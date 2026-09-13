@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-12T10:45:18.429Z",
+  "generatedAt": "2026-09-13T11:51:23.387Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -52,7 +52,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.36,
+      "momentum": -0.21,
       "weeklyCounts": [
         14,
         11,
@@ -64,7 +64,7 @@
         9,
         14,
         14,
-        9
+        11
       ],
       "signals": [
         {
@@ -78,12 +78,6 @@
           "url": "https://www.latent.space/p/anima",
           "source": "latent-space",
           "publishedAt": "2026-08-26T15:15:39.000Z"
-        },
-        {
-          "title": "[AINews] 10% worse, 100x cheaper, 10000x faster: Why Simulation is taking over",
-          "url": "https://www.latent.space/p/ainews-10-worse-100x-cheaper-10000x",
-          "source": "latent-space",
-          "publishedAt": "2026-08-22T07:36:00.000Z"
         }
       ]
     },
@@ -93,7 +87,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.54,
+      "momentum": -0.39,
       "weeklyCounts": [
         81,
         60,
@@ -105,7 +99,7 @@
         107,
         100,
         85,
-        39
+        52
       ],
       "signals": [
         {
@@ -146,7 +140,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.56,
+      "momentum": -0.41,
       "weeklyCounts": [
         411,
         420,
@@ -158,7 +152,7 @@
         437,
         437,
         452,
-        200
+        267
       ],
       "signals": [
         {
@@ -199,7 +193,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.57,
+      "momentum": -0.43,
       "weeklyCounts": [
         375,
         358,
@@ -211,7 +205,7 @@
         398,
         388,
         365,
-        157
+        209
       ],
       "signals": [
         {
@@ -252,7 +246,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.57,
+      "momentum": -0.43,
       "weeklyCounts": [
         21,
         21,
@@ -264,7 +258,7 @@
         21,
         21,
         21,
-        9
+        12
       ],
       "signals": [
         {
