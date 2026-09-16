@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-15T11:44:00.949Z",
+  "generatedAt": "2026-09-16T11:32:06.482Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -20,7 +20,7 @@
         1,
         0,
         0,
-        1
+        2
       ],
       "signals": [
         {
@@ -37,7 +37,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "rising",
-      "momentum": 0.07,
+      "momentum": 0.21,
       "weeklyCounts": [
         14,
         11,
@@ -49,7 +49,7 @@
         9,
         14,
         14,
-        15
+        17
       ],
       "signals": [
         {
@@ -67,34 +67,12 @@
       ]
     },
     {
-      "id": "post-quantum",
-      "label": "Post-Quantum Crypto",
-      "category": "cybersecurity",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "signals": []
-    },
-    {
       "id": "rag",
       "label": "Retrieval-Augmented Generation",
       "category": "ai",
       "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.07,
+      "trajectory": "rising",
+      "momentum": 0.08,
       "weeklyCounts": [
         81,
         60,
@@ -106,7 +84,7 @@
         107,
         100,
         85,
-        79
+        92
       ],
       "signals": [
         {
@@ -134,10 +112,10 @@
           "publishedAt": "2026-09-04T05:18:11.000Z"
         },
         {
-          "title": "[AINews] Hot Chips: OpenAI’s Jalapeño, Cerebras CS-5, Groq 3 LPX, Apple M6",
-          "url": "https://www.latent.space/p/ainews-hot-chips-openais-jalapeno",
-          "source": "latent-space",
-          "publishedAt": "2026-08-27T01:31:22.000Z"
+          "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
+          "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
+          "source": "hf",
+          "publishedAt": "2026-08-12T16:14:36.000Z"
         }
       ]
     },
@@ -146,8 +124,8 @@
       "label": "LLM Agents",
       "category": "ai",
       "stage": "prototype",
-      "trajectory": "cooling",
-      "momentum": -0.11,
+      "trajectory": "rising",
+      "momentum": 0.04,
       "weeklyCounts": [
         411,
         420,
@@ -159,9 +137,21 @@
         437,
         437,
         452,
-        401
+        469
       ],
       "signals": [
+        {
+          "title": "[AINews] Jev: a “System One Model” that only decides/classifies/routes/scores — >100x faster, >200x cheaper than small frontier LLMs",
+          "url": "https://www.latent.space/p/ainews-jev-a-system-one-model-that",
+          "source": "latent-space",
+          "publishedAt": "2026-09-16T11:09:53.000Z"
+        },
+        {
+          "title": "Can Skills Learned in Games Transfer to Real-World Work?",
+          "url": "https://www.latent.space/p/good-start-labs",
+          "source": "latent-space",
+          "publishedAt": "2026-09-15T20:11:54.000Z"
+        },
         {
           "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
           "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
@@ -179,18 +169,6 @@
           "url": "https://www.latent.space/p/ainews-deepseek-v41-flash-763b-p8b",
           "source": "latent-space",
           "publishedAt": "2026-09-12T05:56:05.000Z"
-        },
-        {
-          "title": "Quoting Boris Cherny",
-          "url": "https://simonwillison.net/2026/Sep/11/boris-cherny/",
-          "source": "simonw",
-          "publishedAt": "2026-09-11T17:47:11.000Z"
-        },
-        {
-          "title": "Datasette 1.0a39 and 0.65.4 security releases",
-          "url": "https://simonwillison.net/2026/Sep/11/datasette-security/",
-          "source": "simonw",
-          "publishedAt": "2026-09-11T03:27:16.000Z"
         }
       ]
     },
@@ -200,7 +178,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.14,
+      "momentum": 0,
       "weeklyCounts": [
         375,
         358,
@@ -212,7 +190,7 @@
         398,
         388,
         365,
-        313
+        364
       ],
       "signals": [
         {
@@ -252,8 +230,8 @@
       "label": "Protein Design",
       "category": "biotech",
       "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.14,
+      "trajectory": "stable",
+      "momentum": 0,
       "weeklyCounts": [
         21,
         21,
@@ -265,7 +243,7 @@
         21,
         21,
         21,
-        18
+        21
       ],
       "signals": [
         {
@@ -287,6 +265,28 @@
           "publishedAt": "2025-11-25T15:52:51.000Z"
         }
       ]
+    },
+    {
+      "id": "post-quantum",
+      "label": "Post-Quantum Crypto",
+      "category": "cybersecurity",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "signals": []
     }
   ]
 }

@@ -1,6 +1,121 @@
 {
-  "generatedAt": "2026-09-15T11:44:00.865Z",
+  "generatedAt": "2026-09-16T11:32:06.414Z",
   "items": [
+    {
+      "id": "d-ajhtul",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-jev-a-system-one-model-that",
+      "publishedAt": "2026-09-16T11:09:53.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Jev proves that specialized decision models beat general LLMs on speed and cost for routing, classification, and scoring tasks—opening a new category of cheaper, faster inference.",
+        "tweets": [
+          "Jev does one thing well: decide, classify, route, score. Not coding, not reasoning. >100x faster and >200x cheaper than frontier LLMs on these tasks. System One thinking beats System Two overhead when you don't need it.",
+          "Trained via RLCD (calibrated decisions), Jev delivers parallel sampling, no hallucination, and reliable confidence scores. The trade: narrow domain focus. The gain: production-grade performance at 1/200th the cost.",
+          "This is the third signal this week: domain-specific data + RL beats generalist models on narrow workloads. Periodic Labs did it for materials science, Google for voice agents, TypeSafe for decisions. The pattern is real."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Jev показывает, что специализированные модели для принятия решений в 100+ раз быстрее и в 200+ раз дешевле универсальных LLM на задачах маршрутизации и классификации.",
+        "tweets": [
+          "Jev делает одно, но хорошо: принимает решения, классифицирует, маршрутизирует, оценивает. Не пишет код, не рассуждает. Когда вам не нужна полная мощь LLM, вы экономите 100x на скорости и 200x на цене.",
+          "Обучена методом RLCD (откалиброванные решения). Даёт параллельную выборку, отсутствие галлюцинаций и надёжные оценки уверенности. Компромисс: узкая специализация. Выигрыш: боевая производительность за 1/200 стоимости.",
+          "Третий сигнал за неделю: специальные данные + RL бьют универсальные модели на узких задачах. Periodic Labs для материалов, Google для голоса, TypeSafe для решений. Паттерн подтверждается."
+        ]
+      }
+    },
+    {
+      "id": "d-aplxt5",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/15/gemini-live/",
+      "publishedAt": "2026-09-15T22:47:07.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Google's Gemini Live audio models enable real-time voice conversations in browsers, matching OpenAI's speech capabilities and lowering the barrier to building voice AI apps.",
+        "tweets": [
+          "Google released Gemini 3.8 Live and 3.8 Live Extended Thinking - speech-to-speech models that let you have real-time voice conversations with interruption support, similar to GPT-Live.",
+          "The WebSocket API connects directly to generativelanguage.googleapis.com with no external libraries needed. Uses Web Audio API for mic capture and speaker playback.",
+          "Developers can now build voice UIs with custom system prompts and voice presets. Astra Extra High already built a working web demo - shows how accessible the API has become."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Голосовые модели Gemini Live позволяют разработчикам встраивать реальные диалоги прямо в браузер, не отставая от возможностей конкурентов.",
+        "tweets": [
+          "Google выпустил Gemini 3.8 Live и Extended Thinking - модели речь-в-речь для реальных голосовых диалогов с поддержкой прерывания, как у OpenAI.",
+          "API подключается через WebSocket напрямую к Google серверам без дополнительных библиотек. Звук захватывается и воспроизводится через Web Audio API.",
+          "Разработчики могут создавать голосовые интерфейсы с кастомными промптами и выбором голоса. Уже готовые примеры показывают, как доступной стала разработка."
+        ]
+      }
+    },
+    {
+      "id": "d-uncd9s",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/good-start-labs",
+      "publishedAt": "2026-09-15T20:11:54.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Game-based training teaches AI models verifiable skills like strategic reasoning that transfer to real work tasks, not just gaming performance.",
+        "tweets": [
+          "Good Start Labs trains frontier models inside games like Diplomacy and 1830: Railroad to teach strategic thinking. A 30B model trained on 1830 improved financial research benchmarks—skills actually transferred outside the game.",
+          "How you design the training environment changes what an AI learns. Same game, different reward structures or input formats (text vs Python vs images) produce different capabilities. Design is the lever.",
+          "Newer models get better at games but diverge on personality traits: betrayal, collaboration, theory of mind. Claude refuses to lie and loses. GPT models plan betrayals and win. Same task, different behaviors."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: игровые среды обучают ИИ проверяемым навыкам стратегического мышления, которые переносятся на реальные рабочие задачи за пределами игры.",
+        "tweets": [
+          "Good Start Labs обучает модели ИИ в играх типа Diplomacy и 1830: Railroad. Модель на 30B параметров, обученная на 1830, улучшила результаты в финансовых аналитических задачах—навыки реально перенеслись за пределы игры.",
+          "Дизайн обучающей среды определяет, какие навыки усвоит ИИ. Одна игра, но разные системы вознаграждения или форматы входа (текст, Python, изображения)—разные способности на выходе.",
+          "Новые модели лучше играют, но по-разному проявляют черты характера: предательство, сотрудничество, теория разума. Claude отказывается лгать и проигрывает. GPT планирует предательства и выигрывает."
+        ]
+      }
+    },
+    {
+      "id": "d-1w9de8h",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/introducing-gemini-3-8-live-and-3-8-live-extended-thinking/",
+      "publishedAt": "2026-09-15T17:05:57.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Gemini 3.8 Live adds real-time multimodal interaction and extended thinking, letting you reason through complex problems in conversation without waiting for batch processing.",
+        "tweets": [
+          "Gemini 3.8 Live processes audio, video, and text in real-time. No more round-trip delays—interrupt, clarify, and iterate as you speak.",
+          "Extended Thinking mode lets the model reason internally before answering. Better for math, coding, and logic puzzles that need working-through.",
+          "Live API enables interactive apps: real-time tutoring, collaborative coding sessions, live data analysis. Stream reasoning steps as they happen."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Gemini 3.8 Live обрабатывает аудио, видео и текст в реальном времени с расширенным мышлением, позволяя решать сложные задачи прямо в беседе без задержек.",
+        "tweets": [
+          "Gemini 3.8 Live принимает аудио, видео и текст одновременно. Прерывайте, уточняйте и итерируйте без ожидания—всё происходит на лету.",
+          "Extended Thinking включает внутреннее рассуждение перед ответом. Помогает с математикой, кодом и логикой, где нужно разобраться пошагово.",
+          "Live API открывает интерактивные приложения: репетиторство в реальном времени, совместное программирование, анализ данных на лету с потоком рассуждений."
+        ]
+      }
+    },
+    {
+      "id": "d-10u888m",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/ibm-research/altk-evolve-consistency",
+      "publishedAt": "2026-09-15T16:00:44.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: AI agents that succeed once often fail on similar tasks later, exposing a gap between one-shot performance and reliable deployment.",
+        "tweets": [
+          "IBM researchers found AI agents ace tasks in isolation but flop on variations. The problem: agents memorize specific examples rather than learning generalizable strategies.",
+          "Consistency matters more than peak performance for real-world AI. An agent that works 80% reliably beats one that's brilliant once then breaks.",
+          "New benchmarks like ALTK-Evolve test whether agents adapt across task variations. This shifts focus from 'can it do this?' to 'will it do this consistently?'"
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: ИИ-агенты, успешно решившие задачу один раз, часто сваливаются на похожих примерах, что критично для промышленного применения.",
+        "tweets": [
+          "Исследователи IBM обнаружили: агенты отлично справляются с изолированными задачами, но ломаются на вариациях. Причина в том, что они заучивают примеры вместо обобщения.",
+          "Надёжность важнее пиковой производительности. Агент с 80% консистентностью лучше того, что блистает один раз, а потом падает.",
+          "Бенчмарк ALTK-Evolve проверяет адаптивность к изменяющимся условиям. Это сдвигает фокус с 'может ли?' на 'будет ли делать это постоянно?'"
+        ]
+      }
+    },
     {
       "id": "d-1vgws3u",
       "source": "latent-space",
@@ -8,19 +123,19 @@
       "publishedAt": "2026-09-15T04:50:36.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: AI labs are formalizing third-party oversight through embedded evaluators and standardized protocols, shifting from voluntary safety promises to verifiable compliance mechanisms.",
+        "headline": "Why it matters: AI labs are formalizing independent oversight through embedded evaluators and shared safety standards, shifting the debate from abstract alignment research to concrete governance and control mechanisms.",
         "tweets": [
-          "Anthropic, OpenAI, and Xai endorse AEF-1 standard for independent evaluators. Frontier labs now commit to desk space, office access, and internal tool permissions for third-party auditors—banking-style regulatory oversight applied to AI.",
-          "The real debate isn't slowdown vs speed anymore—it's whether control engineering (sandboxes, harnesses, permissions) or capability pacing better reduces risk. Production engineering is becoming a core safety discipline.",
-          "Embedded evaluators face structural questions: can outside auditors stay independent when labs fund them? AEF-1 attempts to address conflicts of interest and recusal, but enforcement and transparency remain unproven."
+          "Anthropic commits to embedded third-party evaluators with office desks and internal access—same model banking regulators use. AEF-1 standard now defines baseline for independent AI audits across Xai, OpenAI, and Anthropic.",
+          "Safety debate splits sharply: pacing advocates argue progress outpaces alignment; control-first camp says sandboxing, harnesses, and process engineering solve risks better than slowing capability development.",
+          "Agent harness engineering becomes production discipline. Custom orchestration layers—tool routing, kill switches, memory management—now matter more than model weights for shipping reliable AI systems."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Компании-лидеры в сфере ИИ формализуют внешний контроль через встроенных аудиторов и стандартные протоколы, переходя от добровольных обещаний к проверяемым механизмам соответствия.",
+        "headline": "Почему важно: компании ускоренной разработки ИИ формализуют независимый надзор через встроенных оценщиков и общие стандарты безопасности, переводя дискуссию с абстрактных исследований в конкретное управление и контроль.",
         "tweets": [
-          "Anthropic, OpenAI и Xai согласовали стандарт AEF-1 для независимых оценивателей. Лаборатории обязуются предоставить рабочие места, доступ в офисы и права на внутренние инструменты сторонним аудиторам—банковская модель надзора для ИИ.",
-          "Дискуссия сместилась с темпа развития на механику контроля: помогут ли изоляция, средства оркестрации и разграничение прав снизить риск лучше, чем замедление развития возможностей?",
-          "Встроенные аудиторы сталкиваются с конфликтом интересов: как оставаться независимыми, если лаборатории их финансируют? AEF-1 это адресует, но исполнение и прозрачность остаются под вопросом."
+          "Anthropic обязуется размещать независимых оценщиков в офисе с доступом как у внутренних команд. Стандарт AEF-1 теперь определяет базовые требования к аудитам ИИ для Xai, OpenAI и Anthropic.",
+          "Сообщество раскалывается: одни требуют замедления развития моделей, другие видят решение в песочницах, инженерии оркестровки и управлении процессами, а не в снижении темпов.",
+          "Инженерия агент-харнесса становится дисциплиной production. Слой оркестровки—маршрутизация инструментов, аварийные отключения, управление памятью—теперь важнее весов модели для развёртывания надёжных систем."
         ]
       }
     },
@@ -31,19 +146,19 @@
       "publishedAt": "2026-09-14T21:18:13.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Expert claims about AI extinction risk need rigorous grounding, not hand-waving extrapolation, or they erode public trust.",
+        "headline": "Why it matters: AI doomsday claims spread faster when experts make vague alarms without backing from relevant specialists, eroding public trust through unfounded fear.",
         "tweets": [
-          "Anthropic researchers claiming AI could 'kill us all by decade's end' cite vague threats like bioweapons and infrastructure hacking without the expertise to back them up.",
-          "Domain experts implicitly hold public trust. Making alarming claims outside your expertise—without evidence—abuses that trust and spreads unjustified fear.",
-          "Before raising extinction alarms, get actual bioweapons experts, infrastructure security specialists, and extinction biologists in the room. Specifics matter; fear-mongering doesn't."
+          "Anthropic researchers claiming AI 'could kill us all by decade's end' cite hacking and bioweapons without specifics. Domain experts must either prove claims rigorously or stop weaponizing public trust.",
+          "Hand-wavy extrapolation is contagious: fear spreads when experts make alarming claims outside their expertise. Bioweapon predictions need actual biologists, not LLM researchers, to be credible.",
+          "The burden is on those raising alarms to be precise and circumspect. Vague doomsaying from smart people fills gaps with imagination—and that's how unfounded panic becomes mainstream."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Заявления экспертов об угрозе AI для человечества требуют строгого обоснования, а не размытых предположений, иначе подрывают доверие общества.",
+        "headline": "Почему важно: Туманные предостережения от экспертов об опасности ИИ распространяют страх быстрее, чем факты, и подрывают доверие к их словам.",
         "tweets": [
-          "Исследователи Anthropic говорят, что AI может 'убить нас всех в этом десятилетии', но приводят лишь туманные угрозы биооружия и взлома инфраструктуры без доказательств.",
-          "Эксперты по определению носители общественного доверия. Делать тревожные заявления вне своей компетенции—значит этим доверием манипулировать и распространять необоснованный страх.",
-          "Прежде чем бить в набат об угрозе вымирания, привлеките специалистов по биооружию, инфраструктурной безопасности и экологии. Конкретика важна, паника нет."
+          "Исследователи Anthropic пугают концом света, но ссылаются на хакинг и биооружие без конкретики. Эксперты должны либо доказывать свои утверждения, либо перестать злоупотреблять доверием публики.",
+          "Туманные экстраполяции заразны: страх быстро распространяется, когда учёные делают громкие заявления вне своей области. О биооружии должны говорить биологи, а не специалисты по языковым моделям.",
+          "Те, кто бьёт тревогу, несут ответственность быть точными и осторожными. Неопределённые предсказания от умных людей люди заполняют воображением—так необоснованный панический страх становится мейнстримом."
         ]
       }
     },
@@ -54,19 +169,19 @@
       "publishedAt": "2026-09-14T20:21:48.000Z",
       "category": "web3",
       "en": {
-        "headline": "Why it matters: Understanding which ideas shaped your engineering mindset helps you recognize blind spots and adopt practices that actually scale.",
+        "headline": "Why it matters: Understanding which ideas shaped how you work helps you recognize blindspots and adopt better practices intentionally rather than by accident.",
         "tweets": [
-          "Leaky Abstractions: always dig into the layers beneath your code. That abstraction will break eventually, and you'll need to know what's underneath.",
-          "Migrations aren't disasters to avoid—they're core engineering skills. Replace services, switch databases, redesign systems. Get good at them, not afraid of them.",
-          "Engineer-to-manager-to-engineer isn't a career failure. Top developers ping-pong between roles. Each switch makes you better at both."
+          "Leaky Abstractions (Spolsky): Always dig into the layers beneath your work. When abstractions fail, ignorance hurts. Invest in understanding the stack.",
+          "Migrations as core skill (Larson): Tech debt isn't solved by avoiding migration work—it's solved by getting systematically better at the migrations themselves.",
+          "Engineer/Manager Pendulum (Majors): Switching between IC and management tracks isn't a career trap—it's how the best engineers stay sharp on both sides."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Идеи, которые сформировали вашу инженерную философию, помогают увидеть слепые пятна и принять практики, которые действительно масштабируются.",
+        "headline": "Почему важно: Осознание того, какие идеи сформировали вашу работу, помогает выявить слепые пятна и осознанно применять лучшие практики.",
         "tweets": [
-          "Протечки абстракций: всегда копайте слой за слоем под вашим кодом. Абстракция рано или поздно сломается, и вам понадобится знать, что под ней.",
-          "Миграции—не катастрофы для избежания, а фундаментальный навык инженера. Замена сервисов, смена БД, редизайн систем. Научитесь им, не бойтесь их.",
-          "Переход инженер-менеджер-инженер—не провал карьеры. Лучшие разработчики прыгают между ролями. Каждый переход делает вас сильнее в обоих направлениях."
+          "Течащие абстракции (Spolsky): Всегда копайте глубже. Когда абстракции ломаются, незнание дорого стоит. Инвестируйте в понимание стека.",
+          "Миграции как навык (Larson): Техдолг решается не избеганием миграций, а систематическим улучшением умения их проводить.",
+          "Маятник инженер-менеджер (Majors): Переход между ролями IC и управления—это не карьерная ловушка, а способ оставаться острым в обеих сферах."
         ]
       }
     },
@@ -77,19 +192,19 @@
       "publishedAt": "2026-09-14T16:04:16.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Richard Socher's Recursive is betting that AI systems can automate the invention of better AI systems themselves, potentially compressing years of research into weeks.",
+        "headline": "Why it matters: Richard Socher's Recursive is building AI systems that can automate AI research itself, potentially compressing years of work into weeks and accelerating breakthroughs across science, energy, and materials.",
         "tweets": [
-          "Recursive's early results: an AI research system outperformed humans on optimization tasks in under 48 hours and discovered GPU kernel improvements without needing CUDA experts.",
-          "Socher's core bet: recursive self-improvement can tackle science, energy, materials, and biology by automating the AI research process that currently takes thousands of people years.",
-          "The hard part isn't superintelligence—it's reward design. As AI gets more capable, simple objectives like profit-maximization produce dangerous hacks. Open-source models matter for resilience and competition."
+          "Recursive's AI research system outperformed humans on optimization tasks in under 2 days and discovered GPU kernel improvements without expert CUDA teams. Automation of AI research could be the next frontier.",
+          "Socher argues hard-takeoff scenarios underestimate physical and economic constraints. Superintelligence for science is more likely than uncontrolled recursive self-improvement.",
+          "Open-source AI matters for geopolitical resilience. Constitutional AI approaches have limits. The real challenge is reward engineering when systems become increasingly capable at finding loopholes."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Компания Recursive Ричарда Зохера ставит на то, что системы ИИ смогут автоматизировать улучшение самих себя, потенциально сжимая годы исследований в недели.",
+        "headline": "Почему важно: Recursive Ричарда Сохера создает системы, способные автоматизировать само развитие AI, потенциально сжимая годы работы в недели и ускоряя прорывы в науке, энергетике и материаловедении.",
         "tweets": [
-          "Первые результаты Recursive: система исследования ИИ превзошла людей в задачах оптимизации менее чем за 48 часов и нашла улучшения ядер GPU без экспертов по CUDA.",
-          "Основная ставка Зохера: рекурсивное самосовершенствование может решить задачи в науке, энергетике, материаловедении и биологии через автоматизацию исследований, занимающих сейчас годы.",
-          "Главная сложность не в суперинтеллекте, а в проектировании целевых функций. По мере роста способностей ИИ простые цели типа максимизации прибыли приводят к опасным обходам системы."
+          "AI-система от Recursive превзошла людей в оптимизационных задачах за два дня и нашла улучшения GPU-ядер без помощи экспертов CUDA. Автоматизация AI-исследований — следующий рубеж.",
+          "Сохер считает, что сценарии быстрого взлета недооценивают физические и экономические ограничения. Суперинтеллект для науки вероятнее неконтролируемого рекурсивного самоулучшения.",
+          "Open-source AI критична для геополитической устойчивости. Конституционный подход к AI имеет пределы. Главный вызов — проектирование вознаграждений для систем, которые превосходно находят уязвимости."
         ]
       }
     },
@@ -100,134 +215,19 @@
       "publishedAt": "2026-09-14T14:34:29.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: As AI makes coding cheap, the bottleneck shifts from writing code to understanding what users actually need and designing for it—a skill that won't automate.",
+        "headline": "Why it matters: As AI makes coding cheap, the bottleneck shifts from implementation to understanding what users actually need and building products people want to use.",
         "tweets": [
-          "AI is collapsing the cost of writing, reviewing, and fixing code. What's left: figuring out what people want, defining it precisely, and making it usable. That doesn't scale.",
-          "Software demand is infinite—there's no ceiling. As code gets cheaper, product thinking becomes the entire job. The rarest skill is understanding user needs.",
-          "Every software product has a fixed cost for discovery and UX design that can't be transferred between projects. As coding becomes commoditized, that becomes everything."
+          "AI is collapsing the cost of writing and fixing code. What remains: figuring out what people want, defining it precisely, and making it delightful. That's the irreducible human work.",
+          "Every new line of code gets cheaper with AI. But understanding user needs, product design, and operations scale linearly with each new piece of software. That becomes the whole job.",
+          "As software becomes infinitely abundant, the rare skill isn't coding anymore—it's knowing what to build and why. Engineers are becoming product engineers by necessity."
         ]
       },
       "ru": {
-        "headline": "Почему важно: когда ИИ удешевляет разработку, главной задачей становится понимание реальных потребностей пользователей и дизайн—работа, которая не поддаётся автоматизации.",
+        "headline": "Почему важно: По мере того как ИИ удешевляет написание кода, узким местом становится понимание реальных потребностей пользователей и создание продуктов, которые люди хотят использовать.",
         "tweets": [
-          "Стоимость написания и исправления кода падает. Остаётся: понять, что нужно людям, сформулировать ясно, сделать удобным. Это не масштабируется.",
-          "Спрос на софт бесконечен. По мере удешевления кода продуктовое мышление становится основной работой инженера.",
-          "Каждый продукт имеет фиксированную стоимость на исследование и UX-дизайн, которая не переносится между проектами. Это и будет главным."
-        ]
-      }
-    },
-    {
-      "id": "d-8qmub7",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/fyxer",
-      "publishedAt": "2026-09-14T12:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Fine-tuned AI assistants that learn your communication style can handle email at scale without losing the personal touch that builds trust.",
-        "tweets": [
-          "Fyxer's trick: fine-tune GPT models on each user's past emails so the AI drafts replies that actually sound like them, not a generic assistant.",
-          "Memory + feedback loop keeps the assistant improving. Real user corrections train it to avoid mistakes, building confidence over time.",
-          "Inbox organization + email drafting in your voice solves the core problem: managing volume without delegating your identity to a bot."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Адаптированные под пользователя AI-ассистенты могут справляться с огромными объемами писем, сохраняя личный стиль, который создает доверие.",
-        "tweets": [
-          "Секрет Fyxer: тонкая настройка моделей GPT на письмах каждого юзера, чтобы ассистент писал именно в его стиле, а не как робот.",
-          "Память и обратная связь: реальные исправления пользователей обучают систему избегать ошибок и наращивают уверенность в помощнике.",
-          "Организация входящих + черновики писем в твоем голосе решают главное: справляться с объемом, не теряя лицо перед адресатами."
-        ]
-      }
-    },
-    {
-      "id": "d-14vlf82",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/14/commit-rewriter/",
-      "publishedAt": "2026-09-14T00:28:10.000Z",
-      "category": "web3",
-      "en": {
-        "headline": "Why it matters: AI-generated commits often need cleanup before release—this tool batch-edits commit messages while preserving history.",
-        "tweets": [
-          "commit-rewriter 0.1 lets you bulk-edit commit messages across a repo's history. Built to strip AI cruft and private references from Datasette security releases.",
-          "Run uvx commit-rewriter path/to/repo. Tool auto-creates timestamped backup branch before rewriting commits, so you can safely revert if needed.",
-          "Solves real problem: AI coding agents produce verbose commits with internal IDs. This handles the manual cleanup that publishing requires."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: коммиты, созданные AI, часто требуют очистки перед публикацией—этот инструмент массово редактирует сообщения коммитов с сохранением истории.",
-        "tweets": [
-          "commit-rewriter 0.1 позволяет массово редактировать сообщения коммитов по всей истории репозитория. Создан для удаления артефактов AI и приватных ссылок.",
-          "Запустите uvx commit-rewriter path/to/repo. Инструмент автоматически создаёт резервную ветку перед переписью коммитов для безопасного отката.",
-          "Решает практическую проблему: AI-ассистенты генерируют многословные коммиты с внутренними ID. Инструмент автоматизирует ручную очистку перед релизом."
-        ]
-      }
-    },
-    {
-      "id": "d-1mdqn4g",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/perplexity-improving-accuracy-with-astra",
-      "publishedAt": "2026-09-14T00:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Perplexity is letting GPT-6 Astra handle production systems end-to-end, reducing human oversight needs and speeding up deployment cycles.",
-        "tweets": [
-          "Perplexity now trusts Astra with writing communications, modifying software, and monitoring live production—with significantly less human review than previous models.",
-          "GPT-6 Astra handles end-to-end system tasks, meaning fewer checkpoints between decision and execution. This is about efficiency gains, not replacing humans.",
-          "Key shift: AI that can autonomously manage production systems raises both speed benefits and operational risk questions that teams must actively manage."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Perplexity доверяет GPT-6 Astra управлять production-системами полностью, сокращая необходимость человеческого контроля и ускоряя развёртывание.",
-        "tweets": [
-          "Astra теперь пишет коммуникации, меняет код и мониторит живые системы с минимальным человеческим надзором—это качественный скачок от более ранних моделей.",
-          "ИИ управляет end-to-end циклом: от решения до выполнения в production. Меньше контрольных точек, больше скорость, но и больше ответственности.",
-          "Новый уровень автономии в production-системах: выигрыш в эффективности требует осторожного управления рисками на каждом уровне архитектуры."
-        ]
-      }
-    },
-    {
-      "id": "d-78rt2e",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/13/shot-scraper/",
-      "publishedAt": "2026-09-13T23:58:14.000Z",
-      "category": "web3",
-      "en": {
-        "headline": "Why it matters: WebP support in shot-scraper cuts screenshot file sizes dramatically while maintaining quality for automated web capture workflows.",
-        "tweets": [
-          "shot-scraper 1.12 now generates WebP screenshots. Same visual quality, ~50% smaller files than JPEG/PNG. Use --quality flag to tune compression.",
-          "WebP lossless by default, or dial in lossy compression with --quality option. Practical for automation pipelines handling thousands of screenshots.",
-          "Real-world use case: switching to WebP for commit-rewriter tool eliminated major storage overhead. Simple flag change, significant impact."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: поддержка WebP в shot-scraper заметно снижает размер скриншотов при сохранении качества для автоматизированного захвата веб-страниц.",
-        "tweets": [
-          "shot-scraper 1.12 генерирует скриншоты в WebP. Такое же качество, но файлы на ~50% меньше, чем JPEG или PNG. Флаг --quality для настройки сжатия.",
-          "WebP без потерь по умолчанию, или включите сжатие с потерями через --quality. Полезно для пайплайнов, обрабатывающих тысячи скриншотов.",
-          "На практике: переход на WebP для commit-rewriter уменьшил нагрузку на хранилище. Одна опция, реальный результат."
-        ]
-      }
-    },
-    {
-      "id": "d-12wtnbw",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/12/astra-running-routes/",
-      "publishedAt": "2026-09-12T23:56:42.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: LLMs can now generate real running routes using live map data, but lack of transparency into their work is a serious limitation for reproducibility.",
-        "tweets": [
-          "ChatGPT Work + GPT-6 Astra generated valid 5K and 10K running routes from an address using Nominatim, Overpass, and OSM data—complete with downloadable GPX and interactive maps.",
-          "Thread compaction in ChatGPT erased the actual Python code after execution, making it impossible to audit or reproduce what the system did. Preserving pre-compacted work should be mandatory.",
-          "LLM systems can now integrate geospatial tooling, visualization, and data export seamlessly, but agent transparency needs to catch up before trusting them for critical tasks."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Языковые модели теперь генерируют реальные маршруты на основе географических данных, но отсутствие прозрачности их работы серьёзно ограничивает воспроизводимость.",
-        "tweets": [
-          "ChatGPT Work с GPT-6 Astra создал валидные маршруты на 5 и 10 км через Nominatim, Overpass и данные OpenStreetMap — с экспортом в GPX и интерактивными картами.",
-          "Компактификация потока в ChatGPT удалила исходный код Python после выполнения, что сделало невозможным проверить и повторить действия системы. Сохранение кода должно быть обязательным.",
-          "Языковые модели теперь объединяют геопространственные инструменты, визуализацию и экспорт данных, но прозрачность агентов должна улучшиться перед использованием в критичных задачах."
+          "ИИ снижает стоимость написания и исправления кода. Остаётся главное: понять, что нужно пользователям, чётко это определить и сделать приятным в использовании.",
+          "Каждая строка кода становится дешевле. Но понимание потребностей, дизайн и поддержка растут линейно с каждым новым продуктом. Это становится основной работой.",
+          "Когда софта становится бесконечно много, редкий навык—это не кодирование, а знание, что строить и почему. Инженеры превращаются в продакт-инженеров из необходимости."
         ]
       }
     }
