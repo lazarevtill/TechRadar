@@ -1,14 +1,37 @@
 {
-  "generatedAt": "2026-09-16T11:32:06.482Z",
+  "generatedAt": "2026-09-17T11:40:38.461Z",
   "window": "rolling-120d",
   "topics": [
+    {
+      "id": "post-quantum",
+      "label": "Post-Quantum Crypto",
+      "category": "cybersecurity",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "signals": []
+    },
     {
       "id": "humanoids",
       "label": "Humanoid Robots",
       "category": "robotics",
       "stage": "prototype",
-      "trajectory": "rising",
-      "momentum": 1,
+      "trajectory": "cooling",
+      "momentum": -0.5,
       "weeklyCounts": [
         1,
         7,
@@ -20,7 +43,8 @@
         1,
         0,
         0,
-        2
+        2,
+        1
       ],
       "signals": [
         {
@@ -36,8 +60,8 @@
       "label": "Fusion Energy",
       "category": "energy",
       "stage": "research",
-      "trajectory": "rising",
-      "momentum": 0.21,
+      "trajectory": "cooling",
+      "momentum": -0.82,
       "weeklyCounts": [
         14,
         11,
@@ -49,9 +73,16 @@
         9,
         14,
         14,
-        17
+        17,
+        3
       ],
       "signals": [
+        {
+          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
+          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
+          "source": "latent-space",
+          "publishedAt": "2026-09-17T07:28:25.000Z"
+        },
         {
           "title": "Humanity’s Last Invention — Richard Socher of Recursive",
           "url": "https://www.latent.space/p/recursive",
@@ -71,8 +102,8 @@
       "label": "Retrieval-Augmented Generation",
       "category": "ai",
       "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 0.08,
+      "trajectory": "cooling",
+      "momentum": -0.85,
       "weeklyCounts": [
         81,
         60,
@@ -84,9 +115,16 @@
         107,
         100,
         85,
-        92
+        92,
+        14
       ],
       "signals": [
+        {
+          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
+          "url": "https://www.latent.space/p/aiuc",
+          "source": "latent-space",
+          "publishedAt": "2026-09-16T18:07:45.000Z"
+        },
         {
           "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
           "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
@@ -110,12 +148,6 @@
           "url": "https://www.latent.space/p/ainews-gpt-6-astra-openais-biggest",
           "source": "latent-space",
           "publishedAt": "2026-09-04T05:18:11.000Z"
-        },
-        {
-          "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
-          "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
-          "source": "hf",
-          "publishedAt": "2026-08-12T16:14:36.000Z"
         }
       ]
     },
@@ -124,8 +156,8 @@
       "label": "LLM Agents",
       "category": "ai",
       "stage": "prototype",
-      "trajectory": "rising",
-      "momentum": 0.04,
+      "trajectory": "cooling",
+      "momentum": -0.86,
       "weeklyCounts": [
         411,
         420,
@@ -137,9 +169,22 @@
         437,
         437,
         452,
-        469
+        469,
+        68
       ],
       "signals": [
+        {
+          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
+          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
+          "source": "latent-space",
+          "publishedAt": "2026-09-17T07:28:25.000Z"
+        },
+        {
+          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
+          "url": "https://www.latent.space/p/aiuc",
+          "source": "latent-space",
+          "publishedAt": "2026-09-16T18:07:45.000Z"
+        },
         {
           "title": "[AINews] Jev: a “System One Model” that only decides/classifies/routes/scores — >100x faster, >200x cheaper than small frontier LLMs",
           "url": "https://www.latent.space/p/ainews-jev-a-system-one-model-that",
@@ -157,18 +202,6 @@
           "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
           "source": "latent-space",
           "publishedAt": "2026-09-15T04:50:36.000Z"
-        },
-        {
-          "title": "Quoting Laurie Voss",
-          "url": "https://simonwillison.net/2026/Sep/14/laurie-voss/",
-          "source": "simonw",
-          "publishedAt": "2026-09-14T14:34:29.000Z"
-        },
-        {
-          "title": "[AINews] DeepSeek v4.1-Flash: 763B-P8B-D16B novel causal Encoder–Decoder architecture with vision marks the Return of the Whale",
-          "url": "https://www.latent.space/p/ainews-deepseek-v41-flash-763b-p8b",
-          "source": "latent-space",
-          "publishedAt": "2026-09-12T05:56:05.000Z"
         }
       ]
     },
@@ -178,7 +211,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": 0,
+      "momentum": -0.86,
       "weeklyCounts": [
         375,
         358,
@@ -190,9 +223,22 @@
         398,
         388,
         365,
-        364
+        364,
+        52
       ],
       "signals": [
+        {
+          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
+          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
+          "source": "latent-space",
+          "publishedAt": "2026-09-17T07:28:25.000Z"
+        },
+        {
+          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
+          "url": "https://www.latent.space/p/aiuc",
+          "source": "latent-space",
+          "publishedAt": "2026-09-16T18:07:45.000Z"
+        },
         {
           "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
           "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
@@ -210,18 +256,6 @@
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-d3b",
           "source": "latent-space",
           "publishedAt": "2026-09-10T03:33:12.000Z"
-        },
-        {
-          "title": "[AINews] OpenAI reports Navier-Stokes singularity find in 88 hours using Astra-next, roughly 10,000 agents and 130B tokens (>$40M), a contender for second ever Millennium Prize awarded",
-          "url": "https://www.latent.space/p/ainews-openai-reports-navier-stokes",
-          "source": "latent-space",
-          "publishedAt": "2026-09-09T05:04:51.000Z"
-        },
-        {
-          "title": "[AINews] Collusion.wiki: A second undisclosed OpenAI agent swarm incident...",
-          "url": "https://www.latent.space/p/ainews-collusionwiki-a-second-undisclosed",
-          "source": "latent-space",
-          "publishedAt": "2026-09-05T04:32:00.000Z"
         }
       ]
     },
@@ -230,8 +264,8 @@
       "label": "Protein Design",
       "category": "biotech",
       "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
+      "trajectory": "cooling",
+      "momentum": -0.86,
       "weeklyCounts": [
         21,
         21,
@@ -243,7 +277,8 @@
         21,
         21,
         21,
-        21
+        21,
+        3
       ],
       "signals": [
         {
@@ -265,28 +300,6 @@
           "publishedAt": "2025-11-25T15:52:51.000Z"
         }
       ]
-    },
-    {
-      "id": "post-quantum",
-      "label": "Post-Quantum Crypto",
-      "category": "cybersecurity",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "signals": []
     }
   ]
 }
