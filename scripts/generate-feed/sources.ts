@@ -55,6 +55,21 @@ function stripHtml(s: string): string {
     .trim()
 }
 
+type AtomLink = { '@_rel'?: string; '@_href'?: string }
+
+/**
+ * RSS/Atom dates are frequently malformed. Returns null only when a date is
+ * present but unparseable, so the caller can drop that one item instead of
+ * letting `toISOString()` throw and take the entire feed down with it.
+ */
+function resolveDate(raw: unknown): string | null {
+  if (raw === undefined || raw === null || raw === '') {
+    return new Date().toISOString()
+  }
+  const d = new Date(String(raw))
+  return Number.isNaN(d.getTime()) ? null : d.toISOString()
+}
+
 function asArray<T>(v: T | T[] | undefined): T[] {
   if (v === undefined) return []
   return Array.isArray(v) ? v : [v]
@@ -63,17 +78,21 @@ function asArray<T>(v: T | T[] | undefined): T[] {
 export function parseFeed(xml: string, sourceId: string): RawPost[] {
   const doc = parser.parse(xml)
   const out: RawPost[] = []
+  let badDates = 0
 
   // RSS: rss.channel.item[]
   const items = asArray(doc?.rss?.channel?.item)
   for (const it of items) {
+    const publishedAt = resolveDate(it.pubDate ?? it['dc:date'])
+    if (publishedAt === null) {
+      badDates++
+      continue
+    }
     out.push({
       source: sourceId,
       title: stripHtml(it.title),
       url: typeof it.link === 'string' ? it.link : (it.link?.['#text'] ?? ''),
-      publishedAt: new Date(
-        it.pubDate ?? it['dc:date'] ?? Date.now(),
-      ).toISOString(),
+      publishedAt,
       contentText: stripHtml(it['content:encoded'] ?? it.description ?? ''),
     })
   }
@@ -81,19 +100,21 @@ export function parseFeed(xml: string, sourceId: string): RawPost[] {
   // Atom: feed.entry[]
   const entries = asArray(doc?.feed?.entry)
   for (const e of entries) {
+    const links = asArray<AtomLink>(e.link)
     const link =
-      asArray(e.link).find(
-        (l: any) => !l['@_rel'] || l['@_rel'] === 'alternate',
-      ) ?? asArray(e.link)[0]
+      links.find((l) => !l['@_rel'] || l['@_rel'] === 'alternate') ?? links[0]
+    const publishedAt = resolveDate(e.updated ?? e.published)
+    if (publishedAt === null) {
+      badDates++
+      continue
+    }
     out.push({
       source: sourceId,
       title: stripHtml(
         typeof e.title === 'string' ? e.title : e.title?.['#text'],
       ),
       url: link?.['@_href'] ?? '',
-      publishedAt: new Date(
-        e.updated ?? e.published ?? Date.now(),
-      ).toISOString(),
+      publishedAt,
       contentText: stripHtml(
         e.summary?.['#text'] ??
           e.summary ??
@@ -104,6 +125,11 @@ export function parseFeed(xml: string, sourceId: string): RawPost[] {
     })
   }
 
+  if (badDates > 0) {
+    console.warn(
+      `[sources] ${sourceId}: skipped ${badDates} item(s) with an unparseable date`,
+    )
+  }
   return out.filter((p) => p.title && p.url)
 }
 

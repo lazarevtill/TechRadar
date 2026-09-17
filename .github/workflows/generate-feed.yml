@@ -12,14 +12,17 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
-        with: { bun-version: latest }
+        with: { bun-version: 1.4.2 }
       - run: bun install --frozen-lockfile
       - name: Generate digest + trends
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Switch models without a code change; see scripts/generate-feed/model.ts
+          # DIGEST_MODEL: claude-sonnet-5
         run: bun run generate:feed
       - name: Verify no secrets leaked into artifacts
         run: bun run check:secrets
