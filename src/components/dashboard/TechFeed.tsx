@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef } from 'react'
+import type { ComponentType } from 'react'
 import { motion } from 'motion/react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import {
@@ -10,7 +11,6 @@ import {
   RefreshCw,
   Loader2,
   AlertCircle,
-  Github,
   FileText,
   MessageSquare,
   Globe,
@@ -18,6 +18,7 @@ import {
   GraduationCap,
   Stethoscope,
 } from 'lucide-react'
+import { GithubIcon } from '@/components/ui/brand-icons'
 import { useFilteredTechFeed, type FilterOptions } from '@/hooks/use-tech-feed'
 import {
   CATEGORY_CONFIG,
@@ -151,10 +152,10 @@ export function TechFeed() {
   const sourceOptions: {
     value: DataSource | 'all'
     label: string
-    icon: typeof Github
+    icon: ComponentType<{ className?: string }>
   }[] = [
     { value: 'all', label: t.allSources, icon: Filter },
-    { value: 'github', label: localizedSources.github, icon: Github },
+    { value: 'github', label: localizedSources.github, icon: GithubIcon },
     { value: 'arxiv', label: localizedSources.arxiv, icon: FileText },
     {
       value: 'hackernews',

@@ -4,7 +4,7 @@ import {
   X,
   Download,
   FolderOpen,
-  Chrome,
+  Puzzle,
   ToggleRight,
   Upload,
   Loader2,
@@ -90,7 +90,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
       number: 3,
       title: t.step3Title,
       description: t.step3Desc,
-      icon: Chrome,
+      icon: Puzzle,
       color: '#22c55e',
       link: 'chrome://extensions',
     },
@@ -150,7 +150,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00f0ff]/20 to-[#ff00aa]/20 border border-white/10 flex items-center justify-center">
-                  <Chrome className="w-5 h-5 text-[#00f0ff]" />
+                  <Puzzle className="w-5 h-5 text-[#00f0ff]" />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white">
                   {t.installationGuide}

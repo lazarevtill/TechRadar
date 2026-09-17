@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Chrome, X, Download } from 'lucide-react'
+import { Puzzle, X, Download } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n'
 import { InstallationGuide } from './InstallationGuide'
 
@@ -49,7 +49,7 @@ export function ExtensionBanner() {
             {/* Icon */}
             <div className="flex items-center gap-4">
               <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                <Chrome className="w-6 h-6 text-[#00f0ff]" />
+                <Puzzle className="w-6 h-6 text-[#00f0ff]" />
               </div>
 
               {/* Text */}

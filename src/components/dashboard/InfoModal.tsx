@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react'
 import {
   X,
-  Github,
   FileText,
   MessageSquare,
   TrendingUp,
@@ -15,6 +14,7 @@ import {
   Cpu,
   ArrowRight,
 } from 'lucide-react'
+import { GithubIcon } from '@/components/ui/brand-icons'
 import { useLanguage } from '@/lib/i18n'
 import { MATURITY_CONFIG } from '@/lib/tech-categories'
 
@@ -39,7 +39,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
             'We aggregate signals from three primary sources in real-time:',
           items: [
             {
-              icon: <Github className="w-4 h-4" />,
+              icon: <GithubIcon className="w-4 h-4" />,
               name: 'GitHub',
               color: '#f0f6fc',
               desc: 'Trending repositories, star velocity, fork patterns, and release activity. We track repos gaining unusual traction.',
@@ -155,7 +155,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
             'Мы агрегируем сигналы из трёх основных источников в реальном времени:',
           items: [
             {
-              icon: <Github className="w-4 h-4" />,
+              icon: <GithubIcon className="w-4 h-4" />,
               name: 'GitHub',
               color: '#f0f6fc',
               desc: 'Трендовые репозитории, скорость роста звёзд, паттерны форков и активность релизов.',
