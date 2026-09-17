@@ -6,10 +6,13 @@ export function ErrorComponent({
   error,
   info,
 }: {
-  error: Error
+  // TanStack Router types thrown values as `unknown` — JS can throw anything,
+  // so normalize rather than assuming an Error instance.
+  error: unknown
   info?: { componentStack: string }
   reset: () => void
 }) {
+  const err = error instanceof Error ? error : new Error(String(error))
   const randomErrorId = useRef<string>(
     Math.random().toString(36).substring(2, 15),
   )
@@ -21,9 +24,9 @@ export function ErrorComponent({
     data: {
       errorId: randomErrorId.current,
       href: location.href,
-      errorMessage: error.message,
-      errorStack: error.stack,
-      errorCause: error.cause,
+      errorMessage: err.message,
+      errorStack: err.stack,
+      errorCause: err.cause,
       errorComponentStack: info?.componentStack,
     },
   }
@@ -53,7 +56,7 @@ export function ErrorComponent({
 
       <div>
         <pre className="text-xs border border-red-500 p-2 text-red-500 overflow-auto rounded-md">
-          {error.message ? <code>{error.message}</code> : null}
+          {err.message ? <code>{err.message}</code> : null}
         </pre>
       </div>
     </div>

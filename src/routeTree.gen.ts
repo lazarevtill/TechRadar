@@ -10,12 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
+import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicTestParsersRouteImport } from './routes/_public/test-parsers'
-import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHelloRoute = ApiHelloRouteImport.update({
+  id: '/_api/hello',
+  path: '/hello',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
@@ -28,16 +33,11 @@ const PublicTestParsersRoute = PublicTestParsersRouteImport.update({
   path: '/test-parsers',
   getParentRoute: () => PublicRoute,
 } as any)
-const ApiHelloRoute = ApiHelloRouteImport.update({
-  id: '/_api/hello',
-  path: '/hello',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof PublicIndexRoute
   '/hello': typeof ApiHelloRoute
   '/test-parsers': typeof PublicTestParsersRoute
-  '/': typeof PublicIndexRoute
 }
 export interface FileRoutesByTo {
   '/hello': typeof ApiHelloRoute
@@ -53,7 +53,7 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/hello' | '/test-parsers' | '/'
+  fullPaths: '/' | '/hello' | '/test-parsers'
   fileRoutesByTo: FileRoutesByTo
   to: '/hello' | '/test-parsers' | '/'
   id:
@@ -74,8 +74,15 @@ declare module '@tanstack/react-router' {
     '/_public': {
       id: '/_public'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof PublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_api/hello': {
+      id: '/_api/hello'
+      path: '/hello'
+      fullPath: '/hello'
+      preLoaderRoute: typeof ApiHelloRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/': {
@@ -91,13 +98,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/test-parsers'
       preLoaderRoute: typeof PublicTestParsersRouteImport
       parentRoute: typeof PublicRoute
-    }
-    '/_api/hello': {
-      id: '/_api/hello'
-      path: '/hello'
-      fullPath: '/hello'
-      preLoaderRoute: typeof ApiHelloRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }

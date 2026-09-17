@@ -1,10 +1,7 @@
 // Tech Evolution Radar - Category & Maturity Definitions
 
 export type MaturityStage =
-  | 'research'
-  | 'prototype'
-  | 'early-adopter'
-  | 'mass-market'
+  'research' | 'prototype' | 'early-adopter' | 'mass-market'
 
 export type TechCategory =
   | 'ai'

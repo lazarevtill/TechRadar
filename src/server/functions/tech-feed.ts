@@ -929,22 +929,20 @@ async function fetchCNKI(): Promise<TechItem[]> {
     },
   ]
 
-  const items = chineseResearchTopics.map(
-    (topic, index): TechItem => ({
-      id: `cnki-${index}-${Date.now()}`,
-      title: topic.title,
-      summary: topic.summary,
-      source: 'cnki',
-      sourceUrl: 'https://www.cnki.net/',
-      category: topic.category,
-      maturityStage: 'research',
-      impactScore: 6,
-      hypeVolume: 800,
-      publishedAt: new Date(Date.now() - index * 86400000),
-      whyItMatters: 'High-impact Chinese academic research from CNKI database.',
-      originalLanguage: 'zh',
-    }),
-  )
+  const items = chineseResearchTopics.map((topic, index): TechItem => ({
+    id: `cnki-${index}-${Date.now()}`,
+    title: topic.title,
+    summary: topic.summary,
+    source: 'cnki',
+    sourceUrl: 'https://www.cnki.net/',
+    category: topic.category,
+    maturityStage: 'research',
+    impactScore: 6,
+    hypeVolume: 800,
+    publishedAt: new Date(Date.now() - index * 86400000),
+    whyItMatters: 'High-impact Chinese academic research from CNKI database.',
+    originalLanguage: 'zh',
+  }))
 
   // Cache the results
   setCache(CACHE_KEYS.CNKI, items, CACHE_TTL.DEFAULT)
