@@ -9,13 +9,14 @@
     "build:node": "tsr generate && FOR_SITES=true vite build",
     "serve": "vite preview",
     "test": "vitest run",
+    "test:parsers": "bun run src/server/functions/__tests__/run-tests.ts",
     "lint": "eslint",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "generate:routes": "tsr generate",
     "generate:feed": "bun run scripts/generate-feed/index.ts",
     "check:secrets": "bun run scripts/check-no-secrets.ts",
-    "clean": "rm -rf .ouptut dist node_modules/.vite .nitro .tanstack"
+    "clean": "rm -rf .output dist node_modules/.vite .nitro .tanstack"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.109.1",
@@ -86,21 +87,18 @@
     "@tanstack/eslint-config": "^0.3.0",
     "@tanstack/nitro-v2-vite-plugin": "^1.132.40",
     "@tanstack/router-cli": "^1.132.21",
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/react": "^16.2.0",
     "@types/bun": "^1.2.22",
     "@types/node": "^22.12.0",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
-    "@typescript-eslint/eslint-plugin": "^8.50.0",
     "@vitejs/plugin-react": "^5.0.3",
+    "eslint": "^9.36.0",
     "eslint-plugin-unused-imports": "^4.3.0",
-    "jsdom": "^26.0.0",
     "prettier": "^3.5.3",
     "typescript": "^5.7.2",
+    "typescript-eslint": "^8.70.0",
     "vite": "npm:rolldown-vite@latest",
     "vite-plugin-devtools-json": "^1.0.0",
-    "vitest": "^3.0.5",
-    "web-vitals": "^4.2.4"
+    "vitest": "^3.0.5"
   }
 }

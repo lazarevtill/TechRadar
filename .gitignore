@@ -15,3 +15,6 @@ todos.json
 .env.*
 *.key
 public/data/*.local.json
+
+# npm lockfile — this project installs with bun (bun.lock)
+package-lock.json

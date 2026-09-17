@@ -39,4 +39,24 @@ export default tseslint.config(
       '@typescript-eslint/only-throw-error': 'off', // won't work with TanStack redirects
     },
   },
+  {
+    // chrome-extension/** is browser ES modules that live outside the TS project,
+    // so the type-aware project service can't resolve them and every file errors
+    // with "was not found by the project service". Lint them without type info.
+    files: ['chrome-extension/**/*.js'],
+    languageOptions: {
+      parserOptions: { projectService: false, project: null },
+    },
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'off',
+    },
+  },
+  {
+    // Standalone Node utility run by hand (`node generate-icons.js`), not part
+    // of the extension's ES-module runtime — CommonJS require() is correct here.
+    files: ['chrome-extension/generate-icons.js'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
 )

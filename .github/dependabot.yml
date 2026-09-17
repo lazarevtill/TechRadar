@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # This project installs with bun (bun.lock). Tracking the npm ecosystem here
+  # would update a lockfile that nothing in CI reads.
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
