@@ -108,6 +108,42 @@ describe('summarizePost', () => {
     ).rejects.toThrow(/schema mismatch/)
   })
 
+  it('retries once with the validation error and accepts the correction', async () => {
+    const tooLong = {
+      ...ok,
+      en: { ...ok.en, tweets: ['a'.repeat(TWEET_MAX_CHARS + 1), 'b', 'c'] },
+    }
+    const replies = [reply(tooLong), reply(ok)]
+    let seen: unknown[] = []
+    const client = {
+      messages: {
+        create: async (args: { messages: unknown[] }) => {
+          seen = args.messages
+          return replies.shift()
+        },
+      },
+    } as unknown as Anthropic
+
+    const r = await summarizePost(post, client, profile)
+    expect(r.en.tweets[0]).toBe('a')
+    // the retry must carry the failed attempt plus the complaint
+    expect(seen).toHaveLength(3)
+    expect(JSON.stringify(seen[2])).toContain('failed validation')
+    // usage is summed across both calls
+    expect(r.usage.inputTokens).toBe(20)
+  })
+
+  it('gives up after a second failure', async () => {
+    const bad = {
+      ...ok,
+      en: { ...ok.en, tweets: ['a'.repeat(TWEET_MAX_CHARS + 1), 'b', 'c'] },
+    }
+    const client = clientReturning(reply(bad))
+    await expect(summarizePost(post, client, profile)).rejects.toThrow(
+      /schema mismatch after retry/,
+    )
+  })
+
   it('rejects a headline missing its required prefix', async () => {
     const noPrefix = { ...ok, ru: { ...ok.ru, headline: 'Контекст — бюджет' } }
     await expect(

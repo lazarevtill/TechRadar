@@ -1,10 +1,10 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
-import Anthropic from '@anthropic-ai/sdk'
 import { fetchAllPosts } from './sources'
 import { summarizePost, DigestItemSchema, type DigestItem } from './summarize'
 import { computeTrends, type SignalSnapshot } from './momentum'
 import { TOPIC_LABELS, snapshotFromTexts, collectTopicSignals } from './topics'
 import { resolveProfile } from './model'
+import { createClient } from './client'
 
 const DATA_DIR = 'public/data'
 const DIGEST_MAX = 10
@@ -43,11 +43,7 @@ function todayIso(): string {
 }
 
 async function main() {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey)
-    throw new Error(
-      'ANTHROPIC_API_KEY is required (set as a GitHub Actions secret)',
-    )
+  const client = createClient()
   mkdirSync(DATA_DIR, { recursive: true })
 
   const profile = resolveProfile()
@@ -70,8 +66,6 @@ async function main() {
     )
   }
   const freshest = unique.slice(0, DIGEST_MAX)
-
-  const client = new Anthropic({ apiKey, maxRetries: 3 })
 
   // 1) News digest
   const items: DigestItem[] = []

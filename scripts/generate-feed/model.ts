@@ -32,7 +32,17 @@ export const MODEL_PROFILES: Record<string, ModelProfile> = {
   },
 }
 
-export const DEFAULT_MODEL = 'claude-haiku-4-5'
+/**
+ * Chosen 2026-09-18 by A/B over 8 live posts (scripts/generate-feed/compare-models.ts).
+ * Both models produced valid output with zero failures, but Haiku's Russian was
+ * full of transliterated calques ("компакт-суммаризацию", "гайдлайны
+ * безопасности", "кастомизированными процессами") — exactly what the prompt's
+ * "natural Russian, not a literal translation" rule exists to prevent. Sonnet
+ * read as native and used *fewer* output tokens (4360 vs 5212), so the real
+ * cost gap is ~1.8x, not the ~4x the list prices suggest: roughly $3/month
+ * against $1.70. Switch back by changing this one line.
+ */
+export const DEFAULT_MODEL = 'claude-sonnet-5'
 
 /** Resolve the profile for DIGEST_MODEL, failing fast on a typo. */
 export function resolveProfile(

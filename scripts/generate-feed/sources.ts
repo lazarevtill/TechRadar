@@ -11,6 +11,8 @@ export type RawPost = {
 export const SOURCES = [
   {
     id: 'anthropic',
+    // FIXME(2026-09-18): 404s. /news/rss.xml also 404s; no replacement found.
+    // fetchAllPosts tolerates it, but this source contributes nothing today.
     name: 'Anthropic',
     feedUrl: 'https://www.anthropic.com/rss.xml',
   },
@@ -35,11 +37,17 @@ export const SOURCES = [
     name: 'Hugging Face',
     feedUrl: 'https://huggingface.co/blog/feed.xml',
   },
-  { id: 'meta', name: 'Meta AI', feedUrl: 'https://ai.meta.com/blog/rss/' },
+  {
+    id: 'meta',
+    name: 'Meta AI',
+    // FIXME(2026-09-18): 404s, as does /blog/feed/. No replacement found.
+    feedUrl: 'https://ai.meta.com/blog/rss/',
+  },
   {
     id: 'mistral',
     name: 'Mistral',
-    feedUrl: 'https://mistral.ai/news/rss.xml',
+    // /news/rss.xml now 404s; this is where it redirects to. Verified 2026-09-18.
+    feedUrl: 'https://mistral.ai/news/rss',
   },
 ]
 

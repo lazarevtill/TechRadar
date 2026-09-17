@@ -92,18 +92,16 @@ export type SummarizeResult = z.infer<typeof ModelResponseSchema> & {
  * truncation, refusal and malformed output into one indistinguishable error.
  * Parsing here keeps each failure named and actionable in the CI log.
  */
-export async function summarizePost(
-  post: RawPost,
+async function requestSummary(
   client: Anthropic,
   profile: ModelProfile,
-): Promise<SummarizeResult> {
-  const user = `SOURCE: ${post.source}\nTITLE: ${post.title}\nURL: ${post.url}\n\nCONTENT:\n${post.contentText.slice(0, CONTENT_CHAR_LIMIT)}`
-
+  messages: Anthropic.MessageParam[],
+) {
   const resp = await client.messages.create({
     model: profile.model,
     max_tokens: profile.maxTokens,
     system: DIGEST_SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: user }],
+    messages,
     ...(profile.thinking ? { thinking: profile.thinking } : {}),
     output_config: {
       format: zodOutputFormat(WireResponseSchema),
@@ -134,16 +132,56 @@ export async function summarizePost(
     throw new Error('model output was not valid JSON')
   }
 
-  const parsed = ModelResponseSchema.safeParse(raw)
-  if (!parsed.success) {
-    throw new Error(`schema mismatch: ${parsed.error.issues[0]?.message}`)
-  }
-
   return {
-    ...parsed.data,
+    raw,
+    text,
     usage: {
       inputTokens: resp.usage.input_tokens,
       outputTokens: resp.usage.output_tokens,
     },
   }
+}
+
+export async function summarizePost(
+  post: RawPost,
+  client: Anthropic,
+  profile: ModelProfile,
+): Promise<SummarizeResult> {
+  const user = `SOURCE: ${post.source}\nTITLE: ${post.title}\nURL: ${post.url}\n\nCONTENT:\n${post.contentText.slice(0, CONTENT_CHAR_LIMIT)}`
+  const messages: Anthropic.MessageParam[] = [{ role: 'user', content: user }]
+
+  const first = await requestSummary(client, profile, messages)
+  let parsed = ModelResponseSchema.safeParse(first.raw)
+  const usage = { ...first.usage }
+
+  // The wire schema cannot express the length/prefix/category rules, so the
+  // model overshoots them regularly — a hard reject here discarded ~60% of
+  // otherwise-good summaries. Give it the validation error and one more try;
+  // only a second failure is fatal.
+  if (!parsed.success) {
+    const complaint = parsed.error.issues
+      .map((i) => `${i.path.join('.') || 'response'}: ${i.message}`)
+      .join('; ')
+    messages.push(
+      { role: 'assistant', content: first.text },
+      {
+        role: 'user',
+        content:
+          `That response failed validation: ${complaint}. ` +
+          `Return the whole object again, corrected. Every tweet must be at most ${TWEET_MAX_CHARS} characters ` +
+          `— count them — and the headlines must start exactly with "${EN_PREFIX}" and "${RU_PREFIX}".`,
+      },
+    )
+    const second = await requestSummary(client, profile, messages)
+    usage.inputTokens += second.usage.inputTokens
+    usage.outputTokens += second.usage.outputTokens
+    parsed = ModelResponseSchema.safeParse(second.raw)
+    if (!parsed.success) {
+      throw new Error(
+        `schema mismatch after retry: ${parsed.error.issues[0]?.message}`,
+      )
+    }
+  }
+
+  return { ...parsed.data, usage }
 }

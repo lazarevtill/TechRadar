@@ -9,19 +9,16 @@
  * most visibly struggles. Writes nothing to public/data.
  */
 import { writeFileSync } from 'node:fs'
-import Anthropic from '@anthropic-ai/sdk'
 import { fetchAllPosts } from './sources'
 import { summarizePost } from './summarize'
 import { MODEL_PROFILES } from './model'
+import { createClient } from './client'
 
 const SAMPLE = Number(process.env.COMPARE_SAMPLE ?? 10)
 const OUT = process.env.COMPARE_OUT ?? '/tmp/digest-compare.json'
 
 async function main() {
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is required')
-
-  const client = new Anthropic({ apiKey, maxRetries: 3 })
+  const client = createClient()
   const posts = (await fetchAllPosts())
     .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt))
     .slice(0, SAMPLE)
