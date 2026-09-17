@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { summarizePost, DigestItemSchema, extractJsonObject } from '../summarize'
+import {
+  summarizePost,
+  DigestItemSchema,
+  extractJsonObject,
+} from '../summarize'
 
 const fakeClient = {
   create: async () => ({
@@ -54,7 +58,9 @@ describe('summarizePost', () => {
 
 describe('extractJsonObject', () => {
   it('strips ```json fences', () => {
-    expect(JSON.parse(extractJsonObject('```json\n{"a":1}\n```'))).toEqual({ a: 1 })
+    expect(JSON.parse(extractJsonObject('```json\n{"a":1}\n```'))).toEqual({
+      a: 1,
+    })
   })
   it('strips bare ``` fences and trims prose', () => {
     expect(JSON.parse(extractJsonObject('```\n{"b":2}\n```'))).toEqual({ b: 2 })

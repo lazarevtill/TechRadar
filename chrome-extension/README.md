@@ -62,6 +62,7 @@ chrome-extension/
 ## 🔧 Configuration
 
 The extension works completely offline, fetching data directly from APIs:
+
 - GitHub Trending Repositories
 - arXiv Research Papers
 - Hacker News Top Stories
@@ -70,10 +71,10 @@ Edit `app.js` to customize:
 
 ```javascript
 const CONFIG = {
-    CACHE_DURATION: 5 * 60 * 1000,    // Cache for 5 minutes
-    REFRESH_INTERVAL: 10 * 60 * 1000, // Auto-refresh every 10 minutes
-    MAX_FEED_ITEMS: 20,               // Max items in feed
-};
+  CACHE_DURATION: 5 * 60 * 1000, // Cache for 5 minutes
+  REFRESH_INTERVAL: 10 * 60 * 1000, // Auto-refresh every 10 minutes
+  MAX_FEED_ITEMS: 20, // Max items in feed
+}
 ```
 
 ## 🎨 Customization
@@ -84,27 +85,27 @@ In `app.js`, add new fetch functions following this pattern:
 
 ```javascript
 async function fetchNewSource() {
-    try {
-        const response = await fetch('https://api.example.com/data');
-        const data = await response.json();
-        
-        return data.map(item => ({
-            id: `source-${item.id}`,
-            title: item.title,
-            summary: item.description,
-            source: 'new-source',
-            sourceUrl: item.url,
-            category: categorizeByKeywords(item.title),
-            maturityStage: 'research',
-            impactScore: 5,
-            hypeVolume: 1000,
-            publishedAt: new Date(item.date),
-            isAnomaly: false,
-        }));
-    } catch (error) {
-        console.error('New source error:', error);
-        return [];
-    }
+  try {
+    const response = await fetch('https://api.example.com/data')
+    const data = await response.json()
+
+    return data.map((item) => ({
+      id: `source-${item.id}`,
+      title: item.title,
+      summary: item.description,
+      source: 'new-source',
+      sourceUrl: item.url,
+      category: categorizeByKeywords(item.title),
+      maturityStage: 'research',
+      impactScore: 5,
+      hypeVolume: 1000,
+      publishedAt: new Date(item.date),
+      isAnomaly: false,
+    }))
+  } catch (error) {
+    console.error('New source error:', error)
+    return []
+  }
 }
 ```
 
@@ -112,11 +113,11 @@ Then add it to `fetchAllData()`:
 
 ```javascript
 const [githubItems, arxivItems, hnItems, newItems] = await Promise.all([
-    fetchGitHubTrending(),
-    fetchArxivPapers(),
-    fetchHackerNews(),
-    fetchNewSource(), // Add here
-]);
+  fetchGitHubTrending(),
+  fetchArxivPapers(),
+  fetchHackerNews(),
+  fetchNewSource(), // Add here
+])
 ```
 
 ### Changing Categories
@@ -134,28 +135,32 @@ const CATEGORY_KEYWORDS = {
 ## 🐛 Troubleshooting
 
 ### "No items found"
+
 - Check your internet connection
 - Click the refresh button
 - GitHub API has rate limits (60 requests/hour for unauthenticated)
 
 ### Icons not showing in Chrome
+
 - Make sure all 4 PNG icons exist in the `icons/` folder
 - Use the icon generator to create them
 
 ### Extension not loading
+
 - Ensure Developer mode is enabled
 - Check for errors: `chrome://extensions/` → Details → "Inspect views"
 
 ### CORS errors
+
 - The standalone version uses direct API calls which should work
 
 ## 📊 Data Sources
 
-| Source | API | Rate Limit |
-|--------|-----|------------|
-| GitHub | REST API v3 | 60/hour (unauth) |
-| arXiv | OAI-PMH | No limit |
-| Hacker News | Firebase | No limit |
+| Source      | API         | Rate Limit       |
+| ----------- | ----------- | ---------------- |
+| GitHub      | REST API v3 | 60/hour (unauth) |
+| arXiv       | OAI-PMH     | No limit         |
+| Hacker News | Firebase    | No limit         |
 
 ## 🔒 Permissions
 
@@ -175,6 +180,7 @@ MIT License - Feel free to modify and distribute.
 Built with ❤️ for the tech community.
 
 Data sources:
+
 - [GitHub API](https://docs.github.com/en/rest)
 - [arXiv API](https://arxiv.org/help/api)
 - [Hacker News API](https://github.com/HackerNews/API)

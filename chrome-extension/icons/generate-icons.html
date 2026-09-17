@@ -1,187 +1,197 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Generate Extension Icons</title>
     <style>
-        body {
-            font-family: system-ui, sans-serif;
-            padding: 2rem;
-            background: #1a1a2e;
-            color: white;
-        }
-        h1 {
-            color: #00f0ff;
-        }
-        .icon-container {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            margin: 2rem 0;
-        }
-        .icon-box {
-            text-align: center;
-        }
-        canvas {
-            border: 1px solid #333;
-            border-radius: 8px;
-        }
-        button {
-            margin-top: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: #00f0ff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover {
-            background: #00d4e0;
-        }
-        .instructions {
-            background: rgba(255,255,255,0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
+      body {
+        font-family: system-ui, sans-serif;
+        padding: 2rem;
+        background: #1a1a2e;
+        color: white;
+      }
+      h1 {
+        color: #00f0ff;
+      }
+      .icon-container {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+        margin: 2rem 0;
+      }
+      .icon-box {
+        text-align: center;
+      }
+      canvas {
+        border: 1px solid #333;
+        border-radius: 8px;
+      }
+      button {
+        margin-top: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #00f0ff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button:hover {
+        background: #00d4e0;
+      }
+      .instructions {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>🎯 Tech Evolution Radar - Icon Generator</h1>
-    
+
     <div class="instructions">
-        <p><strong>Instructions:</strong></p>
-        <ol>
-            <li>Click each "Download" button to save the icon</li>
-            <li>Save all icons to the <code>chrome-extension/icons/</code> folder</li>
-            <li>Make sure filenames match: icon16.png, icon32.png, icon48.png, icon128.png</li>
-        </ol>
+      <p><strong>Instructions:</strong></p>
+      <ol>
+        <li>Click each "Download" button to save the icon</li>
+        <li>
+          Save all icons to the <code>chrome-extension/icons/</code> folder
+        </li>
+        <li>
+          Make sure filenames match: icon16.png, icon32.png, icon48.png,
+          icon128.png
+        </li>
+      </ol>
     </div>
 
     <div class="icon-container">
-        <div class="icon-box">
-            <canvas id="icon16" width="16" height="16"></canvas>
-            <p>16x16</p>
-            <button onclick="download('icon16', 16)">Download</button>
-        </div>
-        <div class="icon-box">
-            <canvas id="icon32" width="32" height="32"></canvas>
-            <p>32x32</p>
-            <button onclick="download('icon32', 32)">Download</button>
-        </div>
-        <div class="icon-box">
-            <canvas id="icon48" width="48" height="48"></canvas>
-            <p>48x48</p>
-            <button onclick="download('icon48', 48)">Download</button>
-        </div>
-        <div class="icon-box">
-            <canvas id="icon128" width="128" height="128"></canvas>
-            <p>128x128</p>
-            <button onclick="download('icon128', 128)">Download</button>
-        </div>
+      <div class="icon-box">
+        <canvas id="icon16" width="16" height="16"></canvas>
+        <p>16x16</p>
+        <button onclick="download('icon16', 16)">Download</button>
+      </div>
+      <div class="icon-box">
+        <canvas id="icon32" width="32" height="32"></canvas>
+        <p>32x32</p>
+        <button onclick="download('icon32', 32)">Download</button>
+      </div>
+      <div class="icon-box">
+        <canvas id="icon48" width="48" height="48"></canvas>
+        <p>48x48</p>
+        <button onclick="download('icon48', 48)">Download</button>
+      </div>
+      <div class="icon-box">
+        <canvas id="icon128" width="128" height="128"></canvas>
+        <p>128x128</p>
+        <button onclick="download('icon128', 128)">Download</button>
+      </div>
     </div>
 
     <script>
-        function drawIcon(canvas, size) {
-            const ctx = canvas.getContext('2d');
-            const scale = size / 128;
-            
-            // Background
-            ctx.fillStyle = '#0a0a0f';
-            roundRect(ctx, 0, 0, size, size, size * 0.1875);
-            ctx.fill();
-            
-            const cx = size / 2;
-            const cy = size / 2;
-            
-            // Create gradient
-            const gradient = ctx.createLinearGradient(0, 0, size, size);
-            gradient.addColorStop(0, '#00f0ff');
-            gradient.addColorStop(1, '#ff00aa');
-            
-            // Outer ring
-            ctx.beginPath();
-            ctx.arc(cx, cy, size * 0.375, 0, Math.PI * 2);
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = Math.max(1, size * 0.023);
-            ctx.globalAlpha = 0.8;
-            ctx.stroke();
-            
-            // Middle ring
-            ctx.beginPath();
-            ctx.arc(cx, cy, size * 0.25, 0, Math.PI * 2);
-            ctx.lineWidth = Math.max(1, size * 0.016);
-            ctx.globalAlpha = 0.6;
-            ctx.stroke();
-            
-            // Inner ring
-            ctx.beginPath();
-            ctx.arc(cx, cy, size * 0.125, 0, Math.PI * 2);
-            ctx.lineWidth = Math.max(1, size * 0.016);
-            ctx.globalAlpha = 0.4;
-            ctx.stroke();
-            
-            ctx.globalAlpha = 1;
-            
-            // Center dot
-            ctx.beginPath();
-            ctx.arc(cx, cy, size * 0.047, 0, Math.PI * 2);
-            ctx.fillStyle = '#00f0ff';
-            ctx.fill();
-            
-            // Radar line
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.lineTo(cx, size * 0.125);
-            ctx.strokeStyle = '#00f0ff';
-            ctx.lineWidth = Math.max(1, size * 0.016);
-            ctx.lineCap = 'round';
-            ctx.stroke();
-            
-            // Data points (only for larger sizes)
-            if (size >= 32) {
-                const points = [
-                    { x: 0.664, y: 0.3125, r: 0.031, color: '#ff00aa' },
-                    { x: 0.352, y: 0.586, r: 0.023, color: '#a855f7' },
-                    { x: 0.703, y: 0.547, r: 0.027, color: '#22c55e' },
-                    { x: 0.297, y: 0.391, r: 0.023, color: '#ffaa00' },
-                ];
-                
-                points.forEach(p => {
-                    ctx.beginPath();
-                    ctx.arc(size * p.x, size * p.y, size * p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = p.color;
-                    ctx.fill();
-                });
-            }
+      function drawIcon(canvas, size) {
+        const ctx = canvas.getContext('2d')
+        const scale = size / 128
+
+        // Background
+        ctx.fillStyle = '#0a0a0f'
+        roundRect(ctx, 0, 0, size, size, size * 0.1875)
+        ctx.fill()
+
+        const cx = size / 2
+        const cy = size / 2
+
+        // Create gradient
+        const gradient = ctx.createLinearGradient(0, 0, size, size)
+        gradient.addColorStop(0, '#00f0ff')
+        gradient.addColorStop(1, '#ff00aa')
+
+        // Outer ring
+        ctx.beginPath()
+        ctx.arc(cx, cy, size * 0.375, 0, Math.PI * 2)
+        ctx.strokeStyle = gradient
+        ctx.lineWidth = Math.max(1, size * 0.023)
+        ctx.globalAlpha = 0.8
+        ctx.stroke()
+
+        // Middle ring
+        ctx.beginPath()
+        ctx.arc(cx, cy, size * 0.25, 0, Math.PI * 2)
+        ctx.lineWidth = Math.max(1, size * 0.016)
+        ctx.globalAlpha = 0.6
+        ctx.stroke()
+
+        // Inner ring
+        ctx.beginPath()
+        ctx.arc(cx, cy, size * 0.125, 0, Math.PI * 2)
+        ctx.lineWidth = Math.max(1, size * 0.016)
+        ctx.globalAlpha = 0.4
+        ctx.stroke()
+
+        ctx.globalAlpha = 1
+
+        // Center dot
+        ctx.beginPath()
+        ctx.arc(cx, cy, size * 0.047, 0, Math.PI * 2)
+        ctx.fillStyle = '#00f0ff'
+        ctx.fill()
+
+        // Radar line
+        ctx.beginPath()
+        ctx.moveTo(cx, cy)
+        ctx.lineTo(cx, size * 0.125)
+        ctx.strokeStyle = '#00f0ff'
+        ctx.lineWidth = Math.max(1, size * 0.016)
+        ctx.lineCap = 'round'
+        ctx.stroke()
+
+        // Data points (only for larger sizes)
+        if (size >= 32) {
+          const points = [
+            { x: 0.664, y: 0.3125, r: 0.031, color: '#ff00aa' },
+            { x: 0.352, y: 0.586, r: 0.023, color: '#a855f7' },
+            { x: 0.703, y: 0.547, r: 0.027, color: '#22c55e' },
+            { x: 0.297, y: 0.391, r: 0.023, color: '#ffaa00' },
+          ]
+
+          points.forEach((p) => {
+            ctx.beginPath()
+            ctx.arc(size * p.x, size * p.y, size * p.r, 0, Math.PI * 2)
+            ctx.fillStyle = p.color
+            ctx.fill()
+          })
         }
-        
-        function roundRect(ctx, x, y, width, height, radius) {
-            ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width - radius, y);
-            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-            ctx.lineTo(x + width, y + height - radius);
-            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-            ctx.lineTo(x + radius, y + height);
-            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
-            ctx.closePath();
-        }
-        
-        function download(id, size) {
-            const canvas = document.getElementById(id);
-            const link = document.createElement('a');
-            link.download = `icon${size}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
-        
-        // Draw all icons on load
-        [16, 32, 48, 128].forEach(size => {
-            const canvas = document.getElementById(`icon${size}`);
-            drawIcon(canvas, size);
-        });
+      }
+
+      function roundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath()
+        ctx.moveTo(x + radius, y)
+        ctx.lineTo(x + width - radius, y)
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius)
+        ctx.lineTo(x + width, y + height - radius)
+        ctx.quadraticCurveTo(
+          x + width,
+          y + height,
+          x + width - radius,
+          y + height,
+        )
+        ctx.lineTo(x + radius, y + height)
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius)
+        ctx.lineTo(x, y + radius)
+        ctx.quadraticCurveTo(x, y, x + radius, y)
+        ctx.closePath()
+      }
+
+      function download(id, size) {
+        const canvas = document.getElementById(id)
+        const link = document.createElement('a')
+        link.download = `icon${size}.png`
+        link.href = canvas.toDataURL('image/png')
+        link.click()
+      }
+
+      // Draw all icons on load
+      ;[16, 32, 48, 128].forEach((size) => {
+        const canvas = document.getElementById(`icon${size}`)
+        drawIcon(canvas, size)
+      })
     </script>
-</body>
+  </body>
 </html>

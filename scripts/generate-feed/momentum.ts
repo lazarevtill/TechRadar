@@ -1,5 +1,10 @@
 export type SignalSnapshot = { date: string; topics: Record<string, number> }
-export type Signal = { title: string; url: string; source: string; publishedAt: string }
+export type Signal = {
+  title: string
+  url: string
+  source: string
+  publishedAt: string
+}
 export type Topic = {
   id: string
   label: string

@@ -97,7 +97,13 @@ export function snapshotFromTexts(
 }
 
 export function collectTopicSignals(
-  posts: Array<{ title: string; url: string; source: string; publishedAt: string; contentText?: string }>,
+  posts: Array<{
+    title: string
+    url: string
+    source: string
+    publishedAt: string
+    contentText?: string
+  }>,
   maxPerTopic = 5,
 ): Record<string, Signal[]> {
   const byTopic: Record<string, Signal[]> = {}
@@ -105,11 +111,18 @@ export function collectTopicSignals(
     const ids = tagTopics(`${p.title} ${p.contentText ?? ''}`)
     for (const id of ids) {
       if (!byTopic[id]) byTopic[id] = []
-      byTopic[id].push({ title: p.title, url: p.url, source: p.source, publishedAt: p.publishedAt })
+      byTopic[id].push({
+        title: p.title,
+        url: p.url,
+        source: p.source,
+        publishedAt: p.publishedAt,
+      })
     }
   }
   for (const id of Object.keys(byTopic)) {
-    byTopic[id].sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt))
+    byTopic[id].sort(
+      (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt),
+    )
     byTopic[id] = byTopic[id].slice(0, maxPerTopic)
   }
   return byTopic

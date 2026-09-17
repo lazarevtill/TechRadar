@@ -25,6 +25,7 @@
 ## File Structure
 
 **New — extension pure-logic modules (browser ES modules, vitest-importable):**
+
 - `chrome-extension/lib/categorize.js` — `categorizeByKeywords`, `CATEGORY_KEYWORDS`.
 - `chrome-extension/lib/scoring.js` — `calculateMaturity`, `calculateImpact` (no randomness).
 - `chrome-extension/lib/jitter.js` — `seededJitter(id, index)` deterministic radar placement.
@@ -33,15 +34,19 @@
 - `chrome-extension/lib/trends-view.js` — `formatTrajectory`, `stageIndex`, view helpers for chains.
 
 **New — extension config + data hosts:**
+
 - `chrome-extension/lib/config.js` — `DATA_BASE_URL`, TTLs, source hosts.
 
 **New — extension tests:**
+
 - `chrome-extension/lib/__tests__/*.test.js` — vitest unit tests per module above.
 
 **New — extension fonts:**
+
 - `chrome-extension/fonts/` — bundled woff2 files + `chrome-extension/fonts.css`.
 
 **New — backend cron:**
+
 - `scripts/generate-feed/sources.ts` — blog list + per-source RSS/Atom fetch+parse.
 - `scripts/generate-feed/summarize.ts` — Claude call + zod schema for digest items.
 - `scripts/generate-feed/momentum.ts` — snapshot history + momentum computation.
@@ -50,15 +55,18 @@
 - `scripts/check-no-secrets.ts` — greps built data files for key-shaped strings; exits non-zero on hit.
 
 **New — CI:**
+
 - `.github/workflows/generate-feed.yml` — daily cron + manual dispatch.
 
 **Modified — extension:**
+
 - `chrome-extension/manifest.json` — CSP, host_permissions cleanup, add data + translate hosts.
 - `chrome-extension/newtab.html` — self-hosted fonts, module scripts, new news section markup.
-- `chrome-extension/app.js` — become an ES module; import lib/*; remove `Math.random` metrics; render news + real chains; wire retry.
+- `chrome-extension/app.js` — become an ES module; import lib/\*; remove `Math.random` metrics; render news + real chains; wire retry.
 - `chrome-extension/styles.css` — news section + honest-chain styles.
 
 **Modified — repo root:**
+
 - `.gitignore` — ensure `.env`, `*.key` ignored.
 - `package.json` — add deps + `generate:feed` and `check:secrets` scripts.
 
@@ -69,21 +77,25 @@
 ### Task 0.1: Initialize git and lock down secrets
 
 **Files:**
+
 - Create: `.gitignore` (append if exists)
 - Modify: none
 
 - [ ] **Step 1: Init repo and inspect ignore rules**
 
 Run:
+
 ```bash
 git init
 cat .gitignore
 ```
+
 Expected: repo initialized; note whether `.env` is listed.
 
 - [ ] **Step 2: Ensure secrets are ignored**
 
 Append these lines to `.gitignore` if not already present:
+
 ```
 .env
 .env.*
@@ -101,30 +113,37 @@ git commit -m "chore: initialize git repo with secret ignores"
 - [ ] **Step 4: Create the public GitHub repo and push**
 
 Run (user must be `gh`-authenticated; if not, tell them to run `! gh auth login`):
+
 ```bash
 gh repo create techradar --public --source=. --remote=origin --push
 ```
+
 Expected: repo created, `origin` set, `main` pushed. Record the resulting `<OWNER>/<REPO>` — it is needed in Task 4.1 (`DATA_BASE_URL`).
 
 ### Task 0.2: Add backend dependencies and scripts
 
 **Files:**
+
 - Modify: `package.json`
 
 **Interfaces:**
+
 - Produces: npm scripts `generate:feed`, `check:secrets`; deps `@anthropic-ai/sdk`, `fast-xml-parser`.
 
 - [ ] **Step 1: Install dependencies**
 
 Run:
+
 ```bash
 bun add @anthropic-ai/sdk fast-xml-parser
 ```
+
 Expected: both added to `dependencies`.
 
 - [ ] **Step 2: Add scripts to package.json**
 
 In `package.json` `"scripts"`, add:
+
 ```json
 "generate:feed": "bun run scripts/generate-feed/index.ts",
 "check:secrets": "bun run scripts/check-no-secrets.ts"
@@ -144,10 +163,12 @@ git commit -m "chore: add backend deps (anthropic sdk, fast-xml-parser) and scri
 ### Task 1.1: Extract pure scoring logic (remove randomness) with tests
 
 **Files:**
+
 - Create: `chrome-extension/lib/scoring.js`
 - Test: `chrome-extension/lib/__tests__/scoring.test.js`
 
 **Interfaces:**
+
 - Produces:
   - `calculateMaturity(popularity: number): 'research'|'prototype'|'early-adopter'|'mass-market'`
   - `calculateImpact(primary: number, secondary?: number): number` (1–10)
@@ -226,10 +247,12 @@ git commit -m "feat(ext): extract deterministic scoring module with tests"
 ### Task 1.2: Extract categorization with tests
 
 **Files:**
+
 - Create: `chrome-extension/lib/categorize.js`
 - Test: `chrome-extension/lib/__tests__/categorize.test.js`
 
 **Interfaces:**
+
 - Produces:
   - `CATEGORY_KEYWORDS: Record<string, string[]>`
   - `categorizeByKeywords(text: string): string` (defaults to `'ai'`)
@@ -243,7 +266,9 @@ import { categorizeByKeywords } from '../categorize.js'
 
 describe('categorizeByKeywords', () => {
   it('detects known categories', () => {
-    expect(categorizeByKeywords('New quantum qubit breakthrough')).toBe('quantum')
+    expect(categorizeByKeywords('New quantum qubit breakthrough')).toBe(
+      'quantum',
+    )
     expect(categorizeByKeywords('CRISPR gene therapy trial')).toBe('biotech')
     expect(categorizeByKeywords('SpaceX starship launch')).toBe('space')
   })
@@ -264,14 +289,80 @@ Expected: FAIL (module not found).
 ```js
 // chrome-extension/lib/categorize.js
 export const CATEGORY_KEYWORDS = {
-  ai: ['ai', 'gpt', 'llm', 'machine learning', 'neural', 'openai', 'anthropic', 'claude', 'chatgpt', 'transformer', 'deep learning', 'nlp', 'computer vision'],
+  ai: [
+    'ai',
+    'gpt',
+    'llm',
+    'machine learning',
+    'neural',
+    'openai',
+    'anthropic',
+    'claude',
+    'chatgpt',
+    'transformer',
+    'deep learning',
+    'nlp',
+    'computer vision',
+  ],
   quantum: ['quantum', 'qubit', 'qiskit', 'quantum computing'],
-  robotics: ['robot', 'humanoid', 'autonomous', 'tesla bot', 'optimus', 'drone'],
-  web3: ['blockchain', 'crypto', 'ethereum', 'bitcoin', 'defi', 'nft', 'web3', 'solana'],
-  cybersecurity: ['security', 'hack', 'vulnerability', 'zero-day', 'ransomware', 'encryption', 'malware'],
-  biotech: ['crispr', 'gene', 'biotech', 'drug', 'fda', 'clinical trial', 'protein', 'alphafold', 'dna'],
-  energy: ['fusion', 'solar', 'battery', 'renewable', 'nuclear', 'energy storage', 'ev', 'electric vehicle'],
-  space: ['spacex', 'nasa', 'rocket', 'satellite', 'starship', 'mars', 'moon', 'orbit'],
+  robotics: [
+    'robot',
+    'humanoid',
+    'autonomous',
+    'tesla bot',
+    'optimus',
+    'drone',
+  ],
+  web3: [
+    'blockchain',
+    'crypto',
+    'ethereum',
+    'bitcoin',
+    'defi',
+    'nft',
+    'web3',
+    'solana',
+  ],
+  cybersecurity: [
+    'security',
+    'hack',
+    'vulnerability',
+    'zero-day',
+    'ransomware',
+    'encryption',
+    'malware',
+  ],
+  biotech: [
+    'crispr',
+    'gene',
+    'biotech',
+    'drug',
+    'fda',
+    'clinical trial',
+    'protein',
+    'alphafold',
+    'dna',
+  ],
+  energy: [
+    'fusion',
+    'solar',
+    'battery',
+    'renewable',
+    'nuclear',
+    'energy storage',
+    'ev',
+    'electric vehicle',
+  ],
+  space: [
+    'spacex',
+    'nasa',
+    'rocket',
+    'satellite',
+    'starship',
+    'mars',
+    'moon',
+    'orbit',
+  ],
 }
 
 export function categorizeByKeywords(text) {
@@ -298,10 +389,12 @@ git commit -m "feat(ext): extract categorization module with tests"
 ### Task 1.3: Deterministic radar jitter (stop the radar jumping)
 
 **Files:**
+
 - Create: `chrome-extension/lib/jitter.js`
 - Test: `chrome-extension/lib/__tests__/jitter.test.js`
 
 **Interfaces:**
+
 - Produces: `seededJitter(id: string, index: number): number` returning a stable value in `[-0.5, 0.5]`.
 
 - [ ] **Step 1: Write the failing test**
@@ -365,10 +458,12 @@ git commit -m "feat(ext): deterministic radar jitter to stop dot jumping"
 ### Task 1.4: Bounded translation cache (TTL + size cap)
 
 **Files:**
+
 - Create: `chrome-extension/lib/lru-cache.js`
 - Test: `chrome-extension/lib/__tests__/lru-cache.test.js`
 
 **Interfaces:**
+
 - Produces: `class BoundedCache { constructor(maxEntries: number, ttlMs: number); get(key): any|undefined; set(key, value): void; get size(): number }`
 
 - [ ] **Step 1: Write the failing test**
@@ -381,7 +476,9 @@ import { BoundedCache } from '../lru-cache.js'
 describe('BoundedCache', () => {
   it('evicts oldest beyond maxEntries', () => {
     const c = new BoundedCache(2, 60000)
-    c.set('a', 1); c.set('b', 2); c.set('c', 3)
+    c.set('a', 1)
+    c.set('b', 2)
+    c.set('c', 3)
     expect(c.get('a')).toBeUndefined()
     expect(c.get('c')).toBe(3)
     expect(c.size).toBe(2)
@@ -434,7 +531,9 @@ export class BoundedCache {
       this.map.delete(oldest)
     }
   }
-  get size() { return this.map.size }
+  get size() {
+    return this.map.size
+  }
 }
 ```
 
@@ -453,14 +552,17 @@ git commit -m "feat(ext): bounded TTL cache for translations"
 ### Task 1.5: Manifest hardening — CSP, host_permissions, remove unused
 
 **Files:**
+
 - Modify: `chrome-extension/manifest.json`
 
 **Interfaces:**
+
 - Produces: manifest declaring only hosts actually called + CSP + data host.
 
 - [ ] **Step 1: Replace manifest contents**
 
 Replace the whole file with (note: `<OWNER>/<REPO>` from Task 0.1 is set in `app.js` config, not here; here we only allow the host):
+
 ```json
 {
   "manifest_version": 3,
@@ -505,12 +607,14 @@ git commit -m "feat(ext): add CSP, drop unused host_permissions, add data+transl
 ### Task 1.6: Self-host fonts (stop Google Fonts pings)
 
 **Files:**
+
 - Create: `chrome-extension/fonts/` (woff2 files), `chrome-extension/fonts.css`
 - Modify: `chrome-extension/newtab.html:9-11` (remove Google `<link>`s), add local stylesheet
 
 - [ ] **Step 1: Download the two font families locally**
 
 Run:
+
 ```bash
 mkdir -p chrome-extension/fonts
 # JetBrains Mono (400,500,600) and Space Grotesk (400,500,600,700) as woff2.
@@ -531,33 +635,63 @@ for (const [id,w] of fams) {
   }
 }'
 ```
+
 Expected: several `.woff2` files saved. (If the helper API is unavailable, download equivalents from the official font repos — the requirement is: local woff2 files, no runtime Google request.)
 
 - [ ] **Step 2: Create `fonts.css` with @font-face rules**
 
 ```css
 /* chrome-extension/fonts.css */
-@font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-display: swap;
-  src: url('fonts/jetbrains-mono-400.woff2') format('woff2'); }
-@font-face { font-family: 'JetBrains Mono'; font-weight: 500; font-display: swap;
-  src: url('fonts/jetbrains-mono-500.woff2') format('woff2'); }
-@font-face { font-family: 'JetBrains Mono'; font-weight: 600; font-display: swap;
-  src: url('fonts/jetbrains-mono-600.woff2') format('woff2'); }
-@font-face { font-family: 'Space Grotesk'; font-weight: 400; font-display: swap;
-  src: url('fonts/space-grotesk-400.woff2') format('woff2'); }
-@font-face { font-family: 'Space Grotesk'; font-weight: 500; font-display: swap;
-  src: url('fonts/space-grotesk-500.woff2') format('woff2'); }
-@font-face { font-family: 'Space Grotesk'; font-weight: 600; font-display: swap;
-  src: url('fonts/space-grotesk-600.woff2') format('woff2'); }
-@font-face { font-family: 'Space Grotesk'; font-weight: 700; font-display: swap;
-  src: url('fonts/space-grotesk-700.woff2') format('woff2'); }
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/jetbrains-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/jetbrains-mono-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/jetbrains-mono-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/space-grotesk-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 500;
+  font-display: swap;
+  src: url('fonts/space-grotesk-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 600;
+  font-display: swap;
+  src: url('fonts/space-grotesk-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-weight: 700;
+  font-display: swap;
+  src: url('fonts/space-grotesk-700.woff2') format('woff2');
+}
 ```
 
 - [ ] **Step 3: Swap the `<head>` links in `newtab.html`**
 
 Remove lines 9–11 (the three Google Fonts `<link>` tags) and, immediately before `<link rel="stylesheet" href="styles.css">`, insert:
+
 ```html
-    <link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="fonts.css" />
 ```
 
 - [ ] **Step 4: Manual verification**
@@ -574,9 +708,11 @@ git commit -m "feat(ext): self-host fonts, remove Google Fonts network calls"
 ### Task 1.7: Convert app.js to an ES module and wire in lib modules
 
 **Files:**
+
 - Modify: `chrome-extension/newtab.html:387` (script tag), `chrome-extension/app.js` (imports + replace inlined helpers), `chrome-extension/lib/config.js` (new)
 
 **Interfaces:**
+
 - Consumes: `calculateMaturity`, `calculateImpact` (Task 1.1); `categorizeByKeywords`, `CATEGORY_KEYWORDS` (Task 1.2); `seededJitter` (Task 1.3); `BoundedCache` (Task 1.4).
 - Produces: `app.js` as a module; `chrome-extension/lib/config.js` exporting `DATA_BASE_URL`, `DIGEST_TTL_MS`, `TRANSLATION_CACHE_MAX`, `TRANSLATION_TTL_MS`.
 
@@ -596,24 +732,31 @@ export const TRANSLATION_TTL_MS = 30 * 24 * 60 * 60 * 1000
 - [ ] **Step 2: Make the script a module**
 
 In `newtab.html`, change line 387 from `<script src="app.js"></script>` to:
+
 ```html
-    <script type="module" src="app.js"></script>
+<script type="module" src="app.js"></script>
 ```
 
 - [ ] **Step 3: Add imports at the top of app.js and delete the now-duplicated inlined helpers**
 
 At the very top of `chrome-extension/app.js` (line 1), add:
+
 ```js
 import { calculateMaturity, calculateImpact } from './lib/scoring.js'
 import { categorizeByKeywords, CATEGORY_KEYWORDS } from './lib/categorize.js'
 import { seededJitter } from './lib/jitter.js'
 import { BoundedCache } from './lib/lru-cache.js'
 import {
-  DATA_BASE_URL, DIGEST_TTL_MS, TRENDS_TTL_MS,
-  TRANSLATION_CACHE_MAX, TRANSLATION_TTL_MS,
+  DATA_BASE_URL,
+  DIGEST_TTL_MS,
+  TRENDS_TTL_MS,
+  TRANSLATION_CACHE_MAX,
+  TRANSLATION_TTL_MS,
 } from './lib/config.js'
 ```
+
 Then delete these now-duplicated definitions from app.js:
+
 - `const CATEGORY_KEYWORDS = {…}` (lines 41–50)
 - `function categorizeByKeywords(text) {…}` (lines 571–579)
 - `function calculateMaturity(popularity) {…}` (lines 581–586)
@@ -629,24 +772,33 @@ Expected: only call sites remain (no local definitions).
 - [ ] **Step 5: Replace the module-scoped `translationCache = new Map()` with BoundedCache**
 
 Change (was line 235) `const translationCache = new Map();` to:
+
 ```js
-const translationCache = new BoundedCache(TRANSLATION_CACHE_MAX, TRANSLATION_TTL_MS)
+const translationCache = new BoundedCache(
+  TRANSLATION_CACHE_MAX,
+  TRANSLATION_TTL_MS,
+)
 ```
+
 `get`/`has` usage: in `translateText` replace the `if (translationCache.has(cacheKey)) return translationCache.get(cacheKey)` block (lines 245–248) with:
+
 ```js
-    const cached = translationCache.get(cacheKey)
-    if (cached !== undefined) return cached
+const cached = translationCache.get(cacheKey)
+if (cached !== undefined) return cached
 ```
 
 - [ ] **Step 6: Replace `Math.random` radar jitter (was line 1210) with seededJitter**
 
 In `renderRadar`, replace:
+
 ```js
-        const jitter = (Math.random() - 0.5) * (ringRadius * 0.3);
+const jitter = (Math.random() - 0.5) * (ringRadius * 0.3)
 ```
+
 with:
+
 ```js
-        const jitter = seededJitter(item.id, index) * (ringRadius * 0.3);
+const jitter = seededJitter(item.id, index) * (ringRadius * 0.3)
 ```
 
 - [ ] **Step 7: Manual verification (extension loads as module)**
@@ -663,18 +815,23 @@ git commit -m "refactor(ext): app.js as ES module using shared lib, deterministi
 ### Task 1.8: Remove fabricated growth metrics; honest anomaly/growth
 
 **Files:**
+
 - Modify: `chrome-extension/app.js` (fetchers + AI insight + timeline rendering)
 
 **Interfaces:**
+
 - Produces: items whose `weeklyGrowth` is either a real number or `null`; UI never shows a fabricated `%`.
 
 - [ ] **Step 1: GitHub fetcher — drop random growth**
 
 In `fetchGitHubTrending` (was line 470), replace:
+
 ```js
                 weeklyGrowth: repo.stargazers_count > 500 ? Math.floor(Math.random() * 100) + 20 : null,
 ```
+
 with a real, bounded proxy (stars per day since creation):
+
 ```js
                 weeklyGrowth: (() => {
                     const days = Math.max(1, (Date.now() - new Date(repo.created_at).getTime()) / 86400000)
@@ -686,11 +843,14 @@ with a real, bounded proxy (stars per day since creation):
 - [ ] **Step 2: arXiv fetcher — remove random impact/hype**
 
 In `fetchArxivPapers` (was lines 515–516), replace:
+
 ```js
             impactScore: Math.floor(Math.random() * 4) + 6,
             hypeVolume: Math.floor(Math.random() * 5000) + 500,
 ```
+
 with deterministic neutral values (research papers have no engagement signal yet):
+
 ```js
             impactScore: 6,
             hypeVolume: 0,
@@ -699,10 +859,13 @@ with deterministic neutral values (research papers have no engagement signal yet
 - [ ] **Step 3: Hacker News fetcher — real growth or null**
 
 In `fetchHackerNews` (was line 559), replace:
+
 ```js
             weeklyGrowth: story.score > 300 ? Math.floor(Math.random() * 80) + 10 : null,
 ```
+
 with:
+
 ```js
             weeklyGrowth: null,
 ```
@@ -710,10 +873,13 @@ with:
 - [ ] **Step 4: Timeline anomaly badge — guard against null growth**
 
 In `renderEvolutionChains`, the timeline item (was line 961) shows `+${item.weeklyGrowth}%`. Replace:
+
 ```js
                                         ${item.isAnomaly ? `<span class="timeline-item-anomaly">🔥 +${item.weeklyGrowth}%</span>` : ''}
 ```
+
 with:
+
 ```js
                                         ${item.isAnomaly ? `<span class="timeline-item-anomaly">🔥${item.weeklyGrowth != null ? ' +' + item.weeklyGrowth + '%' : ''}</span>` : ''}
 ```
@@ -732,20 +898,25 @@ git commit -m "fix(ext): remove fabricated random metrics; honest growth/anomaly
 ### Task 1.9: XSS audit pass on all innerHTML sinks
 
 **Files:**
+
 - Modify: `chrome-extension/app.js` (evolution chain header + feed category)
 
 **Interfaces:**
+
 - Consumes: existing `escapeHtml(text)` (was line 1286).
 - Produces: every externally-sourced string passed through `escapeHtml` before `innerHTML`.
 
 - [ ] **Step 1: Escape chain title/description**
 
 In `renderEvolutionChains` (was lines 994–995), replace:
+
 ```js
                         <h3 class="chain-title">${chain.name}</h3>
                         <p class="chain-description">${chain.description}</p>
 ```
+
 with:
+
 ```js
                         <h3 class="chain-title">${escapeHtml(chain.name)}</h3>
                         <p class="chain-description">${escapeHtml(chain.description)}</p>
@@ -763,9 +934,25 @@ Expected: every hit that lands inside an `innerHTML` template is wrapped in `esc
 - [ ] **Step 4: Manual verification with a hostile title**
 
 In DevTools console on the new-tab page, run:
+
 ```js
-state.items.unshift({ id:'xss-1', title:'<img src=x onerror=alert(1)>', summary:'<b>x</b>', source:'github', sourceUrl:'#', category:'ai', maturityStage:'research', impactScore:5, hypeVolume:0, publishedAt:new Date(), isAnomaly:false, weeklyGrowth:null }); renderFeed()
+state.items.unshift({
+  id: 'xss-1',
+  title: '<img src=x onerror=alert(1)>',
+  summary: '<b>x</b>',
+  source: 'github',
+  sourceUrl: '#',
+  category: 'ai',
+  maturityStage: 'research',
+  impactScore: 5,
+  hypeVolume: 0,
+  publishedAt: new Date(),
+  isAnomaly: false,
+  weeklyGrowth: null,
+})
+renderFeed()
 ```
+
 Expected: the markup renders as literal text; no alert dialog fires.
 
 - [ ] **Step 5: Commit**
@@ -778,14 +965,17 @@ git commit -m "fix(ext): escape all externally-sourced innerHTML interpolations"
 ### Task 1.10: GitHub rate-limit resilience + wired Retry
 
 **Files:**
+
 - Modify: `chrome-extension/app.js` (`fetchGitHubTrending`, `fetchAllData`, error render)
 
 **Interfaces:**
+
 - Produces: honest error state when all sources fail; a working Retry button.
 
 - [ ] **Step 1: Detect GitHub rate-limit and stop early**
 
 In `fetchGitHubTrending`, inside the `for` loop after the fetch, replace the `if (response.ok) {…}` block (was lines 444–448) with:
+
 ```js
             if (response.status === 403 || response.status === 429) {
                 console.warn('GitHub rate limit hit; skipping remaining GitHub queries')
@@ -800,48 +990,72 @@ In `fetchGitHubTrending`, inside the `for` loop after the fetch, replace the `if
 - [ ] **Step 2: Render an error state with Retry when everything is empty**
 
 In `render()` (was line 840), immediately after the loading guard, add:
+
 ```js
-    if (state.error && state.items.length === 0) {
-        elements.loading.classList.add('hidden')
-        elements.mainContent.classList.add('hidden')
-        showErrorState()
-        return
-    }
+if (state.error && state.items.length === 0) {
+  elements.loading.classList.add('hidden')
+  elements.mainContent.classList.add('hidden')
+  showErrorState()
+  return
+}
 ```
+
 Add a new function near `render`:
+
 ```js
 function showErrorState() {
-    let host = document.getElementById('error-state')
-    if (!host) {
-        host = document.createElement('div')
-        host.id = 'error-state'
-        host.className = 'error-state'
-        document.getElementById('app').appendChild(host)
-    }
-    host.classList.remove('hidden')
-    host.innerHTML = `
+  let host = document.getElementById('error-state')
+  if (!host) {
+    host = document.createElement('div')
+    host.id = 'error-state'
+    host.className = 'error-state'
+    document.getElementById('app').appendChild(host)
+  }
+  host.classList.remove('hidden')
+  host.innerHTML = `
         <div class="error-inner">
             <div class="error-icon">📡</div>
             <p>${escapeHtml(getTranslation('error'))}</p>
             <button id="error-retry" class="retry-btn">${escapeHtml(getTranslation('retry'))}</button>
         </div>`
-    host.querySelector('#error-retry').addEventListener('click', async () => {
-        host.classList.add('hidden')
-        await fetchAllData()
-    })
+  host.querySelector('#error-retry').addEventListener('click', async () => {
+    host.classList.add('hidden')
+    await fetchAllData()
+  })
 }
 ```
 
 - [ ] **Step 3: Add minimal error styles**
 
 Append to `chrome-extension/styles.css`:
+
 ```css
-.error-state { display:flex; align-items:center; justify-content:center; min-height:60vh; }
-.error-state.hidden { display:none; }
-.error-inner { text-align:center; color:rgba(255,255,255,.7); }
-.error-icon { font-size:2rem; margin-bottom:.5rem; }
-.retry-btn { margin-top:1rem; padding:.5rem 1rem; border-radius:8px; cursor:pointer;
-  background:rgba(0,240,255,.12); border:1px solid rgba(0,240,255,.3); color:#00f0ff; }
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+.error-state.hidden {
+  display: none;
+}
+.error-inner {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+.error-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.retry-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(0, 240, 255, 0.12);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: #00f0ff;
+}
 ```
 
 - [ ] **Step 4: Manual verification**
@@ -880,10 +1094,12 @@ git add -A && git commit -m "chore(ext): format lib modules" || echo "nothing to
 ### Task 2.1: Blog source registry + RSS/Atom fetch & parse
 
 **Files:**
+
 - Create: `scripts/generate-feed/sources.ts`
 - Test: `scripts/generate-feed/__tests__/sources.test.ts`
 
 **Interfaces:**
+
 - Produces:
   - `type RawPost = { source: string; title: string; url: string; publishedAt: string; contentText: string }`
   - `SOURCES: Array<{ id: string; name: string; feedUrl: string }>`
@@ -944,20 +1160,50 @@ export type RawPost = {
 }
 
 export const SOURCES = [
-  { id: 'anthropic', name: 'Anthropic', feedUrl: 'https://www.anthropic.com/rss.xml' },
+  {
+    id: 'anthropic',
+    name: 'Anthropic',
+    feedUrl: 'https://www.anthropic.com/rss.xml',
+  },
   { id: 'openai', name: 'OpenAI', feedUrl: 'https://openai.com/blog/rss.xml' },
-  { id: 'latent-space', name: 'Latent Space', feedUrl: 'https://www.latent.space/feed' },
-  { id: 'deepmind', name: 'Google DeepMind', feedUrl: 'https://deepmind.google/blog/rss.xml' },
-  { id: 'simonw', name: 'Simon Willison', feedUrl: 'https://simonwillison.net/atom/everything/' },
-  { id: 'hf', name: 'Hugging Face', feedUrl: 'https://huggingface.co/blog/feed.xml' },
+  {
+    id: 'latent-space',
+    name: 'Latent Space',
+    feedUrl: 'https://www.latent.space/feed',
+  },
+  {
+    id: 'deepmind',
+    name: 'Google DeepMind',
+    feedUrl: 'https://deepmind.google/blog/rss.xml',
+  },
+  {
+    id: 'simonw',
+    name: 'Simon Willison',
+    feedUrl: 'https://simonwillison.net/atom/everything/',
+  },
+  {
+    id: 'hf',
+    name: 'Hugging Face',
+    feedUrl: 'https://huggingface.co/blog/feed.xml',
+  },
   { id: 'meta', name: 'Meta AI', feedUrl: 'https://ai.meta.com/blog/rss/' },
-  { id: 'mistral', name: 'Mistral', feedUrl: 'https://mistral.ai/news/rss.xml' },
+  {
+    id: 'mistral',
+    name: 'Mistral',
+    feedUrl: 'https://mistral.ai/news/rss.xml',
+  },
 ]
 
-const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_' })
+const parser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: '@_',
+})
 
 function stripHtml(s: string): string {
-  return String(s ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+  return String(s ?? '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function asArray<T>(v: T | T[] | undefined): T[] {
@@ -976,7 +1222,9 @@ export function parseFeed(xml: string, sourceId: string): RawPost[] {
       source: sourceId,
       title: stripHtml(it.title),
       url: typeof it.link === 'string' ? it.link : (it.link?.['#text'] ?? ''),
-      publishedAt: new Date(it.pubDate ?? it['dc:date'] ?? Date.now()).toISOString(),
+      publishedAt: new Date(
+        it.pubDate ?? it['dc:date'] ?? Date.now(),
+      ).toISOString(),
       contentText: stripHtml(it['content:encoded'] ?? it.description ?? ''),
     })
   }
@@ -984,23 +1232,40 @@ export function parseFeed(xml: string, sourceId: string): RawPost[] {
   // Atom: feed.entry[]
   const entries = asArray(doc?.feed?.entry)
   for (const e of entries) {
-    const link = asArray(e.link).find((l: any) => !l['@_rel'] || l['@_rel'] === 'alternate') ?? asArray(e.link)[0]
+    const link =
+      asArray(e.link).find(
+        (l: any) => !l['@_rel'] || l['@_rel'] === 'alternate',
+      ) ?? asArray(e.link)[0]
     out.push({
       source: sourceId,
-      title: stripHtml(typeof e.title === 'string' ? e.title : e.title?.['#text']),
+      title: stripHtml(
+        typeof e.title === 'string' ? e.title : e.title?.['#text'],
+      ),
       url: link?.['@_href'] ?? '',
-      publishedAt: new Date(e.updated ?? e.published ?? Date.now()).toISOString(),
-      contentText: stripHtml(e.summary?.['#text'] ?? e.summary ?? e.content?.['#text'] ?? e.content ?? ''),
+      publishedAt: new Date(
+        e.updated ?? e.published ?? Date.now(),
+      ).toISOString(),
+      contentText: stripHtml(
+        e.summary?.['#text'] ??
+          e.summary ??
+          e.content?.['#text'] ??
+          e.content ??
+          '',
+      ),
     })
   }
 
   return out.filter((p) => p.title && p.url)
 }
 
-export async function fetchAllPosts(fetchImpl: typeof fetch = fetch): Promise<RawPost[]> {
+export async function fetchAllPosts(
+  fetchImpl: typeof fetch = fetch,
+): Promise<RawPost[]> {
   const results = await Promise.allSettled(
     SOURCES.map(async (s) => {
-      const res = await fetchImpl(s.feedUrl, { headers: { 'User-Agent': 'TechRadar/1.1' } })
+      const res = await fetchImpl(s.feedUrl, {
+        headers: { 'User-Agent': 'TechRadar/1.1' },
+      })
       if (!res.ok) throw new Error(`${s.id}: ${res.status}`)
       return parseFeed(await res.text(), s.id)
     }),
@@ -1008,7 +1273,11 @@ export async function fetchAllPosts(fetchImpl: typeof fetch = fetch): Promise<Ra
   const posts: RawPost[] = []
   results.forEach((r, i) => {
     if (r.status === 'fulfilled') posts.push(...r.value)
-    else console.warn(`[sources] ${SOURCES[i].id} failed:`, r.reason?.message ?? r.reason)
+    else
+      console.warn(
+        `[sources] ${SOURCES[i].id} failed:`,
+        r.reason?.message ?? r.reason,
+      )
   })
   return posts
 }
@@ -1029,10 +1298,12 @@ git commit -m "feat(backend): blog source registry with RSS+Atom parsing"
 ### Task 2.2: Claude summarizer with zod-validated EN+RU output
 
 **Files:**
+
 - Create: `scripts/generate-feed/summarize.ts`
 - Test: `scripts/generate-feed/__tests__/summarize.test.ts`
 
 **Interfaces:**
+
 - Consumes: `RawPost` (Task 2.1).
 - Produces:
   - `DigestItemSchema` (zod) and `type DigestItem`
@@ -1049,18 +1320,35 @@ import { summarizePost, DigestItemSchema } from '../summarize'
 
 const fakeClient = {
   create: async () => ({
-    content: [{ type: 'text', text: JSON.stringify({
-      category: 'ai',
-      en: { headline: 'Why it matters: context is a budget', tweets: ['a','b','c'] },
-      ru: { headline: 'Почему важно: контекст — это бюджет', tweets: ['а','б','в'] },
-    }) }],
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify({
+          category: 'ai',
+          en: {
+            headline: 'Why it matters: context is a budget',
+            tweets: ['a', 'b', 'c'],
+          },
+          ru: {
+            headline: 'Почему важно: контекст — это бюджет',
+            tweets: ['а', 'б', 'в'],
+          },
+        }),
+      },
+    ],
   }),
 }
 
 describe('summarizePost', () => {
   it('returns validated EN+RU blocks with exactly 3 tweets', async () => {
     const r = await summarizePost(
-      { source: 'anthropic', title: 'T', url: 'u', publishedAt: '2026-06-01T00:00:00Z', contentText: 'body' },
+      {
+        source: 'anthropic',
+        title: 'T',
+        url: 'u',
+        publishedAt: '2026-06-01T00:00:00Z',
+        contentText: 'body',
+      },
       fakeClient as any,
     )
     expect(r.en.tweets).toHaveLength(3)
@@ -1068,8 +1356,15 @@ describe('summarizePost', () => {
     expect(r.category).toBe('ai')
   })
   it('DigestItemSchema rejects wrong tweet count', () => {
-    const bad = { id:'x', source:'a', sourceUrl:'u', publishedAt:'2026-01-01T00:00:00Z', category:'ai',
-      en:{headline:'h',tweets:['1','2']}, ru:{headline:'h',tweets:['1','2','3']} }
+    const bad = {
+      id: 'x',
+      source: 'a',
+      sourceUrl: 'u',
+      publishedAt: '2026-01-01T00:00:00Z',
+      category: 'ai',
+      en: { headline: 'h', tweets: ['1', '2'] },
+      ru: { headline: 'h', tweets: ['1', '2', '3'] },
+    }
     expect(DigestItemSchema.safeParse(bad).success).toBe(false)
   })
 })
@@ -1087,8 +1382,15 @@ Expected: FAIL (module not found).
 import { z } from 'zod'
 import type { RawPost } from './sources'
 
-const TweetTriple = z.tuple([z.string().min(1), z.string().min(1), z.string().min(1)])
-const LangBlockSchema = z.object({ headline: z.string().min(1), tweets: TweetTriple })
+const TweetTriple = z.tuple([
+  z.string().min(1),
+  z.string().min(1),
+  z.string().min(1),
+])
+const LangBlockSchema = z.object({
+  headline: z.string().min(1),
+  tweets: TweetTriple,
+})
 
 export const DigestItemSchema = z.object({
   id: z.string(),
@@ -1102,7 +1404,16 @@ export const DigestItemSchema = z.object({
 export type DigestItem = z.infer<typeof DigestItemSchema>
 
 const ModelResponseSchema = z.object({
-  category: z.enum(['ai','quantum','robotics','web3','cybersecurity','biotech','energy','space']),
+  category: z.enum([
+    'ai',
+    'quantum',
+    'robotics',
+    'web3',
+    'cybersecurity',
+    'biotech',
+    'energy',
+    'space',
+  ]),
   en: LangBlockSchema,
   ru: LangBlockSchema,
 })
@@ -1130,7 +1441,10 @@ export async function summarizePost(
     system: DIGEST_SYSTEM_PROMPT,
     messages: [{ role: 'user', content: user }],
   })
-  const text = (resp.content ?? []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('')
+  const text = (resp.content ?? [])
+    .filter((b: any) => b.type === 'text')
+    .map((b: any) => b.text)
+    .join('')
   const json = JSON.parse(text)
   const parsed = ModelResponseSchema.parse(json)
   return { en: parsed.en, ru: parsed.ru, category: parsed.category }
@@ -1152,10 +1466,12 @@ git commit -m "feat(backend): Claude summarizer with zod-validated EN+RU digest 
 ### Task 2.3: Momentum / trends computation from snapshot history
 
 **Files:**
+
 - Create: `scripts/generate-feed/momentum.ts`
 - Test: `scripts/generate-feed/__tests__/momentum.test.ts`
 
 **Interfaces:**
+
 - Produces:
   - `type SignalSnapshot = { date: string; topics: Record<string, number> }` (topic → count that day)
   - `type Topic = { id: string; label: string; category: string; stage: string; trajectory: 'rising'|'stable'|'cooling'; momentum: number; weeklyCounts: number[] }`
@@ -1168,7 +1484,9 @@ git commit -m "feat(backend): Claude summarizer with zod-validated EN+RU digest 
 import { describe, it, expect } from 'vitest'
 import { computeTrends } from '../momentum'
 
-const labels = { 'llm-agents': { label: 'LLM Agents', category: 'ai', stage: 'prototype' } }
+const labels = {
+  'llm-agents': { label: 'LLM Agents', category: 'ai', stage: 'prototype' },
+}
 
 describe('computeTrends', () => {
   it('marks a topic rising when recent week exceeds prior week', () => {
@@ -1219,14 +1537,17 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
 function bucketByWeek(history: SignalSnapshot[], topicId: string): number[] {
   if (history.length === 0) return []
-  const sorted = [...history].sort((a, b) => +new Date(a.date) - +new Date(b.date))
+  const sorted = [...history].sort(
+    (a, b) => +new Date(a.date) - +new Date(b.date),
+  )
   const start = +new Date(sorted[0].date)
   const weeks: number[] = []
   for (const snap of sorted) {
     const idx = Math.floor((+new Date(snap.date) - start) / WEEK_MS)
     weeks[idx] = (weeks[idx] ?? 0) + (snap.topics[topicId] ?? 0)
   }
-  for (let i = 0; i < weeks.length; i++) if (weeks[i] === undefined) weeks[i] = 0
+  for (let i = 0; i < weeks.length; i++)
+    if (weeks[i] === undefined) weeks[i] = 0
   return weeks
 }
 
@@ -1248,8 +1569,13 @@ export function computeTrends(
     if (last > prev) trajectory = 'rising'
     else if (last < prev) trajectory = 'cooling'
     topics.push({
-      id, label: meta.label, category: meta.category, stage: meta.stage,
-      trajectory, momentum: Math.round(momentum * 100) / 100, weeklyCounts: weekly,
+      id,
+      label: meta.label,
+      category: meta.category,
+      stage: meta.stage,
+      trajectory,
+      momentum: Math.round(momentum * 100) / 100,
+      weeklyCounts: weekly,
     })
   }
   return topics.sort((a, b) => b.momentum - a.momentum)
@@ -1271,10 +1597,12 @@ git commit -m "feat(backend): weekly momentum/trends computation with tests"
 ### Task 2.4: Topic tagging for snapshots (shared vocabulary)
 
 **Files:**
+
 - Create: `scripts/generate-feed/topics.ts`
 - Test: `scripts/generate-feed/__tests__/topics.test.ts`
 
 **Interfaces:**
+
 - Produces:
   - `TOPIC_LABELS: Record<string, { label: string; category: string; stage: string }>`
   - `tagTopics(text: string): string[]` — returns topic ids matched in text.
@@ -1299,7 +1627,10 @@ describe('tagTopics', () => {
 
 describe('snapshotFromTexts', () => {
   it('counts topic occurrences per day', () => {
-    const snap = snapshotFromTexts(['llm agent', 'llm agent tools'], '2026-06-15')
+    const snap = snapshotFromTexts(
+      ['llm agent', 'llm agent tools'],
+      '2026-06-15',
+    )
     expect(snap.date).toBe('2026-06-15')
     expect(snap.topics['llm-agents']).toBe(2)
   })
@@ -1317,15 +1648,71 @@ Expected: FAIL (module not found).
 // scripts/generate-feed/topics.ts
 import type { SignalSnapshot } from './momentum'
 
-export const TOPIC_LABELS: Record<string, { label: string; category: string; stage: string; keywords: string[] }> = {
-  'llm-agents': { label: 'LLM Agents', category: 'ai', stage: 'prototype', keywords: ['llm agent', 'agent framework', 'agentic', 'ai agent', 'tool use'] },
-  'rag': { label: 'Retrieval-Augmented Generation', category: 'ai', stage: 'early-adopter', keywords: ['rag', 'retrieval augmented', 'vector database', 'embeddings'] },
-  'open-models': { label: 'Open Models', category: 'ai', stage: 'early-adopter', keywords: ['open model', 'open-weight', 'llama', 'mistral', 'qwen', 'gemma'] },
-  'post-quantum': { label: 'Post-Quantum Crypto', category: 'cybersecurity', stage: 'research', keywords: ['post-quantum', 'pqc', 'lattice cryptography'] },
-  'quantum-hardware': { label: 'Quantum Hardware', category: 'quantum', stage: 'research', keywords: ['qubit', 'quantum processor', 'quantum computer'] },
-  'humanoids': { label: 'Humanoid Robots', category: 'robotics', stage: 'prototype', keywords: ['humanoid', 'optimus', 'boston dynamics', 'figure robot'] },
-  'fusion': { label: 'Fusion Energy', category: 'energy', stage: 'research', keywords: ['fusion', 'tokamak', 'plasma confinement'] },
-  'protein-design': { label: 'Protein Design', category: 'biotech', stage: 'research', keywords: ['alphafold', 'protein design', 'protein folding'] },
+export const TOPIC_LABELS: Record<
+  string,
+  { label: string; category: string; stage: string; keywords: string[] }
+> = {
+  'llm-agents': {
+    label: 'LLM Agents',
+    category: 'ai',
+    stage: 'prototype',
+    keywords: [
+      'llm agent',
+      'agent framework',
+      'agentic',
+      'ai agent',
+      'tool use',
+    ],
+  },
+  rag: {
+    label: 'Retrieval-Augmented Generation',
+    category: 'ai',
+    stage: 'early-adopter',
+    keywords: ['rag', 'retrieval augmented', 'vector database', 'embeddings'],
+  },
+  'open-models': {
+    label: 'Open Models',
+    category: 'ai',
+    stage: 'early-adopter',
+    keywords: [
+      'open model',
+      'open-weight',
+      'llama',
+      'mistral',
+      'qwen',
+      'gemma',
+    ],
+  },
+  'post-quantum': {
+    label: 'Post-Quantum Crypto',
+    category: 'cybersecurity',
+    stage: 'research',
+    keywords: ['post-quantum', 'pqc', 'lattice cryptography'],
+  },
+  'quantum-hardware': {
+    label: 'Quantum Hardware',
+    category: 'quantum',
+    stage: 'research',
+    keywords: ['qubit', 'quantum processor', 'quantum computer'],
+  },
+  humanoids: {
+    label: 'Humanoid Robots',
+    category: 'robotics',
+    stage: 'prototype',
+    keywords: ['humanoid', 'optimus', 'boston dynamics', 'figure robot'],
+  },
+  fusion: {
+    label: 'Fusion Energy',
+    category: 'energy',
+    stage: 'research',
+    keywords: ['fusion', 'tokamak', 'plasma confinement'],
+  },
+  'protein-design': {
+    label: 'Protein Design',
+    category: 'biotech',
+    stage: 'research',
+    keywords: ['alphafold', 'protein design', 'protein folding'],
+  },
 }
 
 export function tagTopics(text: string): string[] {
@@ -1337,7 +1724,10 @@ export function tagTopics(text: string): string[] {
   return ids
 }
 
-export function snapshotFromTexts(texts: string[], date: string): SignalSnapshot {
+export function snapshotFromTexts(
+  texts: string[],
+  date: string,
+): SignalSnapshot {
   const topics: Record<string, number> = {}
   for (const text of texts) {
     for (const id of tagTopics(text)) topics[id] = (topics[id] ?? 0) + 1
@@ -1361,10 +1751,12 @@ git commit -m "feat(backend): shared topic vocabulary and daily snapshot tagging
 ### Task 2.5: Orchestrator — write digest.json, trends.json, history.json
 
 **Files:**
+
 - Create: `scripts/generate-feed/index.ts`, `public/data/.gitkeep`
 - Modify: none
 
 **Interfaces:**
+
 - Consumes: `fetchAllPosts` (2.1), `summarizePost`+`DigestItemSchema` (2.2), `computeTrends`+`SignalSnapshot` (2.3), `TOPIC_LABELS`+`snapshotFromTexts` (2.4).
 - Produces: files `public/data/digest.json`, `public/data/trends.json`, `public/data/history.json`.
 
@@ -1384,7 +1776,10 @@ const DIGEST_MAX = 10
 
 function stableId(url: string): string {
   let h = 2166136261
-  for (let i = 0; i < url.length; i++) { h ^= url.charCodeAt(i); h = Math.imul(h, 16777619) }
+  for (let i = 0; i < url.length; i++) {
+    h ^= url.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
   return 'd-' + (h >>> 0).toString(36)
 }
 
@@ -1395,7 +1790,10 @@ function todayIso(): string {
 
 async function main() {
   const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is required (set as a GitHub Actions secret)')
+  if (!apiKey)
+    throw new Error(
+      'ANTHROPIC_API_KEY is required (set as a GitHub Actions secret)',
+    )
   mkdirSync(DATA_DIR, { recursive: true })
 
   const posts = await fetchAllPosts()
@@ -1411,15 +1809,23 @@ async function main() {
     try {
       const s = await summarizePost(p, client)
       const item = DigestItemSchema.parse({
-        id: stableId(p.url), source: p.source, sourceUrl: p.url,
-        publishedAt: p.publishedAt, category: s.category, en: s.en, ru: s.ru,
+        id: stableId(p.url),
+        source: p.source,
+        sourceUrl: p.url,
+        publishedAt: p.publishedAt,
+        category: s.category,
+        en: s.en,
+        ru: s.ru,
       })
       items.push(item)
     } catch (e) {
       console.warn(`[digest] skip ${p.url}:`, (e as Error).message)
     }
   }
-  writeFileSync(`${DATA_DIR}/digest.json`, JSON.stringify({ generatedAt: new Date().toISOString(), items }, null, 2))
+  writeFileSync(
+    `${DATA_DIR}/digest.json`,
+    JSON.stringify({ generatedAt: new Date().toISOString(), items }, null, 2),
+  )
 
   // 2) Trend snapshot + history (append today)
   const historyPath = `${DATA_DIR}/history.json`
@@ -1434,15 +1840,30 @@ async function main() {
   writeFileSync(historyPath, JSON.stringify(trimmed, null, 2))
 
   const labels = Object.fromEntries(
-    Object.entries(TOPIC_LABELS).map(([id, d]) => [id, { label: d.label, category: d.category, stage: d.stage }]),
+    Object.entries(TOPIC_LABELS).map(([id, d]) => [
+      id,
+      { label: d.label, category: d.category, stage: d.stage },
+    ]),
   )
   const topics = computeTrends(trimmed, labels)
-  writeFileSync(`${DATA_DIR}/trends.json`, JSON.stringify({ generatedAt: new Date().toISOString(), window: 'rolling-120d', topics }, null, 2))
+  writeFileSync(
+    `${DATA_DIR}/trends.json`,
+    JSON.stringify(
+      { generatedAt: new Date().toISOString(), window: 'rolling-120d', topics },
+      null,
+      2,
+    ),
+  )
 
-  console.log(`[generate-feed] digest items: ${items.length}, topics: ${topics.length}`)
+  console.log(
+    `[generate-feed] digest items: ${items.length}, topics: ${topics.length}`,
+  )
 }
 
-main().catch((e) => { console.error(e); process.exit(1) })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})
 ```
 
 - [ ] **Step 2: Create the data dir placeholder**
@@ -1464,10 +1885,12 @@ git commit -m "feat(backend): orchestrator writing digest/trends/history json"
 ### Task 2.6: Secret-leak guard on published artifacts
 
 **Files:**
+
 - Create: `scripts/check-no-secrets.ts`
 - Test: `scripts/__tests__/check-no-secrets.test.ts`
 
 **Interfaces:**
+
 - Produces: `scanForSecrets(text: string): string[]` (returns matched offending substrings); CLI exits non-zero on any hit.
 
 - [ ] **Step 1: Write the failing test**
@@ -1479,7 +1902,9 @@ import { scanForSecrets } from '../check-no-secrets'
 
 describe('scanForSecrets', () => {
   it('flags anthropic-style keys', () => {
-    expect(scanForSecrets('x sk-ant-api03-ABCdef123 y').length).toBeGreaterThan(0)
+    expect(scanForSecrets('x sk-ant-api03-ABCdef123 y').length).toBeGreaterThan(
+      0,
+    )
   })
   it('passes clean content', () => {
     expect(scanForSecrets('{"headline":"Why it matters"}')).toEqual([])
@@ -1499,9 +1924,9 @@ Expected: FAIL (module not found).
 import { readFileSync, existsSync } from 'node:fs'
 
 const PATTERNS = [
-  /sk-ant-[a-zA-Z0-9-]{10,}/g,       // Anthropic
-  /sk-[a-zA-Z0-9]{20,}/g,            // OpenAI-style
-  /ghp_[a-zA-Z0-9]{20,}/g,           // GitHub PAT
+  /sk-ant-[a-zA-Z0-9-]{10,}/g, // Anthropic
+  /sk-[a-zA-Z0-9]{20,}/g, // OpenAI-style
+  /ghp_[a-zA-Z0-9]{20,}/g, // GitHub PAT
 ]
 
 export function scanForSecrets(text: string): string[] {
@@ -1514,12 +1939,19 @@ export function scanForSecrets(text: string): string[] {
 }
 
 function run() {
-  const files = ['public/data/digest.json', 'public/data/trends.json', 'public/data/history.json']
+  const files = [
+    'public/data/digest.json',
+    'public/data/trends.json',
+    'public/data/history.json',
+  ]
   let bad = false
   for (const f of files) {
     if (!existsSync(f)) continue
     const hits = scanForSecrets(readFileSync(f, 'utf8'))
-    if (hits.length) { bad = true; console.error(`[check-no-secrets] LEAK in ${f}: ${hits.length} match(es)`) }
+    if (hits.length) {
+      bad = true
+      console.error(`[check-no-secrets] LEAK in ${f}: ${hits.length} match(es)`)
+    }
   }
   if (bad) process.exit(1)
   console.log('[check-no-secrets] clean')
@@ -1544,6 +1976,7 @@ git commit -m "feat(backend): secret-leak guard for published data files"
 ### Task 2.7: GitHub Actions daily cron workflow
 
 **Files:**
+
 - Create: `.github/workflows/generate-feed.yml`
 
 - [ ] **Step 1: Write the workflow**
@@ -1553,7 +1986,7 @@ git commit -m "feat(backend): secret-leak guard for published data files"
 name: Generate feed
 on:
   schedule:
-    - cron: '17 6 * * *'   # daily ~06:17 UTC
+    - cron: '17 6 * * *' # daily ~06:17 UTC
   workflow_dispatch: {}
 permissions:
   contents: write
@@ -1590,9 +2023,11 @@ jobs:
 - [ ] **Step 2: Set the repository secret**
 
 Run (user authenticated with `gh`; if the key isn't handy tell them to run `! gh secret set ANTHROPIC_API_KEY`):
+
 ```bash
 gh secret set ANTHROPIC_API_KEY
 ```
+
 Expected: prompts for the value and stores it encrypted. It must NOT be typed into any file.
 
 - [ ] **Step 3: Commit and trigger a manual run**
@@ -1616,10 +2051,12 @@ Expected: green run; a follow-up commit adds `public/data/digest.json` + `trends
 ### Task 3.1: Trends view helpers with tests
 
 **Files:**
+
 - Create: `chrome-extension/lib/trends-view.js`
 - Test: `chrome-extension/lib/__tests__/trends-view.test.js`
 
 **Interfaces:**
+
 - Produces:
   - `trajectoryMeta(trajectory): { icon: 'up'|'down'|'flat'; color: string }`
   - `nextStage(stage): string` (maturity progression; caps at `mass-market`)
@@ -1680,7 +2117,9 @@ const BLOCKS = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█']
 export function sparkline(weeklyCounts) {
   if (!weeklyCounts || weeklyCounts.length === 0) return ''
   const max = Math.max(1, ...weeklyCounts)
-  return weeklyCounts.map((c) => BLOCKS[Math.round((c / max) * (BLOCKS.length - 1))]).join('')
+  return weeklyCounts
+    .map((c) => BLOCKS[Math.round((c / max) * (BLOCKS.length - 1))])
+    .join('')
 }
 ```
 
@@ -1699,19 +2138,24 @@ git commit -m "feat(ext): trends view helpers (nextStage, trajectory, sparkline)
 ### Task 3.2: Fetch trends.json and render honest chains
 
 **Files:**
+
 - Modify: `chrome-extension/app.js` (add trends fetch, replace `generateEvolutionChains`/`renderEvolutionChains` data source), `chrome-extension/styles.css` (sparkline styling)
 
 **Interfaces:**
+
 - Consumes: `DATA_BASE_URL`, `TRENDS_TTL_MS` (config); `nextStage`, `trajectoryMeta`, `sparkline` (Task 3.1).
 - Produces: `state.trends` populated from `trends.json`; chains rendered from real topics.
 
 - [ ] **Step 1: Add trends to state and imports**
 
 At the top of app.js (module imports from Task 1.7), append to that import line group:
+
 ```js
 import { nextStage, trajectoryMeta, sparkline } from './lib/trends-view.js'
 ```
+
 In the `state` object (was lines 181–198), add:
+
 ```js
     trends: [],
     trendsFetchedAt: null,
@@ -1720,58 +2164,74 @@ In the `state` object (was lines 181–198), add:
 - [ ] **Step 2: Add a cached trends fetch**
 
 Add this function near `fetchAllData`:
+
 ```js
 async function fetchTrends() {
-    try {
-        const cachedRaw = await new Promise((resolve) => {
-            if (chrome?.storage?.local) chrome.storage.local.get(['techRadarTrends'], (r) => resolve(r.techRadarTrends || null))
-            else resolve(JSON.parse(localStorage.getItem('techRadarTrends') || 'null'))
-        })
-        if (cachedRaw && Date.now() - cachedRaw.timestamp < TRENDS_TTL_MS) {
-            state.trends = cachedRaw.topics || []
-            return
-        }
-        const res = await fetch(`${DATA_BASE_URL}/trends.json`, { cache: 'no-cache' })
-        if (!res.ok) return
-        const data = await res.json()
-        state.trends = data.topics || []
-        const toStore = { topics: state.trends, timestamp: Date.now() }
-        if (chrome?.storage?.local) chrome.storage.local.set({ techRadarTrends: toStore })
-        else localStorage.setItem('techRadarTrends', JSON.stringify(toStore))
-    } catch (e) {
-        console.warn('trends fetch failed', e)
+  try {
+    const cachedRaw = await new Promise((resolve) => {
+      if (chrome?.storage?.local)
+        chrome.storage.local.get(['techRadarTrends'], (r) =>
+          resolve(r.techRadarTrends || null),
+        )
+      else
+        resolve(JSON.parse(localStorage.getItem('techRadarTrends') || 'null'))
+    })
+    if (cachedRaw && Date.now() - cachedRaw.timestamp < TRENDS_TTL_MS) {
+      state.trends = cachedRaw.topics || []
+      return
     }
+    const res = await fetch(`${DATA_BASE_URL}/trends.json`, {
+      cache: 'no-cache',
+    })
+    if (!res.ok) return
+    const data = await res.json()
+    state.trends = data.topics || []
+    const toStore = { topics: state.trends, timestamp: Date.now() }
+    if (chrome?.storage?.local)
+      chrome.storage.local.set({ techRadarTrends: toStore })
+    else localStorage.setItem('techRadarTrends', JSON.stringify(toStore))
+  } catch (e) {
+    console.warn('trends fetch failed', e)
+  }
 }
 ```
 
 - [ ] **Step 3: Replace chain rendering to use `state.trends`**
 
 Replace the body of `renderEvolutionChains` (was lines 897–1020) so it renders from `state.trends` instead of `generateEvolutionChains()`. Use this implementation:
+
 ```js
 function renderEvolutionChains() {
-    const t = translations[state.language]
-    const topics = [...state.trends].sort((a, b) => b.momentum - a.momentum).slice(0, 6)
-    elements.chainCount.textContent = `(${topics.length} ${t.active})`
+  const t = translations[state.language]
+  const topics = [...state.trends]
+    .sort((a, b) => b.momentum - a.momentum)
+    .slice(0, 6)
+  elements.chainCount.textContent = `(${topics.length} ${t.active})`
 
-    if (topics.length === 0) {
-        elements.evolutionChains.innerHTML = `
+  if (topics.length === 0) {
+    elements.evolutionChains.innerHTML = `
             <div class="evolution-empty">
                 <div class="evolution-empty-icon">🔗</div>
                 <p>${escapeHtml(t.evolutionChainsWillAppear)}</p>
             </div>`
-        return
-    }
+    return
+  }
 
-    elements.evolutionChains.innerHTML = topics.map((topic) => {
-        const cfg = CATEGORY_CONFIG[topic.category] || { color: '#00f0ff', icon: '' }
-        const maturity = MATURITY_CONFIG[topic.stage] || MATURITY_CONFIG.research
-        const traj = trajectoryMeta(topic.trajectory)
-        const isExpanded = state.expandedChain === topic.id
-        const pct = Math.round((topic.momentum || 0) * 100)
-        const momentumText = topic.trajectory === 'rising'
-            ? `${t.strongMomentumDetected} +${pct}%. ${t.expectedToAdvance} ${getLocalizedMaturity(nextStage(topic.stage))} 6-12 ${t.months}.`
-            : `${t.stableActivity} ${escapeHtml(topic.label)}. ${t.monitoringForBreakthrough}`
-        return `
+  elements.evolutionChains.innerHTML = topics
+    .map((topic) => {
+      const cfg = CATEGORY_CONFIG[topic.category] || {
+        color: '#00f0ff',
+        icon: '',
+      }
+      const maturity = MATURITY_CONFIG[topic.stage] || MATURITY_CONFIG.research
+      const traj = trajectoryMeta(topic.trajectory)
+      const isExpanded = state.expandedChain === topic.id
+      const pct = Math.round((topic.momentum || 0) * 100)
+      const momentumText =
+        topic.trajectory === 'rising'
+          ? `${t.strongMomentumDetected} +${pct}%. ${t.expectedToAdvance} ${getLocalizedMaturity(nextStage(topic.stage))} 6-12 ${t.months}.`
+          : `${t.stableActivity} ${escapeHtml(topic.label)}. ${t.monitoringForBreakthrough}`
+      return `
             <div class="evolution-chain ${isExpanded ? 'expanded' : ''}" data-chain-id="${escapeHtml(topic.id)}">
                 <div class="chain-header">
                     <div>
@@ -1788,38 +2248,52 @@ function renderEvolutionChains() {
                 <div class="chain-sparkline" style="color:${cfg.color}">${sparkline(topic.weeklyCounts)}</div>
                 ${isExpanded ? `<div class="chain-prediction"><p class="chain-prediction-label">${t.trajectoryAnalysis}</p><p class="chain-prediction-text">${escapeHtml(momentumText)}</p></div>` : ''}
             </div>`
-    }).join('')
+    })
+    .join('')
 
-    elements.evolutionChains.querySelectorAll('.evolution-chain').forEach((el) => {
-        el.addEventListener('click', () => {
-            const id = el.dataset.chainId
-            state.expandedChain = state.expandedChain === id ? null : id
-            renderEvolutionChains()
-        })
+  elements.evolutionChains
+    .querySelectorAll('.evolution-chain')
+    .forEach((el) => {
+      el.addEventListener('click', () => {
+        const id = el.dataset.chainId
+        state.expandedChain = state.expandedChain === id ? null : id
+        renderEvolutionChains()
+      })
     })
 }
 ```
+
 Then delete the now-unused `generateEvolutionChains` (was lines 787–834) and `getNextStageName` (was lines 1022–1030).
 
 - [ ] **Step 4: Call `fetchTrends()` on load and refresh**
 
 In `init` (was lines 1381–1394), after `await fetchAllData()`, add `await fetchTrends(); render()`. In the refresh button handler (was lines 1298–1302), add `await fetchTrends()` before the final render, e.g. change to:
+
 ```js
-    elements.refreshBtn.addEventListener('click', async () => {
-        elements.refreshBtn.classList.add('spinning')
-        await fetchAllData()
-        await fetchTrends()
-        render()
-        elements.refreshBtn.classList.remove('spinning')
-    })
+elements.refreshBtn.addEventListener('click', async () => {
+  elements.refreshBtn.classList.add('spinning')
+  await fetchAllData()
+  await fetchTrends()
+  render()
+  elements.refreshBtn.classList.remove('spinning')
+})
 ```
 
 - [ ] **Step 5: Add sparkline styles**
 
 Append to `styles.css`:
+
 ```css
-.chain-sparkline { font-family:'JetBrains Mono',monospace; font-size:1rem; letter-spacing:1px; margin-top:.5rem; opacity:.85; }
-.chain-traj { font-size:.8rem; }
+.chain-sparkline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  margin-top: 0.5rem;
+  opacity: 0.85;
+}
+.chain-traj {
+  font-size: 0.8rem;
+}
 ```
 
 - [ ] **Step 6: Manual verification**
@@ -1840,10 +2314,12 @@ git commit -m "feat(ext): render honest evolution chains from backend trends.jso
 ### Task 4.1: Digest text selection helper with tests
 
 **Files:**
+
 - Create: `chrome-extension/lib/digest.js`
 - Test: `chrome-extension/lib/__tests__/digest.test.js`
 
 **Interfaces:**
+
 - Produces:
   - `pickDigestText(item, lang): { headline: string; tweets: string[] }` — falls back to `en` if the requested lang block is missing.
   - `SOURCE_META: Record<string, { label: string; icon: string }>`
@@ -1857,17 +2333,21 @@ import { pickDigestText, SOURCE_META } from '../digest.js'
 
 const item = {
   source: 'anthropic',
-  en: { headline: 'Why it matters: x', tweets: ['a','b','c'] },
-  ru: { headline: 'Почему важно: x', tweets: ['а','б','в'] },
+  en: { headline: 'Why it matters: x', tweets: ['a', 'b', 'c'] },
+  ru: { headline: 'Почему важно: x', tweets: ['а', 'б', 'в'] },
 }
 
 describe('pickDigestText', () => {
   it('returns the requested language block', () => {
     expect(pickDigestText(item, 'ru').headline).toContain('Почему')
-    expect(pickDigestText(item, 'en').tweets).toEqual(['a','b','c'])
+    expect(pickDigestText(item, 'en').tweets).toEqual(['a', 'b', 'c'])
   })
   it('falls back to en when lang missing', () => {
-    expect(pickDigestText({ source:'x', en:item.en }, 'ru').tweets).toEqual(['a','b','c'])
+    expect(pickDigestText({ source: 'x', en: item.en }, 'ru').tweets).toEqual([
+      'a',
+      'b',
+      'c',
+    ])
   })
 })
 describe('SOURCE_META', () => {
@@ -1898,8 +2378,12 @@ export const SOURCE_META = {
 }
 
 export function pickDigestText(item, lang) {
-  const block = (item && item[lang]) || (item && item.en) || { headline: '', tweets: [] }
-  return { headline: block.headline || '', tweets: Array.isArray(block.tweets) ? block.tweets : [] }
+  const block = (item && item[lang]) ||
+    (item && item.en) || { headline: '', tweets: [] }
+  return {
+    headline: block.headline || '',
+    tweets: Array.isArray(block.tweets) ? block.tweets : [],
+  }
 }
 ```
 
@@ -1918,43 +2402,107 @@ git commit -m "feat(ext): digest text selection helper with language fallback"
 ### Task 4.2: News section markup + styles
 
 **Files:**
+
 - Modify: `chrome-extension/newtab.html` (insert section after the radar/chains grid, before the Feed section — after line 305 `</div>` that closes `.main-grid`, before line 307 `<!-- Feed Section -->`), `chrome-extension/styles.css`
 
 **Interfaces:**
+
 - Produces: DOM host `#news-section` with `#news-list` and a header title (`data-i18n="newsDigest"`).
 
 - [ ] **Step 1: Insert the section markup**
 
 In `newtab.html`, immediately after the `</div>` that closes `.main-grid` (was line 305) and before the `<!-- Feed Section -->` comment (was line 307), insert:
+
 ```html
-                <!-- News Digest Section -->
-                <section id="news-section" class="news-section fade-in fade-in-delay-2">
-                    <div class="section-header">
-                        <h2 data-i18n="newsDigest">AI Blog Digest</h2>
-                        <span class="news-subtitle" data-i18n="newsSubtitle">Engineering blogs, in human</span>
-                    </div>
-                    <div class="news-list" id="news-list"></div>
-                </section>
+<!-- News Digest Section -->
+<section id="news-section" class="news-section fade-in fade-in-delay-2">
+  <div class="section-header">
+    <h2 data-i18n="newsDigest">AI Blog Digest</h2>
+    <span class="news-subtitle" data-i18n="newsSubtitle"
+      >Engineering blogs, in human</span
+    >
+  </div>
+  <div class="news-list" id="news-list"></div>
+</section>
 ```
 
 - [ ] **Step 2: Add styles**
 
 Append to `styles.css`:
+
 ```css
-.news-section { margin-bottom:1.5rem; }
-.news-subtitle { font-size:.75rem; color:rgba(255,255,255,.4); }
-.news-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem; }
-.news-card { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08);
-  border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:.6rem; }
-.news-card-meta { display:flex; align-items:center; gap:.5rem; font-size:.72rem; color:rgba(255,255,255,.5); }
-.news-headline { font-weight:600; line-height:1.35; color:rgba(255,255,255,.92); }
-.news-tweets { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.35rem; }
-.news-tweets li { position:relative; padding-left:1rem; font-size:.82rem; color:rgba(255,255,255,.7); line-height:1.4; }
-.news-tweets li::before { content:'•'; position:absolute; left:0; color:#00f0ff; }
-.news-read { align-self:flex-start; margin-top:.25rem; font-size:.75rem; color:#93c5fd; text-decoration:none;
-  border:1px solid rgba(59,130,246,.25); border-radius:6px; padding:.3rem .55rem; }
-.news-read:hover { background:rgba(59,130,246,.12); }
-.news-empty { color:rgba(255,255,255,.4); font-size:.85rem; padding:1rem 0; }
+.news-section {
+  margin-bottom: 1.5rem;
+}
+.news-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+.news-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+.news-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.news-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+.news-headline {
+  font-weight: 600;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.92);
+}
+.news-tweets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.news-tweets li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+.news-tweets li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #00f0ff;
+}
+.news-read {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #93c5fd;
+  text-decoration: none;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  border-radius: 6px;
+  padding: 0.3rem 0.55rem;
+}
+.news-read:hover {
+  background: rgba(59, 130, 246, 0.12);
+}
+.news-empty {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.85rem;
+  padding: 1rem 0;
+}
 ```
 
 - [ ] **Step 3: Commit**
@@ -1967,25 +2515,32 @@ git commit -m "feat(ext): news digest section markup and styles"
 ### Task 4.3: Fetch digest.json and render cards
 
 **Files:**
+
 - Modify: `chrome-extension/app.js` (imports, state, fetch, render, i18n strings, elements, init wiring)
 
 **Interfaces:**
+
 - Consumes: `pickDigestText`, `SOURCE_META` (Task 4.1); `DATA_BASE_URL`, `DIGEST_TTL_MS` (config).
 - Produces: `state.digest` populated; `renderNews()` renders cards; EN/RU strings `newsDigest`, `newsSubtitle`, `readOriginal`.
 
 - [ ] **Step 1: Add imports + element + state**
 
 Append to the module import group:
+
 ```js
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
 import { DIGEST_TTL_MS } from './lib/config.js'
 ```
+
 (Note: `DIGEST_TTL_MS` may already be imported in Task 1.7's import block — if so, do not import twice; ensure it appears exactly once.)
 In `elements` (was lines 204–229), add:
+
 ```js
     newsList: document.getElementById('news-list'),
 ```
+
 In `state`, add:
+
 ```js
     digest: [],
     digestFetchedAt: null,
@@ -1994,13 +2549,16 @@ In `state`, add:
 - [ ] **Step 2: Add i18n strings**
 
 In `translations.en` add:
+
 ```js
         newsDigest: 'AI Blog Digest',
         newsSubtitle: 'Engineering blogs, in human',
         readOriginal: 'Read original',
         newsEmpty: 'Digest will appear after the next daily update',
 ```
+
 In `translations.ru` add:
+
 ```js
         newsDigest: 'Дайджест ИИ-блогов',
         newsSubtitle: 'Инженерные блоги — по-человечески',
@@ -2011,46 +2569,59 @@ In `translations.ru` add:
 - [ ] **Step 3: Add the cached digest fetch**
 
 Add near `fetchTrends`:
+
 ```js
 async function fetchDigest() {
-    try {
-        const cachedRaw = await new Promise((resolve) => {
-            if (chrome?.storage?.local) chrome.storage.local.get(['techRadarDigest'], (r) => resolve(r.techRadarDigest || null))
-            else resolve(JSON.parse(localStorage.getItem('techRadarDigest') || 'null'))
-        })
-        if (cachedRaw && Date.now() - cachedRaw.timestamp < DIGEST_TTL_MS) {
-            state.digest = cachedRaw.items || []
-            return
-        }
-        const res = await fetch(`${DATA_BASE_URL}/digest.json`, { cache: 'no-cache' })
-        if (!res.ok) return
-        const data = await res.json()
-        state.digest = data.items || []
-        const toStore = { items: state.digest, timestamp: Date.now() }
-        if (chrome?.storage?.local) chrome.storage.local.set({ techRadarDigest: toStore })
-        else localStorage.setItem('techRadarDigest', JSON.stringify(toStore))
-    } catch (e) {
-        console.warn('digest fetch failed', e)
+  try {
+    const cachedRaw = await new Promise((resolve) => {
+      if (chrome?.storage?.local)
+        chrome.storage.local.get(['techRadarDigest'], (r) =>
+          resolve(r.techRadarDigest || null),
+        )
+      else
+        resolve(JSON.parse(localStorage.getItem('techRadarDigest') || 'null'))
+    })
+    if (cachedRaw && Date.now() - cachedRaw.timestamp < DIGEST_TTL_MS) {
+      state.digest = cachedRaw.items || []
+      return
     }
+    const res = await fetch(`${DATA_BASE_URL}/digest.json`, {
+      cache: 'no-cache',
+    })
+    if (!res.ok) return
+    const data = await res.json()
+    state.digest = data.items || []
+    const toStore = { items: state.digest, timestamp: Date.now() }
+    if (chrome?.storage?.local)
+      chrome.storage.local.set({ techRadarDigest: toStore })
+    else localStorage.setItem('techRadarDigest', JSON.stringify(toStore))
+  } catch (e) {
+    console.warn('digest fetch failed', e)
+  }
 }
 ```
 
 - [ ] **Step 4: Add `renderNews()` and call it from `render()`**
 
 Add function:
+
 ```js
 function renderNews() {
-    if (!elements.newsList) return
-    const t = translations[state.language]
-    if (!state.digest || state.digest.length === 0) {
-        elements.newsList.innerHTML = `<div class="news-empty">${escapeHtml(t.newsEmpty)}</div>`
-        return
-    }
-    elements.newsList.innerHTML = state.digest.map((item) => {
-        const meta = SOURCE_META[item.source] || { label: item.source, icon: '📄' }
-        const { headline, tweets } = pickDigestText(item, state.language)
-        const when = formatTimeAgo(new Date(item.publishedAt))
-        return `
+  if (!elements.newsList) return
+  const t = translations[state.language]
+  if (!state.digest || state.digest.length === 0) {
+    elements.newsList.innerHTML = `<div class="news-empty">${escapeHtml(t.newsEmpty)}</div>`
+    return
+  }
+  elements.newsList.innerHTML = state.digest
+    .map((item) => {
+      const meta = SOURCE_META[item.source] || {
+        label: item.source,
+        icon: '📄',
+      }
+      const { headline, tweets } = pickDigestText(item, state.language)
+      const when = formatTimeAgo(new Date(item.publishedAt))
+      return `
             <article class="news-card">
                 <div class="news-card-meta">
                     <span>${meta.icon} ${escapeHtml(meta.label)}</span>
@@ -2058,13 +2629,18 @@ function renderNews() {
                 </div>
                 <div class="news-headline">${escapeHtml(headline)}</div>
                 <ul class="news-tweets">
-                    ${tweets.slice(0, 3).map((tw) => `<li>${escapeHtml(tw)}</li>`).join('')}
+                    ${tweets
+                      .slice(0, 3)
+                      .map((tw) => `<li>${escapeHtml(tw)}</li>`)
+                      .join('')}
                 </ul>
                 <a class="news-read" href="${encodeURI(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.readOriginal)} ↗</a>
             </article>`
-    }).join('')
+    })
+    .join('')
 }
 ```
+
 In `render()` (was lines 850–855), add `renderNews()` after `renderEvolutionChains()`.
 
 - [ ] **Step 5: Wire fetch into load + refresh**
@@ -2085,24 +2661,31 @@ git commit -m "feat(ext): fetch and render daily AI-blog news digest section"
 ### Task 4.4: Update extension README + info modal
 
 **Files:**
+
 - Modify: `chrome-extension/README.md`, `chrome-extension/newtab.html` (info modal — add a digest bullet)
 
 - [ ] **Step 1: Add a digest section to the info modal**
 
 In `newtab.html` info modal body (was lines 351–380), add another `modal-section` block:
+
 ```html
-                <div class="modal-section">
-                    <div class="modal-icon">📰</div>
-                    <div>
-                        <h4>AI Blog Digest</h4>
-                        <p>A daily digest of engineering blogs (Anthropic, OpenAI, Latent Space and more), rewritten into a hook headline plus three tweet-style takeaways, EN/RU.</p>
-                    </div>
-                </div>
+<div class="modal-section">
+  <div class="modal-icon">📰</div>
+  <div>
+    <h4>AI Blog Digest</h4>
+    <p>
+      A daily digest of engineering blogs (Anthropic, OpenAI, Latent Space and
+      more), rewritten into a hook headline plus three tweet-style takeaways,
+      EN/RU.
+    </p>
+  </div>
+</div>
 ```
 
 - [ ] **Step 2: Update README feature list**
 
 In `chrome-extension/README.md` `## ✨ Features`, add:
+
 ```markdown
 - **AI Blog Digest**: Daily LLM-summarized digest of top AI engineering blogs (hook headline + 3 tweet-style bullets), EN/RU, fetched from the project's public data feed.
 - **Honest Evolution Chains**: Real week-over-week topic momentum from accumulated snapshots (no fabricated metrics).

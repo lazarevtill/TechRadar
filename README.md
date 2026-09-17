@@ -17,13 +17,13 @@
 
 ## Стек
 
-| Слой | Технологии |
-|------|------------|
+| Слой     | Технологии                                                                             |
+| -------- | -------------------------------------------------------------------------------------- |
 | Frontend | React 19, TanStack Router, TanStack Query, Tailwind CSS 4, shadcn/ui, Recharts, Motion |
-| Backend | TanStack Start (SSR), server functions |
-| Runtime | Bun, Vite |
-| AI | Anthropic API (генерация дайджеста в CI) |
-| Тесты | Vitest, Testing Library |
+| Backend  | TanStack Start (SSR), server functions                                                 |
+| Runtime  | Bun, Vite                                                                              |
+| AI       | Anthropic API (генерация дайджеста в CI)                                               |
+| Тесты    | Vitest, Testing Library                                                                |
 
 ## Быстрый старт
 
@@ -72,13 +72,13 @@ bun run serve
 
 ### Что нужно для запуска
 
-| Сценарий | Нужны ли секреты? |
-|----------|-------------------|
-| `bun run dev` — локальная разработка | **Нет** |
-| `bun run build` + `bun run start` — production | **Нет** |
-| Chrome Extension | **Нет** (данные из публичных API и GitHub raw) |
-| `bun run generate:feed` — локальная генерация дайджеста | **Да** — `ANTHROPIC_API_KEY` |
-| CI (`generate-feed` workflow) | **Да** — secret `ANTHROPIC_API_KEY` в GitHub |
+| Сценарий                                                | Нужны ли секреты?                              |
+| ------------------------------------------------------- | ---------------------------------------------- |
+| `bun run dev` — локальная разработка                    | **Нет**                                        |
+| `bun run build` + `bun run start` — production          | **Нет**                                        |
+| Chrome Extension                                        | **Нет** (данные из публичных API и GitHub raw) |
+| `bun run generate:feed` — локальная генерация дайджеста | **Да** — `ANTHROPIC_API_KEY`                   |
+| CI (`generate-feed` workflow)                           | **Да** — secret `ANTHROPIC_API_KEY` в GitHub   |
 
 Приложение **не использует** внешнюю БД, Appwrite или другие платформы с API-ключами. Кэш live-данных — in-memory на сервере.
 
@@ -86,14 +86,14 @@ bun run serve
 
 Скопируйте `.env.example` → `.env` только если нужны дополнительные настройки:
 
-| Переменная | Обязательна | Описание |
-|------------|-------------|----------|
-| `VITE_INSTRUMENTATION_SCRIPT_SRC` | Нет | URL скрипта аналитики/инструментации в `<head>` |
+| Переменная                        | Обязательна | Описание                                        |
+| --------------------------------- | ----------- | ----------------------------------------------- |
+| `VITE_INSTRUMENTATION_SCRIPT_SRC` | Нет         | URL скрипта аналитики/инструментации в `<head>` |
 
 ### Генерация дайджеста
 
-| Переменная | Обязательна | Где |
-|------------|-------------|-----|
+| Переменная          | Обязательна                    | Где                                         |
+| ------------------- | ------------------------------ | ------------------------------------------- |
 | `ANTHROPIC_API_KEY` | Да, только для `generate:feed` | Локально в `.env` или GitHub Actions secret |
 
 ```bash
@@ -107,30 +107,30 @@ ANTHROPIC_API_KEY=sk-ant-... bun run generate:feed
 
 Все переменные ниже опциональны — есть разумные значения по умолчанию:
 
-| Переменная | По умолчанию | Описание |
-|------------|--------------|----------|
-| `PORT` | `3000` | Порт HTTP-сервера |
-| `ASSET_PRELOAD_MAX_SIZE` | `5242880` (5 MB) | Макс. размер файла для preload в память |
-| `ASSET_PRELOAD_INCLUDE_PATTERNS` | все файлы | Glob-паттерны для preload |
-| `ASSET_PRELOAD_EXCLUDE_PATTERNS` | — | Исключения из preload |
-| `ASSET_PRELOAD_VERBOSE_LOGGING` | `false` | Подробные логи preload |
-| `ASSET_PRELOAD_ENABLE_ETAG` | `true` | ETag для статики |
-| `ASSET_PRELOAD_ENABLE_GZIP` | `true` | Gzip для статики |
-| `IMAGINE_PREVIEW` | `false` | Отключить кэширование (preview-режим) |
+| Переменная                       | По умолчанию     | Описание                                |
+| -------------------------------- | ---------------- | --------------------------------------- |
+| `PORT`                           | `3000`           | Порт HTTP-сервера                       |
+| `ASSET_PRELOAD_MAX_SIZE`         | `5242880` (5 MB) | Макс. размер файла для preload в память |
+| `ASSET_PRELOAD_INCLUDE_PATTERNS` | все файлы        | Glob-паттерны для preload               |
+| `ASSET_PRELOAD_EXCLUDE_PATTERNS` | —                | Исключения из preload                   |
+| `ASSET_PRELOAD_VERBOSE_LOGGING`  | `false`          | Подробные логи preload                  |
+| `ASSET_PRELOAD_ENABLE_ETAG`      | `true`           | ETag для статики                        |
+| `ASSET_PRELOAD_ENABLE_GZIP`      | `true`           | Gzip для статики                        |
+| `IMAGINE_PREVIEW`                | `false`          | Отключить кэширование (preview-режим)   |
 
 ## Источники данных
 
 ### Live-парсеры (server functions)
 
-| Источник | Что собирается |
-|----------|----------------|
-| GitHub | Репозитории по темам (stars, forks, topics) |
-| arXiv | Научные препринты |
-| Hacker News | Популярные истории |
-| Semantic Scholar | Высокоцитируемые статьи |
-| PubMed | Биомедицинские исследования |
-| HAL | Французский научный архив |
-| CiNii / CNKI | Японские и китайские публикации |
+| Источник         | Что собирается                              |
+| ---------------- | ------------------------------------------- |
+| GitHub           | Репозитории по темам (stars, forks, topics) |
+| arXiv            | Научные препринты                           |
+| Hacker News      | Популярные истории                          |
+| Semantic Scholar | Высокоцитируемые статьи                     |
+| PubMed           | Биомедицинские исследования                 |
+| HAL              | Французский научный архив                   |
+| CiNii / CNKI     | Японские и китайские публикации             |
 
 Данные кэшируются на сервере. Панель **Parser Control** на дашборде позволяет принудительно обновить кэш и посмотреть метрики по источникам.
 
@@ -179,23 +179,23 @@ ANTHROPIC_API_KEY=sk-ant-... bun run generate:feed
 При загрузке страницы `app.js` запускает `init()`:
 
 ```javascript
-await fetchAllData()   // GitHub, arXiv, Hacker News
-await fetchTrends()    // trends.json из репозитория
-await fetchDigest()    // digest.json из репозитория
+await fetchAllData() // GitHub, arXiv, Hacker News
+await fetchTrends() // trends.json из репозитория
+await fetchDigest() // digest.json из репозитория
 render()
-setInterval(fetchAllData, 10 * 60 * 1000)  // автообновление каждые 10 мин
+setInterval(fetchAllData, 10 * 60 * 1000) // автообновление каждые 10 мин
 ```
 
 То есть **каждая новая вкладка** — это свежий запуск дашборда: сначала проверяется кэш, затем при необходимости идут сетевые запросы.
 
 #### 3. Откуда берутся данные
 
-| Тип данных | Источник | Как обновляется |
-|------------|----------|-----------------|
+| Тип данных                              | Источник                                                                                        | Как обновляется                                                                                     |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Live-сигналы (радар, лента, статистика) | Прямые запросы из браузера к `api.github.com`, `export.arxiv.org`, `hacker-news.firebaseio.com` | При каждом открытии вкладки (если кэш старше 5 мин) + автообновление каждые 10 мин + кнопка Refresh |
-| AI Blog Digest | `digest.json` на GitHub (`raw.githubusercontent.com/.../public/data/digest.json`) | Ежедневно через CI (`generate-feed` workflow) |
-| Тренды по темам | `trends.json` — тот же путь | Ежедневно через CI |
-| Переводы EN→RU | MyMemory Translation API | По запросу пользователя, с LRU-кэшем |
+| AI Blog Digest                          | `digest.json` на GitHub (`raw.githubusercontent.com/.../public/data/digest.json`)               | Ежедневно через CI (`generate-feed` workflow)                                                       |
+| Тренды по темам                         | `trends.json` — тот же путь                                                                     | Ежедневно через CI                                                                                  |
+| Переводы EN→RU                          | MyMemory Translation API                                                                        | По запросу пользователя, с LRU-кэшем                                                                |
 
 Расширение **не ходит на ваш сервер** (`localhost:3000` или production). Оно работает автономно: live-данные — напрямую из публичных API, дайджест и тренды — из статики в репозитории.
 
@@ -203,12 +203,12 @@ setInterval(fetchAllData, 10 * 60 * 1000)  // автообновление ка�
 
 Чтобы не перегружать API при частом открытии вкладок, данные сохраняются в `chrome.storage.local`:
 
-| Ключ | TTL | Содержимое |
-|------|-----|------------|
-| `techRadarCache` | 5 мин | Сигналы GitHub/arXiv/HN + статистика |
-| `techRadarDigest` | 6 ч | AI-дайджест блогов |
-| `techRadarTrends` | 6 ч | Тренды по темам |
-| `techRadarLanguage` | — | Выбранный язык (EN/RU) |
+| Ключ                | TTL   | Содержимое                           |
+| ------------------- | ----- | ------------------------------------ |
+| `techRadarCache`    | 5 мин | Сигналы GitHub/arXiv/HN + статистика |
+| `techRadarDigest`   | 6 ч   | AI-дайджест блогов                   |
+| `techRadarTrends`   | 6 ч   | Тренды по темам                      |
+| `techRadarLanguage` | —     | Выбранный язык (EN/RU)               |
 
 Если кэш ещё свежий — вкладка отрисовывается мгновенно из локального хранилища. Если устарел — идёт фоновый fetch и UI перерисовывается.
 
@@ -250,13 +250,13 @@ flowchart TB
     CI[GitHub Actions\ngenerate:feed] -->|commit daily| JSON
 ```
 
-| | Веб-дашборд | Chrome Extension |
-|---|-------------|------------------|
-| Где работает | Сайт (SSR + server functions) | Локально в браузере |
-| Live-источники | GitHub, arXiv, HN + Semantic Scholar, PubMed, HAL… | GitHub, arXiv, HN |
-| Дайджест/тренды | Через server functions / static | Напрямую с GitHub raw |
-| Кэш | Серверный (in-memory) | `chrome.storage.local` |
-| Обновление | TanStack Query + кнопка в Parser Control | При открытии вкладки + interval 10 мин |
+|                 | Веб-дашборд                                        | Chrome Extension                       |
+| --------------- | -------------------------------------------------- | -------------------------------------- |
+| Где работает    | Сайт (SSR + server functions)                      | Локально в браузере                    |
+| Live-источники  | GitHub, arXiv, HN + Semantic Scholar, PubMed, HAL… | GitHub, arXiv, HN                      |
+| Дайджест/тренды | Через server functions / static                    | Напрямую с GitHub raw                  |
+| Кэш             | Серверный (in-memory)                              | `chrome.storage.local`                 |
+| Обновление      | TanStack Query + кнопка в Parser Control           | При открытии вкладки + interval 10 мин |
 
 **Итого:** установив расширение, вы получаете живой дашборд **на каждой новой вкладке** — Chrome подставляет его вместо стандартной страницы, а `app.js` сам подтягивает и кэширует данные. Веб-сайт при этом не меняется; оба клиента параллельно читают одни и те же внешние источники.
 
@@ -285,19 +285,19 @@ TechRadar/
 
 ## Скрипты
 
-| Команда | Описание |
-|---------|----------|
-| `bun run dev` | Dev-сервер (Vite, порт 3000) |
-| `bun run start` | Production-сервер (Bun) |
-| `bun run build` | Сборка клиента и сервера |
-| `bun run test` | Запуск тестов (Vitest) |
-| `bun run lint` | ESLint |
-| `bun run format` | Prettier (запись) |
-| `bun run format:check` | Prettier (проверка) |
-| `bun run generate:routes` | Регенерация route tree |
-| `bun run generate:feed` | Генерация digest/trends/history |
-| `bun run check:secrets` | Проверка секретов в data-файлах |
-| `bun run clean` | Очистка артефактов сборки |
+| Команда                   | Описание                        |
+| ------------------------- | ------------------------------- |
+| `bun run dev`             | Dev-сервер (Vite, порт 3000)    |
+| `bun run start`           | Production-сервер (Bun)         |
+| `bun run build`           | Сборка клиента и сервера        |
+| `bun run test`            | Запуск тестов (Vitest)          |
+| `bun run lint`            | ESLint                          |
+| `bun run format`          | Prettier (запись)               |
+| `bun run format:check`    | Prettier (проверка)             |
+| `bun run generate:routes` | Регенерация route tree          |
+| `bun run generate:feed`   | Генерация digest/trends/history |
+| `bun run check:secrets`   | Проверка секретов в data-файлах |
+| `bun run clean`           | Очистка артефактов сборки       |
 
 ## CI: ежедневный дайджест
 
