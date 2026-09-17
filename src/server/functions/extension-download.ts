@@ -2,7 +2,9 @@ import { createServerFn } from '@tanstack/react-start'
 import { setResponseStatus } from '@tanstack/react-start/server'
 import * as fs from 'fs'
 import * as path from 'path'
-import archiver from 'archiver'
+// archiver 8 is ESM-only and replaced the archiver('zip', …) factory
+// with per-format classes.
+import { ZipArchive } from 'archiver'
 
 export const downloadExtensionFn = createServerFn({ method: 'GET' }).handler(
   async () => {
@@ -19,7 +21,7 @@ export const downloadExtensionFn = createServerFn({ method: 'GET' }).handler(
       const chunks: Uint8Array[] = []
 
       // Create archive
-      const archive = archiver('zip', {
+      const archive = new ZipArchive({
         zlib: { level: 9 }, // Maximum compression
       })
 
