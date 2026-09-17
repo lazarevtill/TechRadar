@@ -155,6 +155,8 @@ export const CACHE_KEYS = {
   CINII: 'tech-feed:cinii',
   CNKI: 'tech-feed:cnki',
   MULTILINGUAL: 'tech-feed:multilingual',
+  DIGEST: 'digest:latest',
+  TRENDS: 'digest:trends',
 } as const
 
 // TTL constants

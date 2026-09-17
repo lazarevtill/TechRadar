@@ -7,6 +7,7 @@ import {
   TechFeed,
   EvolutionChains,
   AIInsight,
+  DigestFeed,
   ExtensionBanner,
   ParserControlPanel,
 } from '@/components/dashboard'
@@ -70,6 +71,15 @@ function TechEvolutionRadar() {
         <main className="max-w-[1800px] mx-auto px-4 sm:px-6 py-6 space-y-6">
           {/* AI Insight Section */}
           <AIInsight />
+
+          {/* AI Blog Digest — output of the daily generate-feed pipeline */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.03 }}
+          >
+            <DigestFeed />
+          </motion.section>
 
           {/* Chrome Extension Banner */}
           <motion.section
