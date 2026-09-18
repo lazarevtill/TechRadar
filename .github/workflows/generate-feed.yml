@@ -12,7 +12,12 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # The job must outlive the batch AND its fallback. Docs put most batches
+    # under an hour; a measured run of 10 requests was still going at 18 min.
+    # The script gives up at DIGEST_BATCH_TIMEOUT_MIN (default 90), drains for
+    # up to 3 min, then may run 10 synchronous calls — so leave real headroom.
+    # A hard kill by Actions publishes nothing and orphans the batch.
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2

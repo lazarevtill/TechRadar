@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { fetchAllPosts, enrichThinPosts } from './sources'
-import { summarizePost, DigestItemSchema, type DigestItem } from './summarize'
+import { DigestItemSchema, type DigestItem } from './summarize'
+import { summarizeAll } from './batch'
 import { computeTrends, type SignalSnapshot } from './momentum'
 import { TOPIC_LABELS, snapshotFromTexts, collectTopicSignals } from './topics'
 import { resolveProfile } from './model'
@@ -68,32 +69,53 @@ async function main() {
   // Only the posts we actually summarize get a body fetch.
   const freshest = await enrichThinPosts(unique.slice(0, DIGEST_MAX))
 
-  // 1) News digest
+  // 1) News digest. The Message Batches API runs these at half price; nobody
+  // waits on this job, so latency is the only cost. Set DIGEST_BATCH=0 to force
+  // the synchronous path.
+  const useBatch = process.env.DIGEST_BATCH !== '0'
+  const batchTimeoutMin = Number(process.env.DIGEST_BATCH_TIMEOUT_MIN ?? 90)
+  if (!Number.isFinite(batchTimeoutMin) || batchTimeoutMin <= 0) {
+    // Number('abc') is NaN, and `Date.now() > NaN` is always false — an
+    // unvalidated value here means the wait never times out at all.
+    throw new Error(
+      `DIGEST_BATCH_TIMEOUT_MIN must be a positive number, got "${process.env.DIGEST_BATCH_TIMEOUT_MIN}"`,
+    )
+  }
+  const batchTimeoutMs = batchTimeoutMin * 60_000
+  console.log(`[generate-feed] mode: ${useBatch ? 'batch' : 'synchronous'}`)
+
+  const { items: summarized, failures } = await summarizeAll(
+    freshest,
+    client,
+    profile,
+    { useBatch, timeoutMs: batchTimeoutMs },
+  )
+
   const items: DigestItem[] = []
-  const failures: Array<{ url: string; reason: string }> = []
   let inputTokens = 0
   let outputTokens = 0
 
-  for (const p of freshest) {
+  for (const { post, summary } of summarized) {
+    inputTokens += summary.usage.inputTokens
+    outputTokens += summary.usage.outputTokens
     try {
-      const s = await summarizePost(p, client, profile)
-      inputTokens += s.usage.inputTokens
-      outputTokens += s.usage.outputTokens
-      const item = DigestItemSchema.parse({
-        id: stableId(p.url),
-        source: p.source,
-        sourceUrl: p.url,
-        publishedAt: p.publishedAt,
-        category: s.category,
-        en: s.en,
-        ru: s.ru,
-      })
-      items.push(item)
+      items.push(
+        DigestItemSchema.parse({
+          id: stableId(post.url),
+          source: post.source,
+          sourceUrl: post.url,
+          publishedAt: post.publishedAt,
+          category: summary.category,
+          en: summary.en,
+          ru: summary.ru,
+        }),
+      )
     } catch (e) {
-      const reason = (e as Error).message
-      failures.push({ url: p.url, reason })
-      console.warn(`[digest] skip ${p.url}: ${reason}`)
+      failures.push({ url: post.url, reason: (e as Error).message })
     }
+  }
+  for (const f of failures) {
+    console.warn(`::warning::[digest] skip ${f.url}: ${f.reason}`)
   }
 
   console.log(
