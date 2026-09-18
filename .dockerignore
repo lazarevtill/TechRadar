@@ -10,3 +10,6 @@ Dockerfile
 docker-compose.yml
 .github
 .git
+docs
+AGENTS.md
+CLAUDE.md

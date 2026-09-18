@@ -118,6 +118,23 @@ ANTHROPIC_API_KEY=sk-ant-... bun run generate:feed
 | `ASSET_PRELOAD_ENABLE_GZIP`      | `true`           | Gzip для статики                        |
 | `IMAGINE_PREVIEW`                | `false`          | Отключить кэширование (preview-режим)   |
 
+## Docker
+
+Приложение — SSR на Bun, поэтому ему нужен рантайм (статического хостинга недостаточно).
+
+```bash
+docker compose up --build        # локально, на http://localhost:3000
+```
+
+Готовый образ публикуется в GHCR при каждом пуше в `main`:
+
+```bash
+docker run -p 3000:3000 ghcr.io/lazarevtill/techradar:latest
+```
+
+Секреты не нужны: live-данные берутся из публичных API, дайджест — из
+публичных raw-ссылок. `DIGEST_DATA_BASE_URL` позволяет указать другой форк.
+
 ## Источники данных
 
 ### Live-парсеры (server functions)

@@ -3,12 +3,12 @@ import { categorizeByKeywords, CATEGORY_KEYWORDS } from './lib/categorize.js'
 import { seededJitter } from './lib/jitter.js'
 import { BoundedCache } from './lib/lru-cache.js'
 import {
-  DATA_BASE_URL,
   DIGEST_TTL_MS,
   TRENDS_TTL_MS,
   TRANSLATION_CACHE_MAX,
   TRANSLATION_TTL_MS,
 } from './lib/config.js'
+import { fetchDataFile } from './lib/data-source.js'
 import { nextStage, trajectoryMeta, sparkline } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
 
@@ -744,11 +744,7 @@ async function fetchTrends(force = false) {
       state.trends = cachedRaw.topics || []
       return
     }
-    const res = await fetch(`${DATA_BASE_URL}/trends.json`, {
-      cache: 'no-cache',
-    })
-    if (!res.ok) return
-    const data = await res.json()
+    const data = await fetchDataFile('trends.json')
     state.trends = data.topics || []
     const toStore = { topics: state.trends, timestamp: Date.now() }
     if (chrome?.storage?.local)
@@ -777,11 +773,7 @@ async function fetchDigest(force = false) {
       state.digest = cachedRaw.items || []
       return
     }
-    const res = await fetch(`${DATA_BASE_URL}/digest.json`, {
-      cache: 'no-cache',
-    })
-    if (!res.ok) return
-    const data = await res.json()
+    const data = await fetchDataFile('digest.json')
     state.digest = data.items || []
     const toStore = { items: state.digest, timestamp: Date.now() }
     if (chrome?.storage?.local)

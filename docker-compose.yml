@@ -1,0 +1,13 @@
+services:
+  techradar:
+    build: .
+    image: ghcr.io/lazarevtill/techradar:latest
+    ports:
+      - '3000:3000'
+    environment:
+      # Every value below is optional — the dashboard needs no secrets. Live
+      # data comes from public APIs and the digest from public raw URLs.
+      PORT: 3000
+      # Point at a different fork's generated data if needed:
+      # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
+    restart: unless-stopped

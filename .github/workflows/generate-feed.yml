@@ -6,6 +6,7 @@ on:
   workflow_dispatch: {}
 permissions:
   contents: write
+  issues: write # so a failed run can raise one
 concurrency:
   group: generate-feed
   cancel-in-progress: false
@@ -52,4 +53,37 @@ jobs:
             done
             echo "push failed after 5 attempts" >&2
             exit 1
+          fi
+
+      # A scheduled job that breaks is invisible: nobody watches the Actions
+      # tab, and the publish gate means the site keeps serving the last good
+      # digest, so the symptom is silence rather than an error.
+      - name: Raise an issue if the run failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          TITLE="Daily digest generation is failing"
+          BODY=$(cat <<TXT
+          The scheduled \`generate-feed\` run failed.
+
+          Run: $RUN_URL
+
+          \`public/data/*.json\` were not overwritten — the MIN_DIGEST_ITEMS gate
+          keeps the last good digest — so the dashboard and the extension are
+          serving stale but valid data until this is fixed.
+
+          Common causes: an expired \`ANTHROPIC_API_KEY\`, a key that is not
+          workspace-scoped (set \`ANTHROPIC_WORKSPACE_ID\`), a feed that moved
+          (the log lists unhealthy sources), or a batch that never settled.
+          TXT
+          )
+          EXISTING=$(gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+            echo "commented on existing issue #$EXISTING"
+          else
+            gh issue create --title "$TITLE" --body "$BODY"
           fi
