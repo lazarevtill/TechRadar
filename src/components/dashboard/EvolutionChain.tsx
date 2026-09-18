@@ -119,7 +119,7 @@ export function EvolutionChains() {
       case 'declining':
         return <TrendingDown className="w-4 h-4 text-red-400" />
       default:
-        return <Minus className="w-4 h-4 text-white/40" />
+        return <Minus className="w-4 h-4 text-white/60" />
     }
   }
 
@@ -139,11 +139,11 @@ export function EvolutionChains() {
       <h2 className="text-lg font-semibold text-white flex items-center gap-2">
         <GitBranch className="w-5 h-5 text-purple-400" />
         {t.evolutionChains}
-        <span className="text-sm font-normal text-white/40">
+        <span className="text-sm font-normal text-white/60">
           ({evolutionChains.length} {t.active})
         </span>
         {isLoading && (
-          <Loader2 className="w-4 h-4 text-white/30 animate-spin" />
+          <Loader2 className="w-4 h-4 text-white/55 animate-spin" />
         )}
       </h2>
 
@@ -165,11 +165,11 @@ export function EvolutionChains() {
         </div>
       ) : evolutionChains.length === 0 ? (
         <div className="p-6 rounded-xl bg-white/[0.02] border border-white/5 text-center">
-          <p className="text-white/40 text-sm">{t.evolutionChainsWillAppear}</p>
+          <p className="text-white/60 text-sm">{t.evolutionChainsWillAppear}</p>
         </div>
       ) : (
         <div className="space-y-3">
-          {evolutionChains.map((chain, index) => {
+          {evolutionChains.map((chain) => {
             const categoryConfig = CATEGORY_CONFIG[chain.category]
             const maturityConfig = MATURITY_CONFIG[chain.currentStage]
             const isExpanded = expandedChain === chain.id
@@ -183,13 +183,7 @@ export function EvolutionChains() {
               ] || maturityConfig.label
 
             return (
-              <motion.div
-                key={chain.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="relative"
-              >
+              <motion.div key={chain.id} className="relative">
                 {/* Chain card */}
                 <div
                   className={`rounded-xl border transition-all duration-300 cursor-pointer ${
@@ -240,7 +234,7 @@ export function EvolutionChains() {
                         transition={{ duration: 0.2 }}
                         className="p-2 rounded-lg bg-white/5"
                       >
-                        <ChevronRight className="w-4 h-4 text-white/40" />
+                        <ChevronRight className="w-4 h-4 text-white/60" />
                       </motion.div>
                     </div>
 
@@ -260,7 +254,7 @@ export function EvolutionChains() {
                           )}
                         </div>
                       ))}
-                      <span className="text-xs text-white/30 ml-2">
+                      <span className="text-xs text-white/55 ml-2">
                         {chain.items.length} {t.signals}
                       </span>
                     </div>
@@ -328,7 +322,7 @@ export function EvolutionChains() {
                                         >
                                           {itemMaturityLabel}
                                         </span>
-                                        <span className="text-xs text-white/30">
+                                        <span className="text-xs text-white/55">
                                           {daysAgo}
                                           {t.daysAgo}
                                         </span>
@@ -345,7 +339,7 @@ export function EvolutionChains() {
 
                                     {/* Arrow to next */}
                                     {i < chain.items.length - 1 && (
-                                      <div className="absolute left-2.5 -bottom-2 text-white/20">
+                                      <div className="absolute left-2.5 -bottom-2 text-white/45">
                                         <ArrowRight className="w-3 h-3 rotate-90" />
                                       </div>
                                     )}

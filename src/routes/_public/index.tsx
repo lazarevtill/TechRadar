@@ -73,74 +73,44 @@ function TechEvolutionRadar() {
           <AIInsight />
 
           {/* AI Blog Digest — output of the daily generate-feed pipeline */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.03 }}
-          >
+          <section>
             <DigestFeed />
-          </motion.section>
+          </section>
 
           {/* Chrome Extension Banner */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-          >
+          <section>
             <ExtensionBanner />
-          </motion.section>
-
-          {/* Parser Control Panel */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.08 }}
-          >
-            <ParserControlPanel />
-          </motion.section>
+          </section>
 
           {/* Stats Overview */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
+          <section>
             <StatsPanel />
-          </motion.section>
+          </section>
 
           {/* Main Grid: Radar + Evolution Chains */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Radar - takes 2 columns */}
-            <motion.section
-              className="xl:col-span-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
+            <section className="xl:col-span-2">
               <TechRadar />
-            </motion.section>
+            </section>
 
             {/* Evolution Chains - takes 1 column */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
+            <section>
               <div className="rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-sm p-4">
                 <EvolutionChains />
               </div>
-            </motion.section>
+            </section>
           </div>
 
           {/* Feed Section */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-sm p-4 sm:p-6"
-          >
+          <section className="rounded-2xl bg-white/[0.02] border border-white/10 backdrop-blur-sm p-4 sm:p-6">
             <TechFeed />
-          </motion.section>
+          </section>
+
+          {/* Parser Control — operator tooling, below the content it inspects */}
+          <section>
+            <ParserControlPanel />
+          </section>
 
           {/* Footer */}
           <footer className="text-center py-8 border-t border-white/5">

@@ -25,10 +25,8 @@ export function ExtensionBanner() {
 
   return (
     <>
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00f0ff]/10 via-[#ff00aa]/10 to-[#a855f7]/10 border border-white/10 backdrop-blur-sm"
         >
@@ -83,7 +81,7 @@ export function ExtensionBanner() {
               </button>
               <button
                 onClick={handleDismiss}
-                className="flex items-center justify-center w-10 h-10 text-white/40 hover:text-white/70 hover:bg-white/5 rounded-lg transition-all"
+                className="flex items-center justify-center w-10 h-10 text-white/60 hover:text-white/70 hover:bg-white/5 rounded-lg transition-all"
                 title={t.extensionDismiss}
               >
                 <X className="w-5 h-5" />

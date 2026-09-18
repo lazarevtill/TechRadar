@@ -257,11 +257,7 @@ export function ParserControlPanel() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 backdrop-blur-xl"
-    >
+    <motion.div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 backdrop-blur-xl">
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl" />
@@ -276,7 +272,7 @@ export function ParserControlPanel() {
           </div>
           <div>
             <h3 className="font-semibold text-white">{t.parserControl}</h3>
-            <p className="text-xs text-white/40">{t.parserMetrics}</p>
+            <p className="text-xs text-white/60">{t.parserMetrics}</p>
           </div>
         </div>
 
@@ -303,7 +299,7 @@ export function ParserControlPanel() {
             {formatTimeAgo(metrics.lastRunAt || fetchedAt)}
           </p>
           {metrics.duration && (
-            <p className="text-xs text-white/30 mt-1">
+            <p className="text-xs text-white/55 mt-1">
               {(metrics.duration / 1000).toFixed(1)}s
             </p>
           )}
@@ -322,7 +318,7 @@ export function ParserControlPanel() {
               metrics.itemsCollected || stats.totalSignals
             )}
           </p>
-          <p className="text-xs text-white/30 mt-1">{t.signals}</p>
+          <p className="text-xs text-white/55 mt-1">{t.signals}</p>
         </div>
 
         {/* Items Analyzed */}
@@ -338,7 +334,7 @@ export function ParserControlPanel() {
               metrics.itemsAnalyzed || stats.anomaliesThisWeek
             )}
           </p>
-          <p className="text-xs text-white/30 mt-1">{t.anomalies}</p>
+          <p className="text-xs text-white/55 mt-1">{t.anomalies}</p>
         </div>
 
         {/* Sources Processed */}
@@ -354,7 +350,7 @@ export function ParserControlPanel() {
               metrics.sourcesProcessed || stats.sourceCount || 0
             )}
           </p>
-          <p className="text-xs text-white/30 mt-1">{t.liveSources}</p>
+          <p className="text-xs text-white/55 mt-1">{t.liveSources}</p>
         </div>
       </div>
 
@@ -433,7 +429,7 @@ export function ParserControlPanel() {
                       <div className="space-y-1.5">
                         {/* Count */}
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-white/40">
+                          <span className="text-[10px] text-white/60">
                             {language === 'ru' ? 'Элементов' : 'Items'}
                           </span>
                           <span className="text-sm font-mono font-semibold text-white">
@@ -443,7 +439,7 @@ export function ParserControlPanel() {
 
                         {/* Avg Impact */}
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-white/40">
+                          <span className="text-[10px] text-white/60">
                             {language === 'ru' ? 'Ср. влияние' : 'Avg Impact'}
                           </span>
                           <div className="flex items-center gap-1">
@@ -456,7 +452,7 @@ export function ParserControlPanel() {
 
                         {/* High Impact */}
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-white/40">
+                          <span className="text-[10px] text-white/60">
                             {language === 'ru'
                               ? 'Высокий импакт'
                               : 'High Impact'}
@@ -469,7 +465,7 @@ export function ParserControlPanel() {
                         {/* Last Update */}
                         {sm.lastItem && (
                           <div className="flex items-center justify-between pt-1 border-t border-white/5">
-                            <span className="text-[10px] text-white/40">
+                            <span className="text-[10px] text-white/60">
                               {language === 'ru' ? 'Обновлено' : 'Updated'}
                             </span>
                             <span className="text-[10px] font-mono text-white/50">

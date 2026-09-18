@@ -149,7 +149,7 @@ export function AIInsight() {
         icon: <AlertTriangle className="w-3.5 h-3.5" />,
         label: language === 'ru' ? 'Аномалии' : 'Anomalies',
         value: stats.anomaliesThisWeek.toString(),
-        color: stats.anomaliesThisWeek > 0 ? 'text-amber-400' : 'text-white/40',
+        color: stats.anomaliesThisWeek > 0 ? 'text-amber-400' : 'text-white/60',
         clickable: stats.anomaliesThisWeek > 0,
         onClick: () => setIsAnomaliesOpen(true),
       },
@@ -175,12 +175,7 @@ export function AIInsight() {
 
   return (
     <>
-      <motion.div
-        className="relative overflow-hidden rounded-2xl"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
+      <motion.div className="relative overflow-hidden rounded-2xl">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-fuchsia-600/20 to-cyan-600/20" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
@@ -312,7 +307,7 @@ export function AIInsight() {
                 <span className="hidden sm:inline text-xs text-white/50 group-hover:text-white/80">
                   {language === 'ru' ? 'Как это работает' : 'How it works'}
                 </span>
-                <ChevronRight className="w-3 h-3 text-white/30 group-hover:text-white/60 group-hover:translate-x-0.5 transition-transform" />
+                <ChevronRight className="w-3 h-3 text-white/55 group-hover:text-white/60 group-hover:translate-x-0.5 transition-transform" />
               </motion.button>
             </div>
           </div>

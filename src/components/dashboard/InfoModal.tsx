@@ -403,7 +403,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
                                 <span className="text-sm font-medium text-white">
                                   {metric.name}
                                 </span>
-                                <span className="text-xs text-white/30 font-mono ml-auto">
+                                <span className="text-xs text-white/55 font-mono ml-auto">
                                   {metric.range}
                                 </span>
                               </div>
@@ -453,7 +453,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
                                 >
                                   {stage.label}
                                 </span>
-                                <p className="text-[10px] text-white/40">
+                                <p className="text-[10px] text-white/60">
                                   {stage.description}
                                 </p>
                               </div>
@@ -478,13 +478,13 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
                                   <div className="text-xs font-medium text-white">
                                     {step.label}
                                   </div>
-                                  <div className="text-[10px] text-white/40">
+                                  <div className="text-[10px] text-white/60">
                                     {step.desc}
                                   </div>
                                 </div>
                               </div>
                               {i < section.process.length - 1 && (
-                                <ArrowRight className="w-4 h-4 text-white/20 hidden sm:block flex-shrink-0" />
+                                <ArrowRight className="w-4 h-4 text-white/45 hidden sm:block flex-shrink-0" />
                               )}
                             </div>
                           ))}
@@ -496,7 +496,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
 
                 {/* Footer */}
                 <div className="mt-8 pt-6 border-t border-white/5">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/40">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/60">
                     <div className="flex items-center gap-2">
                       <Clock className="w-3.5 h-3.5" />
                       {t.footer.refresh}

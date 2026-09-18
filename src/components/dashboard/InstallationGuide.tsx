@@ -139,7 +139,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 text-white/40 hover:text-white/80 hover:bg-white/5 rounded-lg transition-all"
+            className="absolute top-4 right-4 z-10 p-2 text-white/60 hover:text-white/80 hover:bg-white/5 rounded-lg transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -289,7 +289,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
                               <code className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[#00f0ff] font-mono text-xs">
                                 {step.link}
                               </code>
-                              <span className="text-white/30">
+                              <span className="text-white/55">
                                 ← Copy this URL
                               </span>
                             </motion.div>
@@ -300,7 +300,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
                         <ChevronRight
                           className={`w-5 h-5 flex-shrink-0 transition-all ${
                             isActive
-                              ? 'text-white/40 translate-x-0'
+                              ? 'text-white/60 translate-x-0'
                               : 'text-white/10 -translate-x-1'
                           }`}
                         />

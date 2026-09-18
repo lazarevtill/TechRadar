@@ -18,7 +18,7 @@ export function LanguageSwitcher() {
           className={`relative px-2.5 py-1 rounded-md text-xs font-mono transition-all flex items-center gap-1.5 ${
             language === lang.code
               ? 'text-white'
-              : 'text-white/40 hover:text-white/60'
+              : 'text-white/60 hover:text-white/60'
           }`}
         >
           {language === lang.code && (

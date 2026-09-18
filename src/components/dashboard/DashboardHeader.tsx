@@ -19,11 +19,7 @@ export function DashboardHeader() {
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         {/* Title section */}
         <div>
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 mb-2"
-          >
+          <motion.div className="flex items-center gap-3 mb-2">
             <div className="relative">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-fuchsia-500 flex items-center justify-center">
                 <Radar className="w-6 h-6 text-white" />
@@ -38,7 +34,7 @@ export function DashboardHeader() {
               <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                 {t.appTitle}
               </h1>
-              <p className="text-sm text-white/40 font-mono flex items-center gap-2">
+              <p className="text-sm text-white/60 font-mono flex items-center gap-2">
                 <Globe className="w-3 h-3" />
                 {t.appSubtitle}
               </p>
@@ -47,12 +43,7 @@ export function DashboardHeader() {
         </div>
 
         {/* Stats summary */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex items-center gap-4 md:gap-6"
-        >
+        <motion.div className="flex items-center gap-4 md:gap-6">
           {/* Language Switcher */}
           <LanguageSwitcher />
 
@@ -66,7 +57,7 @@ export function DashboardHeader() {
                 stats.totalSignals
               )}
             </span>
-            <span className="text-sm text-white/40">{t.signals}</span>
+            <span className="text-sm text-white/60">{t.signals}</span>
           </div>
 
           {/* Anomaly count */}
@@ -79,7 +70,7 @@ export function DashboardHeader() {
                 stats.anomaliesThisWeek
               )}
             </span>
-            <span className="text-sm text-white/40">{t.anomalies}</span>
+            <span className="text-sm text-white/60">{t.anomalies}</span>
           </div>
 
           {/* Live indicator */}

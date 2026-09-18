@@ -234,7 +234,7 @@ export function FeedItem({ item, index }: FeedItemProps) {
             </div>
 
             {/* Source & time */}
-            <div className="flex items-center gap-3 text-xs text-white/40">
+            <div className="flex items-center gap-3 text-xs text-white/60">
               <span className="flex items-center gap-1">
                 <span>{sourceConfig.icon}</span>
                 <span className="hidden sm:inline">{localizedSourceLabel}</span>
@@ -282,7 +282,7 @@ export function FeedItem({ item, index }: FeedItemProps) {
 
             {/* Show translated indicator */}
             {hasManualRuTranslation && !showOriginal && (
-              <span className="text-xs text-white/30 flex items-center gap-1">
+              <span className="text-xs text-white/55 flex items-center gap-1">
                 <Globe className="w-3 h-3" />
                 Переведено на русский
               </span>
@@ -290,7 +290,7 @@ export function FeedItem({ item, index }: FeedItemProps) {
 
             {/* Auto-translated indicator */}
             {isTranslated && !hasManualRuTranslation && !showOriginal && (
-              <span className="text-xs text-white/30 flex items-center gap-1">
+              <span className="text-xs text-white/55 flex items-center gap-1">
                 <Globe className="w-3 h-3" />
                 {t.autoTranslated}
               </span>
@@ -324,13 +324,13 @@ export function FeedItem({ item, index }: FeedItemProps) {
                     />
                   ))}
                 </div>
-                <span className="text-xs font-mono text-white/40">
+                <span className="text-xs font-mono text-white/60">
                   {item.impactScore}/10
                 </span>
               </div>
 
               {/* Hype volume */}
-              <div className="flex items-center gap-1 text-xs text-white/40">
+              <div className="flex items-center gap-1 text-xs text-white/60">
                 <TrendingUp className="w-3 h-3" />
                 <span className="font-mono">
                   {(item.hypeVolume / 1000).toFixed(1)}k

@@ -200,7 +200,7 @@ export function TechFeed() {
           <h2 className="text-lg font-semibold text-white flex items-center gap-2">
             <Filter className="w-5 h-5 text-fuchsia-400" />
             {t.liveFeed}
-            <span className="text-sm font-normal text-white/40">
+            <span className="text-sm font-normal text-white/60">
               ({filteredItems.length} {t.signals})
             </span>
             {isLoading && (
@@ -211,7 +211,7 @@ export function TechFeed() {
           <div className="flex items-center gap-2">
             {/* Last updated */}
             {fetchedAt && (
-              <span className="text-xs text-white/30 font-mono hidden sm:block">
+              <span className="text-xs text-white/55 font-mono hidden sm:block">
                 {t.updated} {fetchedAt.toLocaleTimeString()}
               </span>
             )}
@@ -247,7 +247,7 @@ export function TechFeed() {
         <div className="flex flex-wrap gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
           {/* Source filter */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-white/40">{t.source}:</span>
+            <span className="text-xs text-white/60">{t.source}:</span>
             <select
               value={sourceFilter}
               onChange={(e) =>
@@ -265,8 +265,8 @@ export function TechFeed() {
 
           {/* Language filter */}
           <div className="flex items-center gap-2">
-            <Globe className="w-3 h-3 text-white/40" />
-            <span className="text-xs text-white/40">{t.language}:</span>
+            <Globe className="w-3 h-3 text-white/60" />
+            <span className="text-xs text-white/60">{t.language}:</span>
             <select
               value={languageFilter}
               onChange={(e) =>
@@ -284,7 +284,7 @@ export function TechFeed() {
 
           {/* Category filter */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-white/40">{t.category}:</span>
+            <span className="text-xs text-white/60">{t.category}:</span>
             <select
               value={categoryFilter}
               onChange={(e) =>
@@ -306,7 +306,7 @@ export function TechFeed() {
 
           {/* Maturity filter */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-white/40">{t.stage}:</span>
+            <span className="text-xs text-white/60">{t.stage}:</span>
             <select
               value={maturityFilter}
               onChange={(e) =>
@@ -326,7 +326,7 @@ export function TechFeed() {
 
           {/* Sort options */}
           <div className="flex items-center gap-2 ml-auto">
-            <SortDesc className="w-3 h-3 text-white/40" />
+            <SortDesc className="w-3 h-3 text-white/60" />
             <div className="flex rounded-lg overflow-hidden border border-white/10">
               {sortOptions.map((option) => (
                 <button
@@ -335,7 +335,7 @@ export function TechFeed() {
                   className={`px-3 py-1 text-xs font-mono flex items-center gap-1 transition-colors ${
                     sortBy === option.value
                       ? 'bg-white/10 text-white'
-                      : 'bg-transparent text-white/40 hover:text-white/60'
+                      : 'bg-transparent text-white/60 hover:text-white/60'
                   }`}
                 >
                   <option.icon className="w-3 h-3" />
@@ -348,7 +348,7 @@ export function TechFeed() {
 
         {/* Live data indicator with language breakdown */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-white/40">
+          <div className="flex items-center gap-2 text-xs text-white/60">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -362,7 +362,7 @@ export function TechFeed() {
               {languageCounts.slice(0, 5).map(([lang, count]) => (
                 <span
                   key={lang}
-                  className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/5 text-white/40"
+                  className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/5 text-white/60"
                   title={`${localizedLanguages[lang as keyof typeof localizedLanguages] || lang}: ${count}`}
                 >
                   {lang === 'en'
@@ -439,7 +439,7 @@ export function TechFeed() {
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <p className="text-white/40">{t.noSignalsMatchFilters}</p>
+            <p className="text-white/60">{t.noSignalsMatchFilters}</p>
             <button
               onClick={() => {
                 setCategoryFilter('all')

@@ -8,6 +8,7 @@ import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from 'next-themes'
+import { MotionConfig } from 'motion/react'
 import { LanguageProvider } from '@/lib/i18n'
 
 interface MyRouterContext {
@@ -83,7 +84,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           disableTransitionOnChange
         >
           <LanguageProvider defaultLanguage="en">
-            {children}
+            {/* Honour the OS "reduce motion" setting: entrance animations jump
+                straight to their final state instead of fading in. */}
+            <MotionConfig reducedMotion="user">{children}</MotionConfig>
             <Toaster />
           </LanguageProvider>
         </ThemeProvider>

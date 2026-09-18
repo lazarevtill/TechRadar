@@ -113,13 +113,7 @@ export function StatsPanel() {
       {/* Main Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat, index) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="relative group"
-          >
+          <motion.div key={stat.label} className="relative group">
             <div
               className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl blur-xl"
               style={{
@@ -134,7 +128,7 @@ export function StatsPanel() {
                   <stat.icon className="w-4 h-4 text-white" />
                 </div>
                 {isLoading && index === 0 && (
-                  <Loader2 className="w-4 h-4 text-white/30 animate-spin" />
+                  <Loader2 className="w-4 h-4 text-white/55 animate-spin" />
                 )}
               </div>
               <div className="font-mono">
@@ -146,26 +140,21 @@ export function StatsPanel() {
                       {stat.value}
                     </span>
                     {stat.suffix && (
-                      <span className="text-white/40 text-lg">
+                      <span className="text-white/60 text-lg">
                         {stat.suffix}
                       </span>
                     )}
                   </>
                 )}
               </div>
-              <p className="text-xs text-white/40 mt-1">{stat.label}</p>
+              <p className="text-xs text-white/60 mt-1">{stat.label}</p>
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* Language & Citation Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
-        className="flex flex-wrap items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-indigo-500/5 to-purple-500/5 border border-indigo-500/10"
-      >
+      <motion.div className="flex flex-wrap items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-indigo-500/5 to-purple-500/5 border border-indigo-500/10">
         <div className="flex items-center gap-2">
           <Globe className="w-4 h-4 text-indigo-400" />
           <span className="text-xs text-white/50">{t.language}:</span>
@@ -180,7 +169,7 @@ export function StatsPanel() {
               {localizedLanguages[lang as keyof typeof localizedLanguages] ||
                 lang}
             </span>
-            <span className="text-xs font-mono text-white/40">{count}</span>
+            <span className="text-xs font-mono text-white/60">{count}</span>
           </div>
         ))}
         {highCitationCount > 0 && (
@@ -196,17 +185,12 @@ export function StatsPanel() {
       {/* Secondary Stats Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Top Rising */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-          className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm"
-        >
+        <motion.div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
           <h3 className="text-sm font-semibold text-white/60 mb-3 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-emerald-400" />
             {t.topRisingThisWeek}
             {isLoading && (
-              <Loader2 className="w-3 h-3 text-white/30 animate-spin" />
+              <Loader2 className="w-3 h-3 text-white/55 animate-spin" />
             )}
           </h3>
           <div className="space-y-2">
@@ -224,7 +208,7 @@ export function StatsPanel() {
                   className="flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs font-mono text-white/30">
+                    <span className="text-xs font-mono text-white/55">
                       #{index + 1}
                     </span>
                     {item.originalLanguage !== 'en' && (
@@ -242,18 +226,13 @@ export function StatsPanel() {
                 </div>
               ))
             ) : (
-              <p className="text-sm text-white/40">{t.noAnomaliesDetected}</p>
+              <p className="text-sm text-white/60">{t.noAnomaliesDetected}</p>
             )}
           </div>
         </motion.div>
 
         {/* Category Distribution */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5 }}
-          className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm"
-        >
+        <motion.div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
           <h3 className="text-sm font-semibold text-white/60 mb-3 flex items-center justify-between">
             <span>{t.categoryDistribution}</span>
             <button
@@ -263,7 +242,7 @@ export function StatsPanel() {
               title={t.refreshData}
             >
               <RefreshCw
-                className={`w-3 h-3 text-white/40 ${isLoading ? 'animate-spin' : ''}`}
+                className={`w-3 h-3 text-white/60 ${isLoading ? 'animate-spin' : ''}`}
               />
             </button>
           </h3>
@@ -297,7 +276,7 @@ export function StatsPanel() {
                         <span>{config.icon}</span>
                         <span className="text-white/70">{localizedLabel}</span>
                       </span>
-                      <span className="font-mono text-white/40">{count}</span>
+                      <span className="font-mono text-white/60">{count}</span>
                     </div>
                     <div className="h-1 bg-white/5 rounded-full overflow-hidden">
                       <motion.div
@@ -312,20 +291,15 @@ export function StatsPanel() {
                 )
               })
             ) : (
-              <p className="text-sm text-white/40">{t.loadingCategories}</p>
+              <p className="text-sm text-white/60">{t.loadingCategories}</p>
             )}
           </div>
         </motion.div>
       </div>
 
       {/* Maturity Stage Legend */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="flex flex-wrap gap-4 p-3 rounded-lg bg-white/[0.02] border border-white/5"
-      >
-        <span className="text-xs text-white/40 font-mono">{t.maturity}:</span>
+      <motion.div className="flex flex-wrap gap-4 p-3 rounded-lg bg-white/[0.02] border border-white/5">
+        <span className="text-xs text-white/60 font-mono">{t.maturity}:</span>
         {Object.entries(MATURITY_CONFIG).map(([key, config]) => {
           const localizedLabel =
             localizedMaturity[key as keyof typeof localizedMaturity] ||

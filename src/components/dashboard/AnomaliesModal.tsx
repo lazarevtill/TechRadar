@@ -78,7 +78,7 @@ export function AnomaliesModal({
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 text-white/40 hover:text-white/80 hover:bg-white/5 rounded-lg transition-all"
+            className="absolute top-4 right-4 z-10 p-2 text-white/60 hover:text-white/80 hover:bg-white/5 rounded-lg transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -117,9 +117,9 @@ export function AnomaliesModal({
                 {anomalies.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
-                      <AlertTriangle className="w-8 h-8 text-white/20" />
+                      <AlertTriangle className="w-8 h-8 text-white/45" />
                     </div>
-                    <p className="text-white/40">
+                    <p className="text-white/60">
                       {language === 'ru'
                         ? 'Аномалии не обнаружены'
                         : 'No anomalies detected'}
@@ -250,8 +250,8 @@ export function AnomaliesModal({
 
                               {/* Time ago */}
                               <div className="flex items-center gap-1.5">
-                                <Clock className="w-3.5 h-3.5 text-white/40" />
-                                <span className="text-xs text-white/40">
+                                <Clock className="w-3.5 h-3.5 text-white/60" />
+                                <span className="text-xs text-white/60">
                                   {getTimeAgo(item.publishedAt)}
                                 </span>
                               </div>
@@ -259,8 +259,8 @@ export function AnomaliesModal({
                               {/* Language indicator */}
                               {item.originalLanguage !== 'en' && (
                                 <div className="flex items-center gap-1.5">
-                                  <Globe className="w-3.5 h-3.5 text-white/40" />
-                                  <span className="text-xs text-white/40 uppercase">
+                                  <Globe className="w-3.5 h-3.5 text-white/60" />
+                                  <span className="text-xs text-white/60 uppercase">
                                     {item.originalLanguage}
                                   </span>
                                 </div>
@@ -295,7 +295,7 @@ export function AnomaliesModal({
                   transition={{ delay: 0.5 }}
                   className="mt-6 p-4 rounded-xl bg-white/[0.02] border border-white/5"
                 >
-                  <p className="text-xs text-white/40 text-center">
+                  <p className="text-xs text-white/60 text-center">
                     {language === 'ru'
                       ? 'Аномалии определяются на основе необычных паттернов активности, резких скачков роста и отклонений от типичного поведения в каждой категории.'
                       : 'Anomalies are identified based on unusual activity patterns, sudden growth spikes, and deviations from typical behavior within each category.'}

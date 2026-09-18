@@ -91,12 +91,7 @@ export function TechRadar() {
   return (
     <div className="relative">
       {/* Radar Container */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative rounded-2xl bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 backdrop-blur-sm overflow-hidden"
-      >
+      <motion.div className="relative rounded-2xl bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 backdrop-blur-sm overflow-hidden">
         {/* Header */}
         <div className="p-4 border-b border-white/5">
           <div className="flex items-center justify-between flex-wrap gap-4">
@@ -108,7 +103,7 @@ export function TechRadar() {
                   <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
                 )}
                 {filteredRadarData.length > 0 && (
-                  <span className="text-xs font-normal text-white/40">
+                  <span className="text-xs font-normal text-white/60">
                     ({filteredRadarData.length}
                     {filteredRadarData.length === MAX_RADAR_POINTS
                       ? '+'
@@ -117,7 +112,7 @@ export function TechRadar() {
                   </span>
                 )}
               </h2>
-              <p className="text-xs text-white/40 mt-1">
+              <p className="text-xs text-white/60 mt-1">
                 {t.radarAxisX} • {t.radarAxisY} • {t.radarAxisZ}
               </p>
             </div>
@@ -171,16 +166,16 @@ export function TechRadar() {
             <div className="h-full flex items-center justify-center">
               <div className="text-center">
                 <Loader2 className="w-8 h-8 text-cyan-400 animate-spin mx-auto mb-3" />
-                <p className="text-white/40 text-sm">{t.loadingLiveData}</p>
+                <p className="text-white/60 text-sm">{t.loadingLiveData}</p>
               </div>
             </div>
           ) : isError ? (
             <div className="h-full flex items-center justify-center">
-              <p className="text-white/40 text-sm">{t.failedToLoadRadar}</p>
+              <p className="text-white/60 text-sm">{t.failedToLoadRadar}</p>
             </div>
           ) : filteredRadarData.length === 0 ? (
             <div className="h-full flex items-center justify-center">
-              <p className="text-white/40 text-sm">{t.noDataForCategory}</p>
+              <p className="text-white/60 text-sm">{t.noDataForCategory}</p>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
@@ -368,13 +363,13 @@ export function TechRadar() {
                     <div className="text-2xl font-bold text-cyan-400 font-mono">
                       {selectedItem.impactScore}
                     </div>
-                    <div className="text-xs text-white/40">{t.impact}</div>
+                    <div className="text-xs text-white/60">{t.impact}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-fuchsia-400 font-mono">
                       {(selectedItem.hypeVolume / 1000).toFixed(1)}k
                     </div>
-                    <div className="text-xs text-white/40">{t.hype}</div>
+                    <div className="text-xs text-white/60">{t.hype}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white font-mono">
@@ -385,7 +380,7 @@ export function TechRadar() {
                       )}
                       d
                     </div>
-                    <div className="text-xs text-white/40">{t.ago}</div>
+                    <div className="text-xs text-white/60">{t.ago}</div>
                   </div>
                 </div>
 
@@ -453,7 +448,7 @@ function CustomTooltip({
         )}
       </div>
       <p className="text-sm text-white font-medium">{data.title}</p>
-      <p className="text-xs text-white/40 mt-1">{t.clickForDetails}</p>
+      <p className="text-xs text-white/60 mt-1">{t.clickForDetails}</p>
     </div>
   )
 }

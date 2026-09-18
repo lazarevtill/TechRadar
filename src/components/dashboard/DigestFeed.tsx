@@ -13,20 +13,15 @@ function relativeHours(iso: string): number {
   )
 }
 
-function DigestCard({ item, index }: { item: DigestItem; index: number }) {
+function DigestCard({ item }: { item: DigestItem }) {
   const { language, t } = useLanguage()
   // The pipeline writes both languages; pick one, never re-prefix the headline.
   const block = language === 'ru' ? item.ru : item.en
   const category = CATEGORY_CONFIG[item.category as TechCategory]
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.04, 0.3) }}
-      className="rounded-xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-sm transition-colors hover:border-white/20"
-    >
-      <div className="mb-2 flex items-center gap-2 text-[11px] font-mono uppercase tracking-wide text-white/40">
+    <motion.article className="rounded-xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-sm transition-colors hover:border-white/20">
+      <div className="mb-2 flex items-center gap-2 text-[11px] font-mono uppercase tracking-wide text-white/60">
         <span className="text-white/60">{item.source}</span>
         {category ? (
           <span style={{ color: category.color }}>{category.label}</span>
@@ -74,9 +69,9 @@ export function DigestFeed() {
         <h2 className="text-sm font-semibold uppercase tracking-wider text-white/80">
           {t.digestTitle}
         </h2>
-        <span className="text-xs text-white/40">{t.digestSubtitle}</span>
+        <span className="text-xs text-white/60">{t.digestSubtitle}</span>
         {generatedAt ? (
-          <span className="ml-auto font-mono text-[11px] text-white/30">
+          <span className="ml-auto font-mono text-[11px] text-white/55">
             {t.digestUpdated} {relativeHours(generatedAt)}h
           </span>
         ) : null}
@@ -90,19 +85,39 @@ export function DigestFeed() {
       ) : null}
 
       {isLoading ? (
-        <p className="py-6 text-center text-xs text-white/40">{t.loading}</p>
+        <div
+          className="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
+          aria-busy="true"
+          aria-label={t.loading}
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="animate-pulse rounded-xl border border-white/10 bg-white/[0.02] p-4"
+            >
+              <div className="mb-3 h-2.5 w-24 rounded bg-white/10" />
+              <div className="mb-2 h-3.5 w-full rounded bg-white/10" />
+              <div className="mb-4 h-3.5 w-4/5 rounded bg-white/10" />
+              <div className="space-y-2">
+                <div className="h-2.5 w-full rounded bg-white/[0.07]" />
+                <div className="h-2.5 w-11/12 rounded bg-white/[0.07]" />
+                <div className="h-2.5 w-3/4 rounded bg-white/[0.07]" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : isError ? (
-        <p className="py-6 text-center text-xs text-white/40">
+        <p className="py-6 text-center text-xs text-white/60">
           {t.digestError}
         </p>
       ) : items.length === 0 ? (
-        <p className="py-6 text-center text-xs text-white/40">
+        <p className="py-6 text-center text-xs text-white/60">
           {t.digestEmpty}
         </p>
       ) : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {items.map((item, i) => (
-            <DigestCard key={item.id} item={item} index={i} />
+          {items.map((item) => (
+            <DigestCard key={item.id} item={item} />
           ))}
         </div>
       )}
