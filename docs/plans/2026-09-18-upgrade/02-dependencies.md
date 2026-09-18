@@ -269,13 +269,29 @@ bun add -d typescript@^6.0.3
 
 The rest of the file is already in good shape: `target: ES2022` ✓ (not the removed `es5`), `module: ESNext` ✓, `strict: true` ✓ (becomes the default anyway), explicit `types: ["vite/client", "bun"]` ✓ — note this defaults to empty in **6.0**, so being explicit is already correct. Also re-check `allowImportingTsExtensions`.
 
-**The TS 7 gate — all three must be true before starting:**
+**Resolved 2026-09-18: TypeScript 7 is adopted, via the side-by-side mechanism.**
 
-1. typescript-eslint publishes a release whose `peerDependencies.typescript` admits `^7`;
-2. TypeScript 7.1 (stable programmatic API) is released;
-3. `bun run lint` passes on a scratch branch with both installed.
+The blocker was real but the conclusion was wrong. typescript-eslint genuinely
+cannot run on TS 7 — it fails loudly with _"typescript-eslint does not support
+TS 7.0"_ ([tracking issue #10940](https://github.com/typescript-eslint/typescript-eslint/issues/10940)).
+But TypeScript ships a supported answer: `@typescript/typescript6`, a package
+that re-exports the 6.x programmatic API precisely so tools can keep working
+while `tsc` is 7.x.
 
-Until then, if you want the ~10x checker speed now, run it **advisory-only** alongside the real gate — add `"typecheck:fast": "tsgo --noEmit"` and keep `tsc --noEmit` in `build` as the thing that can fail CI. Do not swap them.
+```json
+"typescript": "npm:@typescript/typescript6@^6.0.2",   // the API tools import
+"typescript-7": "npm:typescript@^7.0.2"               // the compiler we build with
+```
+
+One wrinkle worth knowing: the TS 6 compat chain also supplies a `tsc` binary
+that wins `node_modules/.bin` resolution, so a bare `tsc` silently type-checks
+with 6. The build scripts therefore name the 7.x compiler explicitly
+(`./node_modules/typescript-7/bin/tsc`), and `bun run typecheck` exists as a
+standalone entry point.
+
+Net: `tsc --noEmit` runs on **7.0.2**, `bun run lint` runs on the **6.x** API,
+and both pass. Revisit when typescript-eslint supports 7.1 natively, at which
+point the alias pair collapses back to a single `typescript` dependency.
 
 **Stage D exit gate:** both build modes, `bun run start` smoke-tested against the built output, the extension ZIP route, and a full dashboard pass.
 
