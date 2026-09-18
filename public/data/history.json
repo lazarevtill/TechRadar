@@ -825,5 +825,16 @@
       "humanoids": 1,
       "protein-design": 3
     }
+  },
+  {
+    "date": "2026-09-18",
+    "topics": {
+      "llm-agents": 68,
+      "open-models": 52,
+      "fusion": 4,
+      "rag": 14,
+      "humanoids": 1,
+      "protein-design": 3
+    }
   }
 ]
