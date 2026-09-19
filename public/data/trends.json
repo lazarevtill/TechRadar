@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-18T11:13:12.304Z",
+  "generatedAt": "2026-09-19T10:58:05.982Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -7,8 +7,8 @@
       "label": "Humanoid Robots",
       "category": "robotics",
       "stage": "prototype",
-      "trajectory": "stable",
-      "momentum": 0,
+      "trajectory": "rising",
+      "momentum": 0.5,
       "weeklyCounts": [
         1,
         7,
@@ -21,7 +21,7 @@
         0,
         0,
         2,
-        2
+        3
       ],
       "signals": [
         {
@@ -61,7 +61,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.59,
+      "momentum": -0.35,
       "weeklyCounts": [
         14,
         11,
@@ -74,7 +74,7 @@
         14,
         14,
         17,
-        7
+        11
       ],
       "signals": [
         {
@@ -109,7 +109,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.7,
+      "momentum": -0.53,
       "weeklyCounts": [
         81,
         60,
@@ -122,9 +122,15 @@
         100,
         85,
         92,
-        28
+        43
       ],
       "signals": [
+        {
+          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
+          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
+          "source": "latent-space",
+          "publishedAt": "2026-09-19T05:48:28.000Z"
+        },
         {
           "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
           "url": "https://www.latent.space/p/aiuc",
@@ -148,12 +154,6 @@
           "url": "https://www.latent.space/p/ainews-collusionwiki-a-second-undisclosed",
           "source": "latent-space",
           "publishedAt": "2026-09-05T04:32:00.000Z"
-        },
-        {
-          "title": "[AINews] GPT-6 Astra: OpenAI’s biggest LLM launch of all time",
-          "url": "https://www.latent.space/p/ainews-gpt-6-astra-openais-biggest",
-          "source": "latent-space",
-          "publishedAt": "2026-09-04T05:18:11.000Z"
         }
       ]
     },
@@ -163,7 +163,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.71,
+      "momentum": -0.57,
       "weeklyCounts": [
         411,
         420,
@@ -176,7 +176,7 @@
         437,
         452,
         469,
-        136
+        203
       ],
       "signals": [
         {
@@ -217,7 +217,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.71,
+      "momentum": -0.57,
       "weeklyCounts": [
         375,
         358,
@@ -230,9 +230,15 @@
         388,
         365,
         364,
-        104
+        156
       ],
       "signals": [
+        {
+          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
+          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
+          "source": "latent-space",
+          "publishedAt": "2026-09-19T05:48:28.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
@@ -256,12 +262,6 @@
           "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
           "source": "latent-space",
           "publishedAt": "2026-09-15T04:50:36.000Z"
-        },
-        {
-          "title": "[AINews] DeepSeek v4.1-Flash: 763B-P8B-D16B novel causal Encoder–Decoder architecture with vision marks the Return of the Whale",
-          "url": "https://www.latent.space/p/ainews-deepseek-v41-flash-763b-p8b",
-          "source": "latent-space",
-          "publishedAt": "2026-09-12T05:56:05.000Z"
         }
       ]
     },
@@ -271,7 +271,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.71,
+      "momentum": -0.57,
       "weeklyCounts": [
         21,
         21,
@@ -284,7 +284,7 @@
         21,
         21,
         21,
-        6
+        9
       ],
       "signals": [
         {
