@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-20T11:22:41.374Z",
+  "generatedAt": "2026-09-21T12:47:04.335Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "rising",
-      "momentum": 1,
+      "momentum": 1.5,
       "weeklyCounts": [
         1,
         7,
@@ -21,7 +21,7 @@
         0,
         0,
         2,
-        4
+        5
       ],
       "signals": [
         {
@@ -33,35 +33,12 @@
       ]
     },
     {
-      "id": "post-quantum",
-      "label": "Post-Quantum Crypto",
-      "category": "cybersecurity",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "signals": []
-    },
-    {
       "id": "fusion",
       "label": "Fusion Energy",
       "category": "energy",
       "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.12,
+      "trajectory": "rising",
+      "momentum": 0.12,
       "weeklyCounts": [
         14,
         11,
@@ -74,7 +51,7 @@
         14,
         14,
         17,
-        15
+        19
       ],
       "signals": [
         {
@@ -104,12 +81,35 @@
       ]
     },
     {
+      "id": "post-quantum",
+      "label": "Post-Quantum Crypto",
+      "category": "cybersecurity",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
       "id": "rag",
       "label": "Retrieval-Augmented Generation",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.37,
+      "momentum": -0.21,
       "weeklyCounts": [
         81,
         60,
@@ -122,7 +122,7 @@
         100,
         85,
         92,
-        58
+        73
       ],
       "signals": [
         {
@@ -163,7 +163,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.42,
+      "momentum": -0.28,
       "weeklyCounts": [
         411,
         420,
@@ -176,7 +176,7 @@
         437,
         452,
         469,
-        270
+        336
       ],
       "signals": [
         {
@@ -217,7 +217,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.43,
+      "momentum": -0.29,
       "weeklyCounts": [
         375,
         358,
@@ -230,7 +230,7 @@
         388,
         365,
         364,
-        208
+        260
       ],
       "signals": [
         {
@@ -271,7 +271,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.43,
+      "momentum": -0.29,
       "weeklyCounts": [
         21,
         21,
@@ -284,7 +284,7 @@
         21,
         21,
         21,
-        12
+        15
       ],
       "signals": [
         {
