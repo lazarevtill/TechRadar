@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import {
   DashboardHeader,
   StatsPanel,
@@ -12,8 +12,19 @@ import {
   ParserControlPanel,
 } from '@/components/dashboard'
 import { useLanguage } from '@/lib/i18n'
+import { techFeedQuery } from '@/hooks/use-tech-feed'
+import { digestQuery, trendsQuery } from '@/hooks/use-digest'
 
 export const Route = createFileRoute('/_public/')({
+  // Start the data requests during SSR instead of after hydration. Not
+  // awaited: the HTML shell is sent immediately and each query's result is
+  // streamed into the page as it resolves (router-ssr-query integration).
+  loader: ({ context }) => {
+    const ignore = () => {} // a failed prefetch just leaves the hook to retry
+    context.queryClient.prefetchQuery(techFeedQuery).catch(ignore)
+    context.queryClient.prefetchQuery(digestQuery).catch(ignore)
+    context.queryClient.prefetchQuery(trendsQuery).catch(ignore)
+  },
   component: TechEvolutionRadar,
 })
 
@@ -53,7 +64,7 @@ function TechEvolutionRadar() {
         />
 
         {/* Scanline effect */}
-        <motion.div
+        <m.div
           className="absolute inset-0 opacity-[0.03]"
           style={{
             background:

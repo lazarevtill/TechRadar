@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import { Puzzle, X, Download } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n'
 import { InstallationGuide } from './InstallationGuide'
@@ -26,7 +26,7 @@ export function ExtensionBanner() {
   return (
     <>
       <AnimatePresence initial={false}>
-        <motion.div
+        <m.div
           exit={{ opacity: 0, y: -20 }}
           className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#00f0ff]/10 via-[#ff00aa]/10 to-[#a855f7]/10 border border-white/10 backdrop-blur-sm"
         >
@@ -121,7 +121,7 @@ export function ExtensionBanner() {
               />
             </svg>
           </div>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
 
       {/* Installation Guide Modal */}

@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import {
   X,
   AlertTriangle,
@@ -40,7 +40,7 @@ export function AnomaliesModal({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -51,7 +51,7 @@ export function AnomaliesModal({
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
 
         {/* Modal */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -64,7 +64,7 @@ export function AnomaliesModal({
 
           {/* Animated warning pattern */}
           <div className="absolute top-0 left-0 right-0 h-1 overflow-hidden">
-            <motion.div
+            <m.div
               className="h-full w-[200%] bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500"
               animate={{ x: ['-50%', '0%'] }}
               transition={{
@@ -88,7 +88,7 @@ export function AnomaliesModal({
             {/* Title */}
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-4">
-                <motion.div
+                <m.div
                   className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center"
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{
@@ -97,7 +97,7 @@ export function AnomaliesModal({
                   }}
                 >
                   <AlertTriangle className="w-6 h-6 text-amber-400" />
-                </motion.div>
+                </m.div>
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold text-white">
                     {language === 'ru' ? 'Аномалии' : 'Anomalies'}
@@ -133,7 +133,7 @@ export function AnomaliesModal({
                     const sourceConfig = SOURCE_CONFIG[item.source]
 
                     return (
-                      <motion.div
+                      <m.div
                         key={item.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -178,7 +178,7 @@ export function AnomaliesModal({
                             </div>
 
                             {/* Anomaly badge */}
-                            <motion.div
+                            <m.div
                               className="flex-shrink-0 px-2.5 py-1 rounded-full bg-amber-500/20 border border-amber-500/30"
                               animate={{
                                 boxShadow: [
@@ -196,7 +196,7 @@ export function AnomaliesModal({
                                 <Flame className="w-3 h-3" />
                                 {language === 'ru' ? 'Аномалия' : 'Anomaly'}
                               </span>
-                            </motion.div>
+                            </m.div>
                           </div>
 
                           {/* Title */}
@@ -281,7 +281,7 @@ export function AnomaliesModal({
                             </a>
                           </div>
                         </div>
-                      </motion.div>
+                      </m.div>
                     )
                   })
                 )}
@@ -289,7 +289,7 @@ export function AnomaliesModal({
 
               {/* Footer info */}
               {anomalies.length > 0 && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
@@ -300,7 +300,7 @@ export function AnomaliesModal({
                       ? 'Аномалии определяются на основе необычных паттернов активности, резких скачков роста и отклонений от типичного поведения в каждой категории.'
                       : 'Anomalies are identified based on unusual activity patterns, sudden growth spikes, and deviations from typical behavior within each category.'}
                   </p>
-                </motion.div>
+                </m.div>
               )}
             </div>
 
@@ -348,8 +348,8 @@ export function AnomaliesModal({
               </defs>
             </svg>
           </div>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </AnimatePresence>
   )
 }

@@ -1,75 +1,93 @@
-import { describe, it, expect } from 'vitest'
-import { tagTopics, snapshotFromTexts, collectTopicSignals } from '../topics'
+import { describe, it, expect, vi } from 'vitest'
+import {
+  TOPIC_LABELS,
+  TOPIC_THRESHOLD,
+  buildTopicRequest,
+  createTopicAsker,
+  tagPosts,
+  snapshotFromTags,
+  collectTopicSignals,
+} from '../topics'
 
-describe('tagTopics', () => {
-  it('tags known topics', () => {
-    expect(tagTopics('a new LLM agent framework')).toContain('llm-agents')
-    expect(tagTopics('post-quantum cryptography')).toContain('post-quantum')
-  })
-  it('returns [] when nothing matches', () => {
-    expect(tagTopics('an unrelated cooking blog')).toEqual([])
-  })
-  it('does not tag on substring-only matches (word boundaries)', () => {
-    expect(tagTopics('We upgraded our storage backend')).not.toContain('rag')
-    expect(tagTopics('The dragon flew over')).not.toContain('rag')
-  })
-  it('still tags real RAG mentions', () => {
-    expect(tagTopics('a new RAG pipeline')).toContain('rag')
-    expect(tagTopics('retrieval augmented generation')).toContain('rag')
+describe('buildTopicRequest', () => {
+  it('asks one noul per tracked topic over title and truncated content', () => {
+    const req = buildTopicRequest({
+      title: 'A new agent framework',
+      contentText: 'x'.repeat(10_000),
+    })
+    expect(req.state.title).toBe('A new agent framework')
+    expect(req.state.content).toHaveLength(6000)
+    expect(Object.keys(req.questions).sort()).toEqual(
+      Object.keys(TOPIC_LABELS).sort(),
+    )
+    for (const q of Object.values(req.questions)) expect(q.type).toBe('noul')
   })
 })
 
-describe('snapshotFromTexts', () => {
+describe('createTopicAsker', () => {
+  it('fails fast without TYPESAFE_API_KEY', () => {
+    expect(() => createTopicAsker({})).toThrow(/TYPESAFE_API_KEY/)
+  })
+})
+
+describe('tagPosts', () => {
+  it('keeps topics at or above the threshold, in input order', async () => {
+    const ask = vi.fn(
+      async (p: { title: string }): Promise<Record<string, number>> =>
+        p.title === 'agents'
+          ? { 'llm-agents': 0.9, rag: TOPIC_THRESHOLD }
+          : { 'llm-agents': 0.1, fusion: 0.49 },
+    )
+    const tags = await tagPosts([{ title: 'agents' }, { title: 'other' }], ask)
+    expect(tags).toEqual([['llm-agents', 'rag'], []])
+  })
+
+  it('propagates a failed request rather than publishing partial trends', async () => {
+    await expect(
+      tagPosts([{ title: 'a' }], async () => {
+        throw new Error('401')
+      }),
+    ).rejects.toThrow('401')
+  })
+})
+
+describe('snapshotFromTags', () => {
   it('counts topic occurrences per day', () => {
-    const snap = snapshotFromTexts(
-      ['llm agent', 'llm agent tools'],
+    const snap = snapshotFromTags(
+      [['llm-agents'], ['llm-agents', 'rag'], []],
       '2026-06-15',
     )
-    expect(snap.date).toBe('2026-06-15')
-    expect(snap.topics['llm-agents']).toBe(2)
+    expect(snap).toEqual({
+      date: '2026-06-15',
+      topics: { 'llm-agents': 2, rag: 1 },
+    })
   })
 })
 
 describe('collectTopicSignals', () => {
-  it('groups matching posts under each topic and caps per topic', () => {
-    const posts = [
-      {
-        title: 'A new LLM agent framework',
-        url: 'https://ex.com/a',
-        source: 'anthropic',
-        publishedAt: '2026-06-03T00:00:00Z',
-        contentText: '',
-      },
-      {
-        title: 'More on llm agents',
-        url: 'https://ex.com/b',
-        source: 'openai',
-        publishedAt: '2026-06-05T00:00:00Z',
-        contentText: 'tool use',
-      },
-      {
-        title: 'A cooking blog',
-        url: 'https://ex.com/c',
-        source: 'meta',
-        publishedAt: '2026-06-04T00:00:00Z',
-        contentText: '',
-      },
-    ]
-    const map = collectTopicSignals(posts, 5)
-    expect(map['llm-agents'].map((s) => s.url)).toEqual([
-      'https://ex.com/b',
-      'https://ex.com/a',
-    ]) // newest first
-    expect(map['llm-agents']).toHaveLength(2)
-    expect(map['cooking']).toBeUndefined()
+  const post = (url: string, publishedAt: string) => ({
+    title: url,
+    url,
+    source: 'hf',
+    publishedAt,
   })
+
+  it('groups tagged posts under each topic, newest first', () => {
+    const posts = [
+      post('a', '2026-06-03T00:00:00Z'),
+      post('b', '2026-06-05T00:00:00Z'),
+      post('c', '2026-06-04T00:00:00Z'),
+    ]
+    const map = collectTopicSignals(posts, [['llm-agents'], ['llm-agents'], []])
+    expect(map['llm-agents'].map((s) => s.url)).toEqual(['b', 'a'])
+    expect(Object.keys(map)).toEqual(['llm-agents'])
+  })
+
   it('caps at maxPerTopic', () => {
-    const posts = Array.from({ length: 8 }, (_, i) => ({
-      title: 'llm agent ' + i,
-      url: 'u' + i,
-      source: 'hf',
-      publishedAt: '2026-06-0' + (i % 9) + 'T00:00:00Z',
-    }))
-    expect(collectTopicSignals(posts, 3)['llm-agents']).toHaveLength(3)
+    const posts = Array.from({ length: 8 }, (_, i) =>
+      post('u' + i, `2026-06-0${i + 1}T00:00:00Z`),
+    )
+    const tags = posts.map(() => ['llm-agents'])
+    expect(collectTopicSignals(posts, tags, 3)['llm-agents']).toHaveLength(3)
   })
 })

@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import {
   TrendingUp,
   Zap,
@@ -113,7 +113,7 @@ export function StatsPanel() {
       {/* Main Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat, index) => (
-          <motion.div key={stat.label} className="relative group">
+          <m.div key={stat.label} className="relative group">
             <div
               className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl blur-xl"
               style={{
@@ -149,12 +149,12 @@ export function StatsPanel() {
               </div>
               <p className="text-xs text-white/60 mt-1">{stat.label}</p>
             </div>
-          </motion.div>
+          </m.div>
         ))}
       </div>
 
       {/* Language & Citation Stats */}
-      <motion.div className="flex flex-wrap items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-indigo-500/5 to-purple-500/5 border border-indigo-500/10">
+      <m.div className="flex flex-wrap items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-indigo-500/5 to-purple-500/5 border border-indigo-500/10">
         <div className="flex items-center gap-2">
           <Globe className="w-4 h-4 text-indigo-400" />
           <span className="text-xs text-white/50">{t.language}:</span>
@@ -180,12 +180,12 @@ export function StatsPanel() {
             </span>
           </div>
         )}
-      </motion.div>
+      </m.div>
 
       {/* Secondary Stats Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Top Rising */}
-        <motion.div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
+        <m.div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
           <h3 className="text-sm font-semibold text-white/60 mb-3 flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-emerald-400" />
             {t.topRisingThisWeek}
@@ -229,10 +229,10 @@ export function StatsPanel() {
               <p className="text-sm text-white/60">{t.noAnomaliesDetected}</p>
             )}
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Category Distribution */}
-        <motion.div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
+        <m.div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
           <h3 className="text-sm font-semibold text-white/60 mb-3 flex items-center justify-between">
             <span>{t.categoryDistribution}</span>
             <button
@@ -279,7 +279,7 @@ export function StatsPanel() {
                       <span className="font-mono text-white/60">{count}</span>
                     </div>
                     <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                      <motion.div
+                      <m.div
                         className="h-full rounded-full"
                         style={{ backgroundColor: config.color }}
                         initial={{ width: 0 }}
@@ -294,11 +294,11 @@ export function StatsPanel() {
               <p className="text-sm text-white/60">{t.loadingCategories}</p>
             )}
           </div>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* Maturity Stage Legend */}
-      <motion.div className="flex flex-wrap gap-4 p-3 rounded-lg bg-white/[0.02] border border-white/5">
+      <m.div className="flex flex-wrap gap-4 p-3 rounded-lg bg-white/[0.02] border border-white/5">
         <span className="text-xs text-white/60 font-mono">{t.maturity}:</span>
         {Object.entries(MATURITY_CONFIG).map(([key, config]) => {
           const localizedLabel =
@@ -314,7 +314,7 @@ export function StatsPanel() {
             </div>
           )
         })}
-      </motion.div>
+      </m.div>
     </div>
   )
 }

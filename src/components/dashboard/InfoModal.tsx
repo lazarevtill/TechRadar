@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import {
   X,
   FileText,
@@ -290,7 +290,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
       {isOpen && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <m.div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -299,7 +299,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
           />
 
           {/* Modal */}
-          <motion.div
+          <m.div
             className="fixed inset-4 sm:inset-8 md:inset-12 lg:inset-16 xl:inset-24 z-50 flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -338,7 +338,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
                 {/* Sections */}
                 <div className="space-y-8">
                   {t.sections.map((section, idx) => (
-                    <motion.div
+                    <m.div
                       key={section.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -490,7 +490,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
                           ))}
                         </div>
                       )}
-                    </motion.div>
+                    </m.div>
                   ))}
                 </div>
 
@@ -508,7 +508,7 @@ export function InfoModal({ isOpen, onClose }: InfoModalProps) {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         </>
       )}
     </AnimatePresence>

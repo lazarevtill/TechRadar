@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { AlertTriangle, ExternalLink, Newspaper } from 'lucide-react'
 import { useDigest } from '@/hooks/use-digest'
 import { useLanguage } from '@/lib/i18n'
@@ -20,7 +20,7 @@ function DigestCard({ item }: { item: DigestItem }) {
   const category = CATEGORY_CONFIG[item.category as TechCategory]
 
   return (
-    <motion.article className="rounded-xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-sm transition-colors hover:border-white/20">
+    <m.article className="rounded-xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-sm transition-colors hover:border-white/20">
       <div className="mb-2 flex items-center gap-2 text-[11px] font-mono uppercase tracking-wide text-white/60">
         <span className="text-white/60">{item.source}</span>
         {category ? (
@@ -54,7 +54,7 @@ function DigestCard({ item }: { item: DigestItem }) {
         {t.digestReadOriginal}
         <ExternalLink className="h-3 w-3" />
       </a>
-    </motion.article>
+    </m.article>
   )
 }
 

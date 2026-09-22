@@ -1,11 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
-import {
-  DigestFileSchema,
-  TrendsFileSchema,
-  isStale,
-  STALE_AFTER_MS,
-} from '../digest-types'
+import { DigestFileSchema, TrendsFileSchema } from '../digest-types'
+import { isStale, STALE_AFTER_MS } from '../digest-freshness'
 
 /**
  * Contract test between the generator and the dashboard. It parses the files

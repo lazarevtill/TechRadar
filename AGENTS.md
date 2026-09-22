@@ -23,7 +23,7 @@ Use Bun and the committed `bun.lock`:
 - `bun run lint`: run ESLint.
 - `bun run format:check`: check Prettier formatting; `bun run format` rewrites files.
 - `bun run check:secrets`: scan generated data for secrets.
-- `bun run generate:feed`: regenerate feed data; requires `ANTHROPIC_API_KEY`.
+- `bun run generate:feed`: regenerate feed data; requires `ANTHROPIC_API_KEY` and `TYPESAFE_API_KEY`.
 
 ## Coding Style & Naming Conventions
 
@@ -39,4 +39,4 @@ Follow the history’s Conventional Commit style, such as `feat(ext): describe b
 
 ## Security & Configuration
 
-Local dashboard development requires no secrets. Keep API keys out of client code, extension assets, and generated JSON. Use `.env.example` for optional configuration and run the secret scanner after regenerating data.
+Local dashboard development runs without secrets; set `TYPESAFE_API_KEY` in `.env` to get Jev feed categories (otherwise items show as uncategorized). Keep API keys out of client code, extension assets, and generated JSON. Use `.env.example` for optional configuration and run the secret scanner after regenerating data.

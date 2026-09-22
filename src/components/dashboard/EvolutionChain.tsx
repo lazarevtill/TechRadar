@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import {
   GitBranch,
   ChevronRight,
@@ -183,7 +183,7 @@ export function EvolutionChains() {
               ] || maturityConfig.label
 
             return (
-              <motion.div key={chain.id} className="relative">
+              <m.div key={chain.id} className="relative">
                 {/* Chain card */}
                 <div
                   className={`rounded-xl border transition-all duration-300 cursor-pointer ${
@@ -229,13 +229,13 @@ export function EvolutionChains() {
                       </div>
 
                       {/* Expand indicator */}
-                      <motion.div
+                      <m.div
                         animate={{ rotate: isExpanded ? 90 : 0 }}
                         transition={{ duration: 0.2 }}
                         className="p-2 rounded-lg bg-white/5"
                       >
                         <ChevronRight className="w-4 h-4 text-white/60" />
-                      </motion.div>
+                      </m.div>
                     </div>
 
                     {/* Mini timeline preview */}
@@ -263,7 +263,7 @@ export function EvolutionChains() {
                   {/* Expanded timeline */}
                   <AnimatePresence>
                     {isExpanded && (
-                      <motion.div
+                      <m.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
@@ -291,7 +291,7 @@ export function EvolutionChains() {
                                 )
 
                                 return (
-                                  <motion.div
+                                  <m.div
                                     key={item.id}
                                     initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
@@ -343,7 +343,7 @@ export function EvolutionChains() {
                                         <ArrowRight className="w-3 h-3 rotate-90" />
                                       </div>
                                     )}
-                                  </motion.div>
+                                  </m.div>
                                 )
                               })}
                             </div>
@@ -361,11 +361,11 @@ export function EvolutionChains() {
                             </p>
                           </div>
                         </div>
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 </div>
-              </motion.div>
+              </m.div>
             )
           })}
         </div>

@@ -1,9 +1,23 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 import { fetchDigestFn, fetchTrendsFn } from '@/server/functions/digest'
-import { isStale, type DigestItem, type TrendTopic } from '@/lib/digest-types'
+import type { DigestItem, TrendTopic } from '@/lib/digest-types'
+import { isStale } from '@/lib/digest-freshness'
 
 /** Matches CACHE_TTL.HOUR on the server — the data changes once a day. */
 const STALE_TIME = 60 * 60 * 1000
+
+/** Shared with the route loader, which prefetches them during SSR. */
+export const digestQuery = queryOptions({
+  queryKey: ['digest'],
+  queryFn: () => fetchDigestFn(),
+  staleTime: STALE_TIME,
+})
+
+export const trendsQuery = queryOptions({
+  queryKey: ['digest-trends'],
+  queryFn: () => fetchTrendsFn(),
+  staleTime: STALE_TIME,
+})
 
 export function useDigest(): {
   items: DigestItem[]
@@ -13,9 +27,7 @@ export function useDigest(): {
   isError: boolean
 } {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['digest'],
-    queryFn: () => fetchDigestFn(),
-    staleTime: STALE_TIME,
+    ...digestQuery,
   })
 
   return {
@@ -34,9 +46,7 @@ export function useTrends(): {
   isError: boolean
 } {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['digest-trends'],
-    queryFn: () => fetchTrendsFn(),
-    staleTime: STALE_TIME,
+    ...trendsQuery,
   })
 
   return {

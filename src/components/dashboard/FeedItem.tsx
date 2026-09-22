@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import {
   ChevronDown,
   ExternalLink,
@@ -144,7 +144,7 @@ export function FeedItem({ item, index }: FeedItemProps) {
     ] || item.originalLanguage
 
   return (
-    <motion.article
+    <m.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
@@ -222,14 +222,14 @@ export function FeedItem({ item, index }: FeedItemProps) {
 
               {/* Anomaly indicator */}
               {item.isAnomaly && (
-                <motion.span
+                <m.span
                   className="px-2 py-0.5 rounded-md text-xs font-mono bg-amber-500/20 text-amber-400 flex items-center gap-1"
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   <Flame className="w-3 h-3" />
                   <span>+{item.weeklyGrowth}%</span>
-                </motion.span>
+                </m.span>
               )}
             </div>
 
@@ -345,12 +345,12 @@ export function FeedItem({ item, index }: FeedItemProps) {
                 className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-xs text-white/60 hover:text-white"
               >
                 <span>{t.whyItMatters}</span>
-                <motion.div
+                <m.div
                   animate={{ rotate: isExpanded ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                 >
                   <ChevronDown className="w-3 h-3" />
-                </motion.div>
+                </m.div>
               </button>
             )}
           </div>
@@ -358,7 +358,7 @@ export function FeedItem({ item, index }: FeedItemProps) {
           {/* Expandable "Why it matters" section */}
           <AnimatePresence>
             {isExpanded && displayWhyItMatters && (
-              <motion.div
+              <m.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -373,7 +373,7 @@ export function FeedItem({ item, index }: FeedItemProps) {
                     {displayWhyItMatters}
                   </p>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>
@@ -390,6 +390,6 @@ export function FeedItem({ item, index }: FeedItemProps) {
           </a>
         </div>
       </div>
-    </motion.article>
+    </m.article>
   )
 }

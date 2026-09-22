@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { queryOptions, useQuery } from '@tanstack/react-query'
 import {
   fetchTechFeedFn,
   fetchGitHubFeedFn,
@@ -47,11 +47,16 @@ export interface UseTechFeedResult {
   fetchedAt: Date | null
 }
 
+/** Shared with the route loader, which prefetches it during SSR. */
+export const techFeedQuery = queryOptions({
+  queryKey: ['tech-feed'],
+  queryFn: () => fetchTechFeedFn(),
+  staleTime: 5 * 60 * 1000, // 5 minutes
+})
+
 export function useTechFeed(): UseTechFeedResult {
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['tech-feed'],
-    queryFn: () => fetchTechFeedFn(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    ...techFeedQuery,
     refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
     retry: 2,
   })
