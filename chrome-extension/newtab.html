@@ -136,28 +136,35 @@
             <!-- Radar -->
             <section class="panel radar-section" data-panel="radar">
               <div class="panel-head">
-                <h2 data-i18n="liveRadar">Radar</h2>
-                <span class="hint" data-i18n="radarHint"
-                  >rings: maturity · dot size: reach · ring: fast-rising</span
-                >
+                <h2 id="view-title" data-i18n="liveRadar">Radar</h2>
+                <span class="hint" id="view-hint"></span>
+                <div
+                  class="segment view-switch"
+                  id="view-switch"
+                  role="tablist"
+                  aria-label="View"
+                ></div>
               </div>
               <div class="filters" id="category-filters" role="group">
                 <button class="chip" data-category="all" aria-pressed="true">
                   All
                 </button>
               </div>
-              <div class="radar-container">
-                <canvas
-                  id="radar-canvas"
-                  tabindex="0"
-                  role="img"
-                  aria-label="Technology radar. Use arrow keys to move between signals and Enter to open one."
-                ></canvas>
-                <div
-                  id="radar-tooltip"
-                  class="radar-tooltip hidden"
-                  role="tooltip"
-                ></div>
+              <div class="chart-body">
+                <div class="radar-container" id="canvas-view">
+                  <canvas
+                    id="radar-canvas"
+                    tabindex="0"
+                    role="img"
+                    aria-label="Technology chart. Use arrow keys to move between signals and Enter to open one."
+                  ></canvas>
+                  <div
+                    id="radar-tooltip"
+                    class="radar-tooltip hidden"
+                    role="tooltip"
+                  ></div>
+                </div>
+                <div class="html-view hidden" id="html-view"></div>
               </div>
               <div class="legend" id="radar-legend"></div>
             </section>
@@ -189,12 +196,14 @@
             <div class="panel-head">
               <h2 data-i18n="liveFeed">Feed</h2>
               <span class="hint" id="feed-count"></span>
+              <div class="active-filters" id="active-filters"></div>
               <select id="source-filter" class="select" aria-label="Source">
                 <option value="all" data-i18n="allSources">All sources</option>
                 <!-- the sources present in the feed are added by app.js -->
               </select>
             </div>
             <div class="feed-list" id="feed-list"></div>
+            <div class="feed-more" id="feed-more"></div>
           </section>
 
           <!-- Digest -->
@@ -326,6 +335,10 @@
                 >Feed items</label
               >
               <select id="set-feed-size" class="select"></select>
+              <label for="set-default-view" data-i18n="settingsDefaultView"
+                >Default view</label
+              >
+              <select id="set-default-view" class="select"></select>
               <label for="set-default-source" data-i18n="settingsDefaultSource"
                 >Default source</label
               >

@@ -93,6 +93,7 @@ interface HALDocument {
   title_s: string[]
   abstract_s: string[]
   producedDate_s: string
+  submittedDate_s?: string // 'YYYY-MM-DD HH:MM:SS', when it appeared in HAL
   authFullName_s: string[]
   uri_s: string
   language_s: string[]
@@ -741,7 +742,7 @@ async function fetchHAL(): Promise<RawItem[]> {
     // HAL - French open archive. Domain codes are hierarchical ('0.info' =
     // computer science, '0.spi' = engineering); bare 'info' matches nothing.
     const response = await fetchWithRetry(
-      `https://api.archives-ouvertes.fr/search/?q=*:*&fq=docType_s:ART&fq=submittedDate_tdate:[NOW-30DAY TO NOW]&fq=domain_s:(0.info OR 0.spi)&rows=25&fl=docid,title_s,abstract_s,producedDate_s,authFullName_s,uri_s,language_s&sort=submittedDate_tdate desc&wt=json`,
+      `https://api.archives-ouvertes.fr/search/?q=*:*&fq=docType_s:ART&fq=submittedDate_tdate:[NOW-30DAY TO NOW]&fq=domain_s:(0.info OR 0.spi)&rows=25&fl=docid,title_s,abstract_s,producedDate_s,submittedDate_s,authFullName_s,uri_s,language_s&sort=submittedDate_tdate desc&wt=json`,
       {
         retries: 3,
         baseDelay: 1000,
@@ -769,7 +770,12 @@ async function fetchHAL(): Promise<RawItem[]> {
         sourceUrl: doc.uri_s || `https://hal.science/${doc.docid}`,
         category: 'uncategorized',
         maturityStage: 'research',
-        publishedAt: new Date(doc.producedDate_s || Date.now()),
+        // When it appeared in HAL. producedDate_s is the publication date the
+        // author declares: often just a year or month ("2026", "2025-10") and
+        // sometimes in the future, which showed as negative ages.
+        publishedAt: doc.submittedDate_s
+          ? new Date(`${doc.submittedDate_s.replace(' ', 'T')}Z`)
+          : new Date(doc.producedDate_s || Date.now()),
         whyItMatters: `Research by ${(doc.authFullName_s || []).slice(0, 2).join(', ')} from French academic institutions.`,
         originalLanguage: detectedLang as OriginalLanguage,
         engagement: null,

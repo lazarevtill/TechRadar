@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { getTechFeed } from '@/server/functions/tech-feed'
 import { getDigest, getTrends } from '@/server/functions/digest'
+import { TOPIC_LABELS } from '@/lib/trend-topics'
 
 /**
  * Everything the Chrome extension shows, in one public read-only response.
@@ -30,7 +31,16 @@ export const Route = createFileRoute('/_api/api/extension-feed')({
           getTrends().catch((error: unknown) => ({ error: String(error) })),
         ])
         return Response.json(
-          { version: EXTENSION_FEED_VERSION, feed, digest, trends },
+          {
+            version: EXTENSION_FEED_VERSION,
+            feed,
+            digest,
+            trends,
+            // Names for the topic ids in item.signal.topics (additive field).
+            topicLabels: Object.fromEntries(
+              Object.entries(TOPIC_LABELS).map(([id, t]) => [id, t.label]),
+            ),
+          },
           {
             headers: {
               ...CORS,
