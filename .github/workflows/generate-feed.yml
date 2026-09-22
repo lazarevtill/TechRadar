@@ -27,6 +27,9 @@ jobs:
       - name: Generate digest + trends
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Required when ANTHROPIC_API_KEY is an org-level key (not workspace-scoped);
+          # an unset secret expands to empty and scripts/generate-feed/client.ts skips it.
+          ANTHROPIC_WORKSPACE_ID: ${{ secrets.ANTHROPIC_WORKSPACE_ID }}
           # Jev (TypeSafe) tags each recent post with trend topics
           TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
           # Switch models without a code change; see scripts/generate-feed/model.ts
