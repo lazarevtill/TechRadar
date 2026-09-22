@@ -1,4 +1,5 @@
 import { BACKEND_URL } from './config.js'
+import { VIEWS } from './views.js'
 
 /**
  * User settings for the new-tab page. Stored in chrome.storage.sync so they
@@ -21,6 +22,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   openLinksInNewTab: true,
   defaultSource: 'all',
   defaultCategory: 'all',
+  defaultView: 'radar',
   panels: Object.freeze(Object.fromEntries(PANELS.map((p) => [p, true]))),
 })
 
@@ -86,6 +88,7 @@ export function sanitizeSettings(raw) {
       typeof s.defaultCategory === 'string' && s.defaultCategory
         ? s.defaultCategory
         : 'all',
+    defaultView: pick(s.defaultView, VIEWS, DEFAULT_SETTINGS.defaultView),
     panels,
   }
 }

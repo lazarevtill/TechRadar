@@ -425,14 +425,169 @@ a {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--rule);
 }
+.radar-section {
+  display: flex;
+  flex-direction: column;
+}
+/* The chart fills whatever height the grid row gives the panel (the right
+   column usually sets it), instead of a fixed canvas leaving an empty band. */
+.chart-body {
+  position: relative;
+  flex: 1;
+  min-height: 460px;
+  display: flex;
+}
 .radar-container {
   position: relative;
-  padding: 0.75rem;
+  flex: 1;
+}
+.radar-container.hidden {
+  display: none;
 }
 #radar-canvas {
-  width: 100%;
-  height: 380px;
+  position: absolute;
+  inset: 0.5rem;
+  width: calc(100% - 1rem);
+  height: calc(100% - 1rem);
   display: block;
+}
+.view-switch {
+  margin-left: auto;
+}
+.html-view {
+  flex: 1;
+  overflow: auto;
+  padding: 0.75rem 1rem;
+}
+.html-view.hidden {
+  display: none;
+}
+
+/* Matrix view */
+.matrix {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3px;
+  font-size: 0.75rem;
+}
+.matrix th {
+  font-weight: 400;
+  color: var(--fg-3);
+  text-align: left;
+  padding: 0.2rem 0.4rem;
+  white-space: nowrap;
+}
+.matrix thead th {
+  text-align: center;
+}
+.matrix-cell {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-family: var(--font-mono);
+  cursor: pointer;
+}
+.matrix-cell:disabled {
+  cursor: default;
+  color: var(--fg-3);
+}
+.matrix-cell[aria-pressed='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+.matrix-cell .hl {
+  font-size: 0.65rem;
+  color: var(--accent);
+}
+
+/* Topics view */
+.tv-list {
+  display: flex;
+  flex-direction: column;
+}
+.tv-row {
+  display: grid;
+  /* Fixed outer columns: every row is its own grid, so bars only line up
+     when the label and meta columns have the same width in each row. */
+  grid-template-columns: 15rem 1fr 14rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.25rem;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.78rem;
+  text-align: left;
+  cursor: pointer;
+}
+.tv-row:hover {
+  background: var(--hover);
+}
+.tv-row[aria-pressed='true'] {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.tv-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--rule-strong);
+  overflow: hidden;
+}
+.tv-bar span {
+  display: block;
+  height: 100%;
+  background: var(--fg-2);
+}
+.tv-row.converging .tv-bar span {
+  background: var(--accent);
+}
+.tv-meta {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+
+/* Active filters + show more */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg-2);
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+.filter-chip:hover {
+  color: var(--fg);
+}
+.feed-more {
+  display: flex;
+  justify-content: center;
+  padding: 0.6rem;
+}
+.feed-more:empty {
+  display: none;
 }
 .radar-tooltip {
   position: absolute;
@@ -472,6 +627,10 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+.dot-ring {
+  background: transparent !important;
+  border: 1.5px solid var(--accent);
 }
 .dot {
   display: inline-block;
@@ -576,10 +735,6 @@ a {
 
 /* ---------- Feed ---------- */
 
-.feed-list {
-  max-height: 640px;
-  overflow-y: auto;
-}
 .feed-item {
   padding: 0.7rem 1rem;
   border-bottom: 1px solid var(--rule);

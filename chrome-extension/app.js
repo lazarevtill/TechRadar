@@ -1,4 +1,13 @@
-import { seededJitter } from './lib/jitter.js'
+import {
+  MATURITY_ORDER,
+  VIEWS,
+  hexToRgba,
+  matrixCells,
+  plottedItems,
+  radarLayout,
+  timelineLayout,
+  topicRows,
+} from './lib/views.js'
 import { CACHE_DURATION_MS } from './lib/config.js'
 import {
   DEFAULT_SETTINGS,
@@ -111,6 +120,31 @@ const translations = {
       'This extension shows data prepared by your TechRadar server. Start it (docker compose up -d) or check the address:',
     showingCached: 'Showing the last saved copy',
     offline: 'Offline',
+    all: 'All',
+    viewRadar: 'Radar',
+    viewTimeline: 'Timeline',
+    viewMatrix: 'Matrix',
+    viewTopics: 'Topics',
+    hintRadar:
+      'rings: maturity · sectors: category · size: reach · ring: highlighted',
+    hintTimeline:
+      'x: age (log scale) · y: signal · size: reach · ring: highlighted',
+    hintMatrix: 'category × maturity · click a cell to filter the feed',
+    hintTopics:
+      'tracked topics, widest spread first · click to filter the feed',
+    plottedNote: 'top {n} of {total} by signal',
+    unscoredHidden: '{n} unscored not shown',
+    noTopics: 'No tracked topics are tagged in this selection',
+    converging: 'converging',
+    justNow: 'just now',
+    showMore: 'Show {n} more',
+    clearFilters: 'Clear filters',
+    highlightedLegend: 'ring = highlighted',
+    signalsN: ['signal', 'signals'],
+    sourcesFromN: ['source', 'sources'],
+    sourcesN: ['source', 'sources'],
+    itemsN: ['item', 'items'],
+    settingsDefaultView: 'Default view',
     settings: 'Settings',
     settingsTitle: 'Settings',
     settingsServer: 'TechRadar server',
@@ -235,6 +269,32 @@ const translations = {
       'Расширение показывает данные, подготовленные вашим сервером TechRadar. Запустите его (docker compose up -d) или проверьте адрес:',
     showingCached: 'Показана последняя сохранённая копия',
     offline: 'Нет связи',
+    all: 'Все',
+    viewRadar: 'Радар',
+    viewTimeline: 'Хронология',
+    viewMatrix: 'Матрица',
+    viewTopics: 'Темы',
+    hintRadar:
+      'кольца: зрелость · секторы: категория · размер: охват · обводка: выделено',
+    hintTimeline:
+      'x: возраст (логарифм) · y: сигнал · размер: охват · обводка: выделено',
+    hintMatrix:
+      'категория × зрелость · нажмите ячейку, чтобы отфильтровать ленту',
+    hintTopics:
+      'отслеживаемые темы, сначала самые широкие · нажмите, чтобы отфильтровать',
+    plottedNote: 'топ {n} из {total} по сигналу',
+    unscoredHidden: 'без оценки не показано: {n}',
+    noTopics: 'В этой выборке нет отслеживаемых тем',
+    converging: 'совпадение',
+    justNow: 'только что',
+    showMore: 'Показать ещё {n}',
+    clearFilters: 'Сбросить фильтры',
+    highlightedLegend: 'обводка = выделено',
+    signalsN: ['сигнал', 'сигнала', 'сигналов'],
+    sourcesFromN: ['источника', 'источников', 'источников'],
+    sourcesN: ['источник', 'источника', 'источников'],
+    itemsN: ['запись', 'записи', 'записей'],
+    settingsDefaultView: 'Вид по умолчанию',
     settings: 'Настройки',
     settingsTitle: 'Настройки',
     settingsServer: 'Сервер TechRadar',
@@ -380,6 +440,11 @@ let state = {
   language: 'en',
   lastFetched: null,
   settings: sanitizeSettings(null),
+  activeView: 'radar',
+  activeMaturity: 'all',
+  activeTopic: 'all',
+  topicLabels: {},
+  feedLimit: 40,
   expandedChain: null,
   showOriginal: new Set(), // item ids showing original instead of translation
   trends: [],
@@ -417,6 +482,13 @@ const elements = {
   settingsModal: document.getElementById('settings-modal'),
   settingsForm: document.getElementById('settings-form'),
   radarLegend: document.getElementById('radar-legend'),
+  viewSwitch: document.getElementById('view-switch'),
+  viewTitle: document.getElementById('view-title'),
+  viewHint: document.getElementById('view-hint'),
+  canvasView: document.getElementById('canvas-view'),
+  htmlView: document.getElementById('html-view'),
+  activeFilters: document.getElementById('active-filters'),
+  feedMore: document.getElementById('feed-more'),
   highlights: document.getElementById('highlights'),
   evolutionChains: document.getElementById('evolution-chains'),
   chainCount: document.getElementById('chain-count'),
@@ -435,12 +507,27 @@ function t(key) {
   return translations[state.language][key] ?? translations.en[key] ?? key
 }
 
+/** Pick the plural form for `n` (English: 2 forms; Russian: 3). */
+function plural(n, key) {
+  const forms = t(key)
+  if (!Array.isArray(forms)) return String(forms)
+  if (state.language !== 'ru') return n === 1 ? forms[0] : forms[1]
+  const mod10 = n % 10
+  const mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return forms[0]
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return forms[1]
+  return forms[2]
+}
+
 function formatTimeAgo(date) {
   if (!(date instanceof Date) || isNaN(date.getTime())) return ''
   const diff = Date.now() - date
   const minutes = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
+  // A timestamp at or after "now" (e.g. an issue dated today) reads as new,
+  // never as a negative age.
+  if (minutes < 1) return t('justNow')
   if (minutes < 60) return `${minutes}${t('minutesAgo')}`
   if (hours < 24) return `${hours}${t('hoursAgo')}`
   return `${days}${t('daysAgo')}`
@@ -550,6 +637,9 @@ function applyPayload(payload) {
     state.activeCategory = 'all'
   if (!state.items.some((i) => i.source === state.activeSource))
     state.activeSource = 'all'
+  state.topicLabels = payload.topicLabels ?? {}
+  if (state.activeTopic !== 'all' && !state.topicLabels[state.activeTopic])
+    state.activeTopic = 'all'
   state.digest = panelData(payload.digest, 'items')
   state.trends = panelData(payload.trends, 'topics')
 }
@@ -698,7 +788,7 @@ function renderStats() {
   elements.statSources.textContent = s.sourceCount
   elements.statScored.textContent = `${s.scored} / ${s.totalSignals}`
   const parts = [
-    `${s.totalSignals} ${t('signals')} ${t('from')} ${s.sourceCount} ${t('sources').toLowerCase()}`,
+    `${s.totalSignals} ${plural(s.totalSignals, 'signalsN')} ${t('from')} ${s.sourceCount} ${plural(s.sourceCount, 'sourcesFromN')}`,
   ]
   if (s.judged > 0) parts.push(`${s.judged} ${t('judged')}`)
   if (s.scored < s.totalSignals) parts.push(t('unscoredNote'))
@@ -727,7 +817,7 @@ function renderSourceFilter() {
 function renderCategoryFilters() {
   const present = new Set(state.items.map((i) => i.category))
   const buttons = [
-    `<button class="chip" data-category="all" aria-pressed="${state.activeCategory === 'all'}">All</button>`,
+    `<button class="chip" data-category="all" aria-pressed="${state.activeCategory === 'all'}">${escapeHtml(t('all'))}</button>`,
   ]
   for (const [key, cfg] of Object.entries(CATEGORY_CONFIG)) {
     if (!present.has(key)) continue
@@ -738,12 +828,21 @@ function renderCategoryFilters() {
   }
   elements.categoryFilters.innerHTML = buttons.join('')
 
-  elements.radarLegend.innerHTML = Object.entries(MATURITY_CONFIG)
-    .map(
-      ([key, cfg]) =>
-        `<span class="legend-item">${dot(cfg.color)}${escapeHtml(getLocalizedMaturity(key))}</span>`,
-    )
-    .join('')
+  // Dots are coloured by category, so that is what the legend explains.
+  const canvasView =
+    state.activeView === 'radar' || state.activeView === 'timeline'
+  elements.radarLegend.innerHTML = canvasView
+    ? Object.entries(CATEGORY_CONFIG)
+        .filter(([key]) => present.has(key))
+        .map(
+          ([key, cfg]) =>
+            `<span class="legend-item">${dot(cfg.color)}${escapeHtml(getLocalizedCategory(key))}</span>`,
+        )
+        .concat(
+          `<span class="legend-item"><span class="dot dot-ring" aria-hidden="true"></span>${escapeHtml(t('highlightedLegend'))}</span>`,
+        )
+        .join('')
+    : ''
 }
 
 // Server reason ids (src/lib/signal-model.ts SignalReason) → i18n keys.
@@ -901,18 +1000,62 @@ function renderNews() {
     .join('')
 }
 
-function renderFeed() {
-  let filteredItems = [...state.items]
-  if (state.activeCategory !== 'all') {
-    filteredItems = filteredItems.filter(
-      (i) => i.category === state.activeCategory,
+/**
+ * Items matching the active filters. The chart ignores the source filter
+ * (it lives on the feed), so views and feed agree on everything else.
+ */
+function filterItems({ ignoreSource = false } = {}) {
+  return state.items.filter(
+    (i) =>
+      (state.activeCategory === 'all' || i.category === state.activeCategory) &&
+      (state.activeMaturity === 'all' ||
+        i.maturityStage === state.activeMaturity) &&
+      (state.activeTopic === 'all' ||
+        (i.signal?.topics ?? []).includes(state.activeTopic)) &&
+      (ignoreSource ||
+        state.activeSource === 'all' ||
+        i.source === state.activeSource),
+  )
+}
+
+function resetFeedLimit() {
+  state.feedLimit = state.settings.feedSize
+}
+
+function renderActiveFilters() {
+  const chips = []
+  const chip = (key, label) =>
+    chips.push(
+      `<button class="filter-chip" data-clear="${key}" title="${escapeHtml(t('clearFilters'))}">${escapeHtml(label)} ×</button>`,
     )
-  }
-  if (state.activeSource !== 'all') {
-    filteredItems = filteredItems.filter((i) => i.source === state.activeSource)
-  }
-  filteredItems = filteredItems.slice(0, state.settings.feedSize)
-  elements.feedCount.textContent = `${filteredItems.length} ${t('signals')}`
+  if (state.activeCategory !== 'all')
+    chip('category', getLocalizedCategory(state.activeCategory))
+  if (state.activeMaturity !== 'all')
+    chip('maturity', getLocalizedMaturity(state.activeMaturity))
+  if (state.activeTopic !== 'all')
+    chip('topic', state.topicLabels[state.activeTopic] ?? state.activeTopic)
+  if (state.activeSource !== 'all')
+    chip(
+      'source',
+      SOURCE_CONFIG[state.activeSource]?.label ?? state.activeSource,
+    )
+  if (chips.length > 1)
+    chips.push(
+      `<button class="filter-chip" data-clear="all">${escapeHtml(t('clearFilters'))}</button>`,
+    )
+  elements.activeFilters.innerHTML = chips.join('')
+}
+
+function renderFeed() {
+  renderActiveFilters()
+  const matching = filterItems()
+  const filteredItems = matching.slice(0, state.feedLimit)
+  elements.feedCount.textContent = `${matching.length} ${plural(matching.length, 'signalsN')}`
+  const remaining = matching.length - filteredItems.length
+  elements.feedMore.innerHTML =
+    remaining > 0
+      ? `<button class="btn" id="feed-more-btn">${escapeHtml(fmt('showMore', { n: Math.min(remaining, state.settings.feedSize) }))}</button>`
+      : ''
 
   if (filteredItems.length === 0) {
     elements.feedList.innerHTML = `<p class="empty">${escapeHtml(t('noItems'))}</p>`
@@ -998,90 +1141,105 @@ function renderInfo() {
 let radarPoints = []
 let radarHoverId = null
 
-function renderRadar() {
-  const canvas = elements.radarCanvas
-  radarPoints = []
-  const ctx = canvas.getContext('2d')
+const VIEW_KEYS = {
+  radar: ['viewRadar', 'hintRadar'],
+  timeline: ['viewTimeline', 'hintTimeline'],
+  matrix: ['viewMatrix', 'hintMatrix'],
+  topics: ['viewTopics', 'hintTopics'],
+}
+const CATEGORY_ORDER = Object.keys(CATEGORY_CONFIG)
 
+function renderViewSwitch() {
+  elements.viewSwitch.innerHTML = VIEWS.map(
+    (view) =>
+      `<button class="lang-btn" role="tab" data-view="${view}" aria-selected="${state.activeView === view}" aria-pressed="${state.activeView === view}">${escapeHtml(t(VIEW_KEYS[view][0]))}</button>`,
+  ).join('')
+  elements.viewTitle.textContent = t(VIEW_KEYS[state.activeView][0])
+}
+
+/** Draws the active view. Kept under this name: every caller re-renders the chart. */
+function renderRadar() {
+  renderViewSwitch()
+  const canvasView =
+    state.activeView === 'radar' || state.activeView === 'timeline'
+  elements.canvasView.classList.toggle('hidden', !canvasView)
+  elements.htmlView.classList.toggle('hidden', canvasView)
+  radarPoints = []
+  if (!state.settings.panels.radar) return
+
+  const items = filterItems({ ignoreSource: true })
+  const hint = [t(VIEW_KEYS[state.activeView][1])]
+  if (canvasView) {
+    const plotted = plottedItems(items)
+    if (plotted.length < items.length)
+      hint.push(fmt('plottedNote', { n: plotted.length, total: items.length }))
+    const unscored = drawCanvasView(plotted)
+    if (unscored > 0) hint.push(fmt('unscoredHidden', { n: unscored }))
+  } else if (state.activeView === 'matrix') {
+    renderMatrix(items)
+  } else {
+    renderTopics(items)
+  }
+  elements.viewHint.textContent = hint.join(' · ')
+}
+
+function setupCanvas() {
+  const canvas = elements.radarCanvas
+  const ctx = canvas.getContext('2d')
   const rect = canvas.getBoundingClientRect()
   canvas.width = rect.width * window.devicePixelRatio
   canvas.height = rect.height * window.devicePixelRatio
   ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+  ctx.clearRect(0, 0, rect.width, rect.height)
+  return { ctx, width: rect.width, height: rect.height }
+}
 
-  const width = rect.width
-  const height = rect.height
-  const centerX = width / 2
-  const centerY = height / 2
-  const maxRadius = Math.min(width, height) / 2 - 24
-  // Hidden by the user (Settings → Panels) or not laid out yet: there is no
-  // room to draw, and arc() throws on the resulting negative radii.
-  if (!state.settings.panels.radar || maxRadius <= 0) return
+const MUTED = 'rgba(255, 255, 255, 0.45)'
+const RULE = 'rgba(255, 255, 255, 0.09)'
+const MONO = '10px ui-monospace, Menlo, Consolas, monospace'
 
-  ctx.clearRect(0, 0, width, height)
-
-  // Concentric rings: maturity, most mature in the middle.
-  const rings = ['mass-market', 'early-adopter', 'prototype', 'research']
-  rings.forEach((ring, index) => {
-    const radius = maxRadius * ((index + 1) / rings.length)
-    ctx.beginPath()
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
-    ctx.lineWidth = 1
-    ctx.stroke()
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
-    ctx.font = '10px ui-monospace, Menlo, Consolas, monospace'
-    ctx.textAlign = 'center'
-    ctx.fillText(getLocalizedMaturity(ring), centerX, centerY - radius + 12)
-  })
-
-  let filteredItems = state.items
-  if (state.activeCategory !== 'all') {
-    filteredItems = filteredItems.filter(
-      (i) => i.category === state.activeCategory,
-    )
+/** Draws radar or timeline; returns how many items had no score to plot. */
+function drawCanvasView(items) {
+  const { ctx, width, height } = setupCanvas()
+  // Not laid out yet (hidden panel, zero size): nothing to draw.
+  if (width < 80 || height < 80) return 0
+  let points
+  let unscored = 0
+  if (state.activeView === 'radar') {
+    const layout = radarLayout(items, width, height, CATEGORY_ORDER)
+    if (layout.maxR <= 0) return 0
+    drawRadarFrame(ctx, layout)
+    points = layout.points
+  } else {
+    const layout = timelineLayout(items, width, height)
+    drawTimelineFrame(ctx, layout)
+    points = layout.points
+    unscored = layout.unscored
   }
 
-  // Highlighted dots drawn last so their ring is never covered.
-  const ordered = [...filteredItems].sort(
-    (a, b) => (a.signal?.reasons.length > 0) - (b.signal?.reasons.length > 0),
+  // Highlighted dots last so their ring is never covered.
+  const ordered = [...points].sort(
+    (a, b) =>
+      (a.item.signal?.reasons.length > 0) - (b.item.signal?.reasons.length > 0),
   )
-
-  ordered.forEach((item) => {
-    const index = filteredItems.indexOf(item)
-    const maturityIndex = rings.indexOf(item.maturityStage)
-    const ringRadius = maxRadius * ((maturityIndex + 1) / rings.length)
-
-    // Angle is only a stable spread: it carries no meaning.
-    const angle = (index / filteredItems.length) * Math.PI * 2 - Math.PI / 2
-    const jitter = seededJitter(item.id, index) * (ringRadius * 0.3)
-    const x = centerX + Math.cos(angle) * (ringRadius - 16 + jitter)
-    const y = centerY + Math.sin(angle) * (ringRadius - 16 + jitter)
-
-    const color = CATEGORY_CONFIG[item.category]?.color || '#8a8a90'
-    const reach = item.signal?.reach
-    const size = reach === null || reach === undefined ? 3 : 3.5 + reach * 5.5
-    const highlighted = item.signal?.reasons.length > 0
-
+  for (const p of ordered) {
+    const color = CATEGORY_CONFIG[p.item.category]?.color || '#8a8a90'
     ctx.beginPath()
-    ctx.arc(x, y, size, 0, Math.PI * 2)
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
     ctx.fillStyle = color
-    ctx.globalAlpha = reach === null || reach === undefined ? 0.55 : 0.85
+    ctx.globalAlpha = p.item.signal?.reach == null ? 0.55 : 0.85
     ctx.fill()
     ctx.globalAlpha = 1
-
-    if (highlighted) {
+    if (p.item.signal?.reasons.length > 0) {
       ctx.beginPath()
-      ctx.arc(x, y, size + 3.5, 0, Math.PI * 2)
+      ctx.arc(p.x, p.y, p.r + 3.5, 0, Math.PI * 2)
       ctx.strokeStyle = ACCENT
       ctx.lineWidth = 1.5
       ctx.stroke()
     }
+  }
+  radarPoints = points
 
-    radarPoints.push({ x, y, r: size, item })
-  })
-
-  // Hovered / keyboard-focused signal: white ring on top of everything.
   const hovered = radarPoints.find((p) => p.item.id === radarHoverId)
   if (hovered) {
     ctx.beginPath()
@@ -1092,6 +1250,139 @@ function renderRadar() {
   } else {
     radarHoverId = null
   }
+  return unscored
+}
+
+function drawRadarFrame(ctx, { cx, cy, maxR, rings, sectors }) {
+  ctx.lineWidth = 1
+  for (const ring of rings) {
+    ctx.beginPath()
+    ctx.arc(cx, cy, ring.radius, 0, Math.PI * 2)
+    ctx.strokeStyle = RULE
+    ctx.stroke()
+  }
+  // Sector boundaries and category labels just outside the outer ring.
+  for (const sector of sectors) {
+    ctx.beginPath()
+    ctx.moveTo(cx, cy)
+    ctx.lineTo(
+      cx + Math.cos(sector.start) * maxR,
+      cy + Math.sin(sector.start) * maxR,
+    )
+    ctx.strokeStyle = RULE
+    ctx.stroke()
+    const mid = (sector.start + sector.end) / 2
+    const lx = cx + Math.cos(mid) * (maxR + 14)
+    const ly = cy + Math.sin(mid) * (maxR + 14)
+    ctx.font = '11px system-ui, sans-serif'
+    ctx.fillStyle = CATEGORY_CONFIG[sector.category]?.color || MUTED
+    ctx.textAlign =
+      Math.cos(mid) > 0.2 ? 'left' : Math.cos(mid) < -0.2 ? 'right' : 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(getLocalizedCategory(sector.category), lx, ly)
+  }
+  // Ring names stacked on the vertical axis above the centre, one per band:
+  // each sits in its own band, so they never collide with each other, and a
+  // backing keeps them readable over dots.
+  ctx.font = MONO
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  let inner = 0
+  for (const ring of rings) {
+    const label = getLocalizedMaturity(ring.stage)
+    const y = cy - (inner + ring.radius) / 2
+    const w = ctx.measureText(label).width + 8
+    ctx.fillStyle = 'rgba(17, 17, 19, 0.85)'
+    ctx.fillRect(cx - w / 2, y - 7, w, 14)
+    ctx.fillStyle = MUTED
+    ctx.fillText(label, cx, y)
+    inner = ring.radius
+  }
+  ctx.textBaseline = 'alphabetic'
+}
+
+function formatAgeTick(hours) {
+  if (hours < 24) return `${hours}${t('hoursAgo').split(' ')[0]}`
+  if (hours < 24 * 7) return `${hours / 24}${t('daysAgo').split(' ')[0]}`
+  if (hours < 24 * 30) return `${Math.round(hours / 24 / 7)}w`
+  if (hours < 24 * 365) return `${Math.round(hours / 24 / 30)}mo`
+  return '1y'
+}
+
+function drawTimelineFrame(ctx, { plot, xTicks, yTicks }) {
+  ctx.lineWidth = 1
+  ctx.font = MONO
+  ctx.fillStyle = MUTED
+  ctx.textBaseline = 'middle'
+  ctx.textAlign = 'right'
+  for (const tick of yTicks) {
+    ctx.beginPath()
+    ctx.moveTo(plot.left, tick.y)
+    ctx.lineTo(plot.left + plot.width, tick.y)
+    ctx.strokeStyle = RULE
+    ctx.stroke()
+    ctx.fillText(tick.value.toFixed(2), plot.left - 6, tick.y)
+  }
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'top'
+  for (const tick of xTicks) {
+    ctx.beginPath()
+    ctx.moveTo(tick.x, plot.top)
+    ctx.lineTo(tick.x, plot.top + plot.height)
+    ctx.strokeStyle = RULE
+    ctx.stroke()
+    ctx.fillText(formatAgeTick(tick.hours), tick.x, plot.top + plot.height + 6)
+  }
+  ctx.textBaseline = 'alphabetic'
+}
+
+function renderMatrix(items) {
+  const { rows, max } = matrixCells(items, CATEGORY_ORDER)
+  if (rows.length === 0) {
+    elements.htmlView.innerHTML = `<p class="empty">${escapeHtml(t('noItems'))}</p>`
+    return
+  }
+  const head = MATURITY_ORDER.map(
+    (stage) =>
+      `<th scope="col">${escapeHtml(getLocalizedMaturity(stage))}</th>`,
+  ).join('')
+  const body = rows
+    .map((row) => {
+      const color = CATEGORY_CONFIG[row.category]?.color || '#8a8a90'
+      const cells = row.cells
+        .map((cell) => {
+          const active =
+            state.activeCategory === row.category &&
+            state.activeMaturity === cell.stage
+          // Tint grows with count; category colour keeps rows distinguishable.
+          const alpha = cell.count ? 0.08 + 0.42 * (cell.count / max) : 0
+          const bg = cell.count ? `background:${hexToRgba(color, alpha)}` : ''
+          return `<td><button class="matrix-cell" data-category="${row.category}" data-stage="${cell.stage}" aria-pressed="${active}" ${cell.count ? '' : 'disabled'} style="${bg}"><span>${cell.count || '·'}</span>${cell.highlighted ? `<span class="hl">★ ${cell.highlighted}</span>` : ''}</button></td>`
+        })
+        .join('')
+      return `<tr><th scope="row">${dot(color)} ${escapeHtml(getLocalizedCategory(row.category))}</th>${cells}</tr>`
+    })
+    .join('')
+  elements.htmlView.innerHTML = `<table class="matrix"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table>`
+}
+
+function renderTopics(items) {
+  const rows = topicRows(items, state.topicLabels)
+  if (rows.length === 0) {
+    elements.htmlView.innerHTML = `<p class="empty">${escapeHtml(t('noTopics'))}</p>`
+    return
+  }
+  const maxItems = Math.max(...rows.map((r) => r.items))
+  elements.htmlView.innerHTML = `<div class="tv-list">${rows
+    .map((r) => {
+      const converging = r.sources >= 4
+      return `<button class="tv-row${converging ? ' converging' : ''}" data-topic="${escapeHtml(r.topic)}" aria-pressed="${state.activeTopic === r.topic}">
+        <span>${escapeHtml(r.label)}</span>
+        <span class="tv-bar"><span style="width:${Math.round((r.items / maxItems) * 100)}%"></span></span>
+        <span class="tv-meta">${r.sources} ${escapeHtml(plural(r.sources, 'sourcesN'))} · ${r.items} ${escapeHtml(plural(r.items, 'itemsN'))}${converging ? ` · ${escapeHtml(t('converging'))}` : ''}</span>
+      </button>`
+    })
+    .join('')}</div>`
 }
 
 /** Nearest dot under (x, y) in canvas CSS pixels, with a few px of slack. */
@@ -1290,17 +1581,71 @@ function setupEventListeners() {
   elements.langEn.addEventListener('click', () => setLanguage('en'))
   elements.langRu.addEventListener('click', () => setLanguage('ru'))
 
+  const refilter = () => {
+    resetFeedLimit()
+    renderCategoryFilters()
+    renderFeed()
+    renderRadar()
+  }
   elements.categoryFilters.addEventListener('click', (e) => {
     const btn = e.target.closest('.chip')
     if (!btn) return
     state.activeCategory = btn.dataset.category
-    renderCategoryFilters()
-    renderFeed()
-    renderRadar()
+    refilter()
   })
 
   elements.sourceFilter.addEventListener('change', (e) => {
     state.activeSource = e.target.value
+    resetFeedLimit()
+    renderFeed()
+  })
+
+  elements.viewSwitch.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-view]')
+    if (!btn || btn.dataset.view === state.activeView) return
+    state.activeView = btn.dataset.view
+    setRadarHover(null)
+    renderCategoryFilters()
+    renderRadar()
+  })
+
+  // Matrix cell: filter by category + maturity (click again to clear).
+  // Topic row: filter by topic (click again to clear).
+  elements.htmlView.addEventListener('click', (e) => {
+    const cell = e.target.closest('.matrix-cell')
+    if (cell && !cell.disabled) {
+      const same =
+        state.activeCategory === cell.dataset.category &&
+        state.activeMaturity === cell.dataset.stage
+      state.activeCategory = same ? 'all' : cell.dataset.category
+      state.activeMaturity = same ? 'all' : cell.dataset.stage
+      refilter()
+      return
+    }
+    const row = e.target.closest('.tv-row')
+    if (row) {
+      state.activeTopic =
+        state.activeTopic === row.dataset.topic ? 'all' : row.dataset.topic
+      refilter()
+    }
+  })
+
+  elements.activeFilters.addEventListener('click', (e) => {
+    const key = e.target.closest('[data-clear]')?.dataset.clear
+    if (!key) return
+    if (key === 'category' || key === 'all') state.activeCategory = 'all'
+    if (key === 'maturity' || key === 'all') state.activeMaturity = 'all'
+    if (key === 'topic' || key === 'all') state.activeTopic = 'all'
+    if (key === 'source' || key === 'all') {
+      state.activeSource = 'all'
+      elements.sourceFilter.value = 'all'
+    }
+    refilter()
+  })
+
+  elements.feedMore.addEventListener('click', (e) => {
+    if (!e.target.closest('#feed-more-btn')) return
+    state.feedLimit += state.settings.feedSize
     renderFeed()
   })
 
@@ -1441,6 +1786,10 @@ function fillSettingsForm(settings) {
     ...FEED_SIZE_CHOICES.map((n) => option(n, String(n))),
   )
   $('set-feed-size').value = String(settings.feedSize)
+  $('set-default-view').replaceChildren(
+    ...VIEWS.map((v) => option(v, t(VIEW_KEYS[v][0]))),
+  )
+  $('set-default-view').value = settings.defaultView
   $('set-default-source').replaceChildren(
     option('all', t('allSources')),
     ...Object.entries(SOURCE_CONFIG).map(([k, cfg]) => option(k, cfg.label)),
@@ -1488,6 +1837,7 @@ function readSettingsForm() {
     openLinksInNewTab: $('set-new-tab').checked,
     defaultSource: $('set-default-source').value,
     defaultCategory: $('set-default-category').value,
+    defaultView: $('set-default-view').value,
     panels: Object.fromEntries(
       [...$('set-panels').querySelectorAll('input')].map((b) => [
         b.name,
@@ -1561,6 +1911,8 @@ async function submitSettings(e) {
   if (!state.items.some((i) => i.source === state.activeSource))
     state.activeSource = state.settings.defaultSource
   scheduleRefresh()
+  state.activeView = state.settings.defaultView
+  resetFeedLimit()
   setStatus($('set-form-status'), t('settingsSaved'), 'ok')
   closeSettings()
   if (serverChanged) {
@@ -1632,6 +1984,8 @@ async function init() {
   state.settings = await loadSettings()
   state.activeSource = state.settings.defaultSource
   state.activeCategory = state.settings.defaultCategory
+  state.activeView = state.settings.defaultView
+  resetFeedLimit()
   loadCjkFonts()
   await loadLanguagePreference()
   // Caches from versions that fetched sources in the browser.
