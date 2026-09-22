@@ -68,7 +68,136 @@ export const TOPIC_LABELS: Record<string, TrendTopic> = {
     definition:
       'Protein structure prediction and protein design, such as AlphaFold or designing new proteins with AI',
   },
+  'ai-chips': {
+    label: 'AI Chips',
+    category: 'ai',
+    stage: 'early-adopter',
+    definition:
+      'Hardware built to train or run AI models: GPUs, TPUs, NPUs, inference accelerators, AI data-center chips',
+  },
+  'small-models': {
+    label: 'Small & Efficient Models',
+    category: 'ai',
+    stage: 'early-adopter',
+    definition:
+      'Making AI models smaller or cheaper to run: on-device models, quantization, distillation, sparse or low-bit models',
+  },
+  multimodal: {
+    label: 'Multimodal Models',
+    category: 'ai',
+    stage: 'early-adopter',
+    definition:
+      'AI models that combine vision, audio or video with language: vision-language models, speech models, video understanding',
+  },
+  'generative-media': {
+    label: 'Generative Media',
+    category: 'ai',
+    stage: 'early-adopter',
+    definition:
+      'AI that generates images, video, 3D or music: diffusion models, text-to-image, text-to-video, world models',
+  },
+  'ai-safety': {
+    label: 'AI Safety & Interpretability',
+    category: 'ai',
+    stage: 'research',
+    definition:
+      'Making AI systems safe or understandable: alignment, safety evaluations, red-teaming, jailbreaks, interpretability of model internals',
+  },
+  'ai-coding': {
+    label: 'AI for Coding',
+    category: 'ai',
+    stage: 'early-adopter',
+    definition:
+      'AI that writes, reviews or fixes software: coding assistants, code-generation models, AI software-engineering agents',
+  },
+  'robot-learning': {
+    label: 'Robot Learning',
+    category: 'robotics',
+    stage: 'prototype',
+    definition:
+      'Robots that learn behaviour from data: robot foundation models, vision-language-action models, learned manipulation or locomotion',
+  },
+  'autonomous-vehicles': {
+    label: 'Autonomous Vehicles & Drones',
+    category: 'robotics',
+    stage: 'early-adopter',
+    definition:
+      'Vehicles that drive or fly themselves: self-driving cars, robotaxis, autonomous drones',
+  },
+  'gene-editing': {
+    label: 'Gene Editing',
+    category: 'biotech',
+    stage: 'prototype',
+    definition:
+      'Editing or replacing genes: CRISPR, base or prime editing, gene therapy',
+  },
+  'ai-drug-discovery': {
+    label: 'AI Drug Discovery',
+    category: 'biotech',
+    stage: 'prototype',
+    definition:
+      'Using computation or AI to discover or design drugs: molecule generation, virtual screening, AI-designed therapeutics',
+  },
+  batteries: {
+    label: 'Batteries & Storage',
+    category: 'energy',
+    stage: 'early-adopter',
+    definition:
+      'Storing energy: battery chemistry (solid-state, sodium-ion, lithium), battery manufacturing, grid-scale storage',
+  },
+  'clean-power': {
+    label: 'Clean Power & Grid',
+    category: 'energy',
+    stage: 'early-adopter',
+    definition:
+      'Generating or moving low-carbon electricity: solar, wind, geothermal, advanced fission, power grids and transmission',
+  },
+  satellites: {
+    label: 'Satellites & Launch',
+    category: 'space',
+    stage: 'early-adopter',
+    definition:
+      'Getting to and operating in orbit: rockets and launch vehicles, satellite constellations, satellite internet, Earth observation',
+  },
+  'supply-chain-security': {
+    label: 'Software Supply-Chain Security',
+    category: 'cybersecurity',
+    stage: 'early-adopter',
+    definition:
+      'Attacks on or defences of software dependencies and build pipelines: malicious packages, compromised libraries, code signing, SBOMs',
+  },
+  'exploited-vulnerabilities': {
+    label: 'Exploited Vulnerabilities',
+    category: 'cybersecurity',
+    stage: 'mass-market',
+    definition:
+      'Security flaws being exploited in the wild: zero-days, ransomware campaigns, actively exploited CVEs and breaches',
+  },
+  'onchain-finance': {
+    label: 'On-chain Finance',
+    category: 'web3',
+    stage: 'early-adopter',
+    definition:
+      'Financial systems built on blockchains: stablecoins, DeFi protocols, tokenized assets, on-chain payments',
+  },
 }
+
+/**
+ * Changes whenever the topic set does. Caches of per-item topic judgments
+ * key on it, so adding or editing a topic re-judges items instead of serving
+ * verdicts that never saw the new question.
+ */
+export const TOPIC_FINGERPRINT = (() => {
+  const text = JSON.stringify(
+    Object.entries(TOPIC_LABELS).map(([id, t]) => [id, t.definition]),
+  )
+  let h = 2166136261
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return (h >>> 0).toString(36)
+})()
 
 export function topicQuestion(
   topic: TrendTopic,

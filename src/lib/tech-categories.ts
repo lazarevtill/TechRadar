@@ -26,6 +26,10 @@ export type DataSource =
   | 'pubmed' // Biomedical research
   | 'hal' // French research archive
   | 'openalex-zh' // Chinese-language journal research (OpenAlex)
+  | 'hf-papers' // Hugging Face Daily Papers
+  | 'hf-models' // Models trending on the Hugging Face Hub
+  | 'biorxiv' // bioRxiv and medRxiv preprints
+  | 'lobsters' // Lobsters front page
   | 'cinii' // Japanese research
 
 export type OriginalLanguage =
@@ -134,5 +138,9 @@ export const SOURCE_CONFIG: Record<
   pubmed: { label: 'PubMed', language: 'en' },
   hal: { label: 'HAL (France)', language: 'fr' },
   'openalex-zh': { label: 'OpenAlex (China)', language: 'zh' },
+  'hf-papers': { label: 'HF Papers', language: 'en' },
+  'hf-models': { label: 'HF Models', language: 'en' },
+  biorxiv: { label: 'bioRxiv / medRxiv', language: 'en' },
+  lobsters: { label: 'Lobsters', language: 'en' },
   cinii: { label: 'CiNii (Japan)', language: 'ja' },
 }

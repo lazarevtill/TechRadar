@@ -31,7 +31,8 @@ import type { DataSource } from './tech-categories'
 export type SignalReason =
   'fast-rising' | 'converging' | 'novel' | 'under-the-radar'
 
-export type EngagementUnit = 'stars' | 'points' | 'citations'
+export type EngagementUnit =
+  'stars' | 'points' | 'citations' | 'upvotes' | 'likes'
 
 export interface SignalMetrics {
   /** Raw attention count the source reports, if any. */
@@ -87,6 +88,10 @@ export const RECENCY_HALF_LIFE_DAYS: Record<DataSource, number> = {
   pubmed: 30,
   hal: 30,
   cinii: 30,
+  'hf-papers': 3,
+  'hf-models': 7,
+  biorxiv: 14,
+  lobsters: 1,
 }
 
 export const SIGNAL_WEIGHTS = {
@@ -98,8 +103,11 @@ export const SIGNAL_WEIGHTS = {
   recency: 0.1,
 } as const
 
-/** Distinct sources on one topic needed to call it converging. */
-export const CONVERGENCE_MIN_SOURCES = 3
+/**
+ * Distinct sources on one topic needed to call it converging. With twelve
+ * sources, popular topics reach three almost every fetch, so four is the bar.
+ */
+export const CONVERGENCE_MIN_SOURCES = 4
 /** P(novel) at or above which an item is called novel. */
 export const NOVELTY_THRESHOLD = 0.5
 /** Reach below which a novel item is "under the radar" rather than "novel". */
@@ -257,8 +265,6 @@ export function computeSignals(
         velocityZ[m] >= FAST_RISING_Z
       )
         reasons.push('fast-rising')
-      if (convergentSources >= CONVERGENCE_MIN_SOURCES)
-        reasons.push('converging')
       if (novelty !== null && novelty >= NOVELTY_THRESHOLD)
         reasons.push(
           reach === null || reach < UNDER_RADAR_REACH
@@ -289,6 +295,25 @@ export function computeSignals(
         reasons,
       })
     }
+  }
+
+  // "Converging" marks a topic, not every item on it: once a topic spans
+  // enough sources, only its highest-scoring item carries the reason, so a
+  // popular topic yields one highlight instead of dozens.
+  const bestByTopic = new Map<string, string>()
+  for (const input of inputs) {
+    const score = out.get(input.id)!.score ?? -1
+    for (const topic of input.judgment?.topics ?? []) {
+      if ((sourcesByTopic.get(topic)?.size ?? 0) < CONVERGENCE_MIN_SOURCES)
+        continue
+      const current = bestByTopic.get(topic)
+      if (!current || score > (out.get(current)!.score ?? -1))
+        bestByTopic.set(topic, input.id)
+    }
+  }
+  for (const id of new Set(bestByTopic.values())) {
+    const reasons = out.get(id)!.reasons
+    if (!reasons.includes('converging')) reasons.unshift('converging')
   }
   return out
 }

@@ -51,6 +51,10 @@ export const SOURCE_ICON = {
   hal: 'file',
   cinii: 'file',
   'openalex-zh': 'file',
+  'hf-papers': 'file',
+  'hf-models': 'bot',
+  biorxiv: 'dna',
+  lobsters: 'message',
 }
 
 /** SVG markup for a named icon. Unknown names render nothing. */

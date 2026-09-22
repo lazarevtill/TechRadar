@@ -152,28 +152,62 @@ describe('computeSignals', () => {
   })
 
   it('counts convergence across distinct sources on one topic', () => {
-    const tagged = (topics: string[]) => ({
-      novelty: 0.1,
+    const tagged = (topics: string[], novelty = 0.1) => ({
+      novelty,
       substance: 0.9,
       topics,
     })
     const signals = computeSignals(
       [
         item('arxiv-a', 'arxiv', null, 1, tagged(['fusion'])),
-        item('gh-a', 'github', 10, 1, tagged(['fusion'])),
+        item('gh-a', 'github', 10, 1, tagged(['fusion'], 0.9)),
         item('hn-a', 'hackernews', 10, 1, tagged(['fusion', 'rag'])),
         item('hn-b', 'hackernews', 10, 1, tagged(['fusion'])),
+        item('hfp-a', 'hf-papers', 10, 1, tagged(['fusion'])),
         item('oa-a', 'openalex', 0, 10, tagged(['rag'])),
       ],
       NOW,
     )
-    expect(signals.get('arxiv-a')!.convergentSources).toBe(3)
-    expect(signals.get('arxiv-a')!.reasons).toContain('converging')
+    expect(signals.get('arxiv-a')!.convergentSources).toBe(4)
     // Two HN items on the same topic are still one source.
-    expect(signals.get('hn-b')!.convergentSources).toBe(3)
+    expect(signals.get('hn-b')!.convergentSources).toBe(4)
     // rag is on two sources only.
     expect(signals.get('oa-a')!.convergentSources).toBe(2)
     expect(signals.get('oa-a')!.reasons).not.toContain('converging')
+  })
+
+  it('marks only the strongest item of a converging topic', () => {
+    const tagged = (novelty: number) => ({
+      novelty,
+      substance: 0.9,
+      topics: ['fusion'],
+    })
+    const signals = computeSignals(
+      [
+        item('arxiv-a', 'arxiv', null, 1, tagged(0.1)),
+        item('gh-a', 'github', 10, 1, tagged(0.9)),
+        item('hn-a', 'hackernews', 10, 1, tagged(0.1)),
+        item('hfp-a', 'hf-papers', 10, 1, tagged(0.1)),
+      ],
+      NOW,
+    )
+    const converging = [...signals.entries()]
+      .filter(([, s]) => s.reasons.includes('converging'))
+      .map(([id]) => id)
+    expect(converging).toEqual(['gh-a'])
+
+    // Three sources are not enough.
+    const three = computeSignals(
+      [
+        item('arxiv-a', 'arxiv', null, 1, tagged(0.1)),
+        item('gh-a', 'github', 10, 1, tagged(0.9)),
+        item('hn-a', 'hackernews', 10, 1, tagged(0.1)),
+      ],
+      NOW,
+    )
+    expect(
+      [...three.values()].some((s) => s.reasons.includes('converging')),
+    ).toBe(false)
   })
 
   it('separates novel from under-the-radar by reach', () => {

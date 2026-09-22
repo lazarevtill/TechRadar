@@ -1,6 +1,10 @@
 import { TypeSafeClient, noul, score } from '@typesafe-ai/sdk'
 import { getCached, setCache, CACHE_TTL } from '@/server/utils/cache'
-import { TOPIC_LABELS, topicQuestion } from '@/lib/trend-topics'
+import {
+  TOPIC_FINGERPRINT,
+  TOPIC_LABELS,
+  topicQuestion,
+} from '@/lib/trend-topics'
 import type { SignalJudgment } from '@/lib/signal-model'
 
 /**
@@ -71,7 +75,8 @@ export function buildSignalRequest(input: SignalJudgeInput) {
   }
 }
 
-const CACHE_PREFIX = 'jev:signal:'
+// The topic fingerprint invalidates judgments made against an older topic set.
+const CACHE_PREFIX = `jev:signal:${TOPIC_FINGERPRINT}:`
 const JUDGMENT_TTL_MS = 24 * CACHE_TTL.HOUR
 
 let client: TypeSafeClient | null | undefined

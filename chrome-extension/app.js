@@ -62,6 +62,10 @@ const SOURCE_CONFIG = {
   hal: { label: 'HAL (France)' },
   cinii: { label: 'CiNii (Japan)' },
   'openalex-zh': { label: 'OpenAlex (China)' },
+  'hf-papers': { label: 'HF Papers' },
+  'hf-models': { label: 'HF Models' },
+  biorxiv: { label: 'bioRxiv / medRxiv' },
+  lobsters: { label: 'Lobsters' },
 }
 
 const ACCENT = '#e0a458'
@@ -75,7 +79,7 @@ const translations = {
     loading: 'Loading…',
     appTitle: 'Tech Evolution Radar',
     appSubtitle:
-      'Eight research and engineering sources, via your TechRadar server',
+      'Twelve research and engineering sources, via your TechRadar server',
     howItWorks: 'How it works',
     totalSignals: 'Signals',
     highlighted: 'Highlighted',
@@ -149,9 +153,11 @@ const translations = {
     noSavedData: 'nothing saved yet',
     retrying: 'Retrying…',
     citations: 'citations',
+    upvotes: 'upvotes',
+    likes: 'likes',
     reasonConverging: 'Converging',
     reasonConvergingDesc:
-      'The same tracked topic appears on three or more sources in this fetch',
+      'The strongest item of a tracked topic that appears on four or more sources in this fetch',
     reasonNovel: 'New capability',
     reasonNovelDesc:
       'Jev judges it likely to describe a capability not available before',
@@ -177,7 +183,7 @@ const translations = {
     trendsEmpty: 'Topic momentum will appear once the daily digest has data',
     infoSources: 'Sources',
     infoSourcesText:
-      'GitHub, arXiv, Hacker News, OpenAlex, PubMed, HAL, CiNii and Chinese-language OpenAlex research, fetched by your TechRadar server. This page only talks to that server and keeps the last copy for five minutes, so a new tab paints instantly.',
+      'GitHub, arXiv, Hacker News, Lobsters, Hugging Face papers and models, bioRxiv and medRxiv, OpenAlex, PubMed, HAL, CiNii and Chinese-language OpenAlex research, fetched by your TechRadar server. This page only talks to that server and keeps the last copy for five minutes, so a new tab paints instantly.',
     infoScoring: 'Signal score',
     infoScoringText:
       'Every item is placed among its own source’s peers: reach (percentile of its attention metric), velocity (engagement per day of age) and recency, combined with Jev’s novelty and substance judgments. Items with nothing measurable are shown but not scored.',
@@ -197,7 +203,7 @@ const translations = {
     loading: 'Загрузка…',
     appTitle: 'Радар эволюции технологий',
     appSubtitle:
-      'Восемь источников исследований и разработок через ваш сервер TechRadar',
+      'Двенадцать источников исследований и разработок через ваш сервер TechRadar',
     howItWorks: 'Как это работает',
     totalSignals: 'Сигналы',
     highlighted: 'Выделено',
@@ -272,9 +278,11 @@ const translations = {
     noSavedData: 'сохранённых данных пока нет',
     retrying: 'Повтор…',
     citations: 'цитирований',
+    upvotes: 'голосов',
+    likes: 'лайков',
     reasonConverging: 'Совпадение тем',
     reasonConvergingDesc:
-      'Одна и та же отслеживаемая тема встречается в трёх и более источниках',
+      'Самая сильная запись по отслеживаемой теме, которая встречается в четырёх и более источниках',
     reasonNovel: 'Новая возможность',
     reasonNovelDesc:
       'По оценке Jev, вероятно описывает возможность, которой раньше не было',
@@ -300,7 +308,7 @@ const translations = {
     trendsEmpty: 'Импульс тем появится, когда в дайджесте накопятся данные',
     infoSources: 'Источники',
     infoSourcesText:
-      'GitHub, arXiv, Hacker News, OpenAlex, PubMed, HAL, CiNii и китаеязычные исследования OpenAlex — их собирает ваш сервер TechRadar. Страница обращается только к нему и хранит последнюю копию пять минут, поэтому новая вкладка открывается мгновенно.',
+      'GitHub, arXiv, Hacker News, Lobsters, статьи и модели Hugging Face, bioRxiv и medRxiv, OpenAlex, PubMed, HAL, CiNii и китаеязычные исследования OpenAlex — их собирает ваш сервер TechRadar. Страница обращается только к нему и хранит последнюю копию пять минут, поэтому новая вкладка открывается мгновенно.',
     infoScoring: 'Оценка сигнала',
     infoScoringText:
       'Каждая запись сравнивается с соседями по своему источнику: охват (перцентиль метрики внимания), скорость (вовлечённость в день возраста) и свежесть, вместе с оценками новизны и содержательности от Jev. Записи, для которых нечего измерить, показываются без оценки.',
