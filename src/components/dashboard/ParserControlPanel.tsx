@@ -1,35 +1,13 @@
 /**
  * Parser Control Panel
  *
- * Панель управления парсером с метриками:
- * - Кнопка ручного запуска
- * - Время последнего запуска
- * - Количество собранных элементов
- * - Количество проанализированных элементов
- * - Детальные метрики по каждому источнику
+ * Operator tooling: run a full re-fetch, force a refresh, clear the server
+ * cache, and see per-source counts from the current fetch.
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { m, AnimatePresence } from 'motion/react'
-import {
-  Play,
-  Loader2,
-  Clock,
-  Database,
-  BarChart3,
-  CheckCircle2,
-  XCircle,
-  RefreshCw,
-  Trash2,
-  Zap,
-  Server,
-  ChevronDown,
-  ChevronUp,
-  Globe,
-  TrendingUp,
-  AlertTriangle,
-} from 'lucide-react'
-import { useLanguage } from '@/lib/i18n'
+import { useState, useCallback, useMemo } from 'react'
+import { Play, RefreshCw, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import { useLanguage, getLocalizedSources } from '@/lib/i18n'
 import { useTechFeed } from '@/hooks/use-tech-feed'
 import { invalidateTechFeedCacheFn } from '@/server/functions/tech-feed'
 import { SOURCE_CONFIG, type DataSource } from '@/lib/tech-categories'
@@ -37,591 +15,206 @@ import { SOURCE_CONFIG, type DataSource } from '@/lib/tech-categories'
 interface SourceMetrics {
   source: DataSource
   count: number
-  anomalies: number
-  avgImpact: number
-  highImpact: number
+  highlighted: number
+  judged: number
   lastItem: Date | null
 }
 
-interface ParserMetrics {
-  lastRunAt: Date | null
-  itemsCollected: number
-  itemsAnalyzed: number
-  sourcesProcessed: number
-  status: 'idle' | 'running' | 'completed' | 'failed'
-  duration: number | null
-  sourceMetrics: SourceMetrics[]
-}
+type RunStatus = 'idle' | 'running' | 'completed' | 'failed'
 
 export function ParserControlPanel() {
   const { t, language } = useLanguage()
-  const { items, stats, isLoading, forceRefresh, fetchedAt } = useTechFeed()
+  const localizedSources = getLocalizedSources(language)
+  const { items, stats, isFetching, forceRefresh, fetchedAt } = useTechFeed()
 
-  const [metrics, setMetrics] = useState<ParserMetrics>({
-    lastRunAt: null,
-    itemsCollected: 0,
-    itemsAnalyzed: 0,
-    sourcesProcessed: 0,
-    status: 'idle',
-    duration: null,
-    sourceMetrics: [],
-  })
-
-  const [isRunning, setIsRunning] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
+  const [status, setStatus] = useState<RunStatus>('idle')
+  const [duration, setDuration] = useState<number | null>(null)
+  const [lastRunAt, setLastRunAt] = useState<Date | null>(null)
   const [showSourceDetails, setShowSourceDetails] = useState(false)
 
-  // Calculate source-specific metrics
   const sourceMetrics = useMemo((): SourceMetrics[] => {
-    if (!items.length) return []
-
-    const sourceMap = new Map<DataSource, SourceMetrics>()
-
-    // Initialize all sources
-    const allSources: DataSource[] = [
-      'github',
-      'arxiv',
-      'hackernews',
-      'openalex',
-      'pubmed',
-      'hal',
-      'openalex-zh',
-      'cinii',
-    ]
-
-    allSources.forEach((source) => {
-      sourceMap.set(source, {
+    const bySource = new Map<DataSource, SourceMetrics>()
+    for (const source of Object.keys(SOURCE_CONFIG) as DataSource[]) {
+      if (source === 'techcrunch') continue
+      bySource.set(source, {
         source,
         count: 0,
-        anomalies: 0,
-        avgImpact: 0,
-        highImpact: 0,
+        highlighted: 0,
+        judged: 0,
         lastItem: null,
       })
-    })
-
-    // Calculate metrics for each source
-    items.forEach((item) => {
-      const existing = sourceMap.get(item.source)
-      if (existing) {
-        existing.count++
-        if (item.isAnomaly) existing.anomalies++
-        if (item.impactScore >= 7) existing.highImpact++
-        existing.avgImpact += item.impactScore
-
-        const itemDate = item.publishedAt
-        if (!existing.lastItem || itemDate > existing.lastItem) {
-          existing.lastItem = itemDate
-        }
-      }
-    })
-
-    // Calculate averages and filter out empty sources
-    return Array.from(sourceMap.values())
-      .map((m) => ({
-        ...m,
-        avgImpact:
-          m.count > 0 ? Math.round((m.avgImpact / m.count) * 10) / 10 : 0,
-      }))
-      .sort((a, b) => b.count - a.count)
+    }
+    for (const item of items) {
+      const m = bySource.get(item.source)
+      if (!m) continue
+      m.count++
+      if (item.signal.reasons.length > 0) m.highlighted++
+      if (item.signal.novelty !== null) m.judged++
+      if (!m.lastItem || item.publishedAt > m.lastItem)
+        m.lastItem = item.publishedAt
+    }
+    return [...bySource.values()].sort((a, b) => b.count - a.count)
   }, [items])
 
-  // Update metrics when data changes
-  useEffect(() => {
-    if (fetchedAt && items.length > 0) {
-      const sources = new Set(items.map((item) => item.source))
-      const anomalies = items.filter((item) => item.isAnomaly)
-
-      setMetrics((prev) => ({
-        ...prev,
-        lastRunAt: fetchedAt,
-        itemsCollected: items.length,
-        itemsAnalyzed:
-          anomalies.length + items.filter((i) => i.impactScore >= 7).length,
-        sourcesProcessed: sources.size,
-        status: prev.status === 'running' ? 'completed' : prev.status,
-        sourceMetrics,
-      }))
-    }
-  }, [fetchedAt, items, sourceMetrics])
-
-  // Format time ago
   const formatTimeAgo = useCallback(
     (date: Date | null): string => {
       if (!date) return t.neverRun
-
-      const now = new Date()
-      const diffMs = now.getTime() - date.getTime()
-      const diffMins = Math.floor(diffMs / 60000)
-      const diffHours = Math.floor(diffMs / 3600000)
-
+      const diffMins = Math.floor((Date.now() - date.getTime()) / 60000)
+      const diffHours = Math.floor(diffMins / 60)
       if (diffMins < 1) return t.justNow
       if (diffMins < 60) return `${diffMins} ${t.minutesAgo}`
       if (diffHours < 24) return `${diffHours} ${t.hoursAgo}`
-
       return date.toLocaleDateString()
     },
     [t],
   )
 
-  // Run parser manually
   const handleRunParser = async () => {
-    setIsRunning(true)
-    setMetrics((prev) => ({ ...prev, status: 'running' }))
-
+    setStatus('running')
     const startTime = Date.now()
-
     try {
-      // Invalidate cache and force refresh
-      await invalidateTechFeedCacheFn()
       await forceRefresh()
-
-      const duration = Date.now() - startTime
-
-      setMetrics((prev) => ({
-        ...prev,
-        status: 'completed',
-        duration,
-        lastRunAt: new Date(),
-      }))
-
-      setShowSuccess(true)
-      setTimeout(() => setShowSuccess(false), 3000)
+      setDuration(Date.now() - startTime)
+      setLastRunAt(new Date())
+      setStatus('completed')
     } catch (error) {
       console.error('Parser run failed:', error)
-      setMetrics((prev) => ({ ...prev, status: 'failed' }))
-    } finally {
-      setIsRunning(false)
+      setStatus('failed')
     }
   }
 
-  // Clear cache
   const handleClearCache = async () => {
     try {
       await invalidateTechFeedCacheFn()
-      setMetrics((prev) => ({
-        ...prev,
-        status: 'idle',
-        itemsCollected: 0,
-        itemsAnalyzed: 0,
-        sourceMetrics: [],
-      }))
+      setStatus('idle')
     } catch (error) {
       console.error('Failed to clear cache:', error)
     }
   }
 
-  const getStatusColor = (status: ParserMetrics['status']) => {
-    switch (status) {
-      case 'running':
-        return 'text-cyan-400'
-      case 'completed':
-        return 'text-emerald-400'
-      case 'failed':
-        return 'text-red-400'
-      default:
-        return 'text-white/50'
-    }
+  const statusText: Record<RunStatus, string> = {
+    idle: t.idle,
+    running: t.running,
+    completed: t.completed,
+    failed: t.failed,
   }
 
-  const getStatusIcon = (status: ParserMetrics['status']) => {
-    switch (status) {
-      case 'running':
-        return <Loader2 className="w-4 h-4 animate-spin" />
-      case 'completed':
-        return <CheckCircle2 className="w-4 h-4" />
-      case 'failed':
-        return <XCircle className="w-4 h-4" />
-      default:
-        return <Clock className="w-4 h-4" />
-    }
-  }
-
-  const getStatusText = (status: ParserMetrics['status']) => {
-    switch (status) {
-      case 'running':
-        return t.running
-      case 'completed':
-        return t.completed
-      case 'failed':
-        return t.failed
-      default:
-        return t.idle
-    }
-  }
-
-  // Get source label based on language
-  const getSourceLabel = (source: DataSource): string => {
-    const config = SOURCE_CONFIG[source]
-    return config?.label || source
-  }
+  const figures = [
+    {
+      label: t.lastRun,
+      value: formatTimeAgo(lastRunAt ?? fetchedAt),
+      hint: duration ? `${(duration / 1000).toFixed(1)}s` : undefined,
+    },
+    { label: t.itemsCollected, value: String(stats.totalSignals) },
+    { label: t.highlighted, value: String(stats.highlighted) },
+    { label: t.sources, value: String(stats.sourceCount) },
+  ]
 
   return (
-    <m.div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 backdrop-blur-xl">
-      {/* Background decoration */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-fuchsia-500/10 rounded-full blur-3xl" />
-      </div>
-
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-fuchsia-500 flex items-center justify-center">
-            <Server className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h3 className="font-semibold text-white">{t.parserControl}</h3>
-            <p className="text-xs text-white/60">{t.parserMetrics}</p>
-          </div>
-        </div>
-
-        {/* Status badge */}
-        <div
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 ${getStatusColor(metrics.status)}`}
+    <div className="panel">
+      <div className="panel-head">
+        <h2 className="panel-title">{t.parserControl}</h2>
+        <span className="panel-hint">{t.parserMetrics}</span>
+        <span
+          className={`ml-auto text-xs ${status === 'failed' ? 'text-danger' : 'text-fg-3'}`}
         >
-          {getStatusIcon(metrics.status)}
-          <span className="text-xs font-mono">
-            {getStatusText(metrics.status)}
-          </span>
-        </div>
+          {t.parserStatus}: {statusText[status]}
+        </span>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
-        {/* Last Run */}
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-          <div className="flex items-center gap-2 mb-2">
-            <Clock className="w-4 h-4 text-cyan-400" />
-            <span className="text-xs text-white/50">{t.lastRun}</span>
+      <dl className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-rule border-b border-rule">
+        {figures.map((f) => (
+          <div key={f.label} className="px-4 py-3">
+            <dt className="text-[11px] uppercase tracking-wide text-fg-3">
+              {f.label}
+            </dt>
+            <dd className="num text-lg text-fg">{f.value}</dd>
+            {f.hint && <dd className="text-[11px] text-fg-3">{f.hint}</dd>}
           </div>
-          <p className="text-lg font-mono font-semibold text-white">
-            {formatTimeAgo(metrics.lastRunAt || fetchedAt)}
-          </p>
-          {metrics.duration && (
-            <p className="text-xs text-white/55 mt-1">
-              {(metrics.duration / 1000).toFixed(1)}s
-            </p>
-          )}
-        </div>
+        ))}
+      </dl>
 
-        {/* Items Collected */}
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-          <div className="flex items-center gap-2 mb-2">
-            <Database className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs text-white/50">{t.itemsCollected}</span>
-          </div>
-          <p className="text-lg font-mono font-semibold text-white">
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin text-white/50" />
-            ) : (
-              metrics.itemsCollected || stats.totalSignals
-            )}
-          </p>
-          <p className="text-xs text-white/55 mt-1">{t.signals}</p>
-        </div>
-
-        {/* Items Analyzed */}
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-          <div className="flex items-center gap-2 mb-2">
-            <BarChart3 className="w-4 h-4 text-amber-400" />
-            <span className="text-xs text-white/50">{t.itemsAnalyzed}</span>
-          </div>
-          <p className="text-lg font-mono font-semibold text-white">
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin text-white/50" />
-            ) : (
-              metrics.itemsAnalyzed || stats.anomaliesThisWeek
-            )}
-          </p>
-          <p className="text-xs text-white/55 mt-1">{t.anomalies}</p>
-        </div>
-
-        {/* Sources Processed */}
-        <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-          <div className="flex items-center gap-2 mb-2">
-            <Zap className="w-4 h-4 text-fuchsia-400" />
-            <span className="text-xs text-white/50">{t.sourcesProcessed}</span>
-          </div>
-          <p className="text-lg font-mono font-semibold text-white">
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin text-white/50" />
-            ) : (
-              metrics.sourcesProcessed || stats.sourceCount || 0
-            )}
-          </p>
-          <p className="text-xs text-white/55 mt-1">{t.liveSources}</p>
-        </div>
-      </div>
-
-      {/* Source Details Toggle */}
-      <div className="px-4 pb-2">
+      <div className="px-4 py-2 border-b border-rule">
         <button
           onClick={() => setShowSourceDetails(!showSourceDetails)}
-          className="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+          aria-expanded={showSourceDetails}
+          className="flex items-center gap-1.5 text-xs text-fg-2 hover:text-fg"
         >
-          <div className="flex items-center gap-2">
-            <Globe className="w-4 h-4 text-cyan-400" />
-            <span className="text-sm text-white/70">
-              {language === 'ru' ? 'Детали по источникам' : 'Source Details'}
-            </span>
-          </div>
+          {t.sourceDetails}
           {showSourceDetails ? (
-            <ChevronUp className="w-4 h-4 text-white/50" />
+            <ChevronUp className="w-3.5 h-3.5" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-white/50" />
+            <ChevronDown className="w-3.5 h-3.5" />
           )}
         </button>
       </div>
 
-      {/* Source-Specific Metrics */}
-      <AnimatePresence>
-        {showSourceDetails && (
-          <m.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="px-4 pb-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {sourceMetrics.map((sm) => {
-                  const config = SOURCE_CONFIG[sm.source]
-                  const hasData = sm.count > 0
+      {showSourceDetails && (
+        <table className="w-full text-xs border-b border-rule">
+          <thead>
+            <tr className="text-left text-[11px] uppercase tracking-wide text-fg-3">
+              <th className="px-4 py-2 font-normal">{t.source}</th>
+              <th className="px-4 py-2 font-normal num text-right">
+                {t.items}
+              </th>
+              <th className="px-4 py-2 font-normal num text-right">
+                {t.highlighted}
+              </th>
+              <th className="px-4 py-2 font-normal num text-right">
+                {t.judged}
+              </th>
+              <th className="px-4 py-2 font-normal text-right">{t.updated}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-rule">
+            {sourceMetrics.map((m) => (
+              <tr
+                key={m.source}
+                className={m.count === 0 ? 'text-fg-3' : 'text-fg-2'}
+              >
+                <td className="px-4 py-2">{localizedSources[m.source]}</td>
+                <td className="px-4 py-2 num text-right">{m.count}</td>
+                <td className="px-4 py-2 num text-right">{m.highlighted}</td>
+                <td className="px-4 py-2 num text-right">{m.judged}</td>
+                <td className="px-4 py-2 text-right">
+                  {m.lastItem ? formatTimeAgo(m.lastItem) : '–'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-                  return (
-                    <m.div
-                      key={sm.source}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className={`
-                                                p-3 rounded-xl border transition-all
-                                                ${
-                                                  hasData
-                                                    ? 'bg-white/5 border-white/10'
-                                                    : 'bg-white/[0.02] border-white/5 opacity-50'
-                                                }
-                                            `}
-                    >
-                      {/* Source Header */}
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-base">{config?.icon}</span>
-                          <span
-                            className="text-xs font-medium"
-                            style={{ color: config?.color || '#fff' }}
-                          >
-                            {getSourceLabel(sm.source)}
-                          </span>
-                        </div>
-                        {hasData && sm.anomalies > 0 && (
-                          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-500/30">
-                            <AlertTriangle className="w-3 h-3 text-amber-400" />
-                            <span className="text-[10px] font-mono text-amber-400">
-                              {sm.anomalies}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Metrics */}
-                      <div className="space-y-1.5">
-                        {/* Count */}
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-white/60">
-                            {language === 'ru' ? 'Элементов' : 'Items'}
-                          </span>
-                          <span className="text-sm font-mono font-semibold text-white">
-                            {sm.count}
-                          </span>
-                        </div>
-
-                        {/* Avg Impact */}
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-white/60">
-                            {language === 'ru' ? 'Ср. влияние' : 'Avg Impact'}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <TrendingUp className="w-3 h-3 text-emerald-400" />
-                            <span className="text-sm font-mono text-emerald-400">
-                              {sm.avgImpact.toFixed(1)}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* High Impact */}
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] text-white/60">
-                            {language === 'ru'
-                              ? 'Высокий импакт'
-                              : 'High Impact'}
-                          </span>
-                          <span className="text-sm font-mono text-fuchsia-400">
-                            {sm.highImpact}
-                          </span>
-                        </div>
-
-                        {/* Last Update */}
-                        {sm.lastItem && (
-                          <div className="flex items-center justify-between pt-1 border-t border-white/5">
-                            <span className="text-[10px] text-white/60">
-                              {language === 'ru' ? 'Обновлено' : 'Updated'}
-                            </span>
-                            <span className="text-[10px] font-mono text-white/50">
-                              {formatTimeAgo(sm.lastItem)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Progress bar for count visualization */}
-                      {hasData && (
-                        <div className="mt-2 h-1 rounded-full bg-white/10 overflow-hidden">
-                          <m.div
-                            initial={{ width: 0 }}
-                            animate={{
-                              width: `${Math.min((sm.count / Math.max(...sourceMetrics.map((s) => s.count))) * 100, 100)}%`,
-                            }}
-                            transition={{ duration: 0.5, delay: 0.1 }}
-                            className="h-full rounded-full"
-                            style={{
-                              background: `linear-gradient(90deg, ${config?.color || '#00f0ff'}80, ${config?.color || '#00f0ff'})`,
-                            }}
-                          />
-                        </div>
-                      )}
-                    </m.div>
-                  )
-                })}
-              </div>
-
-              {/* Summary Stats */}
-              {sourceMetrics.length > 0 && (
-                <div className="mt-3 p-3 rounded-xl bg-gradient-to-r from-cyan-500/10 to-fuchsia-500/10 border border-white/10">
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <p className="text-lg font-mono font-bold text-white">
-                        {sourceMetrics.filter((s) => s.count > 0).length}
-                      </p>
-                      <p className="text-[10px] text-white/50">
-                        {language === 'ru'
-                          ? 'Активных источников'
-                          : 'Active Sources'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-lg font-mono font-bold text-amber-400">
-                        {sourceMetrics.reduce((sum, s) => sum + s.anomalies, 0)}
-                      </p>
-                      <p className="text-[10px] text-white/50">
-                        {language === 'ru'
-                          ? 'Всего аномалий'
-                          : 'Total Anomalies'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-lg font-mono font-bold text-emerald-400">
-                        {(
-                          sourceMetrics.reduce(
-                            (sum, s) => sum + s.avgImpact * s.count,
-                            0,
-                          ) /
-                          Math.max(
-                            sourceMetrics.reduce((sum, s) => sum + s.count, 0),
-                            1,
-                          )
-                        ).toFixed(1)}
-                      </p>
-                      <p className="text-[10px] text-white/50">
-                        {language === 'ru'
-                          ? 'Общий ср. импакт'
-                          : 'Overall Avg Impact'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </m.div>
-        )}
-      </AnimatePresence>
-
-      {/* Actions */}
-      <div className="flex items-center gap-3 p-4 border-t border-white/10">
-        {/* Run Parser Button */}
-        <m.button
-          onClick={handleRunParser}
-          disabled={isRunning || isLoading}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className={`
-                        flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold
-                        transition-all duration-200
-                        ${
-                          isRunning || isLoading
-                            ? 'bg-white/10 text-white/50 cursor-not-allowed'
-                            : 'bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white hover:from-cyan-400 hover:to-fuchsia-400 shadow-lg shadow-cyan-500/20'
-                        }
-                    `}
+      <div className="flex items-center gap-2 px-4 py-3">
+        <button
+          onClick={() => void handleRunParser()}
+          disabled={status === 'running' || isFetching}
+          className="btn-primary"
         >
-          {isRunning ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              {t.parserRunning}
-            </>
-          ) : (
-            <>
-              <Play className="w-5 h-5" />
-              {t.runParser}
-            </>
-          )}
-        </m.button>
-
-        {/* Force Refresh Button */}
-        <m.button
+          <Play className="w-3.5 h-3.5" />
+          {status === 'running' ? `${t.parserRunning}…` : t.runParser}
+        </button>
+        <button
           onClick={() => void forceRefresh()}
-          disabled={isRunning || isLoading}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="p-3 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={status === 'running' || isFetching}
+          className="btn"
           title={t.forceRefresh}
         >
-          <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
-        </m.button>
-
-        {/* Clear Cache Button */}
-        <m.button
-          onClick={handleClearCache}
-          disabled={isRunning || isLoading}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="p-3 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          <RefreshCw
+            className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`}
+          />
+          {t.forceRefresh}
+        </button>
+        <button
+          onClick={() => void handleClearCache()}
+          disabled={status === 'running' || isFetching}
+          className="btn hover:text-danger"
           title={t.clearCache}
         >
-          <Trash2 className="w-5 h-5" />
-        </m.button>
+          <Trash2 className="w-3.5 h-3.5" />
+          {t.clearCache}
+        </button>
       </div>
-
-      {/* Success Toast */}
-      <AnimatePresence>
-        {showSuccess && (
-          <m.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute bottom-4 left-4 right-4 p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center gap-2"
-          >
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-            <span className="text-sm text-emerald-300">{t.completed}!</span>
-            {metrics.duration && (
-              <span className="text-xs text-emerald-400/70 ml-auto">
-                {(metrics.duration / 1000).toFixed(1)}s
-              </span>
-            )}
-          </m.div>
-        )}
-      </AnimatePresence>
-    </m.div>
+    </div>
   )
 }

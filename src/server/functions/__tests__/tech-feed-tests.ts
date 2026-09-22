@@ -1,7 +1,7 @@
 /**
  * Tech Feed Parser Tests
  *
- * Тесты для проверки работоспособности парсеров данных из различных источников:
+ * Live checks that every data-source parser still returns valid items. из различных источников:
  * - GitHub Trending
  * - arXiv Papers
  * - Hacker News
@@ -121,7 +121,7 @@ async function testGitHubParser(): Promise<TestResult> {
       firstItem.sourceUrl &&
       firstItem.category &&
       firstItem.maturityStage &&
-      firstItem.impactScore !== undefined
+      firstItem.signal !== undefined
 
     if (!hasRequiredFields) {
       return {
@@ -244,14 +244,14 @@ async function testHackerNewsParser(): Promise<TestResult> {
     }
 
     // Check for anomalies (high-score stories)
-    const anomalies = result.items.filter((i) => i.isAnomaly)
+    const highlighted = result.items.filter((i) => i.signal.reasons.length > 0)
 
     return {
       name,
       status: 'PASS',
       duration,
       itemCount: result.items.length,
-      details: `${anomalies.length} high-score stories detected`,
+      details: `${highlighted.length} highlighted stories`,
     }
   } catch (error) {
     return {
@@ -339,7 +339,7 @@ async function testFullFeed(): Promise<TestResult> {
     const statsValid =
       result.stats.totalSignals === result.items.length &&
       result.stats.sourceCount > 0 &&
-      result.stats.avgImpactScore > 0
+      result.stats.highlighted <= result.stats.totalSignals
 
     // Check source distribution
     const sources = result.items.reduce(
@@ -364,7 +364,7 @@ async function testFullFeed(): Promise<TestResult> {
       status: statsValid ? 'PASS' : 'WARN',
       duration,
       itemCount: result.items.length,
-      details: `Sources: ${Object.keys(sources).length}, Categories: ${Object.keys(categories).length}, Anomalies: ${result.stats.anomaliesThisWeek}`,
+      details: `Sources: ${Object.keys(sources).length}, Categories: ${Object.keys(categories).length}, Highlighted: ${result.stats.highlighted}`,
     }
   } catch (error) {
     return {
@@ -418,10 +418,11 @@ async function testDataQuality(): Promise<TestResult> {
 
     // Check for valid impact scores (1-10)
     const invalidScores = result.items.filter(
-      (i) => i.impactScore < 1 || i.impactScore > 10,
+      (i) =>
+        i.signal.score !== null && (i.signal.score < 0 || i.signal.score > 1),
     )
     if (invalidScores.length > 0) {
-      issues.push(`${invalidScores.length} items with invalid impact scores`)
+      issues.push(`${invalidScores.length} items with out-of-range scores`)
     }
 
     // Check for valid dates

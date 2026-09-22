@@ -7,7 +7,12 @@ import type {
   DataSource,
   OriginalLanguage,
 } from '@/lib/tech-categories'
-import { batchTranslate } from './translation'
+import {
+  computeSignals,
+  type EngagementUnit,
+  type SignalReason,
+} from '@/lib/signal-model'
+import { batchTranslate, detectLanguage } from './translation'
 import {
   getCached,
   setCache,
@@ -20,6 +25,7 @@ import {
   categorizeItems,
   type CategorizeInput,
 } from '@/server/utils/jev-categorize'
+import { judgeSignals } from '@/server/utils/jev-signal'
 
 // ============================================================================
 // TYPES
@@ -106,17 +112,49 @@ interface CiNiiArticle {
 // ============================================================================
 
 /**
+ * What a fetcher produces: a feed item before ranking. The raw engagement
+ * count (stars, points, citations — or none) and the text Jev reads are kept
+ * so `assembleItems` can rank the whole fetch at once, within each source.
+ */
+type RawItem = Omit<TechItem, 'signal'> & {
+  engagement: number | null
+  engagementUnit: EngagementUnit | null
+  jev: CategorizeInput
+}
+
+/**
  * Set each item's category from Jev's verdict and drop items Jev judged
  * outside every radar area. See src/server/utils/jev-categorize.ts.
  */
-async function applyCategories(
-  items: TechItem[],
-  inputs: CategorizeInput[],
-): Promise<TechItem[]> {
-  const verdicts = await categorizeItems(inputs)
+async function applyCategories(items: RawItem[]): Promise<RawItem[]> {
+  const verdicts = await categorizeItems(items.map((item) => item.jev))
   return items.flatMap((item) => {
     const verdict = verdicts.get(item.id) ?? 'uncategorized'
     return verdict === 'none' ? [] : [{ ...item, category: verdict }]
+  })
+}
+
+/**
+ * Rank raw items: Jev's semantic judgments (cached per id) plus per-source
+ * percentiles, velocity, recency and cross-source convergence, all in code.
+ */
+async function assembleItems(raw: RawItem[]): Promise<TechItem[]> {
+  const judgments = await judgeSignals(raw.map((item) => item.jev))
+  const signals = computeSignals(
+    raw.map((item) => ({
+      id: item.id,
+      source: item.source,
+      publishedAt: item.publishedAt,
+      engagement: item.engagement,
+      engagementUnit: item.engagementUnit,
+      judgment: judgments.get(item.id) ?? null,
+    })),
+  )
+  return raw.map(({ engagement, engagementUnit, jev, ...item }) => {
+    void engagement
+    void engagementUnit
+    void jev
+    return { ...item, signal: signals.get(item.id)! }
   })
 }
 
@@ -147,38 +185,13 @@ function calculateMaturityStage(item: {
   return 'research'
 }
 
-function calculateImpactScore(item: {
-  stars?: number
-  score?: number
-  forks?: number
-  citationCount?: number
-}): number {
-  const stars = item.stars || 0
-  const score = item.score || 0
-  const forks = item.forks || 0
-  const citations = item.citationCount || 0
-
-  // Normalize to 1-10 scale
-  const combined = stars + score * 10 + forks * 2 + citations * 5
-  if (combined > 50000) return 10
-  if (combined > 20000) return 9
-  if (combined > 10000) return 8
-  if (combined > 5000) return 7
-  if (combined > 2000) return 6
-  if (combined > 1000) return 5
-  if (combined > 500) return 4
-  if (combined > 100) return 3
-  if (combined > 50) return 2
-  return 1
-}
-
 // ============================================================================
 // API FETCHERS
 // ============================================================================
 
-async function fetchGitHubTrending(): Promise<TechItem[]> {
+async function fetchGitHubTrending(): Promise<RawItem[]> {
   // Check cache first
-  const cached = getCached<TechItem[]>(CACHE_KEYS.GITHUB)
+  const cached = getCached<RawItem[]>(CACHE_KEYS.GITHUB)
   if (cached) return cached
 
   try {
@@ -223,13 +236,16 @@ async function fetchGitHubTrending(): Promise<TechItem[]> {
       seen.add(repo.id)
       return true
     })
-    const candidates = repos.map((repo): TechItem => {
+    const candidates = repos.map((repo): RawItem => {
+      const description = repo.description ?? ''
       return {
         id: `gh-${repo.id}`,
-        title: `${repo.full_name}: ${repo.description?.slice(0, 80) || 'New trending repository'}`,
+        // The repo name is the title; the description stays a separate field
+        // so a non-English description is translated on its own.
+        title: repo.full_name,
         summary:
-          repo.description ||
-          `A new ${repo.language || 'tech'} project gaining traction with ${repo.stargazers_count.toLocaleString()} stars.`,
+          description ||
+          `A new ${repo.language || 'tech'} project with ${repo.stargazers_count.toLocaleString()} stars.`,
         source: 'github',
         sourceUrl: repo.html_url,
         category: 'uncategorized',
@@ -237,31 +253,24 @@ async function fetchGitHubTrending(): Promise<TechItem[]> {
           stars: repo.stargazers_count,
           source: 'github',
         }),
-        impactScore: calculateImpactScore({
-          stars: repo.stargazers_count,
-          forks: repo.forks_count,
-        }),
-        hypeVolume: repo.stargazers_count + repo.forks_count * 2,
         publishedAt: new Date(repo.created_at),
-        isAnomaly: repo.stargazers_count > 1000,
-        weeklyGrowth: Math.min(999, Math.floor(repo.stargazers_count / 7)),
-        originalLanguage: 'en',
-      }
-    })
-    const items = (
-      await applyCategories(
-        candidates,
-        repos.map((repo) => ({
+        // Repos are not English by default: a Chinese description is
+        // translated like any other non-English source text.
+        originalLanguage: detectLanguage(description),
+        engagement: repo.stargazers_count,
+        engagementUnit: 'stars',
+        jev: {
           id: `gh-${repo.id}`,
           title: repo.full_name,
-          summary: repo.description ?? '',
+          summary: description,
           evidence: {
             github_topics: repo.topics,
             language: repo.language ?? '',
           },
-        })),
-      )
-    ).slice(0, 10)
+        },
+      }
+    })
+    const items = (await applyCategories(candidates)).slice(0, 10)
 
     // Cache the results
     setCache(CACHE_KEYS.GITHUB, items, CACHE_TTL.DEFAULT)
@@ -272,9 +281,9 @@ async function fetchGitHubTrending(): Promise<TechItem[]> {
   }
 }
 
-async function fetchArxivPapers(): Promise<TechItem[]> {
+async function fetchArxivPapers(): Promise<RawItem[]> {
   // Check cache first
-  const cached = getCached<TechItem[]>(CACHE_KEYS.ARXIV)
+  const cached = getCached<RawItem[]>(CACHE_KEYS.ARXIV)
   if (cached) return cached
 
   try {
@@ -336,11 +345,12 @@ async function fetchArxivPapers(): Promise<TechItem[]> {
     }
 
     const papers = entries.slice(0, 10)
-    const candidates = papers.map((entry, index): TechItem => {
+    const candidates = papers.map((entry, index): RawItem => {
       const arxivId = entry.id.split('/').pop() || entry.id
+      const id = `arxiv-${arxivId}-${index}`
 
       return {
-        id: `arxiv-${arxivId}-${index}`,
+        id,
         title: entry.title,
         summary:
           entry.summary.slice(0, 300) +
@@ -349,22 +359,22 @@ async function fetchArxivPapers(): Promise<TechItem[]> {
         sourceUrl: entry.id.replace('http://', 'https://'),
         category: 'uncategorized',
         maturityStage: 'research',
-        impactScore: Math.floor(Math.random() * 4) + 6, // Research papers: 6-9
-        hypeVolume: Math.floor(Math.random() * 5000) + 500,
         publishedAt: new Date(entry.published),
         whyItMatters: `Research by ${entry.authors.slice(0, 2).join(', ')}${entry.authors.length > 2 ? ' et al.' : ''}.`,
         originalLanguage: 'en',
+        // arXiv reports no attention metric; ranking comes from Jev's
+        // judgment and cross-source convergence only.
+        engagement: null,
+        engagementUnit: null,
+        jev: {
+          id,
+          title: entry.title,
+          summary: entry.summary,
+          evidence: { arxiv_categories: entry.categories },
+        },
       }
     })
-    const items = await applyCategories(
-      candidates,
-      papers.map((entry, index) => ({
-        id: candidates[index].id,
-        title: entry.title,
-        summary: entry.summary,
-        evidence: { arxiv_categories: entry.categories },
-      })),
-    )
+    const items = await applyCategories(candidates)
 
     // Cache the results
     setCache(CACHE_KEYS.ARXIV, items, CACHE_TTL.DEFAULT)
@@ -375,9 +385,9 @@ async function fetchArxivPapers(): Promise<TechItem[]> {
   }
 }
 
-async function fetchHackerNews(): Promise<TechItem[]> {
+async function fetchHackerNews(): Promise<RawItem[]> {
   // Check cache first
-  const cached = getCached<TechItem[]>(CACHE_KEYS.HACKERNEWS)
+  const cached = getCached<RawItem[]>(CACHE_KEYS.HACKERNEWS)
   if (cached) return cached
 
   try {
@@ -410,11 +420,11 @@ async function fetchHackerNews(): Promise<TechItem[]> {
 
     // Jev decides which top stories belong on the radar at all: a story it
     // judges outside every area ('none') is dropped by applyCategories.
-    const candidates = stories.map((story): TechItem => {
+    const candidates = stories.map((story): RawItem => {
       return {
         id: `hn-${story.id}`,
         title: story.title,
-        summary: `Trending on Hacker News with ${story.score} points and ${story.descendants || 0} comments. Posted by ${story.by}.`,
+        summary: `${story.score} points and ${story.descendants || 0} comments on Hacker News. Posted by ${story.by}.`,
         source: 'hackernews',
         sourceUrl:
           story.url || `https://news.ycombinator.com/item?id=${story.id}`,
@@ -423,25 +433,18 @@ async function fetchHackerNews(): Promise<TechItem[]> {
           score: story.score,
           source: 'hackernews',
         }),
-        impactScore: calculateImpactScore({ score: story.score }),
-        hypeVolume: story.score * 10 + (story.descendants || 0) * 5,
         publishedAt: new Date(story.time * 1000),
-        isAnomaly: story.score > 500,
-        weeklyGrowth:
-          story.score > 200 ? Math.floor(story.score / 2) : undefined,
-        originalLanguage: 'en',
-      }
-    })
-    const items = (
-      await applyCategories(
-        candidates,
-        stories.map((story) => ({
+        originalLanguage: detectLanguage(story.title),
+        engagement: story.score,
+        engagementUnit: 'points',
+        jev: {
           id: `hn-${story.id}`,
           title: story.title,
           evidence: { url: story.url ?? '' },
-        })),
-      )
-    ).slice(0, 10)
+        },
+      }
+    })
+    const items = (await applyCategories(candidates)).slice(0, 10)
 
     // Cache the results
     setCache(CACHE_KEYS.HACKERNEWS, items, CACHE_TTL.DEFAULT)
@@ -517,12 +520,13 @@ function openAlexToItem(
   work: OpenAlexWork,
   source: DataSource,
   language: OriginalLanguage,
-): TechItem {
+): RawItem {
   const abstract = abstractFromInvertedIndex(work.abstract_inverted_index)
   const venue = work.primary_location?.source?.display_name
   const authors = work.authorships.map((a) => a.author.display_name)
+  const id = `oa-${work.id.split('/').pop()}`
   return {
-    id: `oa-${work.id.split('/').pop()}`,
+    id,
     title: work.title ?? 'Untitled',
     summary:
       abstract.slice(0, 300) + (abstract.length > 300 ? '...' : '') ||
@@ -534,32 +538,28 @@ function openAlexToItem(
       citationCount: work.cited_by_count,
       source,
     }),
-    impactScore: calculateImpactScore({ citationCount: work.cited_by_count }),
-    hypeVolume: work.cited_by_count * 10,
     publishedAt: new Date(work.publication_date),
     citationCount: work.cited_by_count,
-    isAnomaly: work.cited_by_count > 100,
     whyItMatters: `${work.cited_by_count.toLocaleString()} citations${venue ? ` in ${venue}` : ''}${authors.length ? ` — ${authors.slice(0, 2).join(', ')}${authors.length > 2 ? ' et al.' : ''}` : ''}.`,
     originalLanguage: language,
-  }
-}
-
-function openAlexInput(work: OpenAlexWork, item: TechItem): CategorizeInput {
-  return {
-    id: item.id,
-    title: item.title,
-    summary: abstractFromInvertedIndex(work.abstract_inverted_index),
-    evidence: {
-      topic: work.primary_topic?.display_name ?? '',
-      field: work.primary_topic?.field.display_name ?? '',
-      venue: work.primary_location?.source?.display_name ?? '',
+    engagement: work.cited_by_count,
+    engagementUnit: 'citations',
+    jev: {
+      id,
+      title: work.title ?? 'Untitled',
+      summary: abstract,
+      evidence: {
+        topic: work.primary_topic?.display_name ?? '',
+        field: work.primary_topic?.field.display_name ?? '',
+        venue: work.primary_location?.source?.display_name ?? '',
+      },
     },
   }
 }
 
 /** The most-cited peer-reviewed work of the last ~4 months. */
-async function fetchOpenAlex(): Promise<TechItem[]> {
-  const cached = getCached<TechItem[]>(CACHE_KEYS.OPENALEX)
+async function fetchOpenAlex(): Promise<RawItem[]> {
+  const cached = getCached<RawItem[]>(CACHE_KEYS.OPENALEX)
   if (cached) return cached
 
   try {
@@ -575,12 +575,7 @@ async function fetchOpenAlex(): Promise<TechItem[]> {
       12,
     )
     const candidates = works.map((w) => openAlexToItem(w, 'openalex', 'en'))
-    const items = (
-      await applyCategories(
-        candidates,
-        works.map((w, i) => openAlexInput(w, candidates[i])),
-      )
-    ).slice(0, 8)
+    const items = (await applyCategories(candidates)).slice(0, 8)
 
     setCache(CACHE_KEYS.OPENALEX, items, CACHE_TTL.DEFAULT)
     return items
@@ -591,8 +586,8 @@ async function fetchOpenAlex(): Promise<TechItem[]> {
 }
 
 /** Recent Chinese-language journal research (translated like HAL/CiNii). */
-async function fetchOpenAlexChinese(): Promise<TechItem[]> {
-  const cached = getCached<TechItem[]>(CACHE_KEYS.OPENALEX_ZH)
+async function fetchOpenAlexChinese(): Promise<RawItem[]> {
+  const cached = getCached<RawItem[]>(CACHE_KEYS.OPENALEX_ZH)
   if (cached) return cached
 
   try {
@@ -608,12 +603,7 @@ async function fetchOpenAlexChinese(): Promise<TechItem[]> {
       15,
     )
     const candidates = works.map((w) => openAlexToItem(w, 'openalex-zh', 'zh'))
-    const items = (
-      await applyCategories(
-        candidates,
-        works.map((w, i) => openAlexInput(w, candidates[i])),
-      )
-    ).slice(0, 6)
+    const items = (await applyCategories(candidates)).slice(0, 6)
 
     setCache(CACHE_KEYS.OPENALEX_ZH, items, CACHE_TTL.DEFAULT)
     return items
@@ -623,16 +613,35 @@ async function fetchOpenAlexChinese(): Promise<TechItem[]> {
   }
 }
 
-async function fetchPubMed(): Promise<TechItem[]> {
+/**
+ * When the paper became visible: its PubMed entry date (history
+ * `pubstatus: pubmed`). `sortpubdate` is derived from the journal issue date
+ * and can lie far in the future.
+ */
+export function pubmedAddedDate(article: {
+  history?: Array<{ pubstatus: string; date: string }>
+  epubdate?: string
+  sortpubdate?: string
+}): Date {
+  const added = article.history?.find((h) => h.pubstatus === 'pubmed')?.date
+  const parsed = added ? new Date(added.replace(/\//g, '-')) : null
+  if (parsed && !Number.isNaN(parsed.getTime())) return parsed
+  return new Date(article.epubdate || article.sortpubdate || Date.now())
+}
+
+async function fetchPubMed(): Promise<RawItem[]> {
   // Check cache first
-  const cached = getCached<TechItem[]>(CACHE_KEYS.PUBMED)
+  const cached = getCached<RawItem[]>(CACHE_KEYS.PUBMED)
   if (cached) return cached
 
   try {
-    // Search for recent biotech/AI in medicine papers
+    // Papers added to PubMed in the last 60 days (datetype=edat). Sorting by
+    // pub_date instead ranks by journal-issue date, which runs months or
+    // years ahead (one record is dated 2028), so the feed showed items from
+    // the future.
     const searchTerms =
       'artificial+intelligence+OR+machine+learning+OR+CRISPR+OR+gene+therapy'
-    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${searchTerms}&retmax=10&sort=relevance&retmode=json`
+    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${searchTerms}&datetype=edat&reldate=60&retmax=10&retmode=json`
 
     const searchRes = await fetchWithRetry(searchUrl, {
       retries: 3,
@@ -659,7 +668,7 @@ async function fetchPubMed(): Promise<TechItem[]> {
     const articleIds: string[] = ids
       .filter((id: string) => articles[id])
       .slice(0, 6)
-    const candidates = articleIds.map((id): TechItem => {
+    const candidates = articleIds.map((id): RawItem => {
       const article = articles[id]
       const title = article.title || 'Untitled'
       const authors =
@@ -673,23 +682,21 @@ async function fetchPubMed(): Promise<TechItem[]> {
         sourceUrl: `https://pubmed.ncbi.nlm.nih.gov/${id}/`,
         category: 'uncategorized',
         maturityStage: 'research',
-        impactScore: 6,
-        hypeVolume: 1000,
-        publishedAt: new Date(article.sortpubdate || Date.now()),
+        publishedAt: pubmedAddedDate(article),
         whyItMatters: `Medical research published in ${article.fulljournalname || 'peer-reviewed journal'}.`,
         originalLanguage: 'en',
+        engagement: null,
+        engagementUnit: null,
+        jev: {
+          id: `pubmed-${id}`,
+          title,
+          evidence: {
+            journal: article.fulljournalname || article.source || '',
+          },
+        },
       }
     })
-    const items = await applyCategories(
-      candidates,
-      articleIds.map((id) => ({
-        id: `pubmed-${id}`,
-        title: articles[id].title || 'Untitled',
-        evidence: {
-          journal: articles[id].fulljournalname || articles[id].source || '',
-        },
-      })),
-    )
+    const items = await applyCategories(candidates)
 
     // Cache the results
     setCache(CACHE_KEYS.PUBMED, items, CACHE_TTL.DEFAULT)
@@ -700,9 +707,9 @@ async function fetchPubMed(): Promise<TechItem[]> {
   }
 }
 
-async function fetchHAL(): Promise<TechItem[]> {
+async function fetchHAL(): Promise<RawItem[]> {
   // Check cache first
-  const cached = getCached<TechItem[]>(CACHE_KEYS.HAL)
+  const cached = getCached<RawItem[]>(CACHE_KEYS.HAL)
   if (cached) return cached
 
   try {
@@ -721,8 +728,7 @@ async function fetchHAL(): Promise<TechItem[]> {
     const data = await response.json()
     const docs: HALDocument[] = data.response?.docs || []
 
-    const halDocs = docs
-    const candidates = halDocs.map((doc): TechItem => {
+    const candidates = docs.map((doc): RawItem => {
       const title = doc.title_s?.[0] || 'Untitled'
       const abstract = doc.abstract_s?.[0] || ''
       const lang = doc.language_s?.[0] || 'fr'
@@ -738,23 +744,15 @@ async function fetchHAL(): Promise<TechItem[]> {
         sourceUrl: doc.uri_s || `https://hal.science/${doc.docid}`,
         category: 'uncategorized',
         maturityStage: 'research',
-        impactScore: 5,
-        hypeVolume: 500,
         publishedAt: new Date(doc.producedDate_s || Date.now()),
         whyItMatters: `Research by ${(doc.authFullName_s || []).slice(0, 2).join(', ')} from French academic institutions.`,
         originalLanguage: detectedLang as OriginalLanguage,
+        engagement: null,
+        engagementUnit: null,
+        jev: { id: `hal-${doc.docid}`, title, summary: abstract },
       }
     })
-    const items = (
-      await applyCategories(
-        candidates,
-        halDocs.map((doc) => ({
-          id: `hal-${doc.docid}`,
-          title: doc.title_s?.[0] || 'Untitled',
-          summary: doc.abstract_s?.[0] || '',
-        })),
-      )
-    ).slice(0, 6)
+    const items = (await applyCategories(candidates)).slice(0, 6)
 
     // Cache the results
     setCache(CACHE_KEYS.HAL, items, CACHE_TTL.DEFAULT)
@@ -765,9 +763,9 @@ async function fetchHAL(): Promise<TechItem[]> {
   }
 }
 
-async function fetchCiNii(): Promise<TechItem[]> {
+async function fetchCiNii(): Promise<RawItem[]> {
   // Check cache first
-  const cached = getCached<TechItem[]>(CACHE_KEYS.CINII)
+  const cached = getCached<RawItem[]>(CACHE_KEYS.CINII)
   if (cached) return cached
 
   try {
@@ -803,44 +801,49 @@ async function fetchCiNii(): Promise<TechItem[]> {
     const items = data['@graph'] || data.items || []
 
     const articles: CiNiiArticle[] = items
-    const candidates = articles.map((item, index): TechItem => {
+    const candidates = articles.map((item, index): RawItem => {
       const title = item.title || 'Japanese Research Article'
       const description = stripTags(item.description ?? '')
+      // '@id' is the article's stable URI; a timestamped id would change on
+      // every fetch and defeat the per-item Jev verdict cache.
+      const id = `cinii-${item['@id'] || index}`
+      const summary =
+        description || 'Research article from CiNii Japanese academic database.'
 
       return {
-        // '@id' is the article's stable URI; a timestamped id would change on
-        // every fetch and defeat the per-item Jev verdict cache.
-        id: `cinii-${item['@id'] || index}`,
+        id,
         title: title,
-        summary:
-          description ||
-          'Research article from CiNii Japanese academic database.',
+        summary,
         source: 'cinii',
         sourceUrl: item['@id'] || 'https://cir.nii.ac.jp/',
         category: 'uncategorized',
         maturityStage: 'research',
-        impactScore: 5,
-        hypeVolume: 400,
-        publishedAt: item['prism:publicationDate']
-          ? new Date(item['prism:publicationDate'])
-          : new Date(),
+        // CiNii exposes only the journal issue date. Articles are listed
+        // before an issue's cover date, and one that is listed is already
+        // available, so it can be at most "now" — never in the future.
+        publishedAt: new Date(
+          Math.min(
+            item['prism:publicationDate']
+              ? Date.parse(item['prism:publicationDate'])
+              : Date.now(),
+            Date.now(),
+          ),
+        ),
         whyItMatters:
           'Japanese academic research contributing to global tech evolution.',
         originalLanguage: 'ja',
+        engagement: null,
+        engagementUnit: null,
+        jev: {
+          id,
+          title: item.title || '',
+          summary,
+          evidence: { journal: item['prism:publicationName'] ?? '' },
+        },
       }
     })
 
-    const result = (
-      await applyCategories(
-        candidates,
-        articles.map((item, index) => ({
-          id: candidates[index].id,
-          title: item.title || '',
-          summary: candidates[index].summary,
-          evidence: { journal: item['prism:publicationName'] ?? '' },
-        })),
-      )
-    ).slice(0, 6)
+    const result = (await applyCategories(candidates)).slice(0, 6)
 
     // Cache the results
     setCache(CACHE_KEYS.CINII, result, CACHE_TTL.DEFAULT)
@@ -855,7 +858,45 @@ async function fetchCiNii(): Promise<TechItem[]> {
 // SERVER FUNCTIONS
 // ============================================================================
 
-/** Fetch every source, categorize, translate, and derive stats. */
+export interface TechFeedStats {
+  totalSignals: number
+  /** Items with at least one highlight reason. */
+  highlighted: number
+  byReason: Record<SignalReason, number>
+  /** Items that received a Jev signal judgment (0 without a key). */
+  judged: number
+  topCategory: TechCategory
+  sourceCount: number
+  languageCount: number
+}
+
+export function deriveStats(items: TechItem[]): TechFeedStats {
+  const byReason: Record<SignalReason, number> = {
+    'fast-rising': 0,
+    converging: 0,
+    novel: 0,
+    'under-the-radar': 0,
+  }
+  const categoryCount: Record<string, number> = {}
+  for (const item of items) {
+    for (const reason of item.signal.reasons) byReason[reason]++
+    categoryCount[item.category] = (categoryCount[item.category] || 0) + 1
+  }
+  return {
+    totalSignals: items.length,
+    highlighted: items.filter((i) => i.signal.reasons.length > 0).length,
+    byReason,
+    judged: items.filter((i) => i.signal.novelty !== null).length,
+    topCategory:
+      (Object.entries(categoryCount).sort(
+        ([, a], [, b]) => b - a,
+      )[0]?.[0] as TechCategory) || 'ai',
+    sourceCount: new Set(items.map((i) => i.source)).size,
+    languageCount: new Set(items.map((i) => i.originalLanguage)).size,
+  }
+}
+
+/** Fetch every source, categorize, rank, translate, and derive stats. */
 async function buildTechFeed() {
   // Fetch from all sources in parallel
   const [
@@ -878,8 +919,9 @@ async function buildTechFeed() {
     fetchOpenAlexChinese(),
   ])
 
-  // Combine all items
-  let allItems = [
+  // Rank the whole fetch together: percentiles are per source, convergence
+  // needs every source at once.
+  let allItems = await assembleItems([
     ...githubItems,
     ...arxivItems,
     ...hnItems,
@@ -888,7 +930,7 @@ async function buildTechFeed() {
     ...halItems,
     ...ciniiItems,
     ...openAlexZhItems,
-  ]
+  ])
 
   // Translate non-English items
   const nonEnglishItems = allItems.filter(
@@ -918,38 +960,12 @@ async function buildTechFeed() {
   // Sort by date
   allItems.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
 
-  // Calculate stats
-  const stats = {
-    totalSignals: allItems.length,
-    anomaliesThisWeek: allItems.filter((i) => i.isAnomaly).length,
-    activeChains: 0,
-    topCategory: 'ai' as TechCategory,
-    avgImpactScore:
-      Math.round(
-        (allItems.reduce((sum, i) => sum + i.impactScore, 0) /
-          allItems.length) *
-          10,
-      ) / 10,
-    sourceCount: new Set(allItems.map((i) => i.source)).size,
-    languageCount: new Set(allItems.map((i) => i.originalLanguage)).size,
-  }
-
-  // Find top category
-  const categoryCount: Record<string, number> = {}
-  allItems.forEach((item) => {
-    categoryCount[item.category] = (categoryCount[item.category] || 0) + 1
-  })
-  stats.topCategory =
-    (Object.entries(categoryCount).sort(
-      ([, a], [, b]) => b - a,
-    )[0]?.[0] as TechCategory) || 'ai'
-
   return {
     items: allItems.map((item) => ({
       ...item,
       publishedAt: item.publishedAt.toISOString(),
     })),
-    stats,
+    stats: deriveStats(allItems),
     fetchedAt: new Date().toISOString(),
   }
 }
@@ -994,7 +1010,7 @@ const filterSchema = z
     category: z.string().optional(),
     source: z.string().optional(),
     maturity: z.string().optional(),
-    anomaliesOnly: z.boolean().optional(),
+    highlightedOnly: z.boolean().optional(),
     language: z.string().optional(),
   })
   .optional()
@@ -1015,8 +1031,8 @@ export const fetchFilteredFeedFn = createServerFn({ method: 'GET' })
     if (data?.maturity && data.maturity !== 'all') {
       items = items.filter((i) => i.maturityStage === data.maturity)
     }
-    if (data?.anomaliesOnly) {
-      items = items.filter((i) => i.isAnomaly)
+    if (data?.highlightedOnly) {
+      items = items.filter((i) => i.signal.reasons.length > 0)
     }
     if (data?.language && data.language !== 'all') {
       items = items.filter((i) => i.originalLanguage === data.language)
@@ -1028,7 +1044,7 @@ export const fetchFilteredFeedFn = createServerFn({ method: 'GET' })
 // Fetch individual source data
 export const fetchGitHubFeedFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const items = await fetchGitHubTrending()
+    const items = await assembleItems(await fetchGitHubTrending())
     return {
       items: items.map((item) => ({
         ...item,
@@ -1041,7 +1057,7 @@ export const fetchGitHubFeedFn = createServerFn({ method: 'GET' }).handler(
 
 export const fetchArxivFeedFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const items = await fetchArxivPapers()
+    const items = await assembleItems(await fetchArxivPapers())
     return {
       items: items.map((item) => ({
         ...item,
@@ -1054,7 +1070,7 @@ export const fetchArxivFeedFn = createServerFn({ method: 'GET' }).handler(
 
 export const fetchHackerNewsFeedFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const items = await fetchHackerNews()
+    const items = await assembleItems(await fetchHackerNews())
     return {
       items: items.map((item) => ({
         ...item,
@@ -1074,29 +1090,15 @@ export const fetchMultilingualFeedFn = createServerFn({
     fetchOpenAlexChinese(),
   ])
 
-  const allItems = [...halItems, ...ciniiItems, ...zhItems]
-
-  // Translate all items
-  if (allItems.length > 0) {
-    const translations = await batchTranslate(allItems)
-
-    return {
-      items: allItems.map((item) => {
-        const translation = translations.get(item.id)
-        return {
-          ...item,
-          publishedAt: item.publishedAt.toISOString(),
-          translations: translation,
-        }
-      }),
-      fetchedAt: new Date().toISOString(),
-    }
-  }
+  const allItems = await assembleItems([...halItems, ...ciniiItems, ...zhItems])
+  const translations =
+    allItems.length > 0 ? await batchTranslate(allItems) : new Map()
 
   return {
     items: allItems.map((item) => ({
       ...item,
       publishedAt: item.publishedAt.toISOString(),
+      translations: translations.get(item.id),
     })),
     fetchedAt: new Date().toISOString(),
   }

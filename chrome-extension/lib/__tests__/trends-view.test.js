@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { nextStage, trajectoryMeta, sparkline } from '../trends-view.js'
+import { nextStage, trajectoryMeta, sparklineBars } from '../trends-view.js'
 
 describe('nextStage', () => {
   it('advances maturity and caps at mass-market', () => {
@@ -15,8 +15,9 @@ describe('trajectoryMeta', () => {
     expect(trajectoryMeta('stable').icon).toBe('flat')
   })
 })
-describe('sparkline', () => {
-  it('renders one glyph per week', () => {
-    expect(sparkline([0, 2, 4]).length).toBe(3)
+describe('sparklineBars', () => {
+  it('normalizes one bar per week to the max', () => {
+    expect(sparklineBars([0, 2, 4])).toEqual([0, 0.5, 1])
+    expect(sparklineBars([])).toEqual([])
   })
 })

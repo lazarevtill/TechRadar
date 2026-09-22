@@ -5,7 +5,6 @@ import type { OriginalLanguage, TranslatedContent } from '@/lib/tech-categories'
 // ============================================================================
 // TRANSLATION SERVICE
 // Uses MyMemory Translation API (free, no API key required)
-// Fallback to LibreTranslate if needed
 // ============================================================================
 
 const MYMEMORY_API = 'https://api.mymemory.translated.net/get'
@@ -52,15 +51,21 @@ async function translateText(
   text: string,
   fromLang: OriginalLanguage,
   toLang: 'en' | 'ru',
-): Promise<string> {
-  // Skip if same language
+): Promise<string | null> {
+  // `null` means "not translated" (quota, API error): callers must not present
+  // the original text as a translation. Text already in the target language
+  // is returned as-is.
+  // Skip if same language, or if this particular field is already English
+  // (a GitHub repo name next to a Chinese description): sending it to
+  // MyMemory as zh→en wastes quota and can garble it.
   if (fromLang === toLang) return text
+  if (toLang === 'en' && detectLanguage(text) === 'en') return text
 
   // Check cache
   const cacheKey = getCacheKey(text, fromLang, toLang)
   const cached = translationCache.get(cacheKey)
   if (cached) return cached
-  if (Date.now() < quotaBlockedUntil) return text
+  if (Date.now() < quotaBlockedUntil) return null
 
   try {
     // Truncate very long texts (API limit)
@@ -84,11 +89,11 @@ async function translateText(
 
     if (response.status === 429) {
       noteQuotaExhausted('HTTP 429')
-      return text
+      return null
     }
     if (!response.ok) {
       console.warn(`Translation API error: ${response.status}`)
-      return text
+      return null
     }
 
     const data = await response.json()
@@ -96,7 +101,7 @@ async function translateText(
     // its "translatedText" is a warning, never cache or show it.
     if (data.responseStatus === 429 || data.quotaFinished === true) {
       noteQuotaExhausted('quota notice')
-      return text
+      return null
     }
 
     if (data.responseStatus === 200 && data.responseData?.translatedText) {
@@ -108,11 +113,10 @@ async function translateText(
       return translated
     }
 
-    // If quota exceeded or error, return original
-    return text
+    return null
   } catch (error) {
     console.error('Translation error:', error)
-    return text
+    return null
   }
 }
 
@@ -120,7 +124,7 @@ export async function translateContent(
   content: { title: string; summary: string; whyItMatters?: string },
   fromLang: OriginalLanguage,
   toLang: 'en' | 'ru',
-): Promise<TranslatedContent> {
+): Promise<TranslatedContent | null> {
   // Skip translation if already in target language
   if (fromLang === toLang) {
     return {
@@ -136,6 +140,9 @@ export async function translateContent(
     translateText(content.title, fromLang, toLang),
     translateText(content.summary, fromLang, toLang),
   ])
+  // All or nothing: a half-translated item labelled "machine-translated"
+  // would misstate what the reader is looking at.
+  if (title === null || summary === null) return null
 
   return { title, summary, whyItMatters: content.whyItMatters }
 }
@@ -153,14 +160,14 @@ export async function batchTranslate(
   Map<
     string,
     {
-      en: TranslatedContent
-      ru: TranslatedContent
+      en?: TranslatedContent
+      ru?: TranslatedContent
     }
   >
 > {
   const results = new Map<
     string,
-    { en: TranslatedContent; ru: TranslatedContent }
+    { en?: TranslatedContent; ru?: TranslatedContent }
   >()
 
   // Process in batches to avoid rate limiting
@@ -191,7 +198,14 @@ export async function batchTranslate(
           ),
         ])
 
-        results.set(item.id, { en, ru })
+        // Only languages that were really translated; an item with none keeps
+        // its original text and is not labelled as translated.
+        if (en || ru) {
+          results.set(item.id, {
+            ...(en ? { en } : {}),
+            ...(ru ? { ru } : {}),
+          })
+        }
       }),
     )
 
@@ -246,37 +260,59 @@ export const translateItemFn = createServerFn({ method: 'POST' })
     return translated
   })
 
-// Language detection helper (basic heuristic)
-export function detectLanguage(text: string): OriginalLanguage {
-  // Check for CJK characters
-  if (/[\u4e00-\u9fff]/.test(text)) return 'zh' // Chinese
-  if (/[\u3040-\u309f\u30a0-\u30ff]/.test(text)) return 'ja' // Japanese (hiragana/katakana)
-  if (/[\uac00-\ud7af]/.test(text)) return 'ko' // Korean
+// ============================================================================
+// LANGUAGE DETECTION
+// ============================================================================
 
-  // Check for Cyrillic
+/** Function words that are distinctive for each Latin-script language. Words
+ *  shared across languages ("de", "la", "a", "o", "no") are deliberately left
+ *  out: an English title like "Notes on de facto standards" must stay English
+ *  or it is sent to MyMemory as French and both garbled and charged. */
+// `\b` is ASCII-only in JS, so "é" in "método" would count as a word of its
+// own; letter-class lookarounds give real word boundaries for accented text.
+const word = (alternatives: string) =>
+  new RegExp(`(?<!\\p{L})(?:${alternatives})(?!\\p{L})`, 'gu')
+
+const LATIN_MARKERS: Record<'en' | 'fr' | 'de' | 'es' | 'pt', RegExp> = {
+  en: word('the|and|of|for|with|is|are|to|in|on|from|by|this|that'),
+  fr: word(
+    'le|les|du|des|et|est|sont|dans|pour|avec|une|sur|aux|au|cette|nous|vous|par',
+  ),
+  de: word(
+    'der|die|das|und|ist|sind|für|mit|von|ein|eine|nicht|auf|dem|den|zu|im',
+  ),
+  es: word('el|los|las|del|es|son|para|con|una|por|como|más|entre|sobre'),
+  pt: word('os|as|do|da|dos|das|em|é|são|para|com|uma|por|não|mais|sobre'),
+}
+
+const MIN_MARKER_HITS = 2
+
+/**
+ * Language of a text, from its script first and then from function words.
+ *
+ * CJK, Hangul and Cyrillic are unambiguous. Latin-script languages need at
+ * least two distinctive function words and more of them than English shows,
+ * so short English titles never get "translated".
+ */
+export function detectLanguage(text: string): OriginalLanguage {
+  if (/[\u3040-\u309f\u30a0-\u30ff]/.test(text)) return 'ja' // kana
+  if (/[\uac00-\ud7af]/.test(text)) return 'ko'
+  if (/[\u4e00-\u9fff]/.test(text)) return 'zh' // han without kana
   if (/[\u0400-\u04ff]/.test(text)) return 'ru'
 
-  // Check for common French/German/Spanish patterns
-  const lowerText = text.toLowerCase()
-  if (
-    /\b(le|la|les|de|du|des|et|est|sont|dans|pour|avec|une|que)\b/.test(
-      lowerText,
-    )
-  )
-    return 'fr'
-  if (
-    /\b(der|die|das|und|ist|sind|für|mit|von|ein|eine|nicht)\b/.test(lowerText)
-  )
-    return 'de'
-  if (
-    /\b(el|la|los|las|de|del|en|es|son|para|con|una|que|por)\b/.test(lowerText)
-  )
-    return 'es'
-  if (/\b(o|a|os|as|de|do|da|em|é|são|para|com|uma|que|por)\b/.test(lowerText))
-    return 'pt'
-
-  // Default to English
-  return 'en'
+  const lower = text.toLowerCase()
+  const hits = (re: RegExp) => (lower.match(re) ?? []).length
+  const english = hits(LATIN_MARKERS.en)
+  let best: OriginalLanguage = 'en'
+  let bestHits = english
+  for (const lang of ['fr', 'de', 'es', 'pt'] as const) {
+    const n = hits(LATIN_MARKERS[lang])
+    if (n >= MIN_MARKER_HITS && n > bestHits) {
+      best = lang
+      bestHits = n
+    }
+  }
+  return best
 }
 
 // Get language display name

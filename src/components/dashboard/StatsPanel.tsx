@@ -1,101 +1,33 @@
-import { m } from 'motion/react'
-import {
-  TrendingUp,
-  Zap,
-  Link2,
-  Target,
-  Loader2,
-  RefreshCw,
-  Globe,
-  BookOpen,
-} from 'lucide-react'
 import { useTechFeed } from '@/hooks/use-tech-feed'
 import { CATEGORY_CONFIG, MATURITY_CONFIG } from '@/lib/tech-categories'
+import type { SignalReason } from '@/lib/signal-model'
 import {
   useLanguage,
   getLocalizedCategories,
   getLocalizedMaturity,
-  getLocalizedLanguages,
+  getLocalizedReasons,
 } from '@/lib/i18n'
+import { CategoryDot } from './icons'
 
-// Language flag emojis
-const LANGUAGE_FLAGS: Record<string, string> = {
-  en: '🇬🇧',
-  zh: '🇨🇳',
-  ja: '🇯🇵',
-  fr: '🇫🇷',
-  de: '🇩🇪',
-  es: '🇪🇸',
-  ru: '🇷🇺',
-  ko: '🇰🇷',
-  pt: '🇧🇷',
-}
+const REASON_ORDER: SignalReason[] = [
+  'fast-rising',
+  'converging',
+  'novel',
+  'under-the-radar',
+]
 
+/**
+ * Summary strip: the counts that describe this fetch, the highlight
+ * breakdown by reason, and the category mix. Numbers only; nothing here
+ * claims a breakthrough.
+ */
 export function StatsPanel() {
-  const { items, stats, isLoading, refetch } = useTechFeed()
+  const { items, stats, isLoading } = useTechFeed()
   const { t, language } = useLanguage()
   const localizedCategories = getLocalizedCategories(language)
   const localizedMaturity = getLocalizedMaturity(language)
-  const localizedLanguages = getLocalizedLanguages(language)
+  const reasons = getLocalizedReasons(language)
 
-  // Calculate language distribution
-  const languageCount = items.reduce(
-    (acc, item) => {
-      acc[item.originalLanguage] = (acc[item.originalLanguage] || 0) + 1
-      return acc
-    },
-    {} as Record<string, number>,
-  )
-
-  const topLanguages = Object.entries(languageCount)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 5)
-
-  // Count high-citation papers
-  const highCitationCount = items.filter(
-    (item) => item.citationCount && item.citationCount > 100,
-  ).length
-
-  const statCards = [
-    {
-      label: t.totalSignals,
-      value: stats.totalSignals,
-      icon: Zap,
-      color: 'cyan',
-      gradient: 'from-cyan-500 to-blue-500',
-    },
-    {
-      label: t.liveSources,
-      value: stats.sourceCount || 9,
-      suffix: '',
-      icon: Link2,
-      color: 'fuchsia',
-      gradient: 'from-fuchsia-500 to-purple-500',
-    },
-    {
-      label: t.avgImpact,
-      value: stats.avgImpactScore || 0,
-      suffix: '/10',
-      icon: Target,
-      color: 'amber',
-      gradient: 'from-amber-500 to-orange-500',
-    },
-    {
-      label: t.anomaliesLabel,
-      value: stats.anomaliesThisWeek,
-      icon: TrendingUp,
-      color: 'emerald',
-      gradient: 'from-emerald-500 to-green-500',
-    },
-  ]
-
-  // Get top rising technologies
-  const topRising = items
-    .filter((item) => item.weeklyGrowth && item.weeklyGrowth > 100)
-    .sort((a, b) => (b.weeklyGrowth || 0) - (a.weeklyGrowth || 0))
-    .slice(0, 3)
-
-  // Category distribution
   const categoryCount = items.reduce(
     (acc, item) => {
       acc[item.category] = (acc[item.category] || 0) + 1
@@ -103,218 +35,117 @@ export function StatsPanel() {
     },
     {} as Record<string, number>,
   )
+  const categories = Object.entries(categoryCount).sort(([, a], [, b]) => b - a)
+  const maxCategory = categories[0]?.[1] ?? 1
 
-  const topCategories = Object.entries(categoryCount)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 4)
+  const figures: { label: string; value: string }[] = [
+    { label: t.totalSignals, value: String(stats.totalSignals) },
+    { label: t.sources, value: String(stats.sourceCount) },
+    { label: t.languages, value: String(stats.languageCount) },
+    { label: t.highlighted, value: String(stats.highlighted) },
+    {
+      label: t.judgedByJev,
+      value:
+        stats.totalSignals === 0
+          ? '0'
+          : `${stats.judged} / ${stats.totalSignals}`,
+    },
+  ]
+
+  const loading = isLoading && stats.totalSignals === 0
 
   return (
-    <div className="space-y-6">
-      {/* Main Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {statCards.map((stat, index) => (
-          <m.div key={stat.label} className="relative group">
-            <div
-              className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl blur-xl"
-              style={{
-                background: `linear-gradient(135deg, var(--tw-gradient-from), var(--tw-gradient-to))`,
-              }}
-            />
-            <div className="relative p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm hover:border-white/20 transition-colors">
-              <div className="flex items-start justify-between mb-3">
-                <div
-                  className={`p-2 rounded-lg bg-gradient-to-br ${stat.gradient}`}
-                >
-                  <stat.icon className="w-4 h-4 text-white" />
-                </div>
-                {isLoading && index === 0 && (
-                  <Loader2 className="w-4 h-4 text-white/55 animate-spin" />
-                )}
-              </div>
-              <div className="font-mono">
-                {isLoading && stats.totalSignals === 0 ? (
-                  <div className="h-9 w-16 bg-white/10 rounded animate-pulse" />
-                ) : (
-                  <>
-                    <span className="text-3xl font-bold text-white">
-                      {stat.value}
-                    </span>
-                    {stat.suffix && (
-                      <span className="text-white/60 text-lg">
-                        {stat.suffix}
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
-              <p className="text-xs text-white/60 mt-1">{stat.label}</p>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 space-y-4">
+        <dl className="grid grid-cols-2 sm:grid-cols-5 border border-rule rounded-md divide-y sm:divide-y-0 sm:divide-x divide-rule">
+          {figures.map((f) => (
+            <div key={f.label} className="px-4 py-3">
+              <dt className="text-[11px] uppercase tracking-wide text-fg-3">
+                {f.label}
+              </dt>
+              <dd
+                className={`num text-2xl text-fg mt-1 ${loading ? 'opacity-40' : ''}`}
+                aria-busy={loading}
+              >
+                {loading ? '–' : f.value}
+              </dd>
             </div>
-          </m.div>
-        ))}
-      </div>
+          ))}
+        </dl>
 
-      {/* Language & Citation Stats */}
-      <m.div className="flex flex-wrap items-center gap-4 p-3 rounded-lg bg-gradient-to-r from-indigo-500/5 to-purple-500/5 border border-indigo-500/10">
-        <div className="flex items-center gap-2">
-          <Globe className="w-4 h-4 text-indigo-400" />
-          <span className="text-xs text-white/50">{t.language}:</span>
-        </div>
-        {topLanguages.map(([lang, count]) => (
-          <div
-            key={lang}
-            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/5"
-          >
-            <span>{LANGUAGE_FLAGS[lang] || '🌐'}</span>
-            <span className="text-xs text-white/60">
-              {localizedLanguages[lang as keyof typeof localizedLanguages] ||
-                lang}
-            </span>
-            <span className="text-xs font-mono text-white/60">{count}</span>
-          </div>
-        ))}
-        {highCitationCount > 0 && (
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/10 ml-auto">
-            <BookOpen className="w-3 h-3 text-emerald-400" />
-            <span className="text-xs text-emerald-300">
-              {highCitationCount} {t.highCitation}
-            </span>
-          </div>
+        {stats.totalSignals > 0 && stats.judged === 0 && (
+          <p className="text-xs text-fg-2 border-l-2 border-accent pl-3">
+            {t.noJevKey}
+          </p>
         )}
-      </m.div>
 
-      {/* Secondary Stats Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Top Rising */}
-        <m.div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
-          <h3 className="text-sm font-semibold text-white/60 mb-3 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
-            {t.topRisingThisWeek}
-            {isLoading && (
-              <Loader2 className="w-3 h-3 text-white/55 animate-spin" />
-            )}
-          </h3>
-          <div className="space-y-2">
-            {isLoading && topRising.length === 0 ? (
-              [...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="h-4 w-3/4 bg-white/10 rounded animate-pulse" />
-                  <div className="h-4 w-12 bg-white/10 rounded animate-pulse" />
-                </div>
-              ))
-            ) : topRising.length > 0 ? (
-              topRising.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs font-mono text-white/55">
-                      #{index + 1}
-                    </span>
-                    {item.originalLanguage !== 'en' && (
-                      <span className="text-xs">
-                        {LANGUAGE_FLAGS[item.originalLanguage] || '🌐'}
-                      </span>
-                    )}
-                    <span className="text-sm text-white/80 truncate">
-                      {item.title.slice(0, 30)}...
-                    </span>
-                  </div>
-                  <span className="text-xs font-mono text-emerald-400 flex-shrink-0">
-                    +{item.weeklyGrowth}%
-                  </span>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-white/60">{t.noAnomaliesDetected}</p>
-            )}
-          </div>
-        </m.div>
-
-        {/* Category Distribution */}
-        <m.div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-sm">
-          <h3 className="text-sm font-semibold text-white/60 mb-3 flex items-center justify-between">
-            <span>{t.categoryDistribution}</span>
-            <button
-              onClick={() => refetch()}
-              disabled={isLoading}
-              className="p-1 rounded hover:bg-white/10 transition-colors disabled:opacity-50"
-              title={t.refreshData}
-            >
-              <RefreshCw
-                className={`w-3 h-3 text-white/60 ${isLoading ? 'animate-spin' : ''}`}
-              />
-            </button>
-          </h3>
-          <div className="space-y-2">
-            {isLoading && topCategories.length === 0 ? (
-              [...Array(4)].map((_, i) => (
-                <div key={i} className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="h-4 w-24 bg-white/10 rounded animate-pulse" />
-                    <div className="h-4 w-8 bg-white/10 rounded animate-pulse" />
-                  </div>
-                  <div className="h-1 bg-white/5 rounded-full" />
-                </div>
-              ))
-            ) : topCategories.length > 0 ? (
-              topCategories.map(([category, count]) => {
-                const config =
-                  CATEGORY_CONFIG[category as keyof typeof CATEGORY_CONFIG]
-                if (!config) return null
-                const percentage = Math.round(
-                  (count / stats.totalSignals) * 100,
-                )
-                const localizedLabel =
-                  localizedCategories[
-                    category as keyof typeof localizedCategories
-                  ] || config.label
-                return (
-                  <div key={category} className="space-y-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-2">
-                        <span>{config.icon}</span>
-                        <span className="text-white/70">{localizedLabel}</span>
-                      </span>
-                      <span className="font-mono text-white/60">{count}</span>
-                    </div>
-                    <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                      <m.div
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: config.color }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${percentage}%` }}
-                        transition={{ delay: 0.6, duration: 0.5 }}
-                      />
-                    </div>
-                  </div>
-                )
-              })
-            ) : (
-              <p className="text-sm text-white/60">{t.loadingCategories}</p>
-            )}
-          </div>
-        </m.div>
+        <ul className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-fg-2">
+          {REASON_ORDER.map((reason) => (
+            <li key={reason} className="flex items-center gap-1.5">
+              <span className="num text-fg">{stats.byReason[reason]}</span>
+              <span title={reasons[reason].desc}>{reasons[reason].label}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      {/* Maturity Stage Legend */}
-      <m.div className="flex flex-wrap gap-4 p-3 rounded-lg bg-white/[0.02] border border-white/5">
-        <span className="text-xs text-white/60 font-mono">{t.maturity}:</span>
-        {Object.entries(MATURITY_CONFIG).map(([key, config]) => {
-          const localizedLabel =
-            localizedMaturity[key as keyof typeof localizedMaturity] ||
-            config.label
-          return (
-            <div key={key} className="flex items-center gap-2">
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: config.color }}
-              />
-              <span className="text-xs text-white/60">{localizedLabel}</span>
-            </div>
-          )
-        })}
-      </m.div>
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-[11px] uppercase tracking-wide text-fg-3 mb-2">
+            {t.categoryDistribution}
+          </h3>
+          <ul className="space-y-1.5">
+            {categories.map(([category, count]) => {
+              const config =
+                CATEGORY_CONFIG[category as keyof typeof CATEGORY_CONFIG]
+              if (!config) return null
+              return (
+                <li
+                  key={category}
+                  className="grid grid-cols-[auto_1fr_auto] items-center gap-2 text-xs"
+                >
+                  <CategoryDot color={config.color} />
+                  <span className="flex items-center gap-2 min-w-0">
+                    <span className="text-fg-2 truncate">
+                      {localizedCategories[
+                        category as keyof typeof localizedCategories
+                      ] || config.label}
+                    </span>
+                    <span
+                      aria-hidden
+                      className="h-px flex-1 bg-fg-3/40"
+                      style={{
+                        maxWidth: `${Math.round((count / maxCategory) * 100)}%`,
+                      }}
+                    />
+                  </span>
+                  <span className="num text-fg-2">{count}</span>
+                </li>
+              )
+            })}
+            {categories.length === 0 && (
+              <li className="text-xs text-fg-3">–</li>
+            )}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-[11px] uppercase tracking-wide text-fg-3 mb-2">
+            {t.maturity}
+          </h3>
+          <ul className="flex flex-wrap gap-x-4 gap-y-1">
+            {Object.entries(MATURITY_CONFIG).map(([key, config]) => (
+              <li key={key} className="flex items-center gap-1.5 text-xs">
+                <CategoryDot color={config.color} />
+                <span className="text-fg-2">
+                  {localizedMaturity[key as keyof typeof localizedMaturity] ||
+                    config.label}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   )
 }

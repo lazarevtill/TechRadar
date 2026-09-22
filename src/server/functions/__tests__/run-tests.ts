@@ -1,7 +1,7 @@
 /**
  * Test Runner Script
  *
- * Запуск: npx tsx src/server/functions/__tests__/run-tests.ts
+ * Run: bun run test:parsers
  */
 
 import { runAllTests } from './tech-feed-tests'

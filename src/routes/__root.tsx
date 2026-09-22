@@ -7,11 +7,7 @@ import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
-import { LazyMotion, MotionConfig } from 'motion/react'
 import { LanguageProvider } from '@/lib/i18n'
-
-const loadMotionFeatures = () =>
-  import('@/lib/motion-features').then((mod) => mod.default)
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -46,6 +42,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         name: 'description',
         content: 'Track how tech noise becomes trends and industry standards',
       },
+      { name: 'color-scheme', content: 'dark' },
     ],
     links: [
       {
@@ -62,8 +59,13 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         crossOrigin: 'anonymous',
       },
       {
+        // CJK fallback only: the UI itself uses the system font stack. Google
+        // serves these families in unicode-range slices, so a viewer whose
+        // machine lacks Chinese or Japanese fonts downloads just the slices
+        // that an original-language title actually needs, and nobody else
+        // downloads anything.
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap',
+        href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap',
       },
     ],
     scripts: [...scripts],
@@ -78,25 +80,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="font-sans antialiased">
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           forcedTheme="dark"
           disableTransitionOnChange
         >
-          <LanguageProvider defaultLanguage="en">
-            {/* Honour the OS "reduce motion" setting: entrance animations jump
-                straight to their final state instead of fading in. */}
-            <MotionConfig reducedMotion="user">
-              {/* `m` components + the domAnimation feature set (loaded async)
-                  instead of the full `motion` component; `strict` throws if a
-                  full `motion.*` sneaks back in and re-adds the whole library. */}
-              <LazyMotion features={loadMotionFeatures} strict>
-                {children}
-              </LazyMotion>
-            </MotionConfig>
-          </LanguageProvider>
+          <LanguageProvider defaultLanguage="en">{children}</LanguageProvider>
         </ThemeProvider>
         <Scripts />
       </body>

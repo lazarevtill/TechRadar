@@ -7,7 +7,7 @@ TechRadar provides a React 19/TanStack Start dashboard and a standalone Chrome n
 - `src/routes/`: file-based routes; `src/components/dashboard/` and `src/components/ui/`: dashboard and shared UI components.
 - `src/server/functions/` and `src/server/utils/`: data parsers, server functions, caching, and fetch helpers.
 - `src/hooks/` and `src/lib/`: hooks, categories, utilities, and English/Russian translations.
-- `chrome-extension/`: extension HTML, JavaScript, styles, fonts, and manifest.
+- `chrome-extension/`: extension HTML, JavaScript, styles, icons, and manifest (no bundled fonts).
 - `scripts/generate-feed/`: digest pipeline; `public/data/`: generated digest, trends, and history JSON.
 - Tests live in adjacent `__tests__/` directories. Design notes are in `docs/superpowers/`.
 

@@ -1,12 +1,12 @@
 export const SOURCE_META = {
-  anthropic: { label: 'Anthropic', icon: '🧠' },
-  openai: { label: 'OpenAI', icon: '⚪' },
-  'latent-space': { label: 'Latent Space', icon: '🎙️' },
-  deepmind: { label: 'Google DeepMind', icon: '🔷' },
-  simonw: { label: 'Simon Willison', icon: '🧩' },
-  hf: { label: 'Hugging Face', icon: '🤗' },
-  meta: { label: 'Meta AI', icon: '🟦' },
-  mistral: { label: 'Mistral', icon: '🌫️' },
+  anthropic: { label: 'Anthropic' },
+  openai: { label: 'OpenAI' },
+  'latent-space': { label: 'Latent Space' },
+  deepmind: { label: 'Google DeepMind' },
+  simonw: { label: 'Simon Willison' },
+  hf: { label: 'Hugging Face' },
+  meta: { label: 'Meta AI' },
+  mistral: { label: 'Mistral' },
 }
 
 export function pickDigestText(item, lang) {

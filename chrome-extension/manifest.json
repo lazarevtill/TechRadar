@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Tech Evolution Radar",
   "short_name": "TechRadar",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Replace your new tab with a live tech evolution radar. Track how tech noise becomes trends - data from GitHub, arXiv & Hacker News, plus a daily AI-blog digest.",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
