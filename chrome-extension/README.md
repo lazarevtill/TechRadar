@@ -38,6 +38,14 @@ what `GET /api/extension-feed` returns.
 
 ## Installation
 
+**Quickest:** download the latest build —
+[tech-radar-extension.zip](https://github.com/lazarevtill/TechRadar/releases/latest/download/tech-radar-extension.zip)
+(published by `.github/workflows/release-extension.yml` on every extension
+change to `main`) — unzip it, open `chrome://extensions`, enable **Developer
+mode**, click **Load unpacked** and pick the `tech-radar-extension` folder.
+
+**From source:**
+
 1. Run the server: `docker compose up -d` (serves `http://localhost:3000`).
 2. Build the extension: `bun run build:extension`, or use **Download
    Extension** on the dashboard.

@@ -1,0 +1,70 @@
+name: Release extension
+
+# Publishes the packaged Chrome extension as a GitHub Release asset, so it can
+# be installed from a stable, login-free link:
+#   https://github.com/<owner>/<repo>/releases/latest/download/tech-radar-extension.zip
+# (CI artifacts need a GitHub login, arrive zipped twice, and expire.)
+#
+# Each run tags the release with the manifest version plus the commit
+# (extension-v1.5.0+abc1234), so every build stays downloadable and the newest
+# one is always "latest".
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'chrome-extension/**'
+      - 'scripts/build-extension.ts'
+      - '.github/workflows/release-extension.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-extension
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - run: bun install --frozen-lockfile
+      - run: bun run test -- chrome-extension scripts/__tests__/build-extension.test.ts
+      - run: bun run build:extension
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VERSION=$(jq -r .version chrome-extension/manifest.json)
+          SHORT=$(git rev-parse --short HEAD)
+          TAG="extension-v${VERSION}+${SHORT}"
+          ZIP=dist/extension/tech-radar-extension.zip
+          NOTES=$(cat <<TXT
+          Tech Evolution Radar — Chrome extension ${VERSION} (commit ${SHORT}).
+
+          **Install**
+          1. Download \`tech-radar-extension.zip\` below and unzip it.
+          2. Open \`chrome://extensions\`, turn on **Developer mode**.
+          3. Click **Load unpacked** and select the unzipped \`tech-radar-extension\` folder.
+          4. Open a new tab. If your TechRadar server is not at \`http://localhost:3000\`, set its address in **Settings** (gear icon).
+
+          The extension holds no API keys; it only talks to your TechRadar server.
+          TXT
+          )
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ZIP" --clobber
+          else
+            gh release create "$TAG" "$ZIP" \
+              --title "Extension ${VERSION} (${SHORT})" \
+              --notes "$NOTES" \
+              --target "$GITHUB_SHA" \
+              --latest
+          fi
+          echo "Download: https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/tech-radar-extension.zip" >> "$GITHUB_STEP_SUMMARY"
