@@ -268,8 +268,8 @@ function TestParsersPage() {
                 🔶 <strong>Hacker News</strong> — технические новости
               </li>
               <li>
-                🌍 <strong>Multilingual</strong> — HAL (FR), CiNii (JP), CNKI
-                (CN)
+                🌍 <strong>Multilingual</strong> — HAL (FR), CiNii (JP),
+                OpenAlex (ZH) (CN)
               </li>
               <li>
                 🔄 <strong>Full Feed</strong> — агрегация всех источников

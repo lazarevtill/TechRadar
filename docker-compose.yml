@@ -10,6 +10,10 @@ services:
       # Jev (TypeSafe) assigns feed categories. Without it every live item is
       # shown as "Unclassified". Read from the host env / .env, never inlined.
       TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
+      # Optional contact emails: raise the MyMemory translation quota and use
+      # OpenAlex's polite pool. Read from the host env / .env.
+      MYMEMORY_EMAIL: ${MYMEMORY_EMAIL:-}
+      OPENALEX_MAILTO: ${OPENALEX_MAILTO:-}
       # Point at a different fork's generated data if needed:
       # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
     restart: unless-stopped

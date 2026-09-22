@@ -168,10 +168,10 @@ export interface Translations {
   arxiv: string
   techcrunch: string
   hackerNews: string
-  semanticScholar: string
+  openAlex: string
   pubmed: string
   hal: string
-  cnki: string
+  openAlexZh: string
   cinii: string
 
   // Languages
@@ -228,7 +228,7 @@ export const translations: Record<Language, Translations> = {
   en: {
     // Header
     appTitle: 'Tech Evolution Radar',
-    appSubtitle: 'Global Research Feed • 9 Sources • Multilingual',
+    appSubtitle: 'Global Research Feed • 8 Sources • Multilingual',
     signals: 'signals',
     anomalies: 'anomalies',
     live: 'LIVE',
@@ -350,7 +350,7 @@ export const translations: Record<Language, Translations> = {
     allCategories: 'All Categories',
     allStages: 'All Stages',
     recent: 'Recent',
-    liveDataFrom: 'Global data from 9 sources in 5+ languages',
+    liveDataFrom: 'Global data from 8 sources in 5+ languages',
     failedToFetchLiveData: 'Failed to fetch live data',
     pleaseTryAgainLater: 'Please try again later',
     retry: 'Retry',
@@ -399,10 +399,10 @@ export const translations: Record<Language, Translations> = {
     arxiv: 'arXiv',
     techcrunch: 'TechCrunch',
     hackerNews: 'Hacker News',
-    semanticScholar: 'Semantic Scholar',
+    openAlex: 'OpenAlex',
     pubmed: 'PubMed',
     hal: 'HAL (France)',
-    cnki: 'CNKI (China)',
+    openAlexZh: 'OpenAlex (China)',
     cinii: 'CiNii (Japan)',
 
     // Languages
@@ -437,9 +437,9 @@ export const translations: Record<Language, Translations> = {
 
     // Footer
     footerVersion: 'Tech Evolution Radar v2.0 • Global Multilingual Feed',
-    footerSubtitle: 'Real-time data from 9 sources across 5+ languages',
+    footerSubtitle: 'Real-time data from 8 sources across 5+ languages',
     realTimeDataFrom:
-      'Real-time data from GitHub, arXiv, Semantic Scholar, PubMed, HAL, CNKI, CiNii & Hacker News',
+      'Real-time data from GitHub, arXiv, Hacker News, OpenAlex, PubMed, HAL & CiNii',
 
     // AI Blog Digest
     digestTitle: 'AI Blog Digest',
@@ -459,7 +459,7 @@ export const translations: Record<Language, Translations> = {
   ru: {
     // Header
     appTitle: 'Радар Эволюции Технологий',
-    appSubtitle: 'Глобальная лента • 9 источников • Мультиязычный',
+    appSubtitle: 'Глобальная лента • 8 источников • Мультиязычный',
     signals: 'сигналов',
     anomalies: 'аномалий',
     live: 'ОНЛАЙН',
@@ -581,7 +581,7 @@ export const translations: Record<Language, Translations> = {
     allCategories: 'Все категории',
     allStages: 'Все стадии',
     recent: 'Новые',
-    liveDataFrom: 'Глобальные данные из 9 источников на 5+ языках',
+    liveDataFrom: 'Глобальные данные из 8 источников на 5+ языках',
     failedToFetchLiveData: 'Не удалось загрузить данные',
     pleaseTryAgainLater: 'Пожалуйста, попробуйте позже',
     retry: 'Повторить',
@@ -630,10 +630,10 @@ export const translations: Record<Language, Translations> = {
     arxiv: 'arXiv',
     techcrunch: 'TechCrunch',
     hackerNews: 'Hacker News',
-    semanticScholar: 'Semantic Scholar',
+    openAlex: 'OpenAlex',
     pubmed: 'PubMed',
     hal: 'HAL (Франция)',
-    cnki: 'CNKI (Китай)',
+    openAlexZh: 'OpenAlex (Китай)',
     cinii: 'CiNii (Япония)',
 
     // Languages
@@ -669,9 +669,9 @@ export const translations: Record<Language, Translations> = {
     // Footer
     footerVersion:
       'Радар Эволюции Технологий v2.0 • Глобальная мультиязычная лента',
-    footerSubtitle: 'Данные в реальном времени из 9 источников на 5+ языках',
+    footerSubtitle: 'Данные в реальном времени из 8 источников на 5+ языках',
     realTimeDataFrom:
-      'Данные в реальном времени из GitHub, arXiv, Semantic Scholar, PubMed, HAL, CNKI, CiNii и Hacker News',
+      'Данные в реальном времени из GitHub, arXiv, Hacker News, OpenAlex, PubMed, HAL и CiNii',
 
     // AI Blog Digest
     digestTitle: 'Дайджест AI-блогов',
@@ -730,9 +730,9 @@ export const getLocalizedSources = (lang: Language) => ({
   arxiv: translations[lang].arxiv,
   techcrunch: translations[lang].techcrunch,
   hackernews: translations[lang].hackerNews,
-  'semantic-scholar': translations[lang].semanticScholar,
+  openalex: translations[lang].openAlex,
   pubmed: translations[lang].pubmed,
   hal: translations[lang].hal,
-  cnki: translations[lang].cnki,
+  'openalex-zh': translations[lang].openAlexZh,
   cinii: translations[lang].cinii,
 })

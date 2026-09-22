@@ -5,11 +5,11 @@
  * - GitHub Trending
  * - arXiv Papers
  * - Hacker News
- * - Semantic Scholar
+ * - OpenAlex (most-cited recent research)
  * - PubMed
  * - HAL (French)
  * - CiNii (Japanese)
- * - CNKI (Chinese)
+ * - OpenAlex (Chinese-language research)
  */
 
 import {
@@ -265,7 +265,7 @@ async function testHackerNewsParser(): Promise<TestResult> {
 
 async function testMultilingualParsers(): Promise<TestResult> {
   const start = Date.now()
-  const name = 'Multilingual Sources (HAL, CiNii, CNKI)'
+  const name = 'Multilingual Sources (HAL, CiNii, OpenAlex China)'
 
   try {
     const result = await fetchMultilingualFeedFn()

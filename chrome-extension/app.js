@@ -247,6 +247,7 @@ const elements = {
   sourceFilter: document.getElementById('source-filter'),
   feedList: document.getElementById('feed-list'),
   radarCanvas: document.getElementById('radar-canvas'),
+  radarTooltip: document.getElementById('radar-tooltip'),
   tooltip: document.getElementById('tooltip'),
   aiHeadline: document.getElementById('ai-headline'),
   aiSubtext: document.getElementById('ai-subtext'),
@@ -1213,8 +1214,13 @@ function renderFeed() {
   })
 }
 
+// Hit targets from the last radar draw, in draw order: { x, y, r, item }.
+let radarPoints = []
+let radarHoverId = null
+
 function renderRadar() {
   const canvas = elements.radarCanvas
+  radarPoints = []
   const ctx = canvas.getContext('2d')
 
   // Set canvas size
@@ -1304,13 +1310,113 @@ function renderRadar() {
       ctx.lineWidth = 2
       ctx.stroke()
     }
+
+    radarPoints.push({ x, y, r: size, item })
   })
+
+  // Hovered / keyboard-focused signal: bright ring on top of everything.
+  const hovered = radarPoints.find((p) => p.item.id === radarHoverId)
+  if (hovered) {
+    ctx.beginPath()
+    ctx.arc(hovered.x, hovered.y, hovered.r + 5, 0, Math.PI * 2)
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 2
+    ctx.stroke()
+  } else {
+    radarHoverId = null
+  }
 
   // Draw center dot
   ctx.beginPath()
   ctx.arc(centerX, centerY, 4, 0, Math.PI * 2)
   ctx.fillStyle = '#00f0ff'
   ctx.fill()
+}
+
+/** Nearest dot under (x, y) in canvas CSS pixels, with a few px of slack. */
+function radarHitTest(x, y) {
+  let best = null
+  let bestDist = Infinity
+  for (const p of radarPoints) {
+    const dist = Math.hypot(p.x - x, p.y - y)
+    if (dist <= p.r + 6 && dist < bestDist) {
+      best = p
+      bestDist = dist
+    }
+  }
+  return best
+}
+
+function showRadarTooltip(point) {
+  const tip = elements.radarTooltip
+  const { item } = point
+  // textContent only: titles come from third-party APIs.
+  const title = document.createElement('strong')
+  title.textContent = item.title
+  const meta = document.createElement('span')
+  meta.textContent = [
+    CATEGORY_CONFIG[item.category]?.label,
+    MATURITY_CONFIG[item.maturityStage]?.label,
+    SOURCE_CONFIG[item.source]?.label,
+    item.isAnomaly ? '🔥 anomaly' : null,
+  ]
+    .filter(Boolean)
+    .join(' · ')
+  tip.replaceChildren(title, meta)
+  tip.classList.remove('hidden')
+  // Keep the tooltip inside the radar box: flip left near the right edge.
+  const box = elements.radarCanvas.getBoundingClientRect()
+  const left = point.x + point.r + 10
+  tip.style.left = `${Math.min(left, box.width - tip.offsetWidth - 8)}px`
+  tip.style.top = `${Math.max(point.y - tip.offsetHeight / 2, 4)}px`
+}
+
+function setRadarHover(point) {
+  const id = point ? point.item.id : null
+  elements.radarCanvas.style.cursor = point ? 'pointer' : 'default'
+  if (id !== radarHoverId) {
+    radarHoverId = id
+    renderRadar()
+  }
+  if (point) showRadarTooltip(point)
+  else elements.radarTooltip.classList.add('hidden')
+}
+
+function openRadarItem(point) {
+  window.open(safeUrl(point.item.sourceUrl), '_blank')
+}
+
+function setupRadarInteractions() {
+  const canvas = elements.radarCanvas
+  const localPoint = (e) => {
+    const rect = canvas.getBoundingClientRect()
+    return [e.clientX - rect.left, e.clientY - rect.top]
+  }
+  canvas.addEventListener('mousemove', (e) =>
+    setRadarHover(radarHitTest(...localPoint(e))),
+  )
+  canvas.addEventListener('mouseleave', () => setRadarHover(null))
+  canvas.addEventListener('click', (e) => {
+    const hit = radarHitTest(...localPoint(e))
+    if (hit) openRadarItem(hit)
+  })
+  // Keyboard: arrows walk the signals in draw order, Enter/Space opens one.
+  canvas.addEventListener('keydown', (e) => {
+    if (!radarPoints.length) return
+    const current = radarPoints.findIndex((p) => p.item.id === radarHoverId)
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault()
+      setRadarHover(radarPoints[(current + 1) % radarPoints.length])
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault()
+      const prev = current <= 0 ? radarPoints.length - 1 : current - 1
+      setRadarHover(radarPoints[prev])
+    } else if ((e.key === 'Enter' || e.key === ' ') && current >= 0) {
+      e.preventDefault()
+      openRadarItem(radarPoints[current])
+    }
+  })
+  canvas.addEventListener('blur', () => setRadarHover(null))
 }
 
 function hexToRgba(hex, alpha) {
@@ -1366,6 +1472,8 @@ function safeUrl(url) {
 // ============================================
 
 function setupEventListeners() {
+  setupRadarInteractions()
+
   // Refresh button
   elements.refreshBtn.addEventListener('click', async () => {
     elements.refreshBtn.classList.add('spinning')
