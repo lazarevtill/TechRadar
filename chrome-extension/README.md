@@ -37,7 +37,9 @@ convert icon.svg -resize 128x128 icon128.png
 1. Open Chrome and go to `chrome://extensions/`
 2. Enable **Developer mode** (toggle in top right corner)
 3. Click **Load unpacked**
-4. Select the `chrome-extension` folder
+4. Select the `chrome-extension` folder (sources, for development), or run
+   `bun run build:extension` and select `dist/extension/unpacked` — the
+   minified build that ships in `dist/extension/tech-radar-extension.zip`
 5. Done! Open a new tab to see the radar 🎉
 
 ## 📁 File Structure

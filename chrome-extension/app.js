@@ -671,19 +671,19 @@ async function fetchAllData() {
   updateStatusBadge(true)
 
   try {
-    // Check cache first
+    // Stale-while-revalidate: paint whatever is cached right away, so a new
+    // tab never waits on GitHub/arXiv/HN just because the cache aged out.
     const cached = await getCachedData()
-    if (cached && Date.now() - cached.timestamp < CONFIG.CACHE_DURATION) {
+    if (cached) {
       state.items = cached.items.map((item) => ({
         ...item,
         publishedAt: new Date(item.publishedAt),
       }))
       state.stats = cached.stats
       state.lastFetched = new Date(cached.timestamp)
-      state.isLoading = false
       state.error = null
+      if (Date.now() - cached.timestamp < CONFIG.CACHE_DURATION) return
       render()
-      return
     }
 
     // Fetch fresh data
@@ -736,13 +736,10 @@ async function fetchTrends(force = false) {
       else
         resolve(JSON.parse(localStorage.getItem('techRadarTrends') || 'null'))
     })
-    if (
-      !force &&
-      cachedRaw &&
-      Date.now() - cachedRaw.timestamp < TRENDS_TTL_MS
-    ) {
+    if (cachedRaw) {
+      // Show the cached copy immediately; refetch only once it has expired.
       state.trends = cachedRaw.topics || []
-      return
+      if (!force && Date.now() - cachedRaw.timestamp < TRENDS_TTL_MS) return
     }
     const data = await fetchDataFile('trends.json')
     state.trends = data.topics || []
@@ -765,13 +762,10 @@ async function fetchDigest(force = false) {
       else
         resolve(JSON.parse(localStorage.getItem('techRadarDigest') || 'null'))
     })
-    if (
-      !force &&
-      cachedRaw &&
-      Date.now() - cachedRaw.timestamp < DIGEST_TTL_MS
-    ) {
+    if (cachedRaw) {
+      // Show the cached copy immediately; refetch only once it has expired.
       state.digest = cachedRaw.items || []
-      return
+      if (!force && Date.now() - cachedRaw.timestamp < DIGEST_TTL_MS) return
     }
     const data = await fetchDataFile('digest.json')
     state.digest = data.items || []
@@ -1472,10 +1466,13 @@ async function init() {
   elements.langRu.classList.toggle('active', state.language === 'ru')
 
   setupEventListeners()
-  await fetchAllData()
-  await fetchTrends()
-  await fetchDigest()
-  render()
+  // All three read their caches first and only then hit the network, so run
+  // them together: the first paint no longer waits on the slowest source.
+  await Promise.all([
+    fetchAllData(),
+    fetchTrends().then(render),
+    fetchDigest().then(render),
+  ])
 
   // Set up auto-refresh
   setInterval(fetchAllData, CONFIG.REFRESH_INTERVAL)

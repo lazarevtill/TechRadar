@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "vite dev --port 3000",
     "start": "bun run server.ts",
-    "build": "tsr generate && ./node_modules/typescript-7/bin/tsc --noEmit && vite build --sourcemap",
-    "build:node": "tsr generate && ./node_modules/typescript-7/bin/tsc --noEmit && FOR_SITES=true vite build",
+    "build": "tsr generate && ./node_modules/typescript-7/bin/tsc --noEmit && vite build --sourcemap && bun run build:extension",
+    "build:node": "tsr generate && ./node_modules/typescript-7/bin/tsc --noEmit && FOR_SITES=true vite build && bun run build:extension",
+    "build:extension": "bun run scripts/build-extension.ts",
     "serve": "vite preview",
     "test": "vitest run",
     "test:parsers": "bun run src/server/functions/__tests__/run-tests.ts",
