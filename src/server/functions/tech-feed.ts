@@ -170,7 +170,9 @@ function calculateMaturityStage(item: {
     item.source === 'openalex-zh' ||
     item.source === 'pubmed' ||
     item.source === 'hal' ||
-    item.source === 'cinii'
+    item.source === 'cinii' ||
+    item.source === 'hf-papers' ||
+    item.source === 'biorxiv'
   ) {
     // High-citation papers may indicate more mature research
     if (item.citationCount && item.citationCount > 500) return 'early-adopter'
@@ -199,6 +201,9 @@ async function fetchGitHubTrending(): Promise<RawItem[]> {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
     const dateStr = oneWeekAgo.toISOString().split('T')[0]
 
+    // One search per radar area. Keyless search allows ~10 requests/minute,
+    // so without a token each query returns 5 repos; GITHUB_TOKEN (server-side
+    // only) raises the limit to 30/minute and the page size to 15.
     const queries = [
       'machine-learning',
       'llm',
@@ -207,17 +212,24 @@ async function fetchGitHubTrending(): Promise<RawItem[]> {
       'robotics',
       'blockchain',
       'cybersecurity',
+      'bioinformatics',
+      'energy',
+      'aerospace',
     ]
+    const token = process.env.GITHUB_TOKEN
+    const perPage = token ? 15 : 5
+    const searches = token ? queries : queries.slice(0, 7)
 
     const allRepos: GitHubRepo[] = []
 
-    for (const query of queries.slice(0, 3)) {
+    for (const query of searches) {
       const response = await fetchWithRetry(
-        `https://api.github.com/search/repositories?q=${query}+created:>${dateStr}&sort=stars&order=desc&per_page=5`,
+        `https://api.github.com/search/repositories?q=${query}+created:>${dateStr}&sort=stars&order=desc&per_page=${perPage}`,
         {
           headers: {
             Accept: 'application/vnd.github.v3+json',
             'User-Agent': 'TechEvolutionRadar/1.0',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           retries: 3,
           baseDelay: 1000,
@@ -270,7 +282,7 @@ async function fetchGitHubTrending(): Promise<RawItem[]> {
         },
       }
     })
-    const items = (await applyCategories(candidates)).slice(0, 10)
+    const items = (await applyCategories(candidates)).slice(0, 40)
 
     // Cache the results
     setCache(CACHE_KEYS.GITHUB, items, CACHE_TTL.DEFAULT)
@@ -287,11 +299,24 @@ async function fetchArxivPapers(): Promise<RawItem[]> {
   if (cached) return cached
 
   try {
-    const categories = ['cs.AI', 'cs.LG', 'cs.CL', 'quant-ph', 'cs.CR']
+    // One category per radar area, not just AI: robotics, vision, security,
+    // quantum, genomics, astrophysics instrumentation, energy engineering.
+    const categories = [
+      'cs.AI',
+      'cs.LG',
+      'cs.CL',
+      'cs.CV',
+      'cs.RO',
+      'cs.CR',
+      'quant-ph',
+      'q-bio.GN',
+      'astro-ph.IM',
+      'eess.SY',
+    ]
     const query = categories.map((c) => `cat:${c}`).join('+OR+')
 
     const response = await fetchWithRetry(
-      `https://export.arxiv.org/api/query?search_query=${query}&start=0&max_results=15&sortBy=submittedDate&sortOrder=descending`,
+      `https://export.arxiv.org/api/query?search_query=${query}&start=0&max_results=50&sortBy=submittedDate&sortOrder=descending`,
       {
         retries: 3,
         baseDelay: 1000,
@@ -344,7 +369,7 @@ async function fetchArxivPapers(): Promise<RawItem[]> {
       })
     }
 
-    const papers = entries.slice(0, 10)
+    const papers = entries.slice(0, 50)
     const candidates = papers.map((entry, index): RawItem => {
       const arxivId = entry.id.split('/').pop() || entry.id
       const id = `arxiv-${arxivId}-${index}`
@@ -402,7 +427,7 @@ async function fetchHackerNews(): Promise<RawItem[]> {
 
     const topStoryIds: number[] = await topStoriesRes.json()
 
-    const storyPromises = topStoryIds.slice(0, 30).map(async (id) => {
+    const storyPromises = topStoryIds.slice(0, 100).map(async (id) => {
       const res = await fetchWithRetry(
         `https://hacker-news.firebaseio.com/v0/item/${id}.json`,
         {
@@ -444,7 +469,7 @@ async function fetchHackerNews(): Promise<RawItem[]> {
         },
       }
     })
-    const items = (await applyCategories(candidates)).slice(0, 10)
+    const items = (await applyCategories(candidates)).slice(0, 40)
 
     // Cache the results
     setCache(CACHE_KEYS.HACKERNEWS, items, CACHE_TTL.DEFAULT)
@@ -572,10 +597,10 @@ async function fetchOpenAlex(): Promise<RawItem[]> {
         `primary_topic.field.id:${OPENALEX_FIELDS}`,
       ].join(','),
       'cited_by_count:desc',
-      12,
+      30,
     )
     const candidates = works.map((w) => openAlexToItem(w, 'openalex', 'en'))
-    const items = (await applyCategories(candidates)).slice(0, 8)
+    const items = (await applyCategories(candidates)).slice(0, 20)
 
     setCache(CACHE_KEYS.OPENALEX, items, CACHE_TTL.DEFAULT)
     return items
@@ -600,10 +625,10 @@ async function fetchOpenAlexChinese(): Promise<RawItem[]> {
         `primary_topic.field.id:${OPENALEX_FIELDS}`,
       ].join(','),
       'publication_date:desc',
-      15,
+      25,
     )
     const candidates = works.map((w) => openAlexToItem(w, 'openalex-zh', 'zh'))
-    const items = (await applyCategories(candidates)).slice(0, 6)
+    const items = (await applyCategories(candidates)).slice(0, 12)
 
     setCache(CACHE_KEYS.OPENALEX_ZH, items, CACHE_TTL.DEFAULT)
     return items
@@ -641,7 +666,7 @@ async function fetchPubMed(): Promise<RawItem[]> {
     // the future.
     const searchTerms =
       'artificial+intelligence+OR+machine+learning+OR+CRISPR+OR+gene+therapy'
-    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${searchTerms}&datetype=edat&reldate=60&retmax=10&retmode=json`
+    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${searchTerms}&datetype=edat&reldate=60&retmax=25&retmode=json`
 
     const searchRes = await fetchWithRetry(searchUrl, {
       retries: 3,
@@ -667,7 +692,7 @@ async function fetchPubMed(): Promise<RawItem[]> {
 
     const articleIds: string[] = ids
       .filter((id: string) => articles[id])
-      .slice(0, 6)
+      .slice(0, 25)
     const candidates = articleIds.map((id): RawItem => {
       const article = articles[id]
       const title = article.title || 'Untitled'
@@ -716,7 +741,7 @@ async function fetchHAL(): Promise<RawItem[]> {
     // HAL - French open archive. Domain codes are hierarchical ('0.info' =
     // computer science, '0.spi' = engineering); bare 'info' matches nothing.
     const response = await fetchWithRetry(
-      `https://api.archives-ouvertes.fr/search/?q=*:*&fq=docType_s:ART&fq=submittedDate_tdate:[NOW-30DAY TO NOW]&fq=domain_s:(0.info OR 0.spi)&rows=12&fl=docid,title_s,abstract_s,producedDate_s,authFullName_s,uri_s,language_s&sort=submittedDate_tdate desc&wt=json`,
+      `https://api.archives-ouvertes.fr/search/?q=*:*&fq=docType_s:ART&fq=submittedDate_tdate:[NOW-30DAY TO NOW]&fq=domain_s:(0.info OR 0.spi)&rows=25&fl=docid,title_s,abstract_s,producedDate_s,authFullName_s,uri_s,language_s&sort=submittedDate_tdate desc&wt=json`,
       {
         retries: 3,
         baseDelay: 1000,
@@ -752,7 +777,7 @@ async function fetchHAL(): Promise<RawItem[]> {
         jev: { id: `hal-${doc.docid}`, title, summary: abstract },
       }
     })
-    const items = (await applyCategories(candidates)).slice(0, 6)
+    const items = (await applyCategories(candidates)).slice(0, 12)
 
     // Cache the results
     setCache(CACHE_KEYS.HAL, items, CACHE_TTL.DEFAULT)
@@ -774,7 +799,7 @@ async function fetchCiNii(): Promise<RawItem[]> {
     // relevance order surfaced years-old articles and tables of contents.
     const params = new URLSearchParams({
       q: '人工知能 OR 機械学習 OR 量子コンピュータ OR ロボット',
-      count: '15',
+      count: '25',
       sortorder: '0',
       from: String(new Date().getFullYear() - 1),
       format: 'json',
@@ -843,13 +868,292 @@ async function fetchCiNii(): Promise<RawItem[]> {
       }
     })
 
-    const result = (await applyCategories(candidates)).slice(0, 6)
+    const result = (await applyCategories(candidates)).slice(0, 12)
 
     // Cache the results
     setCache(CACHE_KEYS.CINII, result, CACHE_TTL.DEFAULT)
     return result
   } catch (error) {
     console.error('CiNii API error:', error)
+    return []
+  }
+}
+
+// ============================================================================
+// HUGGING FACE, PREPRINTS, LOBSTERS (keyless)
+// ============================================================================
+
+interface HFDailyPaper {
+  title?: string
+  publishedAt?: string
+  paper: {
+    id: string // arXiv id
+    title: string
+    summary?: string
+    upvotes?: number
+    publishedAt?: string
+  }
+}
+
+/** Hugging Face Daily Papers from the last week, most-upvoted first. */
+async function fetchHuggingFacePapers(): Promise<RawItem[]> {
+  const cached = getCached<RawItem[]>(CACHE_KEYS.HF_PAPERS)
+  if (cached) return cached
+
+  try {
+    // Daily Papers are published per day (none on some weekends).
+    const days = Array.from({ length: 7 }, (_, i) => isoDaysAgo(i))
+    const perDay = await Promise.all(
+      days.map(async (date) => {
+        const res = await fetchWithRetry(
+          `https://huggingface.co/api/daily_papers?date=${date}`,
+          { retries: 2, baseDelay: 500, timeout: 15_000 },
+        )
+        return res.ok ? ((await res.json()) as HFDailyPaper[]) : []
+      }),
+    )
+    const seen = new Set<string>()
+    const papers = perDay
+      .flat()
+      .filter(
+        (p) => p.paper?.id && !seen.has(p.paper.id) && seen.add(p.paper.id),
+      )
+      .sort((a, b) => (b.paper.upvotes ?? 0) - (a.paper.upvotes ?? 0))
+      .slice(0, 40)
+
+    const candidates = papers.map((entry): RawItem => {
+      const { paper } = entry
+      const id = `hfp-${paper.id}`
+      const summary = paper.summary ?? ''
+      return {
+        id,
+        title: paper.title,
+        summary: summary.slice(0, 300) + (summary.length > 300 ? '...' : ''),
+        source: 'hf-papers',
+        sourceUrl: `https://huggingface.co/papers/${paper.id}`,
+        category: 'uncategorized',
+        maturityStage: 'research',
+        publishedAt: new Date(
+          entry.publishedAt ?? paper.publishedAt ?? Date.now(),
+        ),
+        whyItMatters: `${paper.upvotes ?? 0} upvotes on Hugging Face Daily Papers.`,
+        originalLanguage: 'en',
+        engagement: paper.upvotes ?? 0,
+        engagementUnit: 'upvotes',
+        jev: {
+          id,
+          title: paper.title,
+          summary,
+          evidence: { arxiv_id: paper.id },
+        },
+      }
+    })
+    const items = (await applyCategories(candidates)).slice(0, 30)
+    setCache(CACHE_KEYS.HF_PAPERS, items, CACHE_TTL.DEFAULT)
+    return items
+  } catch (error) {
+    console.error('Hugging Face papers API error:', error)
+    return []
+  }
+}
+
+interface HFModel {
+  id: string
+  likes?: number
+  downloads?: number
+  trendingScore?: number
+  pipeline_tag?: string
+  tags?: string[]
+  createdAt?: string
+}
+
+/** Models trending on the Hugging Face Hub, by recent likes. */
+async function fetchHuggingFaceModels(): Promise<RawItem[]> {
+  const cached = getCached<RawItem[]>(CACHE_KEYS.HF_MODELS)
+  if (cached) return cached
+
+  try {
+    const res = await fetchWithRetry(
+      'https://huggingface.co/api/models?sort=trendingScore&limit=40',
+      { retries: 2, baseDelay: 500, timeout: 15_000 },
+    )
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const models = (await res.json()) as HFModel[]
+
+    const candidates = models.map((model): RawItem => {
+      const id = `hfm-${model.id}`
+      const task = model.pipeline_tag ?? 'model'
+      const tags = (model.tags ?? [])
+        .filter((t) => !t.includes(':'))
+        .slice(0, 8)
+      return {
+        id,
+        title: model.id,
+        summary: `${task} · ${(model.likes ?? 0).toLocaleString()} likes · ${(model.downloads ?? 0).toLocaleString()} downloads (30 days)`,
+        source: 'hf-models',
+        sourceUrl: `https://huggingface.co/${model.id}`,
+        category: 'uncategorized',
+        maturityStage: calculateMaturityStage({
+          stars: model.likes,
+          source: 'hf-models',
+        }),
+        publishedAt: new Date(model.createdAt ?? Date.now()),
+        whyItMatters: `Trending on the Hugging Face Hub (${task}).`,
+        originalLanguage: 'en',
+        engagement: model.likes ?? 0,
+        engagementUnit: 'likes',
+        jev: {
+          id,
+          title: model.id,
+          summary: `A ${task} model on Hugging Face.`,
+          evidence: { task, tags },
+        },
+      }
+    })
+    const items = (await applyCategories(candidates)).slice(0, 30)
+    setCache(CACHE_KEYS.HF_MODELS, items, CACHE_TTL.DEFAULT)
+    return items
+  } catch (error) {
+    console.error('Hugging Face models API error:', error)
+    return []
+  }
+}
+
+interface PreprintRecord {
+  doi: string
+  title: string
+  abstract?: string
+  date: string
+  category?: string
+  authors?: string
+  server?: string
+}
+
+/** Newest bioRxiv and medRxiv preprints (their shared public API). */
+async function fetchPreprints(): Promise<RawItem[]> {
+  const cached = getCached<RawItem[]>(CACHE_KEYS.PREPRINTS)
+  if (cached) return cached
+
+  try {
+    // bioRxiv posts ~250 preprints a day; a 2-day window keeps the call fast
+    // (a week-long one timed out at 40 s). medRxiv is smaller: one week.
+    const windows: Array<[string, number]> = [
+      ['biorxiv', 2],
+      ['medrxiv', 7],
+    ]
+    const perServer = await Promise.all(
+      windows.map(async ([server, days]) => {
+        const res = await fetchWithRetry(
+          `https://api.biorxiv.org/details/${server}/${isoDaysAgo(days)}/${isoDaysAgo(0)}/0/json`,
+          { retries: 1, baseDelay: 1000, timeout: 20_000 },
+        )
+        if (!res.ok) return []
+        const data = (await res.json()) as { collection?: PreprintRecord[] }
+        return (data.collection ?? []).map((r) => ({ ...r, server }))
+      }),
+    )
+    const seen = new Set<string>()
+    const records = perServer
+      .flat()
+      .filter((r) => r.doi && !seen.has(r.doi) && seen.add(r.doi))
+
+    const candidates = records.map((r): RawItem => {
+      const id = `bx-${r.doi}`
+      const abstract = r.abstract ?? ''
+      const server = r.server === 'medrxiv' ? 'medRxiv' : 'bioRxiv'
+      return {
+        id,
+        title: r.title,
+        summary: abstract.slice(0, 300) + (abstract.length > 300 ? '...' : ''),
+        source: 'biorxiv',
+        sourceUrl: `https://doi.org/${r.doi}`,
+        category: 'uncategorized',
+        maturityStage: 'research',
+        publishedAt: new Date(r.date),
+        whyItMatters: `${server} preprint${r.category ? ` in ${r.category}` : ''}; not yet peer-reviewed.`,
+        originalLanguage: 'en',
+        engagement: null,
+        engagementUnit: null,
+        jev: {
+          id,
+          title: r.title,
+          summary: abstract,
+          evidence: { server, category: r.category ?? '' },
+        },
+      }
+    })
+    const items = (await applyCategories(candidates)).slice(0, 30)
+    setCache(CACHE_KEYS.PREPRINTS, items, CACHE_TTL.DEFAULT)
+    return items
+  } catch (error) {
+    console.error('bioRxiv/medRxiv API error:', error)
+    return []
+  }
+}
+
+interface LobstersStory {
+  short_id: string
+  title: string
+  url: string
+  comments_url: string
+  score: number
+  comment_count: number
+  created_at: string
+  tags: string[]
+  description_plain?: string
+}
+
+/** Lobsters' front page (two pages): a smaller, engineering-heavy HN. */
+async function fetchLobsters(): Promise<RawItem[]> {
+  const cached = getCached<RawItem[]>(CACHE_KEYS.LOBSTERS)
+  if (cached) return cached
+
+  try {
+    const pages = await Promise.all(
+      [1, 2].map(async (page) => {
+        const res = await fetchWithRetry(
+          `https://lobste.rs/hottest.json?page=${page}`,
+          { retries: 2, baseDelay: 500, timeout: 15_000 },
+        )
+        return res.ok ? ((await res.json()) as LobstersStory[]) : []
+      }),
+    )
+    const seen = new Set<string>()
+    const stories = pages
+      .flat()
+      .filter((s) => !seen.has(s.short_id) && seen.add(s.short_id))
+
+    const candidates = stories.map((story): RawItem => {
+      const id = `lob-${story.short_id}`
+      return {
+        id,
+        title: story.title,
+        summary:
+          story.description_plain?.slice(0, 300) ||
+          `${story.score} points and ${story.comment_count} comments on Lobsters.`,
+        source: 'lobsters',
+        sourceUrl: story.url || story.comments_url,
+        category: 'uncategorized',
+        maturityStage: calculateMaturityStage({
+          score: story.score,
+          source: 'lobsters',
+        }),
+        publishedAt: new Date(story.created_at),
+        originalLanguage: detectLanguage(story.title),
+        engagement: story.score,
+        engagementUnit: 'points',
+        jev: {
+          id,
+          title: story.title,
+          evidence: { tags: story.tags, url: story.url ?? '' },
+        },
+      }
+    })
+    const items = (await applyCategories(candidates)).slice(0, 30)
+    setCache(CACHE_KEYS.LOBSTERS, items, CACHE_TTL.DEFAULT)
+    return items
+  } catch (error) {
+    console.error('Lobsters API error:', error)
     return []
   }
 }
@@ -898,17 +1202,9 @@ export function deriveStats(items: TechItem[]): TechFeedStats {
 
 /** Fetch every source, categorize, rank, translate, and derive stats. */
 async function buildTechFeed() {
-  // Fetch from all sources in parallel
-  const [
-    githubItems,
-    arxivItems,
-    hnItems,
-    openAlexItems,
-    pubmedItems,
-    halItems,
-    ciniiItems,
-    openAlexZhItems,
-  ] = await Promise.all([
+  // Fetch from all sources in parallel. To add one, see CLAUDE.md
+  // ("To add a data source").
+  const perSource = await Promise.all([
     fetchGitHubTrending(),
     fetchArxivPapers(),
     fetchHackerNews(),
@@ -917,20 +1213,15 @@ async function buildTechFeed() {
     fetchHAL(),
     fetchCiNii(),
     fetchOpenAlexChinese(),
+    fetchHuggingFacePapers(),
+    fetchHuggingFaceModels(),
+    fetchPreprints(),
+    fetchLobsters(),
   ])
 
   // Rank the whole fetch together: percentiles are per source, convergence
   // needs every source at once.
-  let allItems = await assembleItems([
-    ...githubItems,
-    ...arxivItems,
-    ...hnItems,
-    ...openAlexItems,
-    ...pubmedItems,
-    ...halItems,
-    ...ciniiItems,
-    ...openAlexZhItems,
-  ])
+  let allItems = await assembleItems(perSource.flat())
 
   // Translate non-English items
   const nonEnglishItems = allItems.filter(

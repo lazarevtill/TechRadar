@@ -19,6 +19,8 @@ services:
       # OpenAlex's polite pool. Read from the host env / .env.
       MYMEMORY_EMAIL: ${MYMEMORY_EMAIL:-}
       OPENALEX_MAILTO: ${OPENALEX_MAILTO:-}
+      # Optional, server-side only: more GitHub searches per refresh.
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       # Point at a different fork's generated data if needed:
       # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
     restart: unless-stopped

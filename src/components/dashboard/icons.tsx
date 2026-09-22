@@ -2,6 +2,8 @@ import type { ComponentType } from 'react'
 import {
   Atom,
   Bot,
+  Boxes,
+  FlaskConical,
   Brain,
   CircleHelp,
   Dna,
@@ -54,6 +56,10 @@ export const SOURCE_ICONS: Record<DataSource, Icon> = {
   hal: BookOpen,
   'openalex-zh': GraduationCap,
   cinii: BookOpen,
+  'hf-papers': FileText,
+  'hf-models': Boxes,
+  biorxiv: FlaskConical,
+  lobsters: MessageSquare,
 }
 
 export const REASON_ICONS: Record<SignalReason, Icon> = {

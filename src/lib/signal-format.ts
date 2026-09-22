@@ -30,6 +30,10 @@ export function engagementUnitLabel(
       return t.hnPoints
     case 'citations':
       return t.citations
+    case 'upvotes':
+      return t.upvotes
+    case 'likes':
+      return t.likes
   }
 }
 

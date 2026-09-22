@@ -70,6 +70,8 @@ export interface Translations {
   stars: string
   hnPoints: string
   citations: string
+  upvotes: string
+  likes: string
   whyItMatters: string
   viewOn: string
   ago: string
@@ -210,6 +212,10 @@ export interface Translations {
   pubmed: string
   hal: string
   openAlexZh: string
+  hfPapers: string
+  hfModels: string
+  preprints: string
+  lobsters: string
   cinii: string
 
   // Language names
@@ -235,7 +241,7 @@ export interface Translations {
 export const translations: Record<Language, Translations> = {
   en: {
     appTitle: 'Tech Evolution Radar',
-    appSubtitle: 'Research and engineering signals from eight sources',
+    appSubtitle: 'Research and engineering signals from twelve sources',
     signals: 'signals',
     updated: 'Updated',
     updating: 'Updating',
@@ -257,7 +263,7 @@ export const translations: Record<Language, Translations> = {
       'Gaining attention much faster than its peers on the same source',
     reasonConverging: 'Converging',
     reasonConvergingDesc:
-      'The same tracked topic appears on three or more sources in this fetch',
+      'The strongest item of a tracked topic that appears on four or more sources in this fetch',
     reasonNovel: 'New capability',
     reasonNovelDesc:
       'Jev judges it likely to describe a capability not available before',
@@ -299,6 +305,8 @@ export const translations: Record<Language, Translations> = {
     stars: 'stars',
     hnPoints: 'points',
     citations: 'citations',
+    upvotes: 'upvotes',
+    likes: 'likes',
     whyItMatters: 'Context',
     viewOn: 'Open on',
     ago: 'ago',
@@ -391,7 +399,7 @@ export const translations: Record<Language, Translations> = {
     infoSubtitle: 'What is measured, what is judged, and what is highlighted',
     infoSourcesTitle: 'Sources',
     infoSourcesDesc:
-      'GitHub repositories created this week, new arXiv submissions, Hacker News front page, the most-cited recent journal and conference work on OpenAlex, PubMed, HAL (France), CiNii (Japan) and Chinese-language journals on OpenAlex. All fetched keyless, cached for five minutes, and served stale-while-revalidate.',
+      'GitHub repositories created this week, new arXiv submissions across ten fields, the Hacker News and Lobsters front pages, Hugging Face Daily Papers and trending models, bioRxiv and medRxiv preprints, the most-cited recent journal and conference work on OpenAlex, PubMed, HAL (France), CiNii (Japan) and Chinese-language journals on OpenAlex. All fetched by the server (GitHub optionally with a token), cached for five minutes, and served stale-while-revalidate.',
     infoCategoriesTitle: 'Categories',
     infoCategoriesDesc:
       'Each item is assigned to one of eight areas by TypeSafe’s Jev model, one request per item. Items outside every area are dropped. Without a key, items show as unclassified; nothing is guessed from keywords.',
@@ -399,7 +407,7 @@ export const translations: Record<Language, Translations> = {
     infoScoringDesc:
       'Sources report attention on incomparable scales, and several report none. Every item is placed among its own source’s peers in the current fetch; absolute thresholds are not used. The score is a weighted mean of the components below that are actually available for the item. Missing components are left out, never guessed; an item with nothing measurable has no score.',
     infoReachDesc:
-      'Percentile of stars, points or citations within the source.',
+      'Percentile of stars, points, upvotes, likes or citations within the source.',
     infoVelocityDesc:
       'Percentile of engagement per day of age within the source.',
     infoRecencyDesc:
@@ -412,7 +420,7 @@ export const translations: Record<Language, Translations> = {
       'Jev tags each item with tracked topics; convergence counts the distinct sources carrying the same topic in this fetch.',
     infoHighlightsTitle: 'Highlights',
     infoHighlightsDesc:
-      'An item is emphasized only when an explicit rule fires, and the reason is shown with it: fast-rising (a robust outlier in velocity among its source peers), converging (a topic on three or more sources), new capability (novelty probability at or above 0.5), or under the radar (the same, while reach is still low).',
+      'An item is emphasized only when an explicit rule fires, and the reason is shown with it: fast-rising (a robust outlier in velocity among its source peers), converging (the strongest item of a topic that is on four or more sources), new capability (novelty probability at or above 0.5), or under the radar (the same, while reach is still low).',
     infoMaturityTitle: 'Maturity',
     infoMaturityDesc:
       'Stage comes from counts in code: stars or points for engineering sources, citations for papers.',
@@ -446,6 +454,10 @@ export const translations: Record<Language, Translations> = {
     pubmed: 'PubMed',
     hal: 'HAL (France)',
     openAlexZh: 'OpenAlex (China)',
+    hfPapers: 'HF Papers',
+    hfModels: 'HF Models',
+    preprints: 'bioRxiv / medRxiv',
+    lobsters: 'Lobsters',
     cinii: 'CiNii (Japan)',
 
     english: 'English',
@@ -460,14 +472,14 @@ export const translations: Record<Language, Translations> = {
 
     footerVersion: 'Tech Evolution Radar',
     footerSubtitle:
-      'Live data from GitHub, arXiv, Hacker News, OpenAlex, PubMed, HAL and CiNii',
+      'Live data from GitHub, arXiv, Hacker News, Lobsters, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL and CiNii',
 
     loading: 'Loading',
     error: 'Error',
   },
   ru: {
     appTitle: 'Радар эволюции технологий',
-    appSubtitle: 'Сигналы из исследований и инженерии, восемь источников',
+    appSubtitle: 'Сигналы из исследований и инженерии, двенадцать источников',
     signals: 'сигналов',
     updated: 'Обновлено',
     updating: 'Обновление',
@@ -489,7 +501,7 @@ export const translations: Record<Language, Translations> = {
       'Набирает внимание заметно быстрее соседей по тому же источнику',
     reasonConverging: 'Совпадение тем',
     reasonConvergingDesc:
-      'Одна и та же отслеживаемая тема встречается в трёх и более источниках',
+      'Самая сильная запись по отслеживаемой теме, которая встречается в четырёх и более источниках',
     reasonNovel: 'Новая возможность',
     reasonNovelDesc:
       'По оценке Jev, вероятно описывает возможность, которой раньше не было',
@@ -531,6 +543,8 @@ export const translations: Record<Language, Translations> = {
     stars: 'звёзд',
     hnPoints: 'очков',
     citations: 'цитирований',
+    upvotes: 'голосов',
+    likes: 'лайков',
     whyItMatters: 'Контекст',
     viewOn: 'Открыть на',
     ago: 'назад',
@@ -624,7 +638,7 @@ export const translations: Record<Language, Translations> = {
     infoSubtitle: 'Что измеряется, что оценивается и что выделяется',
     infoSourcesTitle: 'Источники',
     infoSourcesDesc:
-      'Репозитории GitHub, созданные на этой неделе, новые статьи arXiv, главная Hacker News, самые цитируемые свежие журнальные и конференционные работы в OpenAlex, PubMed, HAL (Франция), CiNii (Япония) и китайскоязычные журналы в OpenAlex. Всё без ключей, кэш на пять минут, отдаётся по схеме stale-while-revalidate.',
+      'Репозитории GitHub, созданные на этой неделе, новые статьи arXiv по десяти направлениям, главные страницы Hacker News и Lobsters, Hugging Face Daily Papers и популярные модели, препринты bioRxiv и medRxiv, самые цитируемые свежие журнальные и конференционные работы в OpenAlex, PubMed, HAL (Франция), CiNii (Япония) и китайскоязычные журналы в OpenAlex. Всё собирает сервер (GitHub — при желании с токеном), кэш на пять минут, отдаётся по схеме stale-while-revalidate.',
     infoCategoriesTitle: 'Категории',
     infoCategoriesDesc:
       'Каждую запись относит к одной из восьми областей модель Jev от TypeSafe, по одному запросу на запись. Записи вне всех областей отбрасываются. Без ключа записи показываются как «без категории»; по ключевым словам ничего не угадывается.',
@@ -644,7 +658,7 @@ export const translations: Record<Language, Translations> = {
       'Jev помечает записи отслеживаемыми темами; совпадение — число разных источников с одной темой в текущей выборке.',
     infoHighlightsTitle: 'Выделение',
     infoHighlightsDesc:
-      'Запись выделяется только когда срабатывает явное правило, и причина показывается рядом: быстрый рост (устойчивый выброс по скорости среди соседей по источнику), совпадение тем (тема в трёх и более источниках), новая возможность (вероятность новизны не ниже 0,5) или вне поля зрения (то же при пока низком охвате).',
+      'Запись выделяется только когда срабатывает явное правило, и причина показывается рядом: быстрый рост (устойчивый выброс по скорости среди соседей по источнику), совпадение тем (самая сильная запись темы, которая есть в четырёх и более источниках), новая возможность (вероятность новизны не ниже 0,5) или вне поля зрения (то же при пока низком охвате).',
     infoMaturityTitle: 'Зрелость',
     infoMaturityDesc:
       'Стадия вычисляется в коде из счётчиков: звёзды или очки для инженерных источников, цитирования для статей.',
@@ -678,6 +692,10 @@ export const translations: Record<Language, Translations> = {
     pubmed: 'PubMed',
     hal: 'HAL (Франция)',
     openAlexZh: 'OpenAlex (Китай)',
+    hfPapers: 'HF Papers',
+    hfModels: 'Модели HF',
+    preprints: 'bioRxiv / medRxiv',
+    lobsters: 'Lobsters',
     cinii: 'CiNii (Япония)',
 
     english: 'Английский',
@@ -692,7 +710,7 @@ export const translations: Record<Language, Translations> = {
 
     footerVersion: 'Радар эволюции технологий',
     footerSubtitle:
-      'Живые данные из GitHub, arXiv, Hacker News, OpenAlex, PubMed, HAL и CiNii',
+      'Живые данные из GitHub, arXiv, Hacker News, Lobsters, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL и CiNii',
 
     loading: 'Загрузка',
     error: 'Ошибка',
@@ -743,6 +761,10 @@ export const getLocalizedSources = (lang: Language) => ({
   pubmed: translations[lang].pubmed,
   hal: translations[lang].hal,
   'openalex-zh': translations[lang].openAlexZh,
+  'hf-papers': translations[lang].hfPapers,
+  'hf-models': translations[lang].hfModels,
+  biorxiv: translations[lang].preprints,
+  lobsters: translations[lang].lobsters,
   cinii: translations[lang].cinii,
 })
 
