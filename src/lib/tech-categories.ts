@@ -20,10 +20,10 @@ export type DataSource =
   | 'arxiv'
   | 'techcrunch'
   | 'hackernews'
-  | 'semantic-scholar' // High-citation academic papers
+  | 'openalex' // Most-cited recent peer-reviewed work (OpenAlex)
   | 'pubmed' // Biomedical research
   | 'hal' // French research archive
-  | 'cnki' // Chinese research
+  | 'openalex-zh' // Chinese-language journal research (OpenAlex)
   | 'cinii' // Japanese research
 
 export type OriginalLanguage =
@@ -155,15 +155,20 @@ export const SOURCE_CONFIG: Record<
     color: '#ff6600',
     language: 'en',
   },
-  'semantic-scholar': {
-    label: 'Semantic Scholar',
+  openalex: {
+    label: 'OpenAlex',
     icon: '🎓',
     color: '#1857b6',
     language: 'en',
   },
   pubmed: { label: 'PubMed', icon: '🏥', color: '#326599', language: 'en' },
   hal: { label: 'HAL (France)', icon: '🇫🇷', color: '#003366', language: 'fr' },
-  cnki: { label: 'CNKI (China)', icon: '🇨🇳', color: '#c41e3a', language: 'zh' },
+  'openalex-zh': {
+    label: 'OpenAlex (China)',
+    icon: '🇨🇳',
+    color: '#c41e3a',
+    language: 'zh',
+  },
   cinii: {
     label: 'CiNii (Japan)',
     icon: '🇯🇵',

@@ -163,13 +163,17 @@ export function TechFeed() {
       icon: MessageSquare,
     },
     {
-      value: 'semantic-scholar',
-      label: localizedSources['semantic-scholar'],
+      value: 'openalex',
+      label: localizedSources.openalex,
       icon: GraduationCap,
     },
     { value: 'pubmed', label: localizedSources.pubmed, icon: Stethoscope },
     { value: 'hal', label: localizedSources.hal, icon: FileText },
-    { value: 'cnki', label: localizedSources.cnki, icon: FileText },
+    {
+      value: 'openalex-zh',
+      label: localizedSources['openalex-zh'],
+      icon: FileText,
+    },
     { value: 'cinii', label: localizedSources.cinii, icon: FileText },
   ]
 

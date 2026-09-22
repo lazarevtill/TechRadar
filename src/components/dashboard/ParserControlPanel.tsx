@@ -82,10 +82,10 @@ export function ParserControlPanel() {
       'github',
       'arxiv',
       'hackernews',
-      'semantic-scholar',
+      'openalex',
       'pubmed',
       'hal',
-      'cnki',
+      'openalex-zh',
       'cinii',
     ]
 

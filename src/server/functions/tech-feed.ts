@@ -66,17 +66,20 @@ interface HNStory {
   type: string
 }
 
-interface SemanticScholarPaper {
-  paperId: string
-  title: string
-  abstract: string | null
-  year: number
-  citationCount: number
-  influentialCitationCount: number
-  url: string
-  authors: Array<{ name: string }>
-  fieldsOfStudy: string[] | null
-  publicationDate: string | null
+interface OpenAlexWork {
+  id: string // https://openalex.org/W…
+  doi: string | null
+  title: string | null
+  publication_date: string
+  cited_by_count: number
+  language: string | null
+  abstract_inverted_index: Record<string, number[]> | null
+  authorships: Array<{ author: { display_name: string } }>
+  primary_topic: {
+    display_name: string
+    field: { display_name: string }
+  } | null
+  primary_location: { source: { display_name: string } | null } | null
 }
 
 interface HALDocument {
@@ -91,10 +94,11 @@ interface HALDocument {
 
 interface CiNiiArticle {
   '@id': string
-  'dc:title': string
-  'dc:creator': string[]
-  'prism:publicationDate': string
-  'dc:description'?: string
+  title?: string
+  description?: string // may contain HTML
+  'dc:creator'?: string[]
+  'prism:publicationName'?: string
+  'prism:publicationDate'?: string
 }
 
 // ============================================================================
@@ -124,10 +128,10 @@ function calculateMaturityStage(item: {
 }): MaturityStage {
   if (
     item.source === 'arxiv' ||
-    item.source === 'semantic-scholar' ||
+    item.source === 'openalex' ||
+    item.source === 'openalex-zh' ||
     item.source === 'pubmed' ||
     item.source === 'hal' ||
-    item.source === 'cnki' ||
     item.source === 'cinii'
   ) {
     // High-citation papers may indicate more mature research
@@ -452,90 +456,169 @@ async function fetchHackerNews(): Promise<TechItem[]> {
 // NEW MULTILINGUAL SOURCES
 // ============================================================================
 
-async function fetchSemanticScholar(): Promise<TechItem[]> {
-  // Check cache first
-  const cached = getCached<TechItem[]>(CACHE_KEYS.SEMANTIC_SCHOLAR)
+// ============================================================================
+// OPENALEX (keyless; replaces Semantic Scholar, whose keyless pool answered 429
+// to every request, and the hardcoded CNKI samples — CNKI has no public API)
+// ============================================================================
+
+// OpenAlex field ids that cover the radar areas: Computer Science, Engineering,
+// Physics and Astronomy, Energy, Biochemistry/Genetics/Molecular Biology.
+const OPENALEX_FIELDS = '17|22|31|21|13'
+const OPENALEX_SELECT =
+  'id,doi,title,publication_date,cited_by_count,language,abstract_inverted_index,authorships,primary_topic,primary_location'
+
+function stripTags(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function isoDaysAgo(days: number): string {
+  return new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10)
+}
+
+/** OpenAlex ships abstracts as word → positions; rebuild the running text. */
+export function abstractFromInvertedIndex(
+  index: Record<string, number[]> | null,
+): string {
+  if (!index) return ''
+  const words: string[] = []
+  for (const [word, positions] of Object.entries(index)) {
+    for (const position of positions) words[position] = word
+  }
+  return words.filter(Boolean).join(' ')
+}
+
+async function queryOpenAlex(
+  filter: string,
+  sort: string,
+  perPage: number,
+): Promise<OpenAlexWork[]> {
+  const params = new URLSearchParams({
+    filter,
+    sort,
+    per_page: String(perPage),
+    select: OPENALEX_SELECT,
+  })
+  // Optional: identifies us for OpenAlex's faster "polite pool".
+  if (process.env.OPENALEX_MAILTO)
+    params.set('mailto', process.env.OPENALEX_MAILTO)
+  const response = await fetchWithRetry(
+    `https://api.openalex.org/works?${params}`,
+    { retries: 3, baseDelay: 1000 },
+  )
+  if (!response.ok) throw new Error(`OpenAlex HTTP ${response.status}`)
+  const data = (await response.json()) as { results?: OpenAlexWork[] }
+  return data.results ?? []
+}
+
+function openAlexToItem(
+  work: OpenAlexWork,
+  source: DataSource,
+  language: OriginalLanguage,
+): TechItem {
+  const abstract = abstractFromInvertedIndex(work.abstract_inverted_index)
+  const venue = work.primary_location?.source?.display_name
+  const authors = work.authorships.map((a) => a.author.display_name)
+  return {
+    id: `oa-${work.id.split('/').pop()}`,
+    title: work.title ?? 'Untitled',
+    summary:
+      abstract.slice(0, 300) + (abstract.length > 300 ? '...' : '') ||
+      `${work.primary_topic?.display_name ?? 'Research'}${venue ? ` — ${venue}` : ''}`,
+    source,
+    sourceUrl: work.doi ?? work.id,
+    category: 'uncategorized',
+    maturityStage: calculateMaturityStage({
+      citationCount: work.cited_by_count,
+      source,
+    }),
+    impactScore: calculateImpactScore({ citationCount: work.cited_by_count }),
+    hypeVolume: work.cited_by_count * 10,
+    publishedAt: new Date(work.publication_date),
+    citationCount: work.cited_by_count,
+    isAnomaly: work.cited_by_count > 100,
+    whyItMatters: `${work.cited_by_count.toLocaleString()} citations${venue ? ` in ${venue}` : ''}${authors.length ? ` — ${authors.slice(0, 2).join(', ')}${authors.length > 2 ? ' et al.' : ''}` : ''}.`,
+    originalLanguage: language,
+  }
+}
+
+function openAlexInput(work: OpenAlexWork, item: TechItem): CategorizeInput {
+  return {
+    id: item.id,
+    title: item.title,
+    summary: abstractFromInvertedIndex(work.abstract_inverted_index),
+    evidence: {
+      topic: work.primary_topic?.display_name ?? '',
+      field: work.primary_topic?.field.display_name ?? '',
+      venue: work.primary_location?.source?.display_name ?? '',
+    },
+  }
+}
+
+/** The most-cited peer-reviewed work of the last ~4 months. */
+async function fetchOpenAlex(): Promise<TechItem[]> {
+  const cached = getCached<TechItem[]>(CACHE_KEYS.OPENALEX)
   if (cached) return cached
 
   try {
-    // Fetch high-citation AI/ML papers
-    const queries = [
-      'machine learning',
-      'artificial intelligence',
-      'quantum computing',
-      'robotics',
-    ]
-
-    const allPapers: SemanticScholarPaper[] = []
-
-    for (const query of queries.slice(0, 2)) {
-      const response = await fetchWithRetry(
-        `https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(query)}&limit=5&fields=paperId,title,abstract,year,citationCount,influentialCitationCount,url,authors,fieldsOfStudy,publicationDate&sort=citationCount:desc`,
-        {
-          headers: {
-            'User-Agent': 'TechEvolutionRadar/1.0',
-          },
-          retries: 3,
-          baseDelay: 1000,
-        },
-      )
-
-      if (response.ok) {
-        const data = await response.json()
-        if (data.data) {
-          allPapers.push(...data.data)
-        }
-      }
-    }
-
-    const papers = allPapers.filter((p) => p.citationCount > 10).slice(0, 8)
-    const candidates = papers.map((paper): TechItem => {
-      return {
-        id: `ss-${paper.paperId}`,
-        title: paper.title,
-        summary:
-          paper.abstract?.slice(0, 300) ||
-          `High-impact research with ${paper.citationCount.toLocaleString()} citations.`,
-        source: 'semantic-scholar',
-        sourceUrl:
-          paper.url || `https://www.semanticscholar.org/paper/${paper.paperId}`,
-        category: 'uncategorized',
-        maturityStage: calculateMaturityStage({
-          citationCount: paper.citationCount,
-          source: 'semantic-scholar',
-        }),
-        impactScore: calculateImpactScore({
-          citationCount: paper.citationCount,
-        }),
-        hypeVolume:
-          paper.citationCount * 10 + paper.influentialCitationCount * 50,
-        publishedAt: paper.publicationDate
-          ? new Date(paper.publicationDate)
-          : new Date(`${paper.year}-01-01`),
-        citationCount: paper.citationCount,
-        isAnomaly: paper.citationCount > 500,
-        whyItMatters: `Highly cited research (${paper.citationCount.toLocaleString()} citations) by ${paper.authors
-          .slice(0, 2)
-          .map((a) => a.name)
-          .join(', ')}${paper.authors.length > 2 ? ' et al.' : ''}.`,
-        originalLanguage: 'en',
-      }
-    })
-    const items = await applyCategories(
-      candidates,
-      papers.map((paper) => ({
-        id: `ss-${paper.paperId}`,
-        title: paper.title,
-        summary: paper.abstract ?? '',
-        evidence: { fields_of_study: paper.fieldsOfStudy ?? [] },
-      })),
+    const works = await queryOpenAlex(
+      [
+        `from_publication_date:${isoDaysAgo(120)}`,
+        'type:article',
+        'has_doi:true',
+        'primary_location.source.type:journal|conference',
+        `primary_topic.field.id:${OPENALEX_FIELDS}`,
+      ].join(','),
+      'cited_by_count:desc',
+      12,
     )
+    const candidates = works.map((w) => openAlexToItem(w, 'openalex', 'en'))
+    const items = (
+      await applyCategories(
+        candidates,
+        works.map((w, i) => openAlexInput(w, candidates[i])),
+      )
+    ).slice(0, 8)
 
-    // Cache the results
-    setCache(CACHE_KEYS.SEMANTIC_SCHOLAR, items, CACHE_TTL.DEFAULT)
+    setCache(CACHE_KEYS.OPENALEX, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('Semantic Scholar API error:', error)
+    console.error('OpenAlex API error:', error)
+    return []
+  }
+}
+
+/** Recent Chinese-language journal research (translated like HAL/CiNii). */
+async function fetchOpenAlexChinese(): Promise<TechItem[]> {
+  const cached = getCached<TechItem[]>(CACHE_KEYS.OPENALEX_ZH)
+  if (cached) return cached
+
+  try {
+    const works = await queryOpenAlex(
+      [
+        `from_publication_date:${isoDaysAgo(180)}`,
+        'language:zh',
+        'has_doi:true',
+        'primary_location.source.type:journal',
+        `primary_topic.field.id:${OPENALEX_FIELDS}`,
+      ].join(','),
+      'publication_date:desc',
+      15,
+    )
+    const candidates = works.map((w) => openAlexToItem(w, 'openalex-zh', 'zh'))
+    const items = (
+      await applyCategories(
+        candidates,
+        works.map((w, i) => openAlexInput(w, candidates[i])),
+      )
+    ).slice(0, 6)
+
+    setCache(CACHE_KEYS.OPENALEX_ZH, items, CACHE_TTL.DEFAULT)
+    return items
+  } catch (error) {
+    console.error('OpenAlex (zh) API error:', error)
     return []
   }
 }
@@ -623,9 +706,10 @@ async function fetchHAL(): Promise<TechItem[]> {
   if (cached) return cached
 
   try {
-    // HAL - French open archive
+    // HAL - French open archive. Domain codes are hierarchical ('0.info' =
+    // computer science, '0.spi' = engineering); bare 'info' matches nothing.
     const response = await fetchWithRetry(
-      `https://api.archives-ouvertes.fr/search/?q=*:*&fq=docType_s:ART&fq=submittedDate_tdate:[NOW-30DAY TO NOW]&fq=domain_s:(info OR spi)&rows=8&fl=docid,title_s,abstract_s,producedDate_s,authFullName_s,uri_s,language_s&sort=submittedDate_tdate desc&wt=json`,
+      `https://api.archives-ouvertes.fr/search/?q=*:*&fq=docType_s:ART&fq=submittedDate_tdate:[NOW-30DAY TO NOW]&fq=domain_s:(0.info OR 0.spi)&rows=12&fl=docid,title_s,abstract_s,producedDate_s,authFullName_s,uri_s,language_s&sort=submittedDate_tdate desc&wt=json`,
       {
         retries: 3,
         baseDelay: 1000,
@@ -637,7 +721,7 @@ async function fetchHAL(): Promise<TechItem[]> {
     const data = await response.json()
     const docs: HALDocument[] = data.response?.docs || []
 
-    const halDocs = docs.slice(0, 6)
+    const halDocs = docs
     const candidates = halDocs.map((doc): TechItem => {
       const title = doc.title_s?.[0] || 'Untitled'
       const abstract = doc.abstract_s?.[0] || ''
@@ -661,14 +745,16 @@ async function fetchHAL(): Promise<TechItem[]> {
         originalLanguage: detectedLang as OriginalLanguage,
       }
     })
-    const items = await applyCategories(
-      candidates,
-      halDocs.map((doc) => ({
-        id: `hal-${doc.docid}`,
-        title: doc.title_s?.[0] || 'Untitled',
-        summary: doc.abstract_s?.[0] || '',
-      })),
-    )
+    const items = (
+      await applyCategories(
+        candidates,
+        halDocs.map((doc) => ({
+          id: `hal-${doc.docid}`,
+          title: doc.title_s?.[0] || 'Untitled',
+          summary: doc.abstract_s?.[0] || '',
+        })),
+      )
+    ).slice(0, 6)
 
     // Cache the results
     setCache(CACHE_KEYS.HAL, items, CACHE_TTL.DEFAULT)
@@ -686,8 +772,17 @@ async function fetchCiNii(): Promise<TechItem[]> {
 
   try {
     // CiNii - Japanese research database (using OpenSearch)
+    // Newest first (sortorder=0) from last year on: without it the default
+    // relevance order surfaced years-old articles and tables of contents.
+    const params = new URLSearchParams({
+      q: '人工知能 OR 機械学習 OR 量子コンピュータ OR ロボット',
+      count: '15',
+      sortorder: '0',
+      from: String(new Date().getFullYear() - 1),
+      format: 'json',
+    })
     const response = await fetchWithRetry(
-      `https://cir.nii.ac.jp/opensearch/articles?q=人工知能+OR+機械学習+OR+量子コンピュータ&count=8&format=json`,
+      `https://cir.nii.ac.jp/opensearch/articles?${params}`,
       {
         headers: {
           Accept: 'application/json',
@@ -707,10 +802,10 @@ async function fetchCiNii(): Promise<TechItem[]> {
     const data = await response.json()
     const items = data['@graph'] || data.items || []
 
-    const articles: CiNiiArticle[] = items.slice(0, 6)
+    const articles: CiNiiArticle[] = items
     const candidates = articles.map((item, index): TechItem => {
-      const title = item['dc:title'] || 'Japanese Research Article'
-      const description = item['dc:description'] || ''
+      const title = item.title || 'Japanese Research Article'
+      const description = stripTags(item.description ?? '')
 
       return {
         // '@id' is the article's stable URI; a timestamped id would change on
@@ -735,14 +830,17 @@ async function fetchCiNii(): Promise<TechItem[]> {
       }
     })
 
-    const result = await applyCategories(
-      candidates,
-      articles.map((item, index) => ({
-        id: candidates[index].id,
-        title: item['dc:title'] || '',
-        summary: item['dc:description'] || '',
-      })),
-    )
+    const result = (
+      await applyCategories(
+        candidates,
+        articles.map((item, index) => ({
+          id: candidates[index].id,
+          title: item.title || '',
+          summary: candidates[index].summary,
+          evidence: { journal: item['prism:publicationName'] ?? '' },
+        })),
+      )
+    ).slice(0, 6)
 
     // Cache the results
     setCache(CACHE_KEYS.CINII, result, CACHE_TTL.DEFAULT)
@@ -751,54 +849,6 @@ async function fetchCiNii(): Promise<TechItem[]> {
     console.error('CiNii API error:', error)
     return []
   }
-}
-
-// Simulated CNKI data (actual API requires authentication)
-// In production, this would connect to CNKI's API
-async function fetchCNKI(): Promise<TechItem[]> {
-  // Check cache first
-  const cached = getCached<TechItem[]>(CACHE_KEYS.CNKI)
-  if (cached) return cached
-
-  // CNKI requires institutional access, so we'll create representative entries
-  // based on known high-impact Chinese research topics
-  const chineseResearchTopics = [
-    {
-      title: '基于深度学习的自然语言处理研究进展',
-      summary:
-        '本文综述了深度学习在自然语言处理领域的最新研究进展，包括预训练语言模型、文本生成和机器翻译等方向。',
-      category: 'ai' as TechCategory,
-    },
-    {
-      title: '量子计算在密码学中的应用研究',
-      summary: '探讨量子计算对现有密码体系的影响，以及后量子密码学的发展方向。',
-      category: 'quantum' as TechCategory,
-    },
-    {
-      title: '新能源汽车电池技术发展趋势分析',
-      summary: '分析固态电池、钠离子电池等新型电池技术的研究现状和产业化前景。',
-      category: 'energy' as TechCategory,
-    },
-  ]
-
-  const items = chineseResearchTopics.map((topic, index): TechItem => ({
-    id: `cnki-${index}-${Date.now()}`,
-    title: topic.title,
-    summary: topic.summary,
-    source: 'cnki',
-    sourceUrl: 'https://www.cnki.net/',
-    category: topic.category,
-    maturityStage: 'research',
-    impactScore: 6,
-    hypeVolume: 800,
-    publishedAt: new Date(Date.now() - index * 86400000),
-    whyItMatters: 'High-impact Chinese academic research from CNKI database.',
-    originalLanguage: 'zh',
-  }))
-
-  // Cache the results
-  setCache(CACHE_KEYS.CNKI, items, CACHE_TTL.DEFAULT)
-  return items
 }
 
 // ============================================================================
@@ -812,20 +862,20 @@ async function buildTechFeed() {
     githubItems,
     arxivItems,
     hnItems,
-    semanticScholarItems,
+    openAlexItems,
     pubmedItems,
     halItems,
     ciniiItems,
-    cnkiItems,
+    openAlexZhItems,
   ] = await Promise.all([
     fetchGitHubTrending(),
     fetchArxivPapers(),
     fetchHackerNews(),
-    fetchSemanticScholar(),
+    fetchOpenAlex(),
     fetchPubMed(),
     fetchHAL(),
     fetchCiNii(),
-    fetchCNKI(),
+    fetchOpenAlexChinese(),
   ])
 
   // Combine all items
@@ -833,11 +883,11 @@ async function buildTechFeed() {
     ...githubItems,
     ...arxivItems,
     ...hnItems,
-    ...semanticScholarItems,
+    ...openAlexItems,
     ...pubmedItems,
     ...halItems,
     ...ciniiItems,
-    ...cnkiItems,
+    ...openAlexZhItems,
   ]
 
   // Translate non-English items
@@ -1018,13 +1068,13 @@ export const fetchHackerNewsFeedFn = createServerFn({ method: 'GET' }).handler(
 export const fetchMultilingualFeedFn = createServerFn({
   method: 'GET',
 }).handler(async () => {
-  const [halItems, ciniiItems, cnkiItems] = await Promise.all([
+  const [halItems, ciniiItems, zhItems] = await Promise.all([
     fetchHAL(),
     fetchCiNii(),
-    fetchCNKI(),
+    fetchOpenAlexChinese(),
   ])
 
-  const allItems = [...halItems, ...ciniiItems, ...cnkiItems]
+  const allItems = [...halItems, ...ciniiItems, ...zhItems]
 
   // Translate all items
   if (allItems.length > 0) {

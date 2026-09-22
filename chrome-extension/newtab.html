@@ -312,7 +312,17 @@
                 </div>
               </div>
               <div class="radar-container">
-                <canvas id="radar-canvas"></canvas>
+                <canvas
+                  id="radar-canvas"
+                  tabindex="0"
+                  role="img"
+                  aria-label="Technology radar. Use arrow keys to move between signals and Enter to open one."
+                ></canvas>
+                <div
+                  id="radar-tooltip"
+                  class="radar-tooltip hidden"
+                  role="tooltip"
+                ></div>
                 <div class="radar-legend">
                   <div class="legend-item">
                     <span class="legend-dot research"></span>

@@ -156,7 +156,7 @@ async function testHackerNewsParser(): Promise<TestResult> {
 
 async function testMultilingualParsers(): Promise<TestResult> {
   const start = Date.now()
-  const name = 'Multilingual Sources (HAL, CiNii, CNKI)'
+  const name = 'Multilingual Sources (HAL, CiNii, OpenAlex China)'
 
   try {
     const result = await fetchMultilingualFeedFn()

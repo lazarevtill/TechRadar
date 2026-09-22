@@ -26,6 +26,24 @@ const LANG_CODES: Record<OriginalLanguage, string> = {
 // Cache for translations to avoid repeated API calls
 const translationCache = new Map<string, string>()
 
+// MyMemory's keyless quota is small (~5k chars/day per IP; ~50k with a contact
+// email via MYMEMORY_EMAIL). Once it answers 429, stop calling it for a while
+// instead of re-sending every item on every feed rebuild; items show their
+// original text meanwhile.
+const QUOTA_BACKOFF_MS = 60 * 60 * 1000
+let quotaBlockedUntil = 0
+
+function noteQuotaExhausted(detail: string): void {
+  if (Date.now() < quotaBlockedUntil) return
+  quotaBlockedUntil = Date.now() + QUOTA_BACKOFF_MS
+  console.warn(
+    `[translation] MyMemory quota exhausted (${detail}); pausing translations for 1h` +
+      (process.env.MYMEMORY_EMAIL
+        ? ''
+        : ' — set MYMEMORY_EMAIL for a 10x quota'),
+  )
+}
+
 function getCacheKey(text: string, from: string, to: string): string {
   return `${from}:${to}:${text.slice(0, 100)}`
 }
@@ -42,6 +60,7 @@ async function translateText(
   const cacheKey = getCacheKey(text, fromLang, toLang)
   const cached = translationCache.get(cacheKey)
   if (cached) return cached
+  if (Date.now() < quotaBlockedUntil) return text
 
   try {
     // Truncate very long texts (API limit)
@@ -50,7 +69,12 @@ async function translateText(
     const fromCode = LANG_CODES[fromLang]
     const toCode = LANG_CODES[toLang]
 
-    const url = `${MYMEMORY_API}?q=${encodeURIComponent(truncatedText)}&langpair=${fromCode}|${toCode}`
+    const params = new URLSearchParams({
+      q: truncatedText,
+      langpair: `${fromCode}|${toCode}`,
+    })
+    if (process.env.MYMEMORY_EMAIL) params.set('de', process.env.MYMEMORY_EMAIL)
+    const url = `${MYMEMORY_API}?${params}`
 
     const response = await fetch(url, {
       headers: {
@@ -58,12 +82,22 @@ async function translateText(
       },
     })
 
+    if (response.status === 429) {
+      noteQuotaExhausted('HTTP 429')
+      return text
+    }
     if (!response.ok) {
       console.warn(`Translation API error: ${response.status}`)
       return text
     }
 
     const data = await response.json()
+    // The daily-quota notice can also arrive as a 200 with this body status;
+    // its "translatedText" is a warning, never cache or show it.
+    if (data.responseStatus === 429 || data.quotaFinished === true) {
+      noteQuotaExhausted('quota notice')
+      return text
+    }
 
     if (data.responseStatus === 200 && data.responseData?.translatedText) {
       const translated = data.responseData.translatedText
@@ -96,16 +130,14 @@ export async function translateContent(
     }
   }
 
-  // Translate in parallel
-  const [title, summary, whyItMatters] = await Promise.all([
+  // Only the source's own text is foreign. `whyItMatters` is written in
+  // English by our fetchers, so translating it "from" fr/ja/zh garbles it.
+  const [title, summary] = await Promise.all([
     translateText(content.title, fromLang, toLang),
     translateText(content.summary, fromLang, toLang),
-    content.whyItMatters
-      ? translateText(content.whyItMatters, fromLang, toLang)
-      : Promise.resolve(undefined),
   ])
 
-  return { title, summary, whyItMatters }
+  return { title, summary, whyItMatters: content.whyItMatters }
 }
 
 // Batch translate multiple items
