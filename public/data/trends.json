@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T12:47:04.335Z",
+  "generatedAt": "2026-09-22T11:37:07.686Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "rising",
-      "momentum": 1.5,
+      "momentum": 2,
       "weeklyCounts": [
         1,
         7,
@@ -21,7 +21,7 @@
         0,
         0,
         2,
-        5
+        6
       ],
       "signals": [
         {
@@ -38,7 +38,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "rising",
-      "momentum": 0.12,
+      "momentum": 0.35,
       "weeklyCounts": [
         14,
         11,
@@ -51,7 +51,7 @@
         14,
         14,
         17,
-        19
+        23
       ],
       "signals": [
         {
@@ -109,7 +109,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.21,
+      "momentum": -0.04,
       "weeklyCounts": [
         81,
         60,
@@ -122,7 +122,7 @@
         100,
         85,
         92,
-        73
+        88
       ],
       "signals": [
         {
@@ -158,12 +158,108 @@
       ]
     },
     {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.13,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        315
+      ],
+      "signals": [
+        {
+          "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
+          "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
+          "source": "latent-space",
+          "publishedAt": "2026-09-22T06:30:56.000Z"
+        },
+        {
+          "title": "Transformers now runs llama.cpp quants",
+          "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
+          "source": "hf",
+          "publishedAt": "2026-09-22T00:00:00.000Z"
+        },
+        {
+          "title": "Jev introduces a new shape of LLM - System One, aka Decision Models",
+          "url": "https://simonwillison.net/2026/Sep/21/jev/",
+          "source": "simonw",
+          "publishedAt": "2026-09-21T23:09:20.000Z"
+        },
+        {
+          "title": "Jev: System One models for Prod, not God — with Diogo Almeida, CEO, TypeSafe AI",
+          "url": "https://www.latent.space/p/jev",
+          "source": "latent-space",
+          "publishedAt": "2026-09-21T22:13:49.000Z"
+        },
+        {
+          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
+          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
+          "source": "latent-space",
+          "publishedAt": "2026-09-19T05:48:28.000Z"
+        }
+      ]
+    },
+    {
+      "id": "protein-design",
+      "label": "Protein Design",
+      "category": "biotech",
+      "stage": "research",
+      "trajectory": "cooling",
+      "momentum": -0.14,
+      "weeklyCounts": [
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        18
+      ],
+      "signals": [
+        {
+          "title": "Engineering more resilient crops for a warming climate",
+          "url": "https://deepmind.google/blog/engineering-more-resilient-crops-for-a-warming-climate/",
+          "source": "deepmind",
+          "publishedAt": "2025-12-04T16:23:24.000Z"
+        },
+        {
+          "title": "AlphaFold: Five years of impact",
+          "url": "https://deepmind.google/blog/alphafold-five-years-of-impact/",
+          "source": "deepmind",
+          "publishedAt": "2025-11-25T16:00:12.000Z"
+        },
+        {
+          "title": "Revealing a key protein behind heart disease",
+          "url": "https://deepmind.google/blog/revealing-a-key-protein-behind-heart-disease/",
+          "source": "deepmind",
+          "publishedAt": "2025-11-25T15:52:51.000Z"
+        }
+      ]
+    },
+    {
       "id": "llm-agents",
       "label": "LLM Agents",
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.28,
+      "momentum": -0.15,
       "weeklyCounts": [
         411,
         420,
@@ -176,7 +272,7 @@
         437,
         452,
         469,
-        336
+        399
       ],
       "signals": [
         {
@@ -208,102 +304,6 @@
           "url": "https://www.latent.space/p/good-start-labs",
           "source": "latent-space",
           "publishedAt": "2026-09-15T20:11:54.000Z"
-        }
-      ]
-    },
-    {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.29,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        260
-      ],
-      "signals": [
-        {
-          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
-          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
-          "source": "latent-space",
-          "publishedAt": "2026-09-19T05:48:28.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
-          "source": "latent-space",
-          "publishedAt": "2026-09-18T06:28:43.000Z"
-        },
-        {
-          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
-          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
-          "source": "latent-space",
-          "publishedAt": "2026-09-17T07:28:25.000Z"
-        },
-        {
-          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
-          "url": "https://www.latent.space/p/aiuc",
-          "source": "latent-space",
-          "publishedAt": "2026-09-16T18:07:45.000Z"
-        },
-        {
-          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
-          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T04:50:36.000Z"
-        }
-      ]
-    },
-    {
-      "id": "protein-design",
-      "label": "Protein Design",
-      "category": "biotech",
-      "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.29,
-      "weeklyCounts": [
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        15
-      ],
-      "signals": [
-        {
-          "title": "Engineering more resilient crops for a warming climate",
-          "url": "https://deepmind.google/blog/engineering-more-resilient-crops-for-a-warming-climate/",
-          "source": "deepmind",
-          "publishedAt": "2025-12-04T16:23:24.000Z"
-        },
-        {
-          "title": "AlphaFold: Five years of impact",
-          "url": "https://deepmind.google/blog/alphafold-five-years-of-impact/",
-          "source": "deepmind",
-          "publishedAt": "2025-11-25T16:00:12.000Z"
-        },
-        {
-          "title": "Revealing a key protein behind heart disease",
-          "url": "https://deepmind.google/blog/revealing-a-key-protein-behind-heart-disease/",
-          "source": "deepmind",
-          "publishedAt": "2025-11-25T15:52:51.000Z"
         }
       ]
     }
