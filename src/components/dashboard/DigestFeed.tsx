@@ -1,10 +1,10 @@
-import { m } from 'motion/react'
-import { AlertTriangle, ExternalLink, Newspaper } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { useDigest } from '@/hooks/use-digest'
-import { useLanguage } from '@/lib/i18n'
+import { useLanguage, getLocalizedCategories } from '@/lib/i18n'
 import { CATEGORY_CONFIG } from '@/lib/tech-categories'
 import type { TechCategory } from '@/lib/tech-categories'
 import type { DigestItem } from '@/lib/digest-types'
+import { CategoryDot } from './icons'
 
 function relativeHours(iso: string): number {
   return Math.max(
@@ -15,31 +15,31 @@ function relativeHours(iso: string): number {
 
 function DigestCard({ item }: { item: DigestItem }) {
   const { language, t } = useLanguage()
+  const localizedCategories = getLocalizedCategories(language)
   // The pipeline writes both languages; pick one, never re-prefix the headline.
   const block = language === 'ru' ? item.ru : item.en
   const category = CATEGORY_CONFIG[item.category as TechCategory]
 
   return (
-    <m.article className="rounded-xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-sm transition-colors hover:border-white/20">
-      <div className="mb-2 flex items-center gap-2 text-[11px] font-mono uppercase tracking-wide text-white/60">
-        <span className="text-white/60">{item.source}</span>
+    <article className="py-3 sm:pr-6">
+      <div className="flex items-center gap-2 text-[11px] text-fg-3">
+        <span>{item.source}</span>
         {category ? (
-          <span style={{ color: category.color }}>{category.label}</span>
+          <span className="flex items-center gap-1.5">
+            <CategoryDot color={category.color} />
+            {localizedCategories[item.category as TechCategory] ??
+              category.label}
+          </span>
         ) : null}
-        <span className="ml-auto">{relativeHours(item.publishedAt)}h</span>
+        <span className="ml-auto num">{relativeHours(item.publishedAt)}h</span>
       </div>
 
-      <h3 className="mb-3 text-sm font-medium leading-snug text-white/90">
-        {block.headline}
-      </h3>
+      <h3 className="mt-1.5 text-sm text-fg leading-snug">{block.headline}</h3>
 
-      <ul className="mb-3 space-y-1.5">
+      <ul className="mt-2 space-y-1">
         {block.tweets.map((tweet, i) => (
-          <li
-            key={i}
-            className="flex gap-2 text-xs leading-relaxed text-white/60"
-          >
-            <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-[#00f0ff]" />
+          <li key={i} className="flex gap-2 text-xs leading-relaxed text-fg-2">
+            <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-fg-3" />
             <span>{tweet}</span>
           </li>
         ))}
@@ -49,12 +49,12 @@ function DigestCard({ item }: { item: DigestItem }) {
         href={item.sourceUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 text-[11px] font-mono text-[#00f0ff]/70 transition-colors hover:text-[#00f0ff]"
+        className="mt-2 inline-flex items-center gap-1 text-[11px] text-fg-3 hover:text-fg"
       >
         {t.digestReadOriginal}
         <ExternalLink className="h-3 w-3" />
       </a>
-    </m.article>
+    </article>
   )
 }
 
@@ -63,59 +63,43 @@ export function DigestFeed() {
   const { t } = useLanguage()
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 backdrop-blur-sm sm:p-6">
-      <header className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1">
-        <Newspaper className="h-4 w-4 text-[#00f0ff]" />
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-white/80">
-          {t.digestTitle}
-        </h2>
-        <span className="text-xs text-white/60">{t.digestSubtitle}</span>
+    <div className="panel">
+      <div className="panel-head">
+        <h2 className="panel-title">{t.digestTitle}</h2>
+        <span className="panel-hint">{t.digestSubtitle}</span>
         {generatedAt ? (
-          <span className="ml-auto font-mono text-[11px] text-white/55">
+          <span className="ml-auto panel-hint num">
             {t.digestUpdated} {relativeHours(generatedAt)}h
           </span>
         ) : null}
-      </header>
+      </div>
 
       {isStaleData ? (
-        <p className="mb-4 flex items-center gap-2 rounded-lg border border-amber-400/20 bg-amber-400/5 px-3 py-2 text-xs text-amber-200/80">
-          <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+        <p className="px-4 py-2 border-b border-rule text-xs text-accent">
           {t.digestStale}
         </p>
       ) : null}
 
       {isLoading ? (
         <div
-          className="grid gap-3 md:grid-cols-2 xl:grid-cols-3"
+          className="grid gap-x-6 px-4 md:grid-cols-2 xl:grid-cols-3"
           aria-busy="true"
           aria-label={t.loading}
         >
           {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse rounded-xl border border-white/10 bg-white/[0.02] p-4"
-            >
-              <div className="mb-3 h-2.5 w-24 rounded bg-white/10" />
-              <div className="mb-2 h-3.5 w-full rounded bg-white/10" />
-              <div className="mb-4 h-3.5 w-4/5 rounded bg-white/10" />
-              <div className="space-y-2">
-                <div className="h-2.5 w-full rounded bg-white/[0.07]" />
-                <div className="h-2.5 w-11/12 rounded bg-white/[0.07]" />
-                <div className="h-2.5 w-3/4 rounded bg-white/[0.07]" />
-              </div>
+            <div key={i} className="py-3 space-y-2">
+              <div className="h-2.5 w-24 rounded bg-hover" />
+              <div className="h-3.5 w-full rounded bg-hover" />
+              <div className="h-3 w-4/5 rounded bg-hover" />
             </div>
           ))}
         </div>
       ) : isError ? (
-        <p className="py-6 text-center text-xs text-white/60">
-          {t.digestError}
-        </p>
+        <p className="px-4 py-6 text-xs text-fg-3">{t.digestError}</p>
       ) : items.length === 0 ? (
-        <p className="py-6 text-center text-xs text-white/60">
-          {t.digestEmpty}
-        </p>
+        <p className="px-4 py-6 text-xs text-fg-3">{t.digestEmpty}</p>
       ) : (
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid px-4 md:grid-cols-2 xl:grid-cols-3 divide-y divide-rule md:divide-y-0">
           {items.map((item) => (
             <DigestCard key={item.id} item={item} />
           ))}

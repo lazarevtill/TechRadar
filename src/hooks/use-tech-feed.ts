@@ -6,6 +6,7 @@ import {
   fetchHackerNewsFeedFn,
   fetchMultilingualFeedFn,
   invalidateTechFeedCacheFn,
+  type TechFeedStats,
 } from '@/server/functions/tech-feed'
 import type {
   TechItem,
@@ -14,6 +15,8 @@ import type {
   DataSource,
   OriginalLanguage,
 } from '@/lib/tech-categories'
+
+export type { TechFeedStats }
 
 // Transform serialized items back to proper TechItem format
 function transformItems(
@@ -25,20 +28,21 @@ function transformItems(
   }))
 }
 
-export interface TechFeedStats {
-  totalSignals: number
-  anomaliesThisWeek: number
-  activeChains: number
-  topCategory: TechCategory
-  avgImpactScore: number
-  sourceCount?: number
-  languageCount?: number
+export const EMPTY_STATS: TechFeedStats = {
+  totalSignals: 0,
+  highlighted: 0,
+  byReason: { 'fast-rising': 0, converging: 0, novel: 0, 'under-the-radar': 0 },
+  judged: 0,
+  topCategory: 'ai',
+  sourceCount: 0,
+  languageCount: 0,
 }
 
 export interface UseTechFeedResult {
   items: TechItem[]
   stats: TechFeedStats
   isLoading: boolean
+  isFetching: boolean
   isError: boolean
   error: Error | null
   refetch: () => void
@@ -55,7 +59,7 @@ export const techFeedQuery = queryOptions({
 })
 
 export function useTechFeed(): UseTechFeedResult {
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     ...techFeedQuery,
     refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
     retry: 2,
@@ -65,7 +69,6 @@ export function useTechFeed(): UseTechFeedResult {
   const forceRefresh = async () => {
     try {
       await invalidateTechFeedCacheFn()
-      console.log('[TechFeed] Server cache invalidated, refetching...')
     } catch (err) {
       console.error('[TechFeed] Failed to invalidate cache:', err)
     }
@@ -74,16 +77,9 @@ export function useTechFeed(): UseTechFeedResult {
 
   return {
     items: data ? transformItems(data.items) : [],
-    stats: data?.stats ?? {
-      totalSignals: 0,
-      anomaliesThisWeek: 0,
-      activeChains: 0,
-      topCategory: 'ai',
-      avgImpactScore: 0,
-      sourceCount: 0,
-      languageCount: 0,
-    },
+    stats: data?.stats ?? EMPTY_STATS,
     isLoading,
+    isFetching,
     isError,
     error: error as Error | null,
     refetch,
@@ -171,8 +167,8 @@ export interface FilterOptions {
   category?: TechCategory | 'all'
   source?: DataSource | 'all'
   maturity?: MaturityStage | 'all'
-  anomaliesOnly?: boolean
-  sortBy?: 'recent' | 'impact' | 'hype' | 'citations'
+  highlightedOnly?: boolean
+  sortBy?: 'recent' | 'signal' | 'engagement'
   language?: OriginalLanguage | 'all'
 }
 
@@ -181,6 +177,7 @@ export function useFilteredTechFeed(filters: FilterOptions = {}) {
     items,
     stats,
     isLoading,
+    isFetching,
     isError,
     error,
     refetch,
@@ -202,8 +199,8 @@ export function useFilteredTechFeed(filters: FilterOptions = {}) {
       (i) => i.maturityStage === filters.maturity,
     )
   }
-  if (filters.anomaliesOnly) {
-    filteredItems = filteredItems.filter((i) => i.isAnomaly)
+  if (filters.highlightedOnly) {
+    filteredItems = filteredItems.filter((i) => i.signal.reasons.length > 0)
   }
   if (filters.language && filters.language !== 'all') {
     filteredItems = filteredItems.filter(
@@ -211,17 +208,16 @@ export function useFilteredTechFeed(filters: FilterOptions = {}) {
     )
   }
 
-  // Apply sorting
+  // Apply sorting. Unscored items (nothing measurable) sort last.
   switch (filters.sortBy) {
-    case 'impact':
-      filteredItems.sort((a, b) => b.impactScore - a.impactScore)
-      break
-    case 'hype':
-      filteredItems.sort((a, b) => b.hypeVolume - a.hypeVolume)
-      break
-    case 'citations':
+    case 'signal':
       filteredItems.sort(
-        (a, b) => (b.citationCount || 0) - (a.citationCount || 0),
+        (a, b) => (b.signal.score ?? -1) - (a.signal.score ?? -1),
+      )
+      break
+    case 'engagement':
+      filteredItems.sort(
+        (a, b) => (b.signal.reach ?? -1) - (a.signal.reach ?? -1),
       )
       break
     case 'recent':
@@ -255,6 +251,7 @@ export function useFilteredTechFeed(filters: FilterOptions = {}) {
     allItems: items,
     stats,
     isLoading,
+    isFetching,
     isError,
     error,
     refetch,
@@ -265,25 +262,50 @@ export function useFilteredTechFeed(filters: FilterOptions = {}) {
   }
 }
 
-// Radar data transformation
+export interface RadarPoint {
+  id: string
+  title: string
+  /** Days since publication (0 = today). */
+  x: number
+  /** Composite signal score, 0..1. */
+  y: number
+  /** Reach within the source, 0..1; unranked sources get a small fixed dot. */
+  z: number
+  category: TechCategory
+  maturity: MaturityStage
+  highlighted: boolean
+}
+
+/** The radar shows recent signals; older items stay in the feed only. */
+export const RADAR_MAX_DAYS = 180
+
+// Radar data transformation. Items without a score have no y position and
+// are left off the chart rather than drawn at a made-up height; so are items
+// older than RADAR_MAX_DAYS, which would squash the time axis.
 export function useRadarData() {
   const { items, isLoading, isError } = useTechFeed()
 
-  const radarData = items.map((item) => ({
-    id: item.id,
-    title: item.title.slice(0, 40) + (item.title.length > 40 ? '...' : ''),
-    x: Math.floor(
-      (new Date().getTime() - item.publishedAt.getTime()) /
-        (1000 * 60 * 60 * 24),
-    ), // days ago
-    y: item.impactScore,
-    z: Math.log10(item.hypeVolume + 1) * 20, // normalized bubble size
-    category: item.category,
-    maturity: item.maturityStage,
-    isAnomaly: item.isAnomaly,
-    originalLanguage: item.originalLanguage,
-    citationCount: item.citationCount,
-  }))
+  const radarData: RadarPoint[] = items.flatMap((item) =>
+    item.signal.score === null ||
+    (Date.now() - item.publishedAt.getTime()) / 86_400_000 > RADAR_MAX_DAYS
+      ? []
+      : [
+          {
+            id: item.id,
+            title:
+              item.title.slice(0, 60) + (item.title.length > 60 ? '…' : ''),
+            x: Math.floor(
+              (new Date().getTime() - item.publishedAt.getTime()) /
+                (1000 * 60 * 60 * 24),
+            ),
+            y: item.signal.score,
+            z: item.signal.reach ?? 0.2,
+            category: item.category,
+            maturity: item.maturityStage,
+            highlighted: item.signal.reasons.length > 0,
+          },
+        ],
+  )
 
   return { radarData, items, isLoading, isError }
 }

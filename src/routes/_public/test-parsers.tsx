@@ -1,7 +1,8 @@
 /**
  * Parser Tests Page
  *
- * Страница для запуска и просмотра результатов тестов парсеров
+ * Operator page: runs the live parser checks inside the server and lists
+ * the result per source. English only; it is not part of the dashboard.
  */
 
 import { createFileRoute } from '@tanstack/react-router'
@@ -36,6 +37,12 @@ export const Route = createFileRoute('/_public/test-parsers')({
   component: TestParsersPage,
 })
 
+const STATUS_CLASS: Record<TestResult['status'], string> = {
+  PASS: 'text-fg',
+  FAIL: 'text-danger',
+  WARN: 'text-accent',
+}
+
 function TestParsersPage() {
   const [isRunning, setIsRunning] = useState(false)
   const [testResults, setTestResults] = useState<TestResponse | null>(null)
@@ -56,227 +63,97 @@ function TestParsersPage() {
     }
   }
 
-  const getStatusEmoji = (status: string) => {
-    switch (status) {
-      case 'PASS':
-        return '✅'
-      case 'FAIL':
-        return '❌'
-      case 'WARN':
-        return '⚠️'
-      default:
-        return '❓'
-    }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'PASS':
-        return 'text-green-400'
-      case 'FAIL':
-        return 'text-red-400'
-      case 'WARN':
-        return 'text-yellow-400'
-      default:
-        return 'text-gray-400'
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-            🧪 Parser Tests
-          </h1>
-          <p className="text-gray-400">
-            Тестирование парсеров данных из различных источников
+    <div className="min-h-screen p-6 sm:p-8">
+      <div className="max-w-3xl mx-auto space-y-6">
+        <header className="border-b border-rule pb-4">
+          <h1 className="text-lg font-medium text-fg">Parser tests</h1>
+          <p className="text-xs text-fg-3">
+            Live checks of every data-source parser, run inside the server.
           </p>
-        </div>
+        </header>
 
-        {/* Run Button */}
-        <div className="mb-8">
-          <button
-            onClick={runTests}
-            disabled={isRunning}
-            className={`
-                            px-6 py-3 rounded-lg font-semibold text-lg
-                            transition-all duration-200
-                            ${
-                              isRunning
-                                ? 'bg-gray-700 cursor-not-allowed'
-                                : 'bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500'
-                            }
-                        `}
-          >
-            {isRunning ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Запуск тестов...
-              </span>
-            ) : (
-              '🚀 Запустить тесты'
-            )}
-          </button>
-        </div>
+        <button
+          onClick={() => void runTests()}
+          disabled={isRunning}
+          className="btn-primary"
+        >
+          {isRunning ? 'Running…' : 'Run tests'}
+        </button>
 
-        {/* Error */}
         {error && (
-          <div className="mb-8 p-4 bg-red-900/30 border border-red-500/50 rounded-lg">
-            <h3 className="text-red-400 font-semibold mb-2">❌ Ошибка</h3>
-            <p className="text-red-300">{error}</p>
-          </div>
+          <p className="text-xs text-danger border-l-2 border-danger pl-3">
+            {error}
+          </p>
         )}
 
-        {/* Results */}
         {testResults && (
           <div className="space-y-6">
-            {/* Summary */}
-            <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
-              <h2 className="text-xl font-semibold mb-4">📊 Результаты</h2>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-green-400">
-                    {testResults.summary.passed}
-                  </div>
-                  <div className="text-sm text-green-300">Passed</div>
+            <dl className="grid grid-cols-2 md:grid-cols-4 border border-rule rounded-md divide-y md:divide-y-0 md:divide-x divide-rule">
+              {[
+                ['Passed', testResults.summary.passed],
+                ['Failed', testResults.summary.failed],
+                ['Warnings', testResults.summary.warnings],
+                ['Duration', `${testResults.summary.totalDuration}ms`],
+              ].map(([label, value]) => (
+                <div key={label} className="px-4 py-3">
+                  <dt className="text-[11px] uppercase tracking-wide text-fg-3">
+                    {label}
+                  </dt>
+                  <dd className="num text-xl text-fg">{value}</dd>
                 </div>
-                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-red-400">
-                    {testResults.summary.failed}
+              ))}
+            </dl>
+
+            <p
+              className={`text-sm ${testResults.success ? 'text-fg' : 'text-danger'}`}
+            >
+              {testResults.success ? 'All tests passed' : 'Some tests failed'}
+            </p>
+
+            <ul className="divide-y divide-rule border-y border-rule">
+              {testResults.results.map((result) => (
+                <li key={result.name} className="py-3 text-xs">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm text-fg">{result.name}</span>
+                    <span
+                      className={`font-mono ${STATUS_CLASS[result.status]}`}
+                    >
+                      {result.status}
+                    </span>
                   </div>
-                  <div className="text-sm text-red-300">Failed</div>
-                </div>
-                <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-yellow-400">
-                    {testResults.summary.warnings}
-                  </div>
-                  <div className="text-sm text-yellow-300">Warnings</div>
-                </div>
-                <div className="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-cyan-400">
-                    {testResults.summary.totalDuration}ms
-                  </div>
-                  <div className="text-sm text-cyan-300">Duration</div>
-                </div>
-              </div>
-
-              <div
-                className={`text-center p-3 rounded-lg ${testResults.success ? 'bg-green-500/20' : 'bg-red-500/20'}`}
-              >
-                <span className="text-lg font-semibold">
-                  {testResults.success
-                    ? '✅ Все тесты пройдены!'
-                    : '❌ Есть проваленные тесты'}
-                </span>
-              </div>
-            </div>
-
-            {/* Individual Results */}
-            <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
-              <h2 className="text-xl font-semibold mb-4">📋 Детали тестов</h2>
-
-              <div className="space-y-3">
-                {testResults.results.map((result, index) => (
-                  <div
-                    key={index}
-                    className={`
-                                            p-4 rounded-lg border
-                                            ${result.status === 'PASS' ? 'bg-green-500/5 border-green-500/20' : ''}
-                                            ${result.status === 'FAIL' ? 'bg-red-500/5 border-red-500/20' : ''}
-                                            ${result.status === 'WARN' ? 'bg-yellow-500/5 border-yellow-500/20' : ''}
-                                        `}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">
-                          {getStatusEmoji(result.status)}
-                        </span>
-                        <span className="font-semibold">{result.name}</span>
-                      </div>
-                      <span
-                        className={`font-mono text-sm ${getStatusColor(result.status)}`}
-                      >
-                        {result.status}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-                      <span>⏱️ {result.duration}ms</span>
-                      {result.itemCount !== undefined && (
-                        <span>📦 {result.itemCount} items</span>
-                      )}
-                    </div>
-
-                    {result.details && (
-                      <div className="mt-2 text-sm text-gray-300 bg-black/20 p-2 rounded">
-                        {result.details}
-                      </div>
-                    )}
-
-                    {result.error && (
-                      <div className="mt-2 text-sm text-red-300 bg-red-900/20 p-2 rounded">
-                        ❌ {result.error}
-                      </div>
+                  <div className="mt-1 flex flex-wrap gap-4 text-fg-3 num">
+                    <span>{result.duration}ms</span>
+                    {result.itemCount !== undefined && (
+                      <span>{result.itemCount} items</span>
                     )}
                   </div>
-                ))}
-              </div>
-            </div>
+                  {result.details && (
+                    <p className="mt-1 text-fg-2">{result.details}</p>
+                  )}
+                  {result.error && (
+                    <p className="mt-1 text-danger">{result.error}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
 
-            {/* Timestamp */}
-            <div className="text-center text-gray-500 text-sm">
-              Тесты выполнены:{' '}
-              {new Date(testResults.summary.timestamp).toLocaleString('ru-RU')}
-            </div>
+            <p className="text-xs text-fg-3">
+              Run at {new Date(testResults.summary.timestamp).toLocaleString()}
+            </p>
           </div>
         )}
 
-        {/* Info */}
         {!testResults && !isRunning && (
-          <div className="p-6 bg-white/5 border border-white/10 rounded-xl">
-            <h2 className="text-xl font-semibold mb-4">ℹ️ О тестах</h2>
-            <p className="text-gray-400 mb-4">
-              Эта страница запускает тесты для проверки работоспособности
-              парсеров данных:
-            </p>
-            <ul className="space-y-2 text-gray-300">
-              <li>
-                📦 <strong>GitHub Trending</strong> — трендовые репозитории
-              </li>
-              <li>
-                📄 <strong>arXiv Papers</strong> — научные статьи
-              </li>
-              <li>
-                🔶 <strong>Hacker News</strong> — технические новости
-              </li>
-              <li>
-                🌍 <strong>Multilingual</strong> — HAL (FR), CiNii (JP),
-                OpenAlex (ZH) (CN)
-              </li>
-              <li>
-                🔄 <strong>Full Feed</strong> — агрегация всех источников
-              </li>
-              <li>
-                ✅ <strong>Data Quality</strong> — валидация данных
-              </li>
+          <div className="text-xs text-fg-2 space-y-2">
+            <p>This page runs the following checks:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>GitHub Trending: repositories created this week</li>
+              <li>arXiv: newest submissions</li>
+              <li>Hacker News: front page stories</li>
+              <li>Multilingual: HAL (FR), CiNii (JP), OpenAlex (ZH)</li>
+              <li>Full feed: aggregation of every source</li>
+              <li>Data quality: field, URL, score and date validation</li>
             </ul>
           </div>
         )}

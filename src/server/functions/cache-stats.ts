@@ -1,7 +1,7 @@
 /**
  * Cache Statistics Server Function
  *
- * Получение статистики кэша для диагностики
+ * Cache statistics for diagnostics
  */
 
 import { createServerFn } from '@tanstack/react-start'

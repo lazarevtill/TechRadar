@@ -2,12 +2,10 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { CATEGORY_CONFIG, type TechCategory } from '@/lib/tech-categories'
 
 /**
- * Minimal SVG scatter plot for the live radar.
- *
- * Replaces a recharts ScatterChart: that one chart pulled recharts plus redux,
- * immer, d3-* and decimal.js into the dashboard bundle. This renders the same
- * encoding — x = days ago (recent on the right), y = impact, bubble area =
- * hype, anomalies glow — with a hover tooltip and click/keyboard selection.
+ * Minimal SVG scatter plot for the live radar: x = days ago (recent on the
+ * right), y = signal score, dot area = reach within the source. Highlighted
+ * items get an accent ring, nothing else is decorated. Hover shows a
+ * tooltip; click, Enter or Space selects; every dot is focusable.
  */
 
 export interface ScatterPoint {
@@ -17,15 +15,14 @@ export interface ScatterPoint {
   y: number
   z: number
   category: TechCategory
-  isAnomaly?: boolean
+  highlighted?: boolean
 }
 
-const MARGIN = { top: 16, right: 16, bottom: 28, left: 36 }
-const X_MIN_DOMAIN = 25
-const Y_MIN_DOMAIN = 11
-// Bubble area range in px², as the recharts ZAxis `range` it replaces.
-const AREA_MIN = 100
-const AREA_MAX = 800
+const MARGIN = { top: 12, right: 12, bottom: 26, left: 34 }
+const X_MIN_DOMAIN = 14
+// Dot area range in px².
+const AREA_MIN = 28
+const AREA_MAX = 260
 
 /** Round tick step: the smallest of 1/2/5×10ⁿ giving at most ~6 intervals. */
 export function tickStep(max: number): number {
@@ -43,9 +40,9 @@ export function ticks(max: number): number[] {
   return out
 }
 
-/** Bubble radius for `z`, mapping [0, zMax] linearly onto the area range. */
-export function bubbleRadius(z: number, zMax: number): number {
-  const t = zMax > 0 ? Math.min(Math.max(z / zMax, 0), 1) : 0
+/** Dot radius for `z` in [0,1], mapped linearly onto the area range. */
+export function bubbleRadius(z: number): number {
+  const t = Math.min(Math.max(z, 0), 1)
   return Math.sqrt((AREA_MIN + t * (AREA_MAX - AREA_MIN)) / Math.PI)
 }
 
@@ -54,11 +51,13 @@ export function RadarScatter({
   onSelect,
   renderTooltip,
   axisLabels,
+  accent,
 }: {
   points: ScatterPoint[]
   onSelect: (point: ScatterPoint) => void
   renderTooltip: (point: ScatterPoint) => ReactNode
   axisLabels: { x: string; y: string }
+  accent: string
 }) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ width: 0, height: 0 })
@@ -79,30 +78,34 @@ export function RadarScatter({
   const plotW = Math.max(width - MARGIN.left - MARGIN.right, 0)
   const plotH = Math.max(height - MARGIN.top - MARGIN.bottom, 0)
   const xMax = Math.max(X_MIN_DOMAIN, ...points.map((p) => p.x))
-  const yMax = Math.max(Y_MIN_DOMAIN, ...points.map((p) => p.y))
-  const zMax = Math.max(0, ...points.map((p) => p.z))
+  const yMax = 1
   // x is "days ago": 0 (today) sits on the right edge.
   const sx = (x: number) => MARGIN.left + plotW * (1 - x / xMax)
   const sy = (y: number) => MARGIN.top + plotH * (1 - y / yMax)
 
-  const axis = 'rgba(255,255,255,0.1)'
-  const tickText = 'rgba(255,255,255,0.4)'
+  const axis = 'rgba(255,255,255,0.12)'
+  const grid = 'rgba(255,255,255,0.05)'
+  const tickText = 'rgba(255,255,255,0.45)'
+
+  // Draw highlighted dots last so their ring is never covered.
+  const ordered = [...points].sort(
+    (a, b) => Number(a.highlighted ?? false) - Number(b.highlighted ?? false),
+  )
 
   return (
     <div ref={wrapRef} className="relative w-full h-full">
       {width > 0 && (
-        <svg width={width} height={height} className="block">
-          <defs>
-            <filter id="radar-glow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* Axes */}
+        <svg width={width} height={height} className="block" role="group">
+          {ticks(yMax).map((v) => (
+            <line
+              key={`g${v}`}
+              x1={MARGIN.left}
+              x2={MARGIN.left + plotW}
+              y1={sy(v)}
+              y2={sy(v)}
+              stroke={grid}
+            />
+          ))}
           <line
             x1={MARGIN.left}
             x2={MARGIN.left + plotW}
@@ -122,23 +125,30 @@ export function RadarScatter({
               key={`x${v}`}
               transform={`translate(${sx(v)},${MARGIN.top + plotH})`}
             >
-              <line y2={5} stroke={axis} />
-              <text y={16} textAnchor="middle" fill={tickText} fontSize={10}>
+              <line y2={4} stroke={axis} />
+              <text
+                y={15}
+                textAnchor="middle"
+                fill={tickText}
+                fontSize={10}
+                fontFamily="var(--font-mono)"
+              >
                 {v}
               </text>
             </g>
           ))}
           {ticks(yMax).map((v) => (
             <g key={`y${v}`} transform={`translate(${MARGIN.left},${sy(v)})`}>
-              <line x2={-5} stroke={axis} />
+              <line x2={-4} stroke={axis} />
               <text
-                x={-8}
+                x={-7}
                 dy="0.32em"
                 textAnchor="end"
                 fill={tickText}
                 fontSize={10}
+                fontFamily="var(--font-mono)"
               >
-                {v}
+                {v.toFixed(1)}
               </text>
             </g>
           ))}
@@ -146,23 +156,22 @@ export function RadarScatter({
             x={MARGIN.left + plotW}
             y={MARGIN.top + plotH - 6}
             textAnchor="end"
-            fill="rgba(255,255,255,0.3)"
+            fill={tickText}
             fontSize={10}
           >
             {axisLabels.x}
           </text>
           <text
-            transform={`translate(${MARGIN.left + 12},${MARGIN.top + plotH / 2}) rotate(-90)`}
-            textAnchor="middle"
-            fill="rgba(255,255,255,0.3)"
+            transform={`translate(${MARGIN.left + 10},${MARGIN.top + 4}) rotate(-90)`}
+            textAnchor="end"
+            fill={tickText}
             fontSize={10}
           >
             {axisLabels.y}
           </text>
 
-          {/* Hover crosshair */}
           {hovered && (
-            <g stroke="rgba(255,255,255,0.2)" strokeDasharray="3 3">
+            <g stroke="rgba(255,255,255,0.25)" strokeDasharray="2 3">
               <line
                 x1={sx(hovered.x)}
                 x2={sx(hovered.x)}
@@ -178,35 +187,47 @@ export function RadarScatter({
             </g>
           )}
 
-          {points.map((p) => {
+          {ordered.map((p) => {
             const color = CATEGORY_CONFIG[p.category].color
+            const r = bubbleRadius(p.z)
+            const active = hovered?.id === p.id
             return (
-              <circle
-                key={p.id}
-                cx={sx(p.x)}
-                cy={sy(p.y)}
-                r={bubbleRadius(p.z, zMax)}
-                fill={color}
-                fillOpacity={p.isAnomaly ? 0.9 : 0.6}
-                stroke={p.isAnomaly ? '#ffaa00' : color}
-                strokeWidth={p.isAnomaly ? 2 : 1}
-                filter={p.isAnomaly ? 'url(#radar-glow)' : undefined}
-                className="cursor-pointer"
-                role="button"
-                tabIndex={0}
-                aria-label={p.title}
-                onMouseEnter={() => setHovered(p)}
-                onMouseLeave={() => setHovered(null)}
-                onFocus={() => setHovered(p)}
-                onBlur={() => setHovered(null)}
-                onClick={() => onSelect(p)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    onSelect(p)
-                  }
-                }}
-              />
+              <g key={p.id}>
+                {p.highlighted && (
+                  <circle
+                    cx={sx(p.x)}
+                    cy={sy(p.y)}
+                    r={r + 3}
+                    fill="none"
+                    stroke={accent}
+                    strokeWidth={1.5}
+                  />
+                )}
+                <circle
+                  cx={sx(p.x)}
+                  cy={sy(p.y)}
+                  r={r}
+                  fill={color}
+                  fillOpacity={active ? 0.95 : 0.7}
+                  stroke={active ? '#fff' : color}
+                  strokeWidth={1}
+                  className="cursor-pointer outline-none"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={p.title}
+                  onMouseEnter={() => setHovered(p)}
+                  onMouseLeave={() => setHovered(null)}
+                  onFocus={() => setHovered(p)}
+                  onBlur={() => setHovered(null)}
+                  onClick={() => onSelect(p)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onSelect(p)
+                    }
+                  }}
+                />
+              </g>
             )
           })}
         </svg>
@@ -216,7 +237,7 @@ export function RadarScatter({
         <div
           className="absolute pointer-events-none z-10"
           style={{
-            left: Math.min(sx(hovered.x) + 12, Math.max(width - 260, 0)),
+            left: Math.min(sx(hovered.x) + 12, Math.max(width - 280, 0)),
             top: Math.max(sy(hovered.y) - 12, 0),
           }}
         >

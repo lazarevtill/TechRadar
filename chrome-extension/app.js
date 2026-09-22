@@ -1,4 +1,4 @@
-import { calculateMaturity, calculateImpact } from './lib/scoring.js'
+import { calculateMaturity, computeSignals } from './lib/scoring.js'
 import { categorizeByKeywords, CATEGORY_KEYWORDS } from './lib/categorize.js'
 import { seededJitter } from './lib/jitter.js'
 import { BoundedCache } from './lib/lru-cache.js'
@@ -9,12 +9,17 @@ import {
   TRANSLATION_TTL_MS,
 } from './lib/config.js'
 import { fetchDataFile } from './lib/data-source.js'
-import { nextStage, trajectoryMeta, sparkline } from './lib/trends-view.js'
+import { trajectoryMeta, sparklineBars } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
+import { icon, CATEGORY_ICON } from './lib/icons.js'
+import { detectLanguage, MYMEMORY_CODES } from './lib/detect-language.js'
 
 /**
- * Tech Evolution Radar - Chrome Extension
- * Full Dashboard Version with AI Insight & Evolution Chains
+ * Tech Evolution Radar - Chrome extension new-tab page.
+ *
+ * Fetches GitHub, arXiv and Hacker News directly from the browser, ranks
+ * items among their source peers (lib/scoring.js), and paints a calm,
+ * text-first page. Nothing is emphasized without a stated reason.
  */
 
 // ============================================
@@ -24,49 +29,35 @@ import { pickDigestText, SOURCE_META } from './lib/digest.js'
 const CONFIG = {
   CACHE_DURATION: 5 * 60 * 1000, // 5 minutes
   REFRESH_INTERVAL: 10 * 60 * 1000, // 10 minutes
-  MAX_FEED_ITEMS: 20,
+  MAX_FEED_ITEMS: 30,
   MYMEMORY_API: 'https://api.mymemory.translated.net/get',
 }
 
 const CATEGORY_CONFIG = {
-  ai: { label: 'AI / ML', icon: '🧠', color: '#ff00aa' },
-  energy: { label: 'Energy', icon: '⚡', color: '#22c55e' },
-  biotech: { label: 'BioTech', icon: '🧬', color: '#06b6d4' },
-  robotics: { label: 'Robotics', icon: '🤖', color: '#f97316' },
-  web3: { label: 'Web3', icon: '🔗', color: '#8b5cf6' },
-  quantum: { label: 'Quantum', icon: '⚛️', color: '#ec4899' },
-  space: { label: 'Space', icon: '🚀', color: '#3b82f6' },
-  cybersecurity: { label: 'Security', icon: '🛡️', color: '#ef4444' },
+  ai: { label: 'AI / ML', color: '#c792ea' },
+  energy: { label: 'Energy', color: '#7ec699' },
+  biotech: { label: 'BioTech', color: '#6cc7d1' },
+  robotics: { label: 'Robotics', color: '#e8a86b' },
+  web3: { label: 'Web3', color: '#9aa6f5' },
+  quantum: { label: 'Quantum', color: '#e08fb5' },
+  space: { label: 'Space', color: '#7fb0e8' },
+  cybersecurity: { label: 'Security', color: '#e07c7c' },
 }
 
 const MATURITY_CONFIG = {
-  research: {
-    label: 'Research',
-    color: '#a855f7',
-    bgColor: 'rgba(168, 85, 247, 0.2)',
-  },
-  prototype: {
-    label: 'Prototype',
-    color: '#00f0ff',
-    bgColor: 'rgba(0, 240, 255, 0.2)',
-  },
-  'early-adopter': {
-    label: 'Early Adopter',
-    color: '#ffaa00',
-    bgColor: 'rgba(255, 170, 0, 0.2)',
-  },
-  'mass-market': {
-    label: 'Mass Market',
-    color: '#22c55e',
-    bgColor: 'rgba(34, 197, 94, 0.2)',
-  },
+  research: { label: 'Research', color: '#b39ddb' },
+  prototype: { label: 'Prototype', color: '#80cbc4' },
+  'early-adopter': { label: 'Early adopter', color: '#ffcc80' },
+  'mass-market': { label: 'Mass market', color: '#a5d6a7' },
 }
 
 const SOURCE_CONFIG = {
-  github: { label: 'GitHub', icon: '📦' },
-  arxiv: { label: 'arXiv', icon: '📄' },
-  hackernews: { label: 'Hacker News', icon: '🔶' },
+  github: { label: 'GitHub', unit: 'stars' },
+  arxiv: { label: 'arXiv', unit: null },
+  hackernews: { label: 'Hacker News', unit: 'points' },
 }
+
+const ACCENT = '#e0a458'
 
 // ============================================
 // TRANSLATIONS
@@ -74,93 +65,138 @@ const SOURCE_CONFIG = {
 
 const translations = {
   en: {
-    totalSignals: 'Total Signals',
-    anomalies: 'Anomalies',
-    liveSources: 'Live Sources',
-    avgImpact: 'Avg Impact',
-    liveRadar: 'Live Radar',
-    liveFeed: 'Live Feed',
-    evolutionChains: 'Evolution Chains',
-    allSources: 'All Sources',
-    syncing: 'SYNCING',
-    live: 'LIVE',
-    footerVersion: 'v1.0 • Chrome Extension',
-    footerSubtitle: 'Real-time data from GitHub, arXiv & Hacker News',
+    loading: 'Loading…',
+    appTitle: 'Tech Evolution Radar',
+    appSubtitle: 'GitHub, arXiv and Hacker News, fetched from this browser',
+    howItWorks: 'How it works',
+    totalSignals: 'Signals',
+    highlighted: 'Highlighted',
+    sources: 'Sources',
+    scored: 'Scored',
+    liveRadar: 'Radar',
+    radarHint: 'rings: maturity · dot size: reach · ring: fast-rising',
+    highlightsTitle: 'Highlights',
+    highlightsHint: 'only with a stated reason',
+    highlightsEmpty: 'Nothing stands out in this fetch',
+    trendsTitle: 'Topic momentum',
+    trendsHint: 'week over week, from the daily digest',
+    liveFeed: 'Feed',
+    allSources: 'All sources',
+    newsDigest: 'AI blog digest',
+    newsSubtitle: 'Engineering blogs, summarized daily',
+    infoTitle: 'How the radar works',
+    live: 'Updated',
+    syncing: 'Updating',
     noItems: 'No items found',
-    loading: 'Loading...',
     error: 'Failed to load data',
     retry: 'Retry',
-    aiInsight: 'AI Insight',
-    howItWorks: 'How it works',
-    analyzingData: 'Analyzing data streams...',
-    gatheringSignals: 'Gathering signals from all sources',
     signals: 'signals',
-    active: 'active',
+    from: 'from',
+    unscoredNote:
+      'arXiv reports no attention metric, so its items are unscored',
+    fastRising: 'Fast-rising',
+    fastRisingDesc:
+      'gaining attention much faster than its peers on the same source',
+    signal: 'signal',
+    stars: 'stars',
+    points: 'points',
+    perDay: '/day',
     daysAgo: 'd ago',
-    evolution: 'Evolution',
-    trackingSignals: 'Tracking',
-    fromResearchToAdoption: 'from research to adoption',
-    trajectoryAnalysis: 'Trajectory Analysis',
-    strongMomentumDetected: 'Strong momentum detected with',
-    anomaliesDetected: 'anomalies',
-    expectedToAdvance: 'Expected to advance to',
-    months: 'months',
-    stableActivity: 'Stable activity in',
-    monitoringForBreakthrough: 'Monitoring for breakthrough signals.',
-    evolutionChainsWillAppear:
-      'Evolution chains will appear as data is collected',
+    hoursAgo: 'h ago',
+    minutesAgo: 'm ago',
     translateToRussian: 'Translate to Russian',
-    translating: 'Translating...',
-    showOriginal: 'Show original',
-    translated: 'Translated',
-    newsDigest: 'AI Blog Digest',
-    newsSubtitle: 'Engineering blogs, in human',
+    translating: 'Translating…',
+    showOriginal: 'Original',
+    showTranslation: 'Translation',
+    machineTranslated: 'machine-translated',
+    momentum: 'week over week',
     readOriginal: 'Read original',
     newsEmpty: 'Digest will appear after the next daily update',
+    trendsEmpty: 'Topic momentum will appear once the daily digest has data',
+    infoSources: 'Sources',
+    infoSourcesText:
+      'Repositories created this week on GitHub, the newest arXiv submissions, and the Hacker News front page, fetched directly from this browser and cached locally for five minutes.',
+    infoScoring: 'Signal score',
+    infoScoringText:
+      'Stars and points are on different scales, and arXiv has none, so every item is placed among its own source’s peers: reach (percentile of stars or points), velocity (percentile of engagement per day of age) and recency (age decay per source). Items with no attention metric are shown but not scored.',
+    infoHighlights: 'Highlights',
+    infoHighlightsText:
+      'An item is emphasized only when its velocity is a robust outlier among at least four peers from the same source. The reason is always shown. The full dashboard adds Jev’s novelty and topic judgments; this page cannot, because it holds no API key.',
+    infoMaturity: 'Maturity',
+    infoMaturityText:
+      'Research, prototype, early adopter and mass market come from star or point counts in code. The radar draws them as rings; angle carries no meaning.',
+    infoDigest: 'AI blog digest',
+    infoDigestText:
+      'A daily digest of engineering blogs, rewritten into a headline plus three takeaways in English and Russian, read from the project’s public data.',
+    footerVersion: 'Chrome extension',
+    footerSubtitle: 'Live data from GitHub, arXiv and Hacker News',
   },
   ru: {
-    totalSignals: 'Всего сигналов',
-    anomalies: 'Аномалии',
-    liveSources: 'Источники',
-    avgImpact: 'Ср. влияние',
-    liveRadar: 'Радар',
-    liveFeed: 'Лента',
-    evolutionChains: 'Цепочки эволюции',
-    allSources: 'Все источники',
-    syncing: 'СИНХР.',
-    live: 'LIVE',
-    footerVersion: 'v1.0 • Расширение Chrome',
-    footerSubtitle: 'Данные в реальном времени из GitHub, arXiv и Hacker News',
-    noItems: 'Ничего не найдено',
-    loading: 'Загрузка...',
-    error: 'Ошибка загрузки данных',
-    retry: 'Повторить',
-    aiInsight: 'ИИ Анализ',
+    loading: 'Загрузка…',
+    appTitle: 'Радар эволюции технологий',
+    appSubtitle: 'GitHub, arXiv и Hacker News, запросы из этого браузера',
     howItWorks: 'Как это работает',
-    analyzingData: 'Анализ данных...',
-    gatheringSignals: 'Собираем сигналы из всех источников',
+    totalSignals: 'Сигналы',
+    highlighted: 'Выделено',
+    sources: 'Источники',
+    scored: 'Оценено',
+    liveRadar: 'Радар',
+    radarHint: 'кольца: зрелость · размер: охват · обводка: быстрый рост',
+    highlightsTitle: 'Главное',
+    highlightsHint: 'только с указанной причиной',
+    highlightsEmpty: 'В этой выборке ничего не выделяется',
+    trendsTitle: 'Импульс тем',
+    trendsHint: 'неделя к неделе, по ежедневному дайджесту',
+    liveFeed: 'Лента',
+    allSources: 'Все источники',
+    newsDigest: 'Дайджест AI-блогов',
+    newsSubtitle: 'Инженерные блоги, ежедневные сводки',
+    infoTitle: 'Как работает радар',
+    live: 'Обновлено',
+    syncing: 'Обновление',
+    noItems: 'Ничего не найдено',
+    error: 'Не удалось загрузить данные',
+    retry: 'Повторить',
     signals: 'сигналов',
-    active: 'активных',
+    from: 'из',
+    unscoredNote:
+      'arXiv не сообщает метрику внимания, поэтому его записи без оценки',
+    fastRising: 'Быстрый рост',
+    fastRisingDesc:
+      'набирает внимание заметно быстрее соседей по тому же источнику',
+    signal: 'сигнал',
+    stars: 'звёзд',
+    points: 'очков',
+    perDay: '/день',
     daysAgo: 'д назад',
-    evolution: 'Эволюция',
-    trackingSignals: 'Отслеживание',
-    fromResearchToAdoption: 'от исследований до внедрения',
-    trajectoryAnalysis: 'Анализ траектории',
-    strongMomentumDetected: 'Обнаружен сильный импульс с',
-    anomaliesDetected: 'аномалиями',
-    expectedToAdvance: 'Ожидается переход к',
-    months: 'месяцев',
-    stableActivity: 'Стабильная активность в',
-    monitoringForBreakthrough: 'Мониторинг прорывных сигналов.',
-    evolutionChainsWillAppear: 'Цепочки эволюции появятся по мере сбора данных',
-    translateToRussian: 'На русский',
-    translating: 'Перевод...',
+    hoursAgo: 'ч назад',
+    minutesAgo: 'м назад',
+    translateToRussian: 'Перевести на русский',
+    translating: 'Перевод…',
     showOriginal: 'Оригинал',
-    translated: 'Переведено',
-    newsDigest: 'Дайджест ИИ-блогов',
-    newsSubtitle: 'Инженерные блоги — по-человечески',
+    showTranslation: 'Перевод',
+    machineTranslated: 'машинный перевод',
+    momentum: 'неделя к неделе',
     readOriginal: 'Читать оригинал',
     newsEmpty: 'Дайджест появится после следующего суточного обновления',
+    trendsEmpty: 'Импульс тем появится, когда в дайджесте накопятся данные',
+    infoSources: 'Источники',
+    infoSourcesText:
+      'Репозитории, созданные на этой неделе на GitHub, новейшие статьи arXiv и главная Hacker News, запрошенные напрямую из браузера и кэшированные локально на пять минут.',
+    infoScoring: 'Оценка сигнала',
+    infoScoringText:
+      'Звёзды и очки в разных шкалах, а у arXiv их нет, поэтому каждая запись сравнивается с соседями по своему источнику: охват (перцентиль звёзд или очков), скорость (перцентиль вовлечённости в день возраста) и свежесть (затухание по возрасту для источника). Записи без метрики внимания показываются, но не оцениваются.',
+    infoHighlights: 'Выделение',
+    infoHighlightsText:
+      'Запись выделяется только когда её скорость — устойчивый выброс среди не менее чем четырёх соседей по источнику. Причина показывается всегда. Полная панель добавляет оценки новизны и тем от Jev; эта страница не может, потому что не хранит API-ключ.',
+    infoMaturity: 'Зрелость',
+    infoMaturityText:
+      'Исследование, прототип, ранние последователи и массовый рынок вычисляются в коде из числа звёзд или очков. Радар рисует их кольцами; угол ничего не значит.',
+    infoDigest: 'Дайджест AI-блогов',
+    infoDigestText:
+      'Ежедневный дайджест инженерных блогов: заголовок и три вывода на английском и русском, из публичных данных проекта.',
+    footerVersion: 'Расширение Chrome',
+    footerSubtitle: 'Живые данные из GitHub, arXiv и Hacker News',
   },
 }
 
@@ -176,7 +212,7 @@ const localizedCategories = {
     space: 'Space',
   },
   ru: {
-    ai: 'ИИ / МО',
+    ai: 'ИИ / ML',
     quantum: 'Квантовые',
     robotics: 'Робототехника',
     web3: 'Web3',
@@ -191,8 +227,8 @@ const localizedMaturity = {
   en: {
     research: 'Research',
     prototype: 'Prototype',
-    'early-adopter': 'Early Adopter',
-    'mass-market': 'Mass Market',
+    'early-adopter': 'Early adopter',
+    'mass-market': 'Mass market',
   },
   ru: {
     research: 'Исследование',
@@ -208,12 +244,7 @@ const localizedMaturity = {
 
 let state = {
   items: [],
-  stats: {
-    totalSignals: 0,
-    anomaliesThisWeek: 0,
-    sourceCount: 0,
-    avgImpactScore: 0,
-  },
+  stats: { totalSignals: 0, highlighted: 0, sourceCount: 0, scored: 0 },
   isLoading: true,
   error: null,
   activeCategory: 'all',
@@ -221,8 +252,9 @@ let state = {
   language: 'en',
   lastFetched: null,
   expandedChain: null,
-  translations: {}, // Cache for translated items: { itemId: { title, summary } }
-  translatingItems: new Set(), // Items currently being translated
+  translations: {}, // Manual Russian translations: { itemId: { title, summary } }
+  translatingItems: new Set(),
+  showOriginal: new Set(), // item ids showing original instead of translation
   trends: [],
   digest: [],
 }
@@ -240,22 +272,23 @@ const elements = {
   langEn: document.getElementById('lang-en'),
   langRu: document.getElementById('lang-ru'),
   statSignals: document.getElementById('stat-signals'),
-  statAnomalies: document.getElementById('stat-anomalies'),
+  statHighlighted: document.getElementById('stat-highlighted'),
   statSources: document.getElementById('stat-sources'),
-  statImpact: document.getElementById('stat-impact'),
+  statScored: document.getElementById('stat-scored'),
+  summaryLine: document.getElementById('summary-line'),
   categoryFilters: document.getElementById('category-filters'),
   sourceFilter: document.getElementById('source-filter'),
   feedList: document.getElementById('feed-list'),
+  feedCount: document.getElementById('feed-count'),
   radarCanvas: document.getElementById('radar-canvas'),
   radarTooltip: document.getElementById('radar-tooltip'),
-  tooltip: document.getElementById('tooltip'),
-  aiHeadline: document.getElementById('ai-headline'),
-  aiSubtext: document.getElementById('ai-subtext'),
-  aiStats: document.getElementById('ai-stats'),
+  radarLegend: document.getElementById('radar-legend'),
+  highlights: document.getElementById('highlights'),
   evolutionChains: document.getElementById('evolution-chains'),
   chainCount: document.getElementById('chain-count'),
   newsList: document.getElementById('news-list'),
   infoBtn: document.getElementById('info-btn'),
+  infoBody: document.getElementById('info-body'),
   infoModal: document.getElementById('info-modal'),
   modalClose: document.getElementById('modal-close'),
 }
@@ -269,46 +302,51 @@ const translationCache = new BoundedCache(
   TRANSLATION_TTL_MS,
 )
 
-function getTranslationCacheKey(text, toLang) {
-  return `${toLang}:${text.slice(0, 100)}`
+// MyMemory's keyless quota is small; after a 429 stop for an hour rather
+// than re-sending every item on every refresh.
+const QUOTA_BACKOFF_MS = 60 * 60 * 1000
+let quotaBlockedUntil = 0
+
+function getTranslationCacheKey(text, from, to) {
+  return `${from}:${to}:${text.slice(0, 100)}`
 }
 
-async function translateText(text, toLang = 'ru') {
-  if (!text || text.trim().length === 0) return text
+async function translateText(text, fromLang, toLang) {
+  if (!text || text.trim().length === 0 || fromLang === toLang) return text
+  // Only the fields that are actually foreign go out: a repo name next to a
+  // Chinese description stays as it is.
+  if (toLang === 'en' && detectLanguage(text) === 'en') return text
 
-  // Check cache
-  const cacheKey = getTranslationCacheKey(text, toLang)
+  const cacheKey = getTranslationCacheKey(text, fromLang, toLang)
   const cached = translationCache.get(cacheKey)
   if (cached !== undefined) return cached
+  if (Date.now() < quotaBlockedUntil) return text
 
   try {
-    // Truncate very long texts (API limit)
     const truncatedText = text.slice(0, 500)
+    const pair = `${MYMEMORY_CODES[fromLang] ?? fromLang}|${MYMEMORY_CODES[toLang] ?? toLang}`
+    const url = `${CONFIG.MYMEMORY_API}?q=${encodeURIComponent(truncatedText)}&langpair=${encodeURIComponent(pair)}`
+    const response = await fetch(url)
 
-    const url = `${CONFIG.MYMEMORY_API}?q=${encodeURIComponent(truncatedText)}&langpair=en|${toLang}`
-
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'TechEvolutionRadar-Extension/1.0',
-      },
-    })
-
+    if (response.status === 429) {
+      quotaBlockedUntil = Date.now() + QUOTA_BACKOFF_MS
+      return text
+    }
     if (!response.ok) {
       console.warn(`Translation API error: ${response.status}`)
       return text
     }
 
     const data = await response.json()
-
+    if (data.responseStatus === 429 || data.quotaFinished === true) {
+      quotaBlockedUntil = Date.now() + QUOTA_BACKOFF_MS
+      return text
+    }
     if (data.responseStatus === 200 && data.responseData?.translatedText) {
       const translated = data.responseData.translatedText
-
-      // Cache the result
       translationCache.set(cacheKey, translated)
-
       return translated
     }
-
     return text
   } catch (error) {
     console.error('Translation error:', error)
@@ -316,109 +354,58 @@ async function translateText(text, toLang = 'ru') {
   }
 }
 
-async function translateItem(itemId) {
+/**
+ * Non-English items get an English title and summary so a machine without
+ * CJK fonts still reads them (the page ships no fonts and its CSP forbids
+ * remote ones). Only title and summary go out; volume stays small.
+ */
+async function translateNonEnglish(items) {
+  const foreign = items.filter(
+    (item) => item.originalLanguage !== 'en' && !item.translations?.en,
+  )
+  await Promise.all(
+    foreign.map(async (item) => {
+      const [title, summary] = await Promise.all([
+        translateText(item.title, item.originalLanguage, 'en'),
+        translateText(item.summary, item.originalLanguage, 'en'),
+      ])
+      if (title !== item.title || summary !== item.summary) {
+        item.translations = {
+          ...(item.translations || {}),
+          en: { title, summary },
+        }
+      }
+    }),
+  )
+}
+
+async function translateItemToRussian(itemId) {
   const item = state.items.find((i) => i.id === itemId)
   if (!item) return
-
-  // Already translated or translating
-  if (state.translations[itemId] || state.translatingItems.has(itemId)) {
-    return
-  }
+  if (state.translations[itemId] || state.translatingItems.has(itemId)) return
 
   state.translatingItems.add(itemId)
-  updateFeedItemUI(itemId, 'translating')
+  renderFeed()
 
   try {
-    const [translatedTitle, translatedSummary] = await Promise.all([
-      translateText(item.title, 'ru'),
-      translateText(item.summary, 'ru'),
+    const source = item.translations?.en ?? item
+    const from = item.translations?.en ? 'en' : item.originalLanguage
+    const [title, summary] = await Promise.all([
+      translateText(source.title, from, 'ru'),
+      translateText(source.summary, from, 'ru'),
     ])
-
-    state.translations[itemId] = {
-      title: translatedTitle,
-      summary: translatedSummary,
-    }
-
-    // Save translations to cache
+    state.translations[itemId] = { title, summary }
     saveTranslationsToCache()
   } catch (error) {
     console.error('Failed to translate item:', error)
   } finally {
     state.translatingItems.delete(itemId)
-    updateFeedItemUI(itemId, 'done')
-  }
-}
-
-function updateFeedItemUI(itemId, status) {
-  const feedItem = document.querySelector(`.feed-item[data-id="${itemId}"]`)
-  if (!feedItem) return
-
-  const translateBtn = feedItem.querySelector('.translate-btn')
-  const titleEl = feedItem.querySelector('.feed-item-title')
-  const summaryEl = feedItem.querySelector('.feed-item-summary')
-
-  if (status === 'translating') {
-    if (translateBtn) {
-      translateBtn.innerHTML = `<span class="translate-spinner"></span> ${getTranslation('translating')}`
-      translateBtn.disabled = true
-    }
-  } else if (status === 'done') {
-    const translation = state.translations[itemId]
-
-    if (translation && translateBtn) {
-      // Update button to toggle
-      const isShowingTranslation = feedItem.dataset.showTranslation === 'true'
-
-      if (!isShowingTranslation) {
-        // Show translation
-        if (titleEl) titleEl.textContent = translation.title
-        if (summaryEl) summaryEl.textContent = translation.summary
-        feedItem.dataset.showTranslation = 'true'
-        translateBtn.innerHTML = `🇬🇧 ${getTranslation('showOriginal')}`
-        translateBtn.classList.add('translated')
-      }
-
-      translateBtn.disabled = false
-    }
-  }
-}
-
-function toggleTranslation(itemId) {
-  const feedItem = document.querySelector(`.feed-item[data-id="${itemId}"]`)
-  if (!feedItem) return
-
-  const translation = state.translations[itemId]
-  const item = state.items.find((i) => i.id === itemId)
-  if (!translation || !item) return
-
-  const titleEl = feedItem.querySelector('.feed-item-title')
-  const summaryEl = feedItem.querySelector('.feed-item-summary')
-  const translateBtn = feedItem.querySelector('.translate-btn')
-
-  const isShowingTranslation = feedItem.dataset.showTranslation === 'true'
-
-  if (isShowingTranslation) {
-    // Show original
-    if (titleEl) titleEl.textContent = item.title
-    if (summaryEl) summaryEl.textContent = item.summary
-    feedItem.dataset.showTranslation = 'false'
-    if (translateBtn) {
-      translateBtn.innerHTML = `🇷🇺 ${getTranslation('translated')}`
-    }
-  } else {
-    // Show translation
-    if (titleEl) titleEl.textContent = translation.title
-    if (summaryEl) summaryEl.textContent = translation.summary
-    feedItem.dataset.showTranslation = 'true'
-    if (translateBtn) {
-      translateBtn.innerHTML = `🇬🇧 ${getTranslation('showOriginal')}`
-    }
+    renderFeed()
   }
 }
 
 async function saveTranslationsToCache() {
   const data = { translations: state.translations, timestamp: Date.now() }
-
   return new Promise((resolve) => {
     if (chrome?.storage?.local) {
       chrome.storage.local.set({ techRadarTranslations: data }, resolve)
@@ -490,30 +477,24 @@ async function fetchGitHubTrending() {
         seen.add(repo.id)
         return true
       })
-      .slice(0, 8)
-      .map((repo) => ({
-        id: `gh-${repo.id}`,
-        title: `${repo.full_name}: ${repo.description?.slice(0, 80) || 'New trending repository'}`,
-        summary:
-          repo.description ||
-          `A new ${repo.language || 'tech'} project with ${repo.stargazers_count.toLocaleString()} stars.`,
-        source: 'github',
-        sourceUrl: repo.html_url,
-        category: categorizeByKeywords(repo.description || repo.name),
-        maturityStage: calculateMaturity(repo.stargazers_count),
-        impactScore: calculateImpact(repo.stargazers_count, repo.forks_count),
-        hypeVolume: repo.stargazers_count + repo.forks_count * 2,
-        publishedAt: new Date(repo.created_at),
-        isAnomaly: repo.stargazers_count > 1000,
-        weeklyGrowth: (() => {
-          const days = Math.max(
-            1,
-            (Date.now() - new Date(repo.created_at).getTime()) / 86400000,
-          )
-          const perWeek = Math.round((repo.stargazers_count / days) * 7)
-          return perWeek >= 10 ? Math.min(999, perWeek) : null
-        })(),
-      }))
+      .slice(0, 10)
+      .map((repo) => {
+        const description = repo.description || ''
+        return {
+          id: `gh-${repo.id}`,
+          title: repo.full_name,
+          summary:
+            description ||
+            `A new ${repo.language || 'tech'} project with ${repo.stargazers_count.toLocaleString()} stars.`,
+          source: 'github',
+          sourceUrl: repo.html_url,
+          category: categorizeByKeywords(description || repo.name),
+          maturityStage: calculateMaturity(repo.stargazers_count),
+          engagement: repo.stargazers_count,
+          publishedAt: new Date(repo.created_at),
+          originalLanguage: detectLanguage(description),
+        }
+      })
   } catch (error) {
     console.error('GitHub API error:', error)
     return []
@@ -565,11 +546,10 @@ async function fetchArxivPapers() {
       sourceUrl: entry.id.replace('http://', 'https://'),
       category: categorizeByKeywords(entry.title + ' ' + entry.summary),
       maturityStage: 'research',
-      impactScore: 6,
-      hypeVolume: 0,
+      // arXiv reports no attention metric: shown, never scored.
+      engagement: null,
       publishedAt: new Date(entry.published),
-      isAnomaly: false,
-      weeklyGrowth: null,
+      originalLanguage: 'en',
     }))
   } catch (error) {
     console.error('arXiv API error:', error)
@@ -605,20 +585,18 @@ async function fetchHackerNews() {
         .some((kw) => title.includes(kw))
     })
 
-    return techStories.slice(0, 8).map((story) => ({
+    return techStories.slice(0, 10).map((story) => ({
       id: `hn-${story.id}`,
       title: story.title,
-      summary: `Trending on Hacker News with ${story.score} points and ${story.descendants || 0} comments.`,
+      summary: `${story.score} points and ${story.descendants || 0} comments on Hacker News.`,
       source: 'hackernews',
       sourceUrl:
         story.url || `https://news.ycombinator.com/item?id=${story.id}`,
       category: categorizeByKeywords(story.title),
       maturityStage: calculateMaturity(story.score * 10),
-      impactScore: calculateImpact(story.score * 10),
-      hypeVolume: story.score * 10 + (story.descendants || 0) * 5,
+      engagement: story.score,
       publishedAt: new Date(story.time * 1000),
-      isAnomaly: story.score > 500,
-      weeklyGrowth: null,
+      originalLanguage: detectLanguage(story.title),
     }))
   } catch (error) {
     console.error('Hacker News API error:', error)
@@ -630,21 +608,19 @@ async function fetchHackerNews() {
 // HELPER FUNCTIONS
 // ============================================
 
+function t(key) {
+  return translations[state.language][key] ?? translations.en[key] ?? key
+}
+
 function formatTimeAgo(date) {
   if (!(date instanceof Date) || isNaN(date.getTime())) return ''
-  const now = new Date()
-  const diff = now - date
+  const diff = Date.now() - date
   const minutes = Math.floor(diff / 60000)
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
-
-  if (minutes < 60) return `${minutes}m ago`
-  if (hours < 24) return `${hours}h ago`
-  return `${days}d ago`
-}
-
-function getTranslation(key) {
-  return translations[state.language][key] || translations.en[key] || key
+  if (minutes < 60) return `${minutes}${t('minutesAgo')}`
+  if (hours < 24) return `${hours}${t('hoursAgo')}`
+  return `${days}${t('daysAgo')}`
 }
 
 function getLocalizedCategory(category) {
@@ -663,9 +639,66 @@ function getLocalizedMaturity(stage) {
   )
 }
 
+function engagementLine(item) {
+  const unit = SOURCE_CONFIG[item.source]?.unit
+  if (item.engagement === null || item.engagement === undefined || !unit)
+    return ''
+  const count = `${item.engagement.toLocaleString()} ${t(unit)}`
+  const velocity = item.signal?.velocity
+  if (!velocity || velocity < 1) return count
+  return `${count} · ${Math.round(velocity).toLocaleString()}${t('perDay')}`
+}
+
+/** Text to show for an item in the current language, honoring toggles. */
+function displayText(item) {
+  const manualRu = state.translations[item.id]
+  if (state.showOriginal.has(item.id))
+    return { title: item.title, summary: item.summary, translated: false }
+  if (state.language === 'ru' && manualRu)
+    return { ...manualRu, translated: true }
+  if (item.translations?.en)
+    return { ...item.translations.en, translated: true }
+  return { title: item.title, summary: item.summary, translated: false }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div')
+  div.textContent = text ?? ''
+  return div.innerHTML
+}
+
+function safeUrl(url) {
+  if (typeof url !== 'string') return '#'
+  const u = url.trim()
+  return /^https?:\/\//i.test(u) ? u : '#'
+}
+
+function dot(color) {
+  return `<span class="dot" style="background:${color}" aria-hidden="true"></span>`
+}
+
 // ============================================
 // DATA FETCHING
 // ============================================
+
+function reviveItems(items) {
+  return items.map((item) => ({
+    ...item,
+    publishedAt: new Date(item.publishedAt),
+  }))
+}
+
+function rankItems(items) {
+  const signals = computeSignals(items)
+  for (const item of items) item.signal = signals.get(item.id)
+  items.sort((a, b) => b.publishedAt - a.publishedAt)
+  return {
+    totalSignals: items.length,
+    highlighted: items.filter((i) => i.signal.reasons.length > 0).length,
+    sourceCount: new Set(items.map((i) => i.source)).size,
+    scored: items.filter((i) => i.signal.score !== null).length,
+  }
+}
 
 async function fetchAllData() {
   state.isLoading = true
@@ -676,18 +709,14 @@ async function fetchAllData() {
     // tab never waits on GitHub/arXiv/HN just because the cache aged out.
     const cached = await getCachedData()
     if (cached) {
-      state.items = cached.items.map((item) => ({
-        ...item,
-        publishedAt: new Date(item.publishedAt),
-      }))
-      state.stats = cached.stats
+      state.items = reviveItems(cached.items)
+      state.stats = rankItems(state.items)
       state.lastFetched = new Date(cached.timestamp)
       state.error = null
       if (Date.now() - cached.timestamp < CONFIG.CACHE_DURATION) return
       render()
     }
 
-    // Fetch fresh data
     const [githubItems, arxivItems, hnItems] = await Promise.all([
       fetchGitHubTrending(),
       fetchArxivPapers(),
@@ -695,28 +724,15 @@ async function fetchAllData() {
     ])
 
     const allItems = [...githubItems, ...arxivItems, ...hnItems]
-    allItems.sort((a, b) => b.publishedAt - a.publishedAt)
-
-    // Calculate stats
-    const stats = {
-      totalSignals: allItems.length,
-      anomaliesThisWeek: allItems.filter((i) => i.isAnomaly).length,
-      sourceCount: new Set(allItems.map((i) => i.source)).size,
-      avgImpactScore:
-        Math.round(
-          (allItems.reduce((sum, i) => sum + i.impactScore, 0) /
-            allItems.length) *
-            10,
-        ) / 10 || 0,
-    }
+    await translateNonEnglish(allItems)
+    const stats = rankItems(allItems)
 
     state.items = allItems
     state.stats = stats
     state.lastFetched = new Date()
     state.error = null
 
-    // Cache the data
-    await cacheData({ items: allItems, stats, timestamp: Date.now() })
+    await cacheData({ items: allItems, timestamp: Date.now() })
   } catch (error) {
     console.error('Failed to fetch data:', error)
     state.error = error.message
@@ -738,7 +754,6 @@ async function fetchTrends(force = false) {
         resolve(JSON.parse(localStorage.getItem('techRadarTrends') || 'null'))
     })
     if (cachedRaw) {
-      // Show the cached copy immediately; refetch only once it has expired.
       state.trends = cachedRaw.topics || []
       if (!force && Date.now() - cachedRaw.timestamp < TRENDS_TTL_MS) return
     }
@@ -764,7 +779,6 @@ async function fetchDigest(force = false) {
         resolve(JSON.parse(localStorage.getItem('techRadarDigest') || 'null'))
     })
     if (cachedRaw) {
-      // Show the cached copy immediately; refetch only once it has expired.
       state.digest = cachedRaw.items || []
       if (!force && Date.now() - cachedRaw.timestamp < DIGEST_TTL_MS) return
     }
@@ -793,100 +807,21 @@ async function getCachedData() {
 }
 
 async function cacheData(data) {
+  // The signal object is recomputed on load; the raw fields are enough.
+  const items = data.items.map((item) => {
+    const { signal, ...rest } = item
+    void signal
+    return rest
+  })
+  const payload = { items, timestamp: data.timestamp }
   return new Promise((resolve) => {
     if (chrome?.storage?.local) {
-      chrome.storage.local.set({ techRadarCache: data }, resolve)
+      chrome.storage.local.set({ techRadarCache: payload }, resolve)
     } else {
-      localStorage.setItem('techRadarCache', JSON.stringify(data))
+      localStorage.setItem('techRadarCache', JSON.stringify(payload))
       resolve()
     }
   })
-}
-
-// ============================================
-// AI INSIGHT GENERATION
-// ============================================
-
-function generateAIInsight() {
-  const t = translations[state.language]
-
-  if (state.items.length === 0) {
-    return {
-      headline: t.analyzingData,
-      subtext: t.gatheringSignals,
-      highlights: [],
-    }
-  }
-
-  // Find the most active category
-  const categoryCount = {}
-  const categoryGrowth = {}
-  const anomalies = state.items.filter((i) => i.isAnomaly)
-
-  state.items.forEach((item) => {
-    categoryCount[item.category] = (categoryCount[item.category] || 0) + 1
-    if (item.weeklyGrowth) {
-      categoryGrowth[item.category] = Math.max(
-        categoryGrowth[item.category] || 0,
-        item.weeklyGrowth,
-      )
-    }
-  })
-
-  const topCategory = Object.entries(categoryCount).sort(
-    (a, b) => b[1] - a[1],
-  )[0]
-  const topGrowthCategory = Object.entries(categoryGrowth).sort(
-    (a, b) => b[1] - a[1],
-  )[0]
-  const highestImpact = [...state.items].sort(
-    (a, b) => b.impactScore - a.impactScore,
-  )[0]
-
-  let headline, subtext
-
-  if (anomalies.length > 2) {
-    const catLabel = getLocalizedCategory(anomalies[0].category)
-    headline =
-      state.language === 'ru'
-        ? `🚨 Обнаружено ${anomalies.length} аномалий — возможен прорыв в ${catLabel}`
-        : `🚨 ${anomalies.length} anomalies detected — potential breakthrough in ${catLabel}`
-    subtext =
-      state.language === 'ru'
-        ? 'Необычная активность указывает на значительные изменения'
-        : 'Unusual activity patterns suggest significant shifts'
-  } else if (topGrowthCategory && topGrowthCategory[1] > 50) {
-    const catLabel = getLocalizedCategory(topGrowthCategory[0])
-    headline =
-      state.language === 'ru'
-        ? `📈 ${catLabel} показывает рост +${Math.round(topGrowthCategory[1])}% за неделю`
-        : `📈 ${catLabel} surging with +${Math.round(topGrowthCategory[1])}% weekly growth`
-    subtext =
-      state.language === 'ru'
-        ? 'Сильный импульс указывает на растущий интерес'
-        : 'Strong momentum indicates growing interest'
-  } else if (highestImpact && highestImpact.impactScore >= 8) {
-    headline =
-      state.language === 'ru'
-        ? `⚡ Высокое влияние: "${highestImpact.title.slice(0, 40)}..."`
-        : `⚡ High-impact signal: "${highestImpact.title.slice(0, 40)}..."`
-    subtext =
-      state.language === 'ru'
-        ? `Оценка влияния ${highestImpact.impactScore}/10`
-        : `Impact score ${highestImpact.impactScore}/10`
-  } else {
-    const catLabel = getLocalizedCategory(topCategory[0])
-    headline =
-      state.language === 'ru'
-        ? `🔍 ${catLabel} доминирует с ${topCategory[1]} сигналами`
-        : `🔍 ${catLabel} dominates with ${topCategory[1]} signals`
-    subtext =
-      state.language === 'ru'
-        ? 'Стабильная активность по всем источникам'
-        : 'Steady activity across all sources'
-  }
-
-  return { headline, subtext }
 }
 
 // ============================================
@@ -911,11 +846,13 @@ function render() {
   elements.mainContent.classList.remove('hidden')
 
   renderStats()
-  renderAIInsight()
-  renderEvolutionChains()
+  renderCategoryFilters()
+  renderHighlights()
+  renderTrends()
   renderNews()
   renderFeed()
   renderRadar()
+  renderInfo()
   updateTranslations()
 }
 
@@ -929,11 +866,8 @@ function showErrorState() {
   }
   host.classList.remove('hidden')
   host.innerHTML = `
-        <div class="error-inner">
-            <div class="error-icon">📡</div>
-            <p>${escapeHtml(getTranslation('error'))}</p>
-            <button id="error-retry" class="retry-btn">${escapeHtml(getTranslation('retry'))}</button>
-        </div>`
+    <p>${escapeHtml(t('error'))}</p>
+    <button id="error-retry" class="btn">${escapeHtml(t('retry'))}</button>`
   host.querySelector('#error-retry').addEventListener('click', async () => {
     host.classList.add('hidden')
     await fetchAllData()
@@ -941,277 +875,288 @@ function showErrorState() {
 }
 
 function renderStats() {
-  elements.statSignals.textContent = state.stats.totalSignals
-  elements.statAnomalies.textContent = state.stats.anomaliesThisWeek
-  elements.statSources.textContent = state.stats.sourceCount
-  elements.statImpact.textContent = state.stats.avgImpactScore.toFixed(1)
+  const s = state.stats
+  elements.statSignals.textContent = s.totalSignals
+  elements.statHighlighted.textContent = s.highlighted
+  elements.statSources.textContent = s.sourceCount
+  elements.statScored.textContent = `${s.scored} / ${s.totalSignals}`
+  const parts = [
+    `${s.totalSignals} ${t('signals')} ${t('from')} ${s.sourceCount} ${t('sources').toLowerCase()}`,
+  ]
+  if (s.highlighted > 0)
+    parts.push(`${s.highlighted} ${t('fastRising').toLowerCase()}`)
+  if (state.items.some((i) => i.source === 'arxiv'))
+    parts.push(t('unscoredNote'))
+  elements.summaryLine.textContent = parts.join(' · ')
 }
 
-function renderAIInsight() {
-  const insight = generateAIInsight()
+function renderCategoryFilters() {
+  const present = new Set(state.items.map((i) => i.category))
+  const buttons = [
+    `<button class="chip" data-category="all" aria-pressed="${state.activeCategory === 'all'}">All</button>`,
+  ]
+  for (const [key, cfg] of Object.entries(CATEGORY_CONFIG)) {
+    if (!present.has(key)) continue
+    const active = state.activeCategory === key
+    buttons.push(
+      `<button class="chip" data-category="${key}" aria-pressed="${active}"${active ? ` style="color:${cfg.color}"` : ''}>${icon(CATEGORY_ICON[key])}${escapeHtml(getLocalizedCategory(key))}</button>`,
+    )
+  }
+  elements.categoryFilters.innerHTML = buttons.join('')
 
-  elements.aiHeadline.textContent = insight.headline
-  elements.aiSubtext.textContent = insight.subtext
-
-  // Render stats
-  elements.aiStats.innerHTML = `
-        <div class="ai-stat">
-            <svg class="ai-stat-icon cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            </svg>
-            <span class="ai-stat-value cyan">${state.stats.totalSignals}</span>
-        </div>
-        <div class="ai-stat">
-            <svg class="ai-stat-icon emerald" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                <polyline points="17 6 23 6 23 12"/>
-            </svg>
-            <span class="ai-stat-value emerald">${state.stats.avgImpactScore.toFixed(1)}</span>
-        </div>
-        <div class="ai-stat">
-            <svg class="ai-stat-icon amber" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            <span class="ai-stat-value ${state.stats.anomaliesThisWeek > 0 ? 'amber' : ''}">${state.stats.anomaliesThisWeek}</span>
-        </div>
-    `
+  elements.radarLegend.innerHTML = Object.entries(MATURITY_CONFIG)
+    .map(
+      ([key, cfg]) =>
+        `<span class="legend-item">${dot(cfg.color)}${escapeHtml(getLocalizedMaturity(key))}</span>`,
+    )
+    .join('')
 }
 
-function renderEvolutionChains() {
-  const t = translations[state.language]
+function reasonChips(item) {
+  return (item.signal?.reasons || [])
+    .map(
+      (r) =>
+        `<span class="chip-reason" title="${escapeHtml(t('fastRisingDesc'))}">${escapeHtml(r === 'fast-rising' ? t('fastRising') : r)}</span>`,
+    )
+    .join('')
+}
+
+function renderHighlights() {
+  const top = state.items
+    .filter((i) => i.signal?.reasons.length > 0)
+    .sort((a, b) => (b.signal.score ?? 0) - (a.signal.score ?? 0))
+    .slice(0, 6)
+  if (top.length === 0) {
+    elements.highlights.innerHTML = `<p class="empty">${escapeHtml(t('highlightsEmpty'))}</p>`
+    return
+  }
+  elements.highlights.innerHTML = top
+    .map((item) => {
+      const text = displayText(item)
+      return `
+        <div class="highlight">
+          <a class="highlight-title" href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(text.title)}</a>
+          <div class="highlight-meta">
+            ${dot(CATEGORY_CONFIG[item.category]?.color || '#8a8a90')}
+            <span>${escapeHtml(SOURCE_CONFIG[item.source]?.label || item.source)}</span>
+            <span class="num">${item.signal.score === null ? '–' : item.signal.score.toFixed(2)}</span>
+            ${reasonChips(item)}
+          </div>
+        </div>`
+    })
+    .join('')
+}
+
+function sparklineSvg(counts, color) {
+  const bars = sparklineBars(counts)
+  if (bars.length === 0) return ''
+  const w = 64
+  const h = 14
+  const gap = 2
+  const bw = Math.max(1, (w - gap * (bars.length - 1)) / bars.length)
+  const rects = bars
+    .map((v, i) => {
+      const bh = Math.max(1, Math.round(v * h))
+      return `<rect x="${(i * (bw + gap)).toFixed(1)}" y="${h - bh}" width="${bw.toFixed(1)}" height="${bh}" rx="1"/>`
+    })
+    .join('')
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" fill="${color}" aria-hidden="true">${rects}</svg>`
+}
+
+function renderTrends() {
   const topics = [...state.trends]
     .sort((a, b) => b.momentum - a.momentum)
     .slice(0, 6)
-  elements.chainCount.textContent = `(${topics.length} ${t.active})`
+  elements.chainCount.textContent = topics.length ? t('trendsHint') : ''
 
   if (topics.length === 0) {
-    elements.evolutionChains.innerHTML = `
-            <div class="evolution-empty">
-                <div class="evolution-empty-icon">🔗</div>
-                <p>${escapeHtml(t.evolutionChainsWillAppear)}</p>
-            </div>`
+    elements.evolutionChains.innerHTML = `<p class="empty">${escapeHtml(t('trendsEmpty'))}</p>`
     return
   }
 
   elements.evolutionChains.innerHTML = topics
     .map((topic) => {
-      const cfg = CATEGORY_CONFIG[topic.category] || {
-        color: '#00f0ff',
-        icon: '',
-      }
-      const maturity = MATURITY_CONFIG[topic.stage] || MATURITY_CONFIG.research
+      const color = CATEGORY_CONFIG[topic.category]?.color || '#8a8a90'
       const traj = trajectoryMeta(topic.trajectory)
       const isExpanded = state.expandedChain === topic.id
       const pct = Math.round((topic.momentum || 0) * 100)
-      const momentumText =
-        topic.trajectory === 'rising'
-          ? `${t.strongMomentumDetected} +${pct}%. ${t.expectedToAdvance} ${getLocalizedMaturity(nextStage(topic.stage))} 6-12 ${t.months}.`
-          : `${t.stableActivity} ${topic.label}. ${t.monitoringForBreakthrough}`
+      const sign = pct > 0 ? '+' : ''
       const signals = Array.isArray(topic.signals) ? topic.signals : []
       const signalsHtml = signals.length
-        ? `<div class="chain-signals">${signals
+        ? `<div class="topic-signals">${signals
             .map(
               (s) => `
-                <a class="chain-signal" href="${escapeHtml(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">
-                    <span class="chain-signal-title">${escapeHtml(s.title)}</span>
-                    <span class="chain-signal-meta">${escapeHtml((SOURCE_META[s.source] && SOURCE_META[s.source].label) || s.source)} · ${escapeHtml(formatTimeAgo(new Date(s.publishedAt)))}</span>
-                </a>`,
+              <a class="topic-signal" href="${escapeHtml(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.title)}<span>${escapeHtml((SOURCE_META[s.source] && SOURCE_META[s.source].label) || s.source)} · ${escapeHtml(formatTimeAgo(new Date(s.publishedAt)))}</span></a>`,
             )
             .join('')}</div>`
-        : `<p class="chain-signal-empty">${escapeHtml(t.noItems)}</p>`
+        : `<p class="topic-signals empty">${escapeHtml(t('noItems'))}</p>`
       return `
-            <div class="evolution-chain ${isExpanded ? 'expanded' : ''}" data-chain-id="${escapeHtml(topic.id)}">
-                <div class="chain-header">
-                    <div>
-                        <div class="chain-badges">
-                            <span class="chain-badge" style="background-color:${cfg.color}15;color:${cfg.color}">${cfg.icon}</span>
-                            <span class="chain-badge" style="background-color:${maturity.bgColor};color:${maturity.color}">${escapeHtml(getLocalizedMaturity(topic.stage))}</span>
-                            <span class="chain-traj chain-traj-${traj.icon}" style="color:${traj.color}">${traj.icon === 'up' ? '▲' : traj.icon === 'down' ? '▼' : '—'}</span>
-                        </div>
-                        <h3 class="chain-title">${escapeHtml(topic.label)}</h3>
-                        <p class="chain-description">${escapeHtml(getLocalizedCategory(topic.category))} · ${(topic.weeklyCounts || []).reduce((a, b) => a + b, 0)} ${t.signals}</p>
-                    </div>
-                    <div class="chain-expand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
-                </div>
-                <div class="chain-sparkline" style="color:${cfg.color}">${sparkline(topic.weeklyCounts || [])}</div>
-                ${isExpanded ? `<div class="chain-expanded">${signalsHtml}<div class="chain-prediction"><p class="chain-prediction-label">${t.trajectoryAnalysis}</p><p class="chain-prediction-text">${escapeHtml(momentumText)}</p></div></div>` : ''}
-            </div>`
+        <div class="topic" data-chain-id="${escapeHtml(topic.id)}" role="button" tabindex="0" aria-expanded="${isExpanded}">
+          <div class="topic-row">
+            ${dot(color)}
+            <span class="topic-title">${escapeHtml(topic.label)}</span>
+            ${sparklineSvg(topic.weeklyCounts || [], color)}
+            <span class="topic-meta num ${traj.icon === 'up' ? 'rising' : ''}">${sign}${pct}% · ${escapeHtml(getLocalizedMaturity(topic.stage))}</span>
+          </div>
+          ${isExpanded ? signalsHtml : ''}
+        </div>`
     })
     .join('')
 
-  elements.evolutionChains
-    .querySelectorAll('.evolution-chain')
-    .forEach((el) => {
-      el.addEventListener('click', (e) => {
-        if (e.target.closest('.chain-signal')) return
-        const id = el.dataset.chainId
-        state.expandedChain = state.expandedChain === id ? null : id
-        renderEvolutionChains()
-      })
+  elements.evolutionChains.querySelectorAll('.topic').forEach((el) => {
+    const toggle = () => {
+      const id = el.dataset.chainId
+      state.expandedChain = state.expandedChain === id ? null : id
+      renderTrends()
+    }
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('.topic-signal')) return
+      toggle()
     })
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        toggle()
+      }
+    })
+  })
 }
 
 function renderNews() {
   if (!elements.newsList) return
-  const t = translations[state.language]
   if (!state.digest || state.digest.length === 0) {
-    elements.newsList.innerHTML = `<div class="news-empty">${escapeHtml(t.newsEmpty)}</div>`
+    elements.newsList.innerHTML = `<p class="empty">${escapeHtml(t('newsEmpty'))}</p>`
     return
   }
   elements.newsList.innerHTML = state.digest
     .map((item) => {
-      const meta = SOURCE_META[item.source] || {
-        label: item.source,
-        icon: '📄',
-      }
+      const meta = SOURCE_META[item.source] || { label: item.source }
       const { headline, tweets } = pickDigestText(item, state.language)
       const when = formatTimeAgo(new Date(item.publishedAt))
       return `
-            <article class="news-card">
-                <div class="news-card-meta">
-                    <span>${meta.icon} ${escapeHtml(meta.label)}</span>
-                    <span>· ${escapeHtml(when)}</span>
-                </div>
-                <div class="news-headline">${escapeHtml(headline)}</div>
-                <ul class="news-tweets">
-                    ${tweets
-                      .slice(0, 3)
-                      .map((tw) => `<li>${escapeHtml(tw)}</li>`)
-                      .join('')}
-                </ul>
-                <a class="news-read" href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.readOriginal)} ↗</a>
-            </article>`
+        <article class="news-card">
+          <div class="news-card-meta">
+            <span>${escapeHtml(meta.label)}</span>
+            <span>${escapeHtml(when)}</span>
+          </div>
+          <div class="news-headline">${escapeHtml(headline)}</div>
+          <ul class="news-tweets">
+            ${tweets
+              .slice(0, 3)
+              .map((tw) => `<li>${escapeHtml(tw)}</li>`)
+              .join('')}
+          </ul>
+          <a class="news-read" href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(t('readOriginal'))}${icon('external')}</a>
+        </article>`
     })
     .join('')
 }
 
 function renderFeed() {
   let filteredItems = [...state.items]
-
-  // Apply category filter
   if (state.activeCategory !== 'all') {
     filteredItems = filteredItems.filter(
       (i) => i.category === state.activeCategory,
     )
   }
-
-  // Apply source filter
   if (state.activeSource !== 'all') {
     filteredItems = filteredItems.filter((i) => i.source === state.activeSource)
   }
-
-  // Limit items
   filteredItems = filteredItems.slice(0, CONFIG.MAX_FEED_ITEMS)
+  elements.feedCount.textContent = `${filteredItems.length} ${t('signals')}`
 
   if (filteredItems.length === 0) {
-    elements.feedList.innerHTML = `
-            <div class="feed-empty">
-                <div class="feed-empty-icon">📡</div>
-                <p>${getTranslation('noItems')}</p>
-            </div>
-        `
+    elements.feedList.innerHTML = `<p class="empty">${escapeHtml(t('noItems'))}</p>`
     return
   }
 
   elements.feedList.innerHTML = filteredItems
-    .map((item, index) => {
-      const hasTranslation = !!state.translations[item.id]
+    .map((item) => {
+      const text = displayText(item)
+      const manualRu = state.translations[item.id]
       const isTranslating = state.translatingItems.has(item.id)
+      const hasTranslation =
+        !!item.translations?.en || (state.language === 'ru' && !!manualRu)
+      const showingOriginal = state.showOriginal.has(item.id)
+      const highlighted = item.signal?.reasons.length > 0
+      const engagement = engagementLine(item)
 
-      let translateBtnHtml = ''
+      const controls = []
       if (hasTranslation) {
-        translateBtnHtml = `
-                <button class="translate-btn translated" data-action="toggle" title="${getTranslation('showOriginal')}">
-                    🇷🇺 ${getTranslation('translated')}
-                </button>
-            `
-      } else if (isTranslating) {
-        translateBtnHtml = `
-                <button class="translate-btn" disabled>
-                    <span class="translate-spinner"></span> ${getTranslation('translating')}
-                </button>
-            `
-      } else {
-        translateBtnHtml = `
-                <button class="translate-btn" data-action="translate" title="${getTranslation('translateToRussian')}">
-                    🇷🇺 ${getTranslation('translateToRussian')}
-                </button>
-            `
+        controls.push(
+          `<button class="btn btn-text" data-action="toggle">${escapeHtml(showingOriginal ? t('showTranslation') : t('showOriginal'))}</button>`,
+        )
+        if (text.translated)
+          controls.push(`<span>${escapeHtml(t('machineTranslated'))}</span>`)
       }
+      if (
+        state.language === 'ru' &&
+        !manualRu &&
+        item.originalLanguage !== 'ru'
+      ) {
+        controls.push(
+          isTranslating
+            ? `<span>${escapeHtml(t('translating'))}</span>`
+            : `<button class="btn btn-text" data-action="translate">${escapeHtml(t('translateToRussian'))}</button>`,
+        )
+      }
+      const lang = text.translated
+        ? ''
+        : ` lang="${escapeHtml(item.originalLanguage || 'en')}"`
 
       return `
-            <article class="feed-item fade-in fade-in-delay-${Math.min(index, 4)}"
-                     data-url="${escapeHtml(safeUrl(item.sourceUrl))}"
-                     data-id="${item.id}"
-                     data-show-translation="false">
-                <div class="feed-item-header">
-                    <h3 class="feed-item-title">${escapeHtml(item.title)}</h3>
-                    <div class="feed-item-badges">
-                        ${item.isAnomaly ? '<span class="feed-badge anomaly">🔥</span>' : ''}
-                    </div>
-                </div>
-                <p class="feed-item-summary">${escapeHtml(item.summary)}</p>
-                <div class="feed-item-meta">
-                    <span class="feed-source">
-                        ${SOURCE_CONFIG[item.source]?.icon || '📄'} ${SOURCE_CONFIG[item.source]?.label || item.source}
-                    </span>
-                    <span class="feed-category" style="color: ${CATEGORY_CONFIG[item.category]?.color || '#fff'}">
-                        ${CATEGORY_CONFIG[item.category]?.icon || ''} ${escapeHtml(item.category)}
-                    </span>
-                    <span class="feed-time">${formatTimeAgo(item.publishedAt)}</span>
-                    <span class="feed-impact">
-                        <div class="impact-bar">
-                            <div class="impact-fill" style="width: ${item.impactScore * 10}%"></div>
-                        </div>
-                    </span>
-                </div>
-                <div class="feed-item-actions">
-                    ${translateBtnHtml}
-                    <a href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer" class="feed-link-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                            <polyline points="15 3 21 3 21 9"/>
-                            <line x1="10" y1="14" x2="21" y2="3"/>
-                        </svg>
-                    </a>
-                </div>
-            </article>
-        `
+        <article class="feed-item${highlighted ? ' highlighted' : ''}" data-id="${escapeHtml(item.id)}"${lang}>
+          <div class="feed-item-header">
+            <h3 class="feed-item-title"><a href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(text.title)}</a></h3>
+            <a class="feed-link" href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(SOURCE_CONFIG[item.source]?.label || item.source)}">${icon('external')}</a>
+          </div>
+          <p class="feed-item-summary">${escapeHtml(text.summary)}</p>
+          <div class="feed-item-meta">
+            <span class="meta-item">${dot(CATEGORY_CONFIG[item.category]?.color || '#8a8a90')}${escapeHtml(getLocalizedCategory(item.category))}</span>
+            <span class="meta-item">${dot(MATURITY_CONFIG[item.maturityStage]?.color || '#8a8a90')}${escapeHtml(getLocalizedMaturity(item.maturityStage))}</span>
+            <span>${escapeHtml(SOURCE_CONFIG[item.source]?.label || item.source)}</span>
+            <span class="num">${escapeHtml(formatTimeAgo(item.publishedAt))}</span>
+            ${engagement ? `<span class="num">${escapeHtml(engagement)}</span>` : ''}
+            <span class="num">${escapeHtml(t('signal'))} ${item.signal?.score === null || item.signal?.score === undefined ? '–' : item.signal.score.toFixed(2)}</span>
+            ${reasonChips(item)}
+            ${item.originalLanguage && item.originalLanguage !== 'en' ? `<span class="chip-muted">${escapeHtml(item.originalLanguage)}</span>` : ''}
+            ${controls.join('')}
+          </div>
+        </article>`
     })
     .join('')
 
-  // Add click handlers
   elements.feedList.querySelectorAll('.feed-item').forEach((el) => {
-    // Translate button handler
-    const translateBtn = el.querySelector('.translate-btn')
-    if (translateBtn) {
-      translateBtn.addEventListener('click', (e) => {
+    const itemId = el.dataset.id
+    el.querySelectorAll('[data-action]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
         e.stopPropagation()
-        const itemId = el.dataset.id
-        const action = translateBtn.dataset.action
-
-        if (action === 'translate') {
-          translateItem(itemId)
-        } else if (action === 'toggle') {
-          toggleTranslation(itemId)
+        if (btn.dataset.action === 'translate') translateItemToRussian(itemId)
+        else if (btn.dataset.action === 'toggle') {
+          if (state.showOriginal.has(itemId)) state.showOriginal.delete(itemId)
+          else state.showOriginal.add(itemId)
+          renderFeed()
+          renderHighlights()
         }
       })
-    }
-
-    // Item click handler (open URL)
-    el.addEventListener('click', (e) => {
-      // Don't open if clicking on buttons or links
-      if (
-        e.target.closest('.translate-btn') ||
-        e.target.closest('.feed-link-btn')
-      ) {
-        return
-      }
-      window.open(safeUrl(el.dataset.url), '_blank')
     })
   })
+}
+
+function renderInfo() {
+  const sections = [
+    ['infoSources', 'infoSourcesText'],
+    ['infoScoring', 'infoScoringText'],
+    ['infoHighlights', 'infoHighlightsText'],
+    ['infoMaturity', 'infoMaturityText'],
+    ['infoDigest', 'infoDigestText'],
+  ]
+  elements.infoBody.innerHTML = sections
+    .map(
+      ([h, p]) =>
+        `<section><h4>${escapeHtml(t(h))}</h4><p>${escapeHtml(t(p))}</p></section>`,
+    )
+    .join('')
 }
 
 // Hit targets from the last radar draw, in draw order: { x, y, r, item }.
@@ -1223,7 +1168,6 @@ function renderRadar() {
   radarPoints = []
   const ctx = canvas.getContext('2d')
 
-  // Set canvas size
   const rect = canvas.getBoundingClientRect()
   canvas.width = rect.width * window.devicePixelRatio
   canvas.height = rect.height * window.devicePixelRatio
@@ -1233,12 +1177,11 @@ function renderRadar() {
   const height = rect.height
   const centerX = width / 2
   const centerY = height / 2
-  const maxRadius = Math.min(width, height) / 2 - 40
+  const maxRadius = Math.min(width, height) / 2 - 24
 
-  // Clear canvas
   ctx.clearRect(0, 0, width, height)
 
-  // Draw concentric circles (maturity rings)
+  // Concentric rings: maturity, most mature in the middle.
   const rings = ['mass-market', 'early-adopter', 'prototype', 'research']
   rings.forEach((ring, index) => {
     const radius = maxRadius * ((index + 1) / rings.length)
@@ -1248,23 +1191,12 @@ function renderRadar() {
     ctx.lineWidth = 1
     ctx.stroke()
 
-    // Label
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'
-    ctx.font = '10px JetBrains Mono'
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
+    ctx.font = '10px ui-monospace, Menlo, Consolas, monospace'
     ctx.textAlign = 'center'
-    ctx.fillText(MATURITY_CONFIG[ring].label, centerX, centerY - radius + 15)
+    ctx.fillText(getLocalizedMaturity(ring), centerX, centerY - radius + 12)
   })
 
-  // Draw cross lines
-  ctx.beginPath()
-  ctx.moveTo(centerX, centerY - maxRadius)
-  ctx.lineTo(centerX, centerY + maxRadius)
-  ctx.moveTo(centerX - maxRadius, centerY)
-  ctx.lineTo(centerX + maxRadius, centerY)
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
-  ctx.stroke()
-
-  // Filter items by category
   let filteredItems = state.items
   if (state.activeCategory !== 'all') {
     filteredItems = filteredItems.filter(
@@ -1272,65 +1204,56 @@ function renderRadar() {
     )
   }
 
-  // Draw items as dots
-  filteredItems.forEach((item, index) => {
+  // Highlighted dots drawn last so their ring is never covered.
+  const ordered = [...filteredItems].sort(
+    (a, b) => (a.signal?.reasons.length > 0) - (b.signal?.reasons.length > 0),
+  )
+
+  ordered.forEach((item) => {
+    const index = filteredItems.indexOf(item)
     const maturityIndex = rings.indexOf(item.maturityStage)
     const ringRadius = maxRadius * ((maturityIndex + 1) / rings.length)
 
-    // Distribute items around the ring
+    // Angle is only a stable spread: it carries no meaning.
     const angle = (index / filteredItems.length) * Math.PI * 2 - Math.PI / 2
     const jitter = seededJitter(item.id, index) * (ringRadius * 0.3)
-    const x = centerX + Math.cos(angle) * (ringRadius - 20 + jitter)
-    const y = centerY + Math.sin(angle) * (ringRadius - 20 + jitter)
+    const x = centerX + Math.cos(angle) * (ringRadius - 16 + jitter)
+    const y = centerY + Math.sin(angle) * (ringRadius - 16 + jitter)
 
-    // Draw dot
-    const color = CATEGORY_CONFIG[item.category]?.color || '#00f0ff'
-    const size = 4 + item.impactScore / 2
+    const color = CATEGORY_CONFIG[item.category]?.color || '#8a8a90'
+    const reach = item.signal?.reach
+    const size = reach === null || reach === undefined ? 3 : 3.5 + reach * 5.5
+    const highlighted = item.signal?.reasons.length > 0
 
-    // Glow effect
-    ctx.beginPath()
-    ctx.arc(x, y, size + 4, 0, Math.PI * 2)
-    ctx.fillStyle = color.replace(')', ', 0.2)').replace('rgb', 'rgba')
-    if (!color.includes('rgba')) {
-      ctx.fillStyle = hexToRgba(color, 0.2)
-    }
-    ctx.fill()
-
-    // Main dot
     ctx.beginPath()
     ctx.arc(x, y, size, 0, Math.PI * 2)
     ctx.fillStyle = color
+    ctx.globalAlpha = reach === null || reach === undefined ? 0.55 : 0.85
     ctx.fill()
+    ctx.globalAlpha = 1
 
-    // Anomaly indicator
-    if (item.isAnomaly) {
+    if (highlighted) {
       ctx.beginPath()
-      ctx.arc(x, y, size + 8, 0, Math.PI * 2)
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)'
-      ctx.lineWidth = 2
+      ctx.arc(x, y, size + 3.5, 0, Math.PI * 2)
+      ctx.strokeStyle = ACCENT
+      ctx.lineWidth = 1.5
       ctx.stroke()
     }
 
     radarPoints.push({ x, y, r: size, item })
   })
 
-  // Hovered / keyboard-focused signal: bright ring on top of everything.
+  // Hovered / keyboard-focused signal: white ring on top of everything.
   const hovered = radarPoints.find((p) => p.item.id === radarHoverId)
   if (hovered) {
     ctx.beginPath()
-    ctx.arc(hovered.x, hovered.y, hovered.r + 5, 0, Math.PI * 2)
+    ctx.arc(hovered.x, hovered.y, hovered.r + 6, 0, Math.PI * 2)
     ctx.strokeStyle = '#ffffff'
-    ctx.lineWidth = 2
+    ctx.lineWidth = 1.5
     ctx.stroke()
   } else {
     radarHoverId = null
   }
-
-  // Draw center dot
-  ctx.beginPath()
-  ctx.arc(centerX, centerY, 4, 0, Math.PI * 2)
-  ctx.fillStyle = '#00f0ff'
-  ctx.fill()
 }
 
 /** Nearest dot under (x, y) in canvas CSS pixels, with a few px of slack. */
@@ -1350,21 +1273,30 @@ function radarHitTest(x, y) {
 function showRadarTooltip(point) {
   const tip = elements.radarTooltip
   const { item } = point
+  const text = displayText(item)
   // textContent only: titles come from third-party APIs.
   const title = document.createElement('strong')
-  title.textContent = item.title
+  title.textContent = text.title
   const meta = document.createElement('span')
   meta.textContent = [
-    CATEGORY_CONFIG[item.category]?.label,
-    MATURITY_CONFIG[item.maturityStage]?.label,
+    getLocalizedCategory(item.category),
+    getLocalizedMaturity(item.maturityStage),
     SOURCE_CONFIG[item.source]?.label,
-    item.isAnomaly ? '🔥 anomaly' : null,
+    item.signal?.score === null || item.signal?.score === undefined
+      ? null
+      : `${t('signal')} ${item.signal.score.toFixed(2)}`,
   ]
     .filter(Boolean)
     .join(' · ')
-  tip.replaceChildren(title, meta)
+  const children = [title, meta]
+  if (item.signal?.reasons.length) {
+    const reason = document.createElement('span')
+    reason.className = 'chip-reason'
+    reason.textContent = t('fastRising')
+    children.push(reason)
+  }
+  tip.replaceChildren(...children)
   tip.classList.remove('hidden')
-  // Keep the tooltip inside the radar box: flip left near the right edge.
   const box = elements.radarCanvas.getBoundingClientRect()
   const left = point.x + point.r + 10
   tip.style.left = `${Math.min(left, box.width - tip.offsetWidth - 8)}px`
@@ -1419,52 +1351,29 @@ function setupRadarInteractions() {
   canvas.addEventListener('blur', () => setRadarHover(null))
 }
 
-function hexToRgba(hex, alpha) {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`
-}
-
 function updateStatusBadge(syncing) {
   if (syncing) {
-    elements.statusBadge.classList.add('syncing')
-    elements.statusText.textContent = getTranslation('syncing')
+    elements.statusText.textContent = `${t('syncing')}…`
   } else {
-    elements.statusBadge.classList.remove('syncing')
-    elements.statusText.textContent = getTranslation('live')
+    const when = state.lastFetched
+      ? state.lastFetched.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : ''
+    elements.statusText.textContent = `${t('live')} ${when}`.trim()
   }
 }
 
 function updateTranslations() {
-  const t = translations[state.language]
-
-  // Update all elements with data-i18n attribute
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n
-    if (t[key]) {
-      el.textContent = t[key]
-    }
+    const value = translations[state.language][key]
+    if (value) el.textContent = value
   })
-
-  // Update footer
-  document.querySelector('.footer-version').textContent = t.footerVersion
-  document.querySelector('.footer-subtitle').textContent = t.footerSubtitle
-
-  // Update info button
-  elements.infoBtn.querySelector('span').textContent = t.howItWorks
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
-}
-
-function safeUrl(url) {
-  if (typeof url !== 'string') return '#'
-  const u = url.trim()
-  return /^https?:\/\//i.test(u) ? u : '#'
+  document.querySelector('.footer-version').textContent = t('footerVersion')
+  document.querySelector('.footer-subtitle').textContent = t('footerSubtitle')
+  updateStatusBadge(state.isLoading)
 }
 
 // ============================================
@@ -1474,7 +1383,6 @@ function safeUrl(url) {
 function setupEventListeners() {
   setupRadarInteractions()
 
-  // Refresh button
   elements.refreshBtn.addEventListener('click', async () => {
     elements.refreshBtn.classList.add('spinning')
     await fetchAllData()
@@ -1484,66 +1392,55 @@ function setupEventListeners() {
     elements.refreshBtn.classList.remove('spinning')
   })
 
-  // Language switcher
   elements.langEn.addEventListener('click', () => setLanguage('en'))
   elements.langRu.addEventListener('click', () => setLanguage('ru'))
 
-  // Category filters
   elements.categoryFilters.addEventListener('click', (e) => {
-    const btn = e.target.closest('.filter-btn')
+    const btn = e.target.closest('.chip')
     if (!btn) return
-
-    elements.categoryFilters
-      .querySelectorAll('.filter-btn')
-      .forEach((b) => b.classList.remove('active'))
-    btn.classList.add('active')
     state.activeCategory = btn.dataset.category
+    renderCategoryFilters()
     renderFeed()
     renderRadar()
   })
 
-  // Source filter
   elements.sourceFilter.addEventListener('change', (e) => {
     state.activeSource = e.target.value
     renderFeed()
   })
 
-  // Info modal
-  elements.infoBtn.addEventListener('click', () => {
+  const openModal = () => {
     elements.infoModal.classList.remove('hidden')
-  })
-
-  elements.modalClose.addEventListener('click', () => {
+    elements.infoModal.querySelector('.modal-content').focus()
+  }
+  const closeModal = () => {
     elements.infoModal.classList.add('hidden')
-  })
-
+    elements.infoBtn.focus()
+  }
+  elements.infoBtn.addEventListener('click', openModal)
+  elements.modalClose.addEventListener('click', closeModal)
   elements.infoModal
     .querySelector('.modal-backdrop')
-    .addEventListener('click', () => {
-      elements.infoModal.classList.add('hidden')
-    })
-
-  // Window resize
-  window.addEventListener('resize', () => {
-    renderRadar()
+    .addEventListener('click', closeModal)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !elements.infoModal.classList.contains('hidden'))
+      closeModal()
   })
+
+  window.addEventListener('resize', () => renderRadar())
 }
 
 function setLanguage(lang) {
   state.language = lang
+  elements.langEn.setAttribute('aria-pressed', String(lang === 'en'))
+  elements.langRu.setAttribute('aria-pressed', String(lang === 'ru'))
+  document.documentElement.lang = lang
 
-  // Update UI
-  elements.langEn.classList.toggle('active', lang === 'en')
-  elements.langRu.classList.toggle('active', lang === 'ru')
-
-  // Save preference
   if (chrome?.storage?.local) {
     chrome.storage.local.set({ techRadarLanguage: lang })
   } else {
     localStorage.setItem('techRadarLanguage', lang)
   }
-
-  // Re-render
   render()
 }
 
@@ -1569,9 +1466,10 @@ async function init() {
   await loadLanguagePreference()
   await loadTranslationsFromCache()
 
-  // Update language buttons
-  elements.langEn.classList.toggle('active', state.language === 'en')
-  elements.langRu.classList.toggle('active', state.language === 'ru')
+  elements.langEn.setAttribute('aria-pressed', String(state.language === 'en'))
+  elements.langRu.setAttribute('aria-pressed', String(state.language === 'ru'))
+  document.documentElement.lang = state.language
+  updateTranslations()
 
   setupEventListeners()
   // All three read their caches first and only then hit the network, so run
@@ -1582,9 +1480,7 @@ async function init() {
     fetchDigest().then(render),
   ])
 
-  // Set up auto-refresh
   setInterval(fetchAllData, CONFIG.REFRESH_INTERVAL)
 }
 
-// Start the app
 document.addEventListener('DOMContentLoaded', init)

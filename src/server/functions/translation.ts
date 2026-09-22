@@ -5,7 +5,6 @@ import type { OriginalLanguage, TranslatedContent } from '@/lib/tech-categories'
 // ============================================================================
 // TRANSLATION SERVICE
 // Uses MyMemory Translation API (free, no API key required)
-// Fallback to LibreTranslate if needed
 // ============================================================================
 
 const MYMEMORY_API = 'https://api.mymemory.translated.net/get'
@@ -53,8 +52,11 @@ async function translateText(
   fromLang: OriginalLanguage,
   toLang: 'en' | 'ru',
 ): Promise<string> {
-  // Skip if same language
+  // Skip if same language, or if this particular field is already English
+  // (a GitHub repo name next to a Chinese description): sending it to
+  // MyMemory as zh→en wastes quota and can garble it.
   if (fromLang === toLang) return text
+  if (toLang === 'en' && detectLanguage(text) === 'en') return text
 
   // Check cache
   const cacheKey = getCacheKey(text, fromLang, toLang)
@@ -246,37 +248,59 @@ export const translateItemFn = createServerFn({ method: 'POST' })
     return translated
   })
 
-// Language detection helper (basic heuristic)
-export function detectLanguage(text: string): OriginalLanguage {
-  // Check for CJK characters
-  if (/[\u4e00-\u9fff]/.test(text)) return 'zh' // Chinese
-  if (/[\u3040-\u309f\u30a0-\u30ff]/.test(text)) return 'ja' // Japanese (hiragana/katakana)
-  if (/[\uac00-\ud7af]/.test(text)) return 'ko' // Korean
+// ============================================================================
+// LANGUAGE DETECTION
+// ============================================================================
 
-  // Check for Cyrillic
+/** Function words that are distinctive for each Latin-script language. Words
+ *  shared across languages ("de", "la", "a", "o", "no") are deliberately left
+ *  out: an English title like "Notes on de facto standards" must stay English
+ *  or it is sent to MyMemory as French and both garbled and charged. */
+// `\b` is ASCII-only in JS, so "é" in "método" would count as a word of its
+// own; letter-class lookarounds give real word boundaries for accented text.
+const word = (alternatives: string) =>
+  new RegExp(`(?<!\\p{L})(?:${alternatives})(?!\\p{L})`, 'gu')
+
+const LATIN_MARKERS: Record<'en' | 'fr' | 'de' | 'es' | 'pt', RegExp> = {
+  en: word('the|and|of|for|with|is|are|to|in|on|from|by|this|that'),
+  fr: word(
+    'le|les|du|des|et|est|sont|dans|pour|avec|une|sur|aux|au|cette|nous|vous|par',
+  ),
+  de: word(
+    'der|die|das|und|ist|sind|für|mit|von|ein|eine|nicht|auf|dem|den|zu|im',
+  ),
+  es: word('el|los|las|del|es|son|para|con|una|por|como|más|entre|sobre'),
+  pt: word('os|as|do|da|dos|das|em|é|são|para|com|uma|por|não|mais|sobre'),
+}
+
+const MIN_MARKER_HITS = 2
+
+/**
+ * Language of a text, from its script first and then from function words.
+ *
+ * CJK, Hangul and Cyrillic are unambiguous. Latin-script languages need at
+ * least two distinctive function words and more of them than English shows,
+ * so short English titles never get "translated".
+ */
+export function detectLanguage(text: string): OriginalLanguage {
+  if (/[\u3040-\u309f\u30a0-\u30ff]/.test(text)) return 'ja' // kana
+  if (/[\uac00-\ud7af]/.test(text)) return 'ko'
+  if (/[\u4e00-\u9fff]/.test(text)) return 'zh' // han without kana
   if (/[\u0400-\u04ff]/.test(text)) return 'ru'
 
-  // Check for common French/German/Spanish patterns
-  const lowerText = text.toLowerCase()
-  if (
-    /\b(le|la|les|de|du|des|et|est|sont|dans|pour|avec|une|que)\b/.test(
-      lowerText,
-    )
-  )
-    return 'fr'
-  if (
-    /\b(der|die|das|und|ist|sind|für|mit|von|ein|eine|nicht)\b/.test(lowerText)
-  )
-    return 'de'
-  if (
-    /\b(el|la|los|las|de|del|en|es|son|para|con|una|que|por)\b/.test(lowerText)
-  )
-    return 'es'
-  if (/\b(o|a|os|as|de|do|da|em|é|são|para|com|uma|que|por)\b/.test(lowerText))
-    return 'pt'
-
-  // Default to English
-  return 'en'
+  const lower = text.toLowerCase()
+  const hits = (re: RegExp) => (lower.match(re) ?? []).length
+  const english = hits(LATIN_MARKERS.en)
+  let best: OriginalLanguage = 'en'
+  let bestHits = english
+  for (const lang of ['fr', 'de', 'es', 'pt'] as const) {
+    const n = hits(LATIN_MARKERS[lang])
+    if (n >= MIN_MARKER_HITS && n > bestHits) {
+      best = lang
+      bestHits = n
+    }
+  }
+  return best
 }
 
 // Get language display name
