@@ -613,16 +613,35 @@ async function fetchOpenAlexChinese(): Promise<RawItem[]> {
   }
 }
 
+/**
+ * When the paper became visible: its PubMed entry date (history
+ * `pubstatus: pubmed`). `sortpubdate` is derived from the journal issue date
+ * and can lie far in the future.
+ */
+export function pubmedAddedDate(article: {
+  history?: Array<{ pubstatus: string; date: string }>
+  epubdate?: string
+  sortpubdate?: string
+}): Date {
+  const added = article.history?.find((h) => h.pubstatus === 'pubmed')?.date
+  const parsed = added ? new Date(added.replace(/\//g, '-')) : null
+  if (parsed && !Number.isNaN(parsed.getTime())) return parsed
+  return new Date(article.epubdate || article.sortpubdate || Date.now())
+}
+
 async function fetchPubMed(): Promise<RawItem[]> {
   // Check cache first
   const cached = getCached<RawItem[]>(CACHE_KEYS.PUBMED)
   if (cached) return cached
 
   try {
-    // Search for recent biotech/AI in medicine papers
+    // Papers added to PubMed in the last 60 days (datetype=edat). Sorting by
+    // pub_date instead ranks by journal-issue date, which runs months or
+    // years ahead (one record is dated 2028), so the feed showed items from
+    // the future.
     const searchTerms =
       'artificial+intelligence+OR+machine+learning+OR+CRISPR+OR+gene+therapy'
-    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${searchTerms}&retmax=10&sort=pub_date&retmode=json`
+    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${searchTerms}&datetype=edat&reldate=60&retmax=10&retmode=json`
 
     const searchRes = await fetchWithRetry(searchUrl, {
       retries: 3,
@@ -663,7 +682,7 @@ async function fetchPubMed(): Promise<RawItem[]> {
         sourceUrl: `https://pubmed.ncbi.nlm.nih.gov/${id}/`,
         category: 'uncategorized',
         maturityStage: 'research',
-        publishedAt: new Date(article.sortpubdate || Date.now()),
+        publishedAt: pubmedAddedDate(article),
         whyItMatters: `Medical research published in ${article.fulljournalname || 'peer-reviewed journal'}.`,
         originalLanguage: 'en',
         engagement: null,
@@ -799,9 +818,17 @@ async function fetchCiNii(): Promise<RawItem[]> {
         sourceUrl: item['@id'] || 'https://cir.nii.ac.jp/',
         category: 'uncategorized',
         maturityStage: 'research',
-        publishedAt: item['prism:publicationDate']
-          ? new Date(item['prism:publicationDate'])
-          : new Date(),
+        // CiNii exposes only the journal issue date. Articles are listed
+        // before an issue's cover date, and one that is listed is already
+        // available, so it can be at most "now" — never in the future.
+        publishedAt: new Date(
+          Math.min(
+            item['prism:publicationDate']
+              ? Date.parse(item['prism:publicationDate'])
+              : Date.now(),
+            Date.now(),
+          ),
+        ),
         whyItMatters:
           'Japanese academic research contributing to global tech evolution.',
         originalLanguage: 'ja',

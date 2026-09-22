@@ -61,8 +61,12 @@ export function FeedItem({ item }: FeedItemProps) {
           toLang: 'ru',
         },
       })
-      setManualTranslation(result)
-      setShowOriginal(false)
+      // null: the translation service is unavailable (e.g. daily quota);
+      // keep the button so the reader can retry later.
+      if (result) {
+        setManualTranslation(result)
+        setShowOriginal(false)
+      }
     } catch (error) {
       console.error('Translation failed:', error)
     } finally {

@@ -51,7 +51,10 @@ async function translateText(
   text: string,
   fromLang: OriginalLanguage,
   toLang: 'en' | 'ru',
-): Promise<string> {
+): Promise<string | null> {
+  // `null` means "not translated" (quota, API error): callers must not present
+  // the original text as a translation. Text already in the target language
+  // is returned as-is.
   // Skip if same language, or if this particular field is already English
   // (a GitHub repo name next to a Chinese description): sending it to
   // MyMemory as zh→en wastes quota and can garble it.
@@ -62,7 +65,7 @@ async function translateText(
   const cacheKey = getCacheKey(text, fromLang, toLang)
   const cached = translationCache.get(cacheKey)
   if (cached) return cached
-  if (Date.now() < quotaBlockedUntil) return text
+  if (Date.now() < quotaBlockedUntil) return null
 
   try {
     // Truncate very long texts (API limit)
@@ -86,11 +89,11 @@ async function translateText(
 
     if (response.status === 429) {
       noteQuotaExhausted('HTTP 429')
-      return text
+      return null
     }
     if (!response.ok) {
       console.warn(`Translation API error: ${response.status}`)
-      return text
+      return null
     }
 
     const data = await response.json()
@@ -98,7 +101,7 @@ async function translateText(
     // its "translatedText" is a warning, never cache or show it.
     if (data.responseStatus === 429 || data.quotaFinished === true) {
       noteQuotaExhausted('quota notice')
-      return text
+      return null
     }
 
     if (data.responseStatus === 200 && data.responseData?.translatedText) {
@@ -110,11 +113,10 @@ async function translateText(
       return translated
     }
 
-    // If quota exceeded or error, return original
-    return text
+    return null
   } catch (error) {
     console.error('Translation error:', error)
-    return text
+    return null
   }
 }
 
@@ -122,7 +124,7 @@ export async function translateContent(
   content: { title: string; summary: string; whyItMatters?: string },
   fromLang: OriginalLanguage,
   toLang: 'en' | 'ru',
-): Promise<TranslatedContent> {
+): Promise<TranslatedContent | null> {
   // Skip translation if already in target language
   if (fromLang === toLang) {
     return {
@@ -138,6 +140,9 @@ export async function translateContent(
     translateText(content.title, fromLang, toLang),
     translateText(content.summary, fromLang, toLang),
   ])
+  // All or nothing: a half-translated item labelled "machine-translated"
+  // would misstate what the reader is looking at.
+  if (title === null || summary === null) return null
 
   return { title, summary, whyItMatters: content.whyItMatters }
 }
@@ -155,14 +160,14 @@ export async function batchTranslate(
   Map<
     string,
     {
-      en: TranslatedContent
-      ru: TranslatedContent
+      en?: TranslatedContent
+      ru?: TranslatedContent
     }
   >
 > {
   const results = new Map<
     string,
-    { en: TranslatedContent; ru: TranslatedContent }
+    { en?: TranslatedContent; ru?: TranslatedContent }
   >()
 
   // Process in batches to avoid rate limiting
@@ -193,7 +198,14 @@ export async function batchTranslate(
           ),
         ])
 
-        results.set(item.id, { en, ru })
+        // Only languages that were really translated; an item with none keeps
+        // its original text and is not labelled as translated.
+        if (en || ru) {
+          results.set(item.id, {
+            ...(en ? { en } : {}),
+            ...(ru ? { ru } : {}),
+          })
+        }
       }),
     )
 
