@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
   extensionBackendUrl,
-  withBackendOrigin,
   collectExtensionFiles,
   manifestEntries,
   planBuild,
@@ -119,24 +118,15 @@ describe('extensionBackendUrl', () => {
   })
 })
 
-describe('withBackendOrigin', () => {
-  it('limits host_permissions and connect-src to the backend origin', () => {
-    const out = withBackendOrigin(
-      {
-        host_permissions: ['https://api.github.com/*'],
-        content_security_policy: {
-          extension_pages:
-            "default-src 'self'; connect-src 'self' https://api.github.com; img-src 'self' data:",
-        },
-      },
-      'https://radar.example.com/base',
+describe('source manifest', () => {
+  it('asks for no host permissions and keeps scripts local', async () => {
+    const { readFileSync } = await import('node:fs')
+    const manifest = JSON.parse(
+      readFileSync('chrome-extension/manifest.json', 'utf8'),
     )
-    expect(out.host_permissions).toEqual(['https://radar.example.com/*'])
-    expect(
-      (out.content_security_policy as { extension_pages: string })
-        .extension_pages,
-    ).toBe(
-      "default-src 'self'; connect-src 'self' https://radar.example.com; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://radar.example.com; font-src https://radar.example.com",
-    )
+    expect(manifest.host_permissions).toBeUndefined()
+    const csp: string = manifest.content_security_policy.extension_pages
+    expect(csp).toMatch(/script-src 'self'(;|$)/)
+    expect(csp).toMatch(/object-src 'none'/)
   })
 })

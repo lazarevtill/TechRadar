@@ -2,15 +2,14 @@
   "manifest_version": 3,
   "name": "Tech Evolution Radar",
   "short_name": "TechRadar",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Replace your new tab with a calm tech radar: research and engineering signals from eight sources, prepared by your TechRadar server, plus a daily AI-blog digest.",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },
   "permissions": ["storage"],
-  "host_permissions": ["http://localhost:3000/*"],
   "content_security_policy": {
-    "extension_pages": "default-src 'self'; connect-src 'self' http://localhost:3000; img-src 'self' data:; style-src 'self' 'unsafe-inline' http://localhost:3000; font-src http://localhost:3000"
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; connect-src 'self' http: https:; img-src 'self' data:; style-src 'self' 'unsafe-inline' http: https:; font-src http: https:"
   },
   "icons": {
     "16": "icons/icon16.png",

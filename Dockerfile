@@ -11,8 +11,8 @@ COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
 COPY . .
-# The server the downloadable Chrome extension will read from; its manifest is
-# limited to this origin (scripts/build-extension.ts). Default: local Docker.
+# Default server address baked into the downloadable Chrome extension; users
+# can change it in the extension's Settings. Default: local Docker.
 ARG EXTENSION_BACKEND_URL=http://localhost:3000
 RUN EXTENSION_BACKEND_URL=$EXTENSION_BACKEND_URL bun run build
 

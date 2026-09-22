@@ -1,13 +1,13 @@
 /**
- * The TechRadar server this extension reads from. It holds every API key and
- * does all fetching, categorization (Jev), translation and scoring; the
- * extension only renders what `GET /api/extension-feed` returns.
+ * Default address of the TechRadar server — the one a fresh install uses
+ * until the user changes it in Settings (lib/settings.js, stored in
+ * chrome.storage.sync). The server holds every API key and does all
+ * fetching, categorization (Jev), translation and scoring; the extension only
+ * renders what `GET /api/extension-feed` returns.
  *
  * `scripts/build-extension.ts` replaces `__TECHRADAR_BACKEND_URL__` from the
- * `EXTENSION_BACKEND_URL` env var and writes the same origin into the built
- * manifest's host_permissions and CSP. Loaded unpacked from source, the
- * identifier is undefined and the local default applies — matching the
- * source manifest.
+ * `EXTENSION_BACKEND_URL` env var. Loaded unpacked from source, the identifier
+ * is undefined and the local default applies.
  */
 /* global __TECHRADAR_BACKEND_URL__ */
 export const BACKEND_URL =
