@@ -39,12 +39,18 @@ export const CATEGORY_ICON = {
   quantum: 'atom',
   space: 'rocket',
   cybersecurity: 'shield',
+  uncategorized: 'help',
 }
 
 export const SOURCE_ICON = {
   github: 'github',
   arxiv: 'file',
   hackernews: 'message',
+  openalex: 'file',
+  pubmed: 'file',
+  hal: 'file',
+  cinii: 'file',
+  'openalex-zh': 'file',
 }
 
 /** SVG markup for a named icon. Unknown names render nothing. */

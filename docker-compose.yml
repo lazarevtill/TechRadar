@@ -1,6 +1,10 @@
 services:
   techradar:
-    build: .
+    build:
+      context: .
+      args:
+        # Where the "Download Extension" build points; set for a deployed host.
+        EXTENSION_BACKEND_URL: ${EXTENSION_BACKEND_URL:-http://localhost:3000}
     image: ghcr.io/lazarevtill/techradar:latest
     ports:
       - '3000:3000'

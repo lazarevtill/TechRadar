@@ -23,8 +23,9 @@ server-side storage) and a Chrome extension that replaces the new-tab page.
   (EN/RU), generated in CI.
 - **Languages** — English and Russian UI; non-English items are
   machine-translated with the original one click away.
-- **Chrome extension** — the same idea on every new tab, fetching GitHub,
-  arXiv and Hacker News directly from the browser.
+- **Chrome extension** — the same feed on every new tab, served by your
+  TechRadar server (the extension holds no keys and calls no other API), with
+  an offline copy and a retry banner when the server is unreachable.
 
 ## Stack
 

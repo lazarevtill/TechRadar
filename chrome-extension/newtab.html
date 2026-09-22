@@ -74,6 +74,18 @@
           </div>
         </header>
 
+        <!-- Shown while the last refresh failed; the page keeps the saved copy. -->
+        <div
+          id="connection-banner"
+          class="connection-banner hidden"
+          role="status"
+          aria-live="polite"
+        >
+          <span class="connection-dot" aria-hidden="true"></span>
+          <p id="connection-text"></p>
+          <button id="connection-retry" class="btn" type="button"></button>
+        </div>
+
         <main class="main">
           <!-- Summary -->
           <section class="summary">
@@ -157,9 +169,7 @@
               <span class="hint" id="feed-count"></span>
               <select id="source-filter" class="select" aria-label="Source">
                 <option value="all" data-i18n="allSources">All sources</option>
-                <option value="github">GitHub</option>
-                <option value="arxiv">arXiv</option>
-                <option value="hackernews">Hacker News</option>
+                <!-- the sources present in the feed are added by app.js -->
               </select>
             </div>
             <div class="feed-list" id="feed-list"></div>

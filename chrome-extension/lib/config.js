@@ -1,19 +1,20 @@
 /**
- * Mirrors for the generated data files, tried in order.
+ * The TechRadar server this extension reads from. It holds every API key and
+ * does all fetching, categorization (Jev), translation and scoring; the
+ * extension only renders what `GET /api/extension-feed` returns.
  *
- * All entries must be raw.githubusercontent.com URLs: the manifest grants that
- * host only, and widening host_permissions would make every existing install
- * prompt for re-approval.
+ * `scripts/build-extension.ts` replaces `__TECHRADAR_BACKEND_URL__` from the
+ * `EXTENSION_BACKEND_URL` env var and writes the same origin into the built
+ * manifest's host_permissions and CSP. Loaded unpacked from source, the
+ * identifier is undefined and the local default applies — matching the
+ * source manifest.
  */
-export const DATA_BASE_URLS = [
-  'https://raw.githubusercontent.com/lazarevtill/TechRadar/main/public/data',
-  'https://raw.githubusercontent.com/liseren91/TechRadar/main/public/data',
-]
+/* global __TECHRADAR_BACKEND_URL__ */
+export const BACKEND_URL =
+  typeof __TECHRADAR_BACKEND_URL__ === 'string'
+    ? __TECHRADAR_BACKEND_URL__
+    : 'http://localhost:3000'
 
-/** @deprecated kept so older callers keep working; prefer fetchDataFile(). */
-export const DATA_BASE_URL = DATA_BASE_URLS[0]
-
-export const DIGEST_TTL_MS = 6 * 60 * 60 * 1000
-export const TRENDS_TTL_MS = 6 * 60 * 60 * 1000
-export const TRANSLATION_CACHE_MAX = 500
-export const TRANSLATION_TTL_MS = 30 * 24 * 60 * 60 * 1000
+/** Client-side cache: repaint instantly, refetch after this. */
+export const CACHE_DURATION_MS = 5 * 60 * 1000
+export const REFRESH_INTERVAL_MS = 10 * 60 * 1000
