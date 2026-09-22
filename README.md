@@ -23,7 +23,8 @@ server-side storage) and a Chrome extension that replaces the new-tab page.
   (EN/RU), generated in CI.
 - **Languages** — English and Russian UI; non-English items are
   machine-translated with the original one click away.
-- **Chrome extension** — the same feed on every new tab, served by your
+- **Chrome extension** — [download the latest build](https://github.com/lazarevtill/TechRadar/releases/latest/download/tech-radar-extension.zip)
+  (unzip → `chrome://extensions` → Developer mode → Load unpacked). The same feed on every new tab, served by your
   TechRadar server (the extension holds no keys and calls no other API), with
   an offline copy and a retry banner when the server is unreachable.
 
