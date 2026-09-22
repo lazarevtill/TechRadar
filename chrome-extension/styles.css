@@ -510,13 +510,15 @@ a {
 }
 
 /* Topics view */
-.topic-list {
+.tv-list {
   display: flex;
   flex-direction: column;
 }
-.topic-row {
+.tv-row {
   display: grid;
-  grid-template-columns: minmax(10rem, 1.3fr) 2fr auto;
+  /* Fixed outer columns: every row is its own grid, so bars only line up
+     when the label and meta columns have the same width in each row. */
+  grid-template-columns: 15rem 1fr 14rem;
   align-items: center;
   gap: 0.75rem;
   padding: 0.4rem 0.25rem;
@@ -529,27 +531,28 @@ a {
   text-align: left;
   cursor: pointer;
 }
-.topic-row:hover {
+.tv-row:hover {
   background: var(--hover);
 }
-.topic-row[aria-pressed='true'] {
+.tv-row[aria-pressed='true'] {
   box-shadow: inset 2px 0 0 var(--accent);
 }
-.topic-bar {
+.tv-bar {
   height: 6px;
   border-radius: 3px;
   background: var(--rule-strong);
   overflow: hidden;
 }
-.topic-bar span {
+.tv-bar span {
   display: block;
   height: 100%;
   background: var(--fg-2);
 }
-.topic-row.converging .topic-bar span {
+.tv-row.converging .tv-bar span {
   background: var(--accent);
 }
-.topic-meta {
+.tv-meta {
+  text-align: right;
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--fg-3);

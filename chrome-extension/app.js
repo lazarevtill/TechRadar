@@ -1,6 +1,7 @@
 import {
   MATURITY_ORDER,
   VIEWS,
+  hexToRgba,
   matrixCells,
   plottedItems,
   radarLayout,
@@ -1280,20 +1281,21 @@ function drawRadarFrame(ctx, { cx, cy, maxR, rings, sectors }) {
     ctx.textBaseline = 'middle'
     ctx.fillText(getLocalizedCategory(sector.category), lx, ly)
   }
-  // Ring names on the horizontal axis, left of centre, on a backing so dots
-  // never make them unreadable.
+  // Ring names stacked on the vertical axis above the centre, one per band:
+  // each sits in its own band, so they never collide with each other, and a
+  // backing keeps them readable over dots.
   ctx.font = MONO
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   let inner = 0
   for (const ring of rings) {
     const label = getLocalizedMaturity(ring.stage)
-    const x = cx - (inner + ring.radius) / 2
+    const y = cy - (inner + ring.radius) / 2
     const w = ctx.measureText(label).width + 8
     ctx.fillStyle = 'rgba(17, 17, 19, 0.85)'
-    ctx.fillRect(x - w / 2, cy - 7, w, 14)
+    ctx.fillRect(cx - w / 2, y - 7, w, 14)
     ctx.fillStyle = MUTED
-    ctx.fillText(label, x, cy)
+    ctx.fillText(label, cx, y)
     inner = ring.radius
   }
   ctx.textBaseline = 'alphabetic'
@@ -1371,13 +1373,13 @@ function renderTopics(items) {
     return
   }
   const maxItems = Math.max(...rows.map((r) => r.items))
-  elements.htmlView.innerHTML = `<div class="topic-list">${rows
+  elements.htmlView.innerHTML = `<div class="tv-list">${rows
     .map((r) => {
       const converging = r.sources >= 4
-      return `<button class="topic-row${converging ? ' converging' : ''}" data-topic="${escapeHtml(r.topic)}" aria-pressed="${state.activeTopic === r.topic}">
+      return `<button class="tv-row${converging ? ' converging' : ''}" data-topic="${escapeHtml(r.topic)}" aria-pressed="${state.activeTopic === r.topic}">
         <span>${escapeHtml(r.label)}</span>
-        <span class="topic-bar"><span style="width:${Math.round((r.items / maxItems) * 100)}%"></span></span>
-        <span class="topic-meta">${r.sources} ${escapeHtml(plural(r.sources, 'sourcesN'))} · ${r.items} ${escapeHtml(plural(r.items, 'itemsN'))}${converging ? ` · ${escapeHtml(t('converging'))}` : ''}</span>
+        <span class="tv-bar"><span style="width:${Math.round((r.items / maxItems) * 100)}%"></span></span>
+        <span class="tv-meta">${r.sources} ${escapeHtml(plural(r.sources, 'sourcesN'))} · ${r.items} ${escapeHtml(plural(r.items, 'itemsN'))}${converging ? ` · ${escapeHtml(t('converging'))}` : ''}</span>
       </button>`
     })
     .join('')}</div>`
@@ -1620,7 +1622,7 @@ function setupEventListeners() {
       refilter()
       return
     }
-    const row = e.target.closest('.topic-row')
+    const row = e.target.closest('.tv-row')
     if (row) {
       state.activeTopic =
         state.activeTopic === row.dataset.topic ? 'all' : row.dataset.topic

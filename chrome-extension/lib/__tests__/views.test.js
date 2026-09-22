@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   MAX_PLOTTED,
+  hexToRgba,
   matrixCells,
   plottedItems,
   radarLayout,
@@ -147,5 +148,12 @@ describe('topicRows', () => {
       items: 3,
       sources: 1,
     })
+  })
+})
+
+describe('hexToRgba', () => {
+  it('converts hex colours and tolerates bad input', () => {
+    expect(hexToRgba('#c792ea', 0.5)).toBe('rgba(199, 146, 234, 0.5)')
+    expect(hexToRgba('nope', 0.2)).toBe('rgba(138, 138, 144, 0.2)')
   })
 })

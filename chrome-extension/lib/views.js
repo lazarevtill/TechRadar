@@ -187,3 +187,11 @@ export function topicRows(items, labels = {}) {
     }))
     .sort((a, b) => b.sources - a.sources || b.items - a.items)
 }
+
+/** '#rrggbb' → 'rgba(r, g, b, alpha)'; used to tint matrix cells by count. */
+export function hexToRgba(hex, alpha) {
+  const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex)
+  if (!m) return `rgba(138, 138, 144, ${alpha})`
+  const [r, g, b] = m.slice(1).map((h) => parseInt(h, 16))
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+}
