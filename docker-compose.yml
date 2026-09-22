@@ -5,9 +5,11 @@ services:
     ports:
       - '3000:3000'
     environment:
-      # Every value below is optional — the dashboard needs no secrets. Live
-      # data comes from public APIs and the digest from public raw URLs.
+      # Live data comes from public APIs and the digest from public raw URLs.
       PORT: 3000
+      # Jev (TypeSafe) assigns feed categories. Without it every live item is
+      # shown as "Unclassified". Read from the host env / .env, never inlined.
+      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
       # Point at a different fork's generated data if needed:
       # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
     restart: unless-stopped

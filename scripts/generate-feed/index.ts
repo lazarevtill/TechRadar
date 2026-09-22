@@ -3,7 +3,13 @@ import { fetchAllPosts, enrichThinPosts } from './sources'
 import { DigestItemSchema, type DigestItem } from './summarize'
 import { summarizeAll } from './batch'
 import { computeTrends, type SignalSnapshot } from './momentum'
-import { TOPIC_LABELS, snapshotFromTexts, collectTopicSignals } from './topics'
+import {
+  TOPIC_LABELS,
+  createTopicAsker,
+  tagPosts,
+  snapshotFromTags,
+  collectTopicSignals,
+} from './topics'
 import { resolveProfile } from './model'
 import { createClient } from './client'
 
@@ -45,6 +51,8 @@ function todayIso(): string {
 
 async function main() {
   const client = createClient()
+  // Built up front so a missing TYPESAFE_API_KEY fails before any Claude spend.
+  const askTopics = createTopicAsker()
   mkdirSync(DATA_DIR, { recursive: true })
 
   const profile = resolveProfile()
@@ -134,6 +142,14 @@ async function main() {
     )
   }
 
+  // Topic tagging also runs before any write: if it fails, nothing is published.
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+  const recent = posts.filter((p) => +new Date(p.publishedAt) >= weekAgo)
+  console.log(
+    `[generate-feed] tagging topics over ${recent.length} post(s) from the last 7 days`,
+  )
+  const recentTags = await tagPosts(recent, askTopics)
+
   writeFileSync(
     `${DATA_DIR}/digest.json`,
     JSON.stringify({ generatedAt: new Date().toISOString(), items }, null, 2),
@@ -144,15 +160,9 @@ async function main() {
   const history: SignalSnapshot[] = existsSync(historyPath)
     ? JSON.parse(readFileSync(historyPath, 'utf8'))
     : []
-  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
-  const recent = posts.filter((p) => +new Date(p.publishedAt) >= weekAgo)
-  const snapTexts = recent.map((p) => `${p.title} ${p.contentText}`)
-  console.log(
-    `[generate-feed] trend snapshot over ${recent.length} post(s) from the last 7 days`,
-  )
   const today = todayIso()
   const filtered = history.filter((s) => s.date !== today) // idempotent per day
-  filtered.push(snapshotFromTexts(snapTexts, today))
+  filtered.push(snapshotFromTags(recentTags, today))
   const trimmed = filtered.slice(-120) // keep ~4 months
   writeFileSync(historyPath, JSON.stringify(trimmed, null, 2))
 
@@ -163,7 +173,7 @@ async function main() {
     ]),
   )
   const topics = computeTrends(trimmed, labels)
-  const signalsByTopic = collectTopicSignals(recent, 5)
+  const signalsByTopic = collectTopicSignals(recent, recentTags, 5)
   for (const t of topics) t.signals = signalsByTopic[t.id] ?? []
   writeFileSync(
     `${DATA_DIR}/trends.json`,

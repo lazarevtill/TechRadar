@@ -12,6 +12,8 @@ export type TechCategory =
   | 'quantum'
   | 'space'
   | 'cybersecurity'
+  // No category judgment was available (TypeSafe key missing or the call failed)
+  | 'uncategorized'
 
 export type DataSource =
   | 'github'
@@ -127,6 +129,7 @@ export const CATEGORY_CONFIG: Record<
   quantum: { label: 'Quantum', icon: '⚛️', color: '#ec4899' },
   space: { label: 'Space', icon: '🚀', color: '#3b82f6' },
   cybersecurity: { label: 'Security', icon: '🛡️', color: '#ef4444' },
+  uncategorized: { label: 'Unclassified', icon: '❔', color: '#71717a' },
 }
 
 export const SOURCE_CONFIG: Record<

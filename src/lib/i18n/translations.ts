@@ -161,6 +161,7 @@ export interface Translations {
   quantum: string
   space: string
   security: string
+  unclassified: string
 
   // Sources
   github: string
@@ -391,6 +392,7 @@ export const translations: Record<Language, Translations> = {
     quantum: 'Quantum',
     space: 'Space',
     security: 'Security',
+    unclassified: 'Unclassified',
 
     // Sources
     github: 'GitHub',
@@ -621,6 +623,7 @@ export const translations: Record<Language, Translations> = {
     quantum: 'Квантовые',
     space: 'Космос',
     security: 'Безопасность',
+    unclassified: 'Без категории',
 
     // Sources
     github: 'GitHub',
@@ -705,6 +708,7 @@ export const getLocalizedCategories = (lang: Language) => ({
   quantum: translations[lang].quantum,
   space: translations[lang].space,
   cybersecurity: translations[lang].security,
+  uncategorized: translations[lang].unclassified,
 })
 
 // Helper to get localized language names

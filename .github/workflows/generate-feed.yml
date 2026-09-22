@@ -27,6 +27,8 @@ jobs:
       - name: Generate digest + trends
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Jev (TypeSafe) tags each recent post with trend topics
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
           # Switch models without a code change; see scripts/generate-feed/model.ts
           # DIGEST_MODEL: claude-sonnet-5
         run: bun run generate:feed
