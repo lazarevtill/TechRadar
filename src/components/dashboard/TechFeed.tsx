@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from 'react'
 import type { ComponentType } from 'react'
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import {
   Filter,
@@ -386,7 +386,7 @@ export function TechFeed() {
 
       {/* Error state */}
       {isError && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3"
@@ -406,7 +406,7 @@ export function TechFeed() {
           >
             {t.retry}
           </button>
-        </motion.div>
+        </m.div>
       )}
 
       {/* Loading state */}
@@ -434,7 +434,7 @@ export function TechFeed() {
         {filteredItems.length > 0 ? (
           <VirtualizedFeed items={filteredItems} />
         ) : !isLoading ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center py-12"
@@ -452,7 +452,7 @@ export function TechFeed() {
             >
               {t.resetFilters}
             </button>
-          </motion.div>
+          </m.div>
         ) : null}
       </div>
     </div>

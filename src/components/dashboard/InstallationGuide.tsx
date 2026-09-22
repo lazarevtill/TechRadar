@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import {
   X,
   Download,
@@ -114,7 +114,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
 
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -125,7 +125,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
         <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
 
         {/* Modal */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -169,7 +169,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
                 const isCompleted = activeStep > step.number
 
                 return (
-                  <motion.div
+                  <m.div
                     key={step.number}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -242,7 +242,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
 
                           {/* Action button for step 1 */}
                           {step.action && isActive && (
-                            <motion.button
+                            <m.button
                               initial={{
                                 opacity: 0,
                                 y: 10,
@@ -270,12 +270,12 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
                                 <Download className="w-4 h-4" />
                               )}
                               {step.actionLabel}
-                            </motion.button>
+                            </m.button>
                           )}
 
                           {/* Link for step 3 */}
                           {step.link && isActive && (
-                            <motion.div
+                            <m.div
                               initial={{
                                 opacity: 0,
                                 y: 10,
@@ -292,7 +292,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
                               <span className="text-white/55">
                                 ← Copy this URL
                               </span>
-                            </motion.div>
+                            </m.div>
                           )}
                         </div>
 
@@ -311,13 +311,13 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
                     {index < steps.length - 1 && (
                       <div className="absolute left-[1.75rem] top-[3.5rem] w-px h-4 bg-gradient-to-b from-white/10 to-transparent" />
                     )}
-                  </motion.div>
+                  </m.div>
                 )
               })}
             </div>
 
             {/* Pro tip */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
@@ -334,7 +334,7 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
                   <p className="text-sm text-white/50">{t.proTipText}</p>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Footer */}
             <div className="mt-6 flex justify-end">
@@ -388,8 +388,8 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
               </defs>
             </svg>
           </div>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </AnimatePresence>
   )
 }

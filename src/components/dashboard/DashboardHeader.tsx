@@ -1,4 +1,4 @@
-import { motion } from 'motion/react'
+import { m } from 'motion/react'
 import { Activity, Loader2, Radar, Globe, Flame } from 'lucide-react'
 import { useTechFeed } from '@/hooks/use-tech-feed'
 import { useLanguage } from '@/lib/i18n'
@@ -19,12 +19,12 @@ export function DashboardHeader() {
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         {/* Title section */}
         <div>
-          <motion.div className="flex items-center gap-3 mb-2">
+          <m.div className="flex items-center gap-3 mb-2">
             <div className="relative">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-fuchsia-500 flex items-center justify-center">
                 <Radar className="w-6 h-6 text-white" />
               </div>
-              <motion.div
+              <m.div
                 className="absolute -inset-1 rounded-xl bg-gradient-to-br from-cyan-500 to-fuchsia-500 opacity-50 blur-sm -z-10"
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -39,11 +39,11 @@ export function DashboardHeader() {
                 {t.appSubtitle}
               </p>
             </div>
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Stats summary */}
-        <motion.div className="flex items-center gap-4 md:gap-6">
+        <m.div className="flex items-center gap-4 md:gap-6">
           {/* Language Switcher */}
           <LanguageSwitcher />
 
@@ -83,7 +83,7 @@ export function DashboardHeader() {
               {isLoading ? t.syncing : t.live}
             </span>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </header>
   )

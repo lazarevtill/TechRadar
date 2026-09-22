@@ -209,6 +209,32 @@ function isMimeTypeCompressible(mimeType: string): boolean {
 }
 
 /**
+ * Gzip a dynamic (SSR or server-function) response on the fly. Static assets
+ * are pre-compressed at boot; before this, rendered HTML and feed JSON — the
+ * largest responses — went out uncompressed.
+ */
+function compressDynamicResponse(req: Request, res: Response): Response {
+  if (!ENABLE_GZIP || !res.body) return res
+  if (res.status === 204 || res.status === 304) return res
+  if (res.headers.has('content-encoding')) return res
+  if (!req.headers.get('accept-encoding')?.includes('gzip')) return res
+  const mimeType = (res.headers.get('content-type') ?? '').split(';')[0].trim()
+  if (!isMimeTypeCompressible(mimeType)) return res
+  const length = Number(res.headers.get('content-length') ?? NaN)
+  if (length < GZIP_MIN_BYTES) return res
+
+  const headers = new Headers(res.headers)
+  headers.set('Content-Encoding', 'gzip')
+  headers.delete('Content-Length')
+  headers.append('Vary', 'Accept-Encoding')
+  return new Response(res.body.pipeThrough(new CompressionStream('gzip')), {
+    status: res.status,
+    statusText: res.statusText,
+    headers,
+  })
+}
+
+/**
  * Conditionally compress data based on size and MIME type
  */
 function compressDataIfAppropriate(
@@ -535,9 +561,9 @@ async function initializeServer() {
       ...routes,
 
       // Fallback to TanStack Start handler for all other routes
-      '/*': (req: Request) => {
+      '/*': async (req: Request) => {
         try {
-          return handler.fetch(req)
+          return compressDynamicResponse(req, await handler.fetch(req))
         } catch (error) {
           log.error(`Server handler error: ${String(error)}`)
           return new Response('Internal Server Error', { status: 500 })

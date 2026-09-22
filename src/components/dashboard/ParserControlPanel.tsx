@@ -10,7 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import {
   Play,
   Loader2,
@@ -257,7 +257,7 @@ export function ParserControlPanel() {
   }
 
   return (
-    <motion.div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 backdrop-blur-xl">
+    <m.div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 backdrop-blur-xl">
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl" />
@@ -377,7 +377,7 @@ export function ParserControlPanel() {
       {/* Source-Specific Metrics */}
       <AnimatePresence>
         {showSourceDetails && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -391,7 +391,7 @@ export function ParserControlPanel() {
                   const hasData = sm.count > 0
 
                   return (
-                    <motion.div
+                    <m.div
                       key={sm.source}
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -478,7 +478,7 @@ export function ParserControlPanel() {
                       {/* Progress bar for count visualization */}
                       {hasData && (
                         <div className="mt-2 h-1 rounded-full bg-white/10 overflow-hidden">
-                          <motion.div
+                          <m.div
                             initial={{ width: 0 }}
                             animate={{
                               width: `${Math.min((sm.count / Math.max(...sourceMetrics.map((s) => s.count))) * 100, 100)}%`,
@@ -491,7 +491,7 @@ export function ParserControlPanel() {
                           />
                         </div>
                       )}
-                    </motion.div>
+                    </m.div>
                   )
                 })}
               </div>
@@ -543,14 +543,14 @@ export function ParserControlPanel() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
       {/* Actions */}
       <div className="flex items-center gap-3 p-4 border-t border-white/10">
         {/* Run Parser Button */}
-        <motion.button
+        <m.button
           onClick={handleRunParser}
           disabled={isRunning || isLoading}
           whileHover={{ scale: 1.02 }}
@@ -576,10 +576,10 @@ export function ParserControlPanel() {
               {t.runParser}
             </>
           )}
-        </motion.button>
+        </m.button>
 
         {/* Force Refresh Button */}
-        <motion.button
+        <m.button
           onClick={() => void forceRefresh()}
           disabled={isRunning || isLoading}
           whileHover={{ scale: 1.05 }}
@@ -588,10 +588,10 @@ export function ParserControlPanel() {
           title={t.forceRefresh}
         >
           <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
-        </motion.button>
+        </m.button>
 
         {/* Clear Cache Button */}
-        <motion.button
+        <m.button
           onClick={handleClearCache}
           disabled={isRunning || isLoading}
           whileHover={{ scale: 1.05 }}
@@ -600,13 +600,13 @@ export function ParserControlPanel() {
           title={t.clearCache}
         >
           <Trash2 className="w-5 h-5" />
-        </motion.button>
+        </m.button>
       </div>
 
       {/* Success Toast */}
       <AnimatePresence>
         {showSuccess && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -619,9 +619,9 @@ export function ParserControlPanel() {
                 {(metrics.duration / 1000).toFixed(1)}s
               </span>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   )
 }

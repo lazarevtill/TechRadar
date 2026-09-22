@@ -1,17 +1,8 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import {
-  ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  ZAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts'
+import { m, AnimatePresence } from 'motion/react'
 import { X, ExternalLink, TrendingUp, Zap, Loader2 } from 'lucide-react'
 import { useRadarData } from '@/hooks/use-tech-feed'
+import { RadarScatter } from './RadarScatter'
 import {
   CATEGORY_CONFIG,
   MATURITY_CONFIG,
@@ -70,7 +61,8 @@ export function TechRadar() {
         : allRadarData.filter((d) => d.category === debouncedCategory)
 
     // Sort by impact (y) descending, then limit to MAX_RADAR_POINTS
-    return filtered.sort((a, b) => b.y - a.y).slice(0, MAX_RADAR_POINTS)
+    // Copy first: for 'all', `filtered` is the hook's own array.
+    return [...filtered].sort((a, b) => b.y - a.y).slice(0, MAX_RADAR_POINTS)
   }, [allRadarData, debouncedCategory])
 
   // Memoized category change handler
@@ -91,7 +83,7 @@ export function TechRadar() {
   return (
     <div className="relative">
       {/* Radar Container */}
-      <motion.div className="relative rounded-2xl bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 backdrop-blur-sm overflow-hidden">
+      <m.div className="relative rounded-2xl bg-gradient-to-br from-white/[0.03] to-transparent border border-white/10 backdrop-blur-sm overflow-hidden">
         {/* Header */}
         <div className="p-4 border-b border-white/5">
           <div className="flex items-center justify-between flex-wrap gap-4">
@@ -178,93 +170,18 @@ export function TechRadar() {
               <p className="text-white/60 text-sm">{t.noDataForCategory}</p>
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart
-                margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-              >
-                <defs>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                    <feMerge>
-                      <feMergeNode in="coloredBlur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-                <XAxis
-                  type="number"
-                  dataKey="x"
-                  name="Days Ago"
-                  domain={[0, 25]}
-                  reversed
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
-                  axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                  tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                  label={{
-                    value: '← Recent',
-                    position: 'insideBottomRight',
-                    fill: 'rgba(255,255,255,0.3)',
-                    fontSize: 10,
-                    offset: -5,
-                  }}
+            <RadarScatter
+              points={filteredRadarData}
+              onSelect={(point) => handleDotClick(point as RadarDataPoint)}
+              axisLabels={{ x: '← Recent', y: 'Impact ↑' }}
+              renderTooltip={(point) => (
+                <RadarTooltip
+                  data={point as RadarDataPoint}
+                  t={t}
+                  localizedCategories={localizedCategories}
                 />
-                <YAxis
-                  type="number"
-                  dataKey="y"
-                  name="Impact"
-                  domain={[0, 11]}
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }}
-                  axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                  tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-                  label={{
-                    value: 'Impact ↑',
-                    angle: -90,
-                    position: 'insideLeft',
-                    fill: 'rgba(255,255,255,0.3)',
-                    fontSize: 10,
-                  }}
-                />
-                <ZAxis
-                  type="number"
-                  dataKey="z"
-                  range={[100, 800]}
-                  name="Hype"
-                />
-                <Tooltip
-                  content={
-                    <CustomTooltip
-                      t={t}
-                      localizedCategories={localizedCategories}
-                    />
-                  }
-                  cursor={{
-                    strokeDasharray: '3 3',
-                    stroke: 'rgba(255,255,255,0.2)',
-                  }}
-                />
-                <Scatter
-                  data={filteredRadarData}
-                  onClick={(data) =>
-                    handleDotClick(data as unknown as RadarDataPoint)
-                  }
-                  style={{ cursor: 'pointer' }}
-                >
-                  {filteredRadarData.map((entry, index) => {
-                    const config = CATEGORY_CONFIG[entry.category]
-                    return (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={config.color}
-                        fillOpacity={entry.isAnomaly ? 0.9 : 0.6}
-                        stroke={entry.isAnomaly ? '#ffaa00' : config.color}
-                        strokeWidth={entry.isAnomaly ? 2 : 1}
-                        filter={entry.isAnomaly ? 'url(#glow)' : undefined}
-                      />
-                    )
-                  })}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
+              )}
+            />
           )}
         </div>
 
@@ -277,19 +194,19 @@ export function TechRadar() {
                         `,
           }}
         />
-      </motion.div>
+      </m.div>
 
       {/* Detail Modal */}
       <AnimatePresence>
         {selectedItem && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
             onClick={() => setSelectedItem(null)}
           >
-            <motion.div
+            <m.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
@@ -409,29 +326,23 @@ export function TechRadar() {
                     selectedItem.source.slice(1)}
                 </a>
               </div>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>
   )
 }
 
-// Custom tooltip component
-function CustomTooltip({
-  active,
-  payload,
+function RadarTooltip({
+  data,
   t,
   localizedCategories,
 }: {
-  active?: boolean
-  payload?: Array<{ payload: RadarDataPoint }>
+  data: RadarDataPoint
   t: ReturnType<typeof useLanguage>['t']
   localizedCategories: ReturnType<typeof getLocalizedCategories>
 }) {
-  if (!active || !payload?.length) return null
-
-  const data = payload[0].payload
   const config = CATEGORY_CONFIG[data.category]
 
   return (

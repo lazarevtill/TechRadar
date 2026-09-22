@@ -9,8 +9,9 @@ Package manager / runtime is **Bun** (`bun.lock`; `package-lock.json` is gitigno
 ```bash
 bun install
 bun run dev              # Vite dev server on :3000
-bun run build            # tsr generate && tsc --noEmit && vite build  (type errors fail the build)
+bun run build            # tsr generate && tsc --noEmit && vite build && build:extension  (type errors fail the build)
 bun run build:node       # same, but FOR_SITES=true → nitro node preset
+bun run build:extension  # package chrome-extension/ → dist/extension/{tech-radar-extension.zip,unpacked/}
 bun run start            # production: bun run server.ts (serves ./dist, needs a prior build)
 bun run test             # vitest run (offline unit tests only)
 bun run test:parsers     # live-network parser diagnostics (hits real APIs)
@@ -52,6 +53,8 @@ The repo ships **two separate applications** that share data sources but never t
 
 The extension never calls this project's server. Its digest/trends come from `DATA_BASE_URLS` in `chrome-extension/lib/config.js` — raw.githubusercontent.com mirrors tried in order (`lazarevtill/TechRadar`, then upstream `liseren91/TechRadar`) — so extension digest data only changes when `public/data/*.json` is committed to a mirror's `main`. Mirrors must stay on raw.githubusercontent.com: it is the only host in the manifest's `host_permissions`, and widening that forces every install to re-approve. Pure logic lives in `chrome-extension/lib/*.js` precisely so vitest can import it without a browser.
 
+The extension is **packaged, not zipped raw**: `scripts/build-extension.ts` walks the reference graph from `manifest.json` (icons, new-tab page → HTML `src`/`href` → CSS `url()` → relative JS imports), fails the build on any missing reference, bundles each page script with its `lib/` imports into one minified file (`Bun.build`), minifies CSS, and copies the rest. Tests, READMEs and dev tools are never shipped because nothing references them. Output is reproducible (sorted entries, fixed timestamps). The dashboard's "Download Extension" (`extension-download.ts`) serves that prebuilt zip — the Docker runtime image contains `dist/` but not `chrome-extension/` — and CI (`verify.yml`) uploads it as an artifact. Startup is stale-while-revalidate: `app.js` paints cached feed/digest/trends immediately and refreshes all three in parallel.
+
 ### Feed pipeline (`src/server/functions/tech-feed.ts`, ~1200 lines — the core of the app)
 
 Eight source fetchers (`fetchGitHubTrending`, `fetchArxivPapers`, `fetchHackerNews`, `fetchSemanticScholar`, `fetchPubMed`, `fetchHAL`, `fetchCiNii`, `fetchCNKI`) each:
@@ -63,7 +66,7 @@ Eight source fetchers (`fetchGitHubTrending`, `fetchArxivPapers`, `fetchHackerNe
 
 Categorization is **one Jev Choice request per item** (title + summary + source metadata such as GitHub topics or arXiv codes as `evidence`), run in parallel and cached per item id for 24 h (`jev:area:*`, successes only). Options are the 8 radar areas plus `none`; `none` items are dropped — for Hacker News that is the "is this a tech story" filter. A failed or unconfigured call yields `uncategorized`; there is deliberately no keyword fallback. Keep item ids stable across fetches or the verdict cache never hits. Maturity (`calculateMaturityStage`) stays in code from stars/points/citations — Jev is weak at numeric judgments. CNKI items are hardcoded samples with fixed categories.
 
-`fetchTechFeedFn` runs all eight in `Promise.all`, translates non-English items via `batchTranslate` (MyMemory API, no key), sorts, and derives `stats`. **`publishedAt` is serialized to ISO strings across the server-function boundary** and rehydrated to `Date` in the hooks — keep that contract when adding fields.
+`buildTechFeed` runs all eight in `Promise.all`, translates non-English items via `batchTranslate` (MyMemory API, no key), sorts, and derives `stats`. `fetchTechFeedFn` serves that result **stale-while-revalidate** (`CACHE_KEYS.TECH_FEED`, kept 24 h): a snapshot older than 5 min is returned immediately while one single-flight rebuild runs in the background, so only the first request after boot or after `invalidateTechFeedCacheFn` waits on upstream APIs. **`publishedAt` is serialized to ISO strings across the server-function boundary** and rehydrated to `Date` in the hooks — keep that contract when adding fields.
 
 **To add a data source**, all of these must change together: a fetcher + a `CACHE_KEYS` entry, the `DataSource` union and `SOURCE_CONFIG` in `src/lib/tech-categories.ts`, the `Promise.all` in `fetchTechFeedFn`, and `getLocalizedSources` in `src/lib/i18n/translations.ts`.
 
@@ -71,7 +74,7 @@ Categorization is **one Jev Choice request per item** (title + summary + source 
 
 ### Client data flow
 
-`src/hooks/use-tech-feed.ts` wraps the server functions in TanStack Query with a 5-minute `staleTime` that mirrors the server cache TTL — a "refresh" in `ParserControlPanel` invalidates the server cache (`invalidateTechFeedCacheFn`) _and_ refetches. Everything the dashboard shows beyond the raw feed — **AI Insight, evolution chains, anomaly detection, stats** — is derived client-side with `useMemo` over the same feed data. The only request-time model call is the server-side Jev categorization above; there is no generative LLM call at request time.
+`src/hooks/use-tech-feed.ts` and `use-digest.ts` wrap the server functions in TanStack Query; their `queryOptions` (`techFeedQuery`, `digestQuery`, `trendsQuery`) are also prefetched — not awaited — by the `/` route loader, so results stream into the SSR HTML instead of being requested after hydration. The 5-minute `staleTime` mirrors the server cache TTL — a "refresh" in `ParserControlPanel` invalidates the server cache (`invalidateTechFeedCacheFn`) _and_ refetches. Everything the dashboard shows beyond the raw feed — **AI Insight, evolution chains, anomaly detection, stats** — is derived client-side with `useMemo` over the same feed data. The only request-time model call is the server-side Jev categorization above; there is no generative LLM call at request time.
 
 ### Digest pipeline: `scripts/generate-feed/`
 
@@ -81,13 +84,14 @@ Runs in CI (`.github/workflows/generate-feed.yml`, daily ~06:17 UTC) — never a
 
 File-based routing under `src/routes/`: `_public/` is the dashboard (`/`), `_api/` holds raw server handlers. `src/routeTree.gen.ts` is generated by `tsr generate` (part of `build`) — never edit it. `src/router.tsx` wires the SSR-query integration; `__root.tsx` mounts `ThemeProvider` + `LanguageProvider` and optionally injects `VITE_INSTRUMENTATION_SCRIPT_SRC`.
 
-`server.ts` is a standalone Bun production server: it preloads `dist/client` assets into memory (size/glob-filtered, ETag + gzip, all tunable via `ASSET_PRELOAD_*` env vars) and delegates everything else to the built `dist/server/server.js` handler.
+`server.ts` is a standalone Bun production server: it preloads `dist/client` assets into memory (size/glob-filtered, ETag + gzip, all tunable via `ASSET_PRELOAD_*` env vars) and delegates everything else to the built `dist/server/server.js` handler, gzip-streaming compressible dynamic responses (SSR HTML, server-function JSON). The build emits no client sourcemaps.
 
 ## Conventions
 
 - Prettier: **no semicolons, single quotes, trailing commas**. Path alias `@/*` → `src/*`.
 - TypeScript is `strict` with `noUnusedLocals`/`noUnusedParameters`; ESLint enforces `no-floating-promises` and errors on unused imports.
 - `src/components/ui/**` is shadcn-generated and **excluded from ESLint** — add components with `pnpx shadcn@latest add <component>` (style `new-york`, base color zinc, lucide icons) rather than hand-writing them.
+- **Bundle weight is a feature.** Animate with `m.*` from `motion/react`, never `motion.*`: `__root.tsx` wraps the app in `<LazyMotion strict>` with async-loaded `domAnimation`, and `strict` throws on a full `motion` component. Layout animations (`layout`/`layoutId`) are not in that feature set — use CSS. Charts are hand-written SVG (`RadarScatter.tsx`); recharts is only referenced by the unused shadcn `ui/chart.tsx`. Client code must not value-import modules that pull zod (e.g. `lib/digest-types.ts` — client helpers live in `lib/digest-freshness.ts`). Check `dist/client/assets` sizes after adding a dependency.
 - All user-facing UI text goes through `src/lib/i18n/translations.ts`: adding a string means adding a key to the `Translations` interface **and** to both the `en` and `ru` objects, or the build fails. Components read it via `useLanguage()`.
 
 ## Gotchas

@@ -6,10 +6,12 @@ import {
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
-import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from 'next-themes'
-import { MotionConfig } from 'motion/react'
+import { LazyMotion, MotionConfig } from 'motion/react'
 import { LanguageProvider } from '@/lib/i18n'
+
+const loadMotionFeatures = () =>
+  import('@/lib/motion-features').then((mod) => mod.default)
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -86,8 +88,14 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <LanguageProvider defaultLanguage="en">
             {/* Honour the OS "reduce motion" setting: entrance animations jump
                 straight to their final state instead of fading in. */}
-            <MotionConfig reducedMotion="user">{children}</MotionConfig>
-            <Toaster />
+            <MotionConfig reducedMotion="user">
+              {/* `m` components + the domAnimation feature set (loaded async)
+                  instead of the full `motion` component; `strict` throws if a
+                  full `motion.*` sneaks back in and re-adds the whole library. */}
+              <LazyMotion features={loadMotionFeatures} strict>
+                {children}
+              </LazyMotion>
+            </MotionConfig>
           </LanguageProvider>
         </ThemeProvider>
         <Scripts />

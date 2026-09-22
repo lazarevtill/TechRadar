@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, AnimatePresence } from 'motion/react'
 import {
   Sparkles,
   TrendingUp,
@@ -175,7 +175,7 @@ export function AIInsight() {
 
   return (
     <>
-      <motion.div className="relative overflow-hidden rounded-2xl">
+      <m.div className="relative overflow-hidden rounded-2xl">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-fuchsia-600/20 to-cyan-600/20" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40" />
@@ -198,7 +198,7 @@ export function AIInsight() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             {/* AI Icon */}
             <div className="flex items-center gap-3">
-              <motion.div
+              <m.div
                 className="relative flex-shrink-0"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
@@ -210,14 +210,14 @@ export function AIInsight() {
                     <Brain className="w-5 h-5 text-white" />
                   )}
                 </div>
-                <motion.div
+                <m.div
                   className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 flex items-center justify-center"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   <Sparkles className="w-2.5 h-2.5 text-emerald-900" />
-                </motion.div>
-              </motion.div>
+                </m.div>
+              </m.div>
 
               <div className="hidden sm:block">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-violet-300/70">
@@ -236,7 +236,7 @@ export function AIInsight() {
               }
             >
               <AnimatePresence mode="wait">
-                <motion.div
+                <m.div
                   key={insight.headline}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -261,14 +261,14 @@ export function AIInsight() {
                       </span>
                     )}
                   </p>
-                </motion.div>
+                </m.div>
               </AnimatePresence>
             </div>
 
             {/* Quick stats */}
             <div className="flex items-center gap-3 sm:gap-4">
               {insight.highlights.map((h, i) => (
-                <motion.div
+                <m.div
                   key={h.label}
                   className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 ${
                     h.clickable
@@ -293,11 +293,11 @@ export function AIInsight() {
                       {h.value}
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
 
               {/* Info button */}
-              <motion.button
+              <m.button
                 onClick={() => setIsInfoOpen(true)}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
                 whileHover={{ scale: 1.02 }}
@@ -308,7 +308,7 @@ export function AIInsight() {
                   {language === 'ru' ? 'Как это работает' : 'How it works'}
                 </span>
                 <ChevronRight className="w-3 h-3 text-white/55 group-hover:text-white/60 group-hover:translate-x-0.5 transition-transform" />
-              </motion.button>
+              </m.button>
             </div>
           </div>
         </div>
@@ -320,7 +320,7 @@ export function AIInsight() {
                         100% { background-position: 200% 0; }
                     }
                 `}</style>
-      </motion.div>
+      </m.div>
 
       {/* Info Modal */}
       <InfoModal isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />

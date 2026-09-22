@@ -1,4 +1,3 @@
-import { motion } from 'motion/react'
 import { useLanguage, type Language } from '@/lib/i18n'
 
 const languages: { code: Language; label: string; flag: string }[] = [
@@ -8,28 +7,35 @@ const languages: { code: Language; label: string; flag: string }[] = [
 
 export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage()
+  const activeIndex = Math.max(
+    languages.findIndex((l) => l.code === language),
+    0,
+  )
 
   return (
-    <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
+    <div className="relative grid grid-cols-2 gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
+      {/* One sliding pill, moved with a CSS transform: equal-width grid
+          columns make each step exactly one column plus the gap. */}
+      <div
+        aria-hidden
+        className="absolute top-1 bottom-1 left-1 w-[calc(50%-0.375rem)] rounded-md bg-white/10 transition-transform duration-300 ease-out motion-reduce:transition-none"
+        style={{
+          transform: `translateX(calc(${activeIndex * 100}% + ${activeIndex * 0.25}rem))`,
+        }}
+      />
       {languages.map((lang) => (
         <button
           key={lang.code}
           onClick={() => setLanguage(lang.code)}
-          className={`relative px-2.5 py-1 rounded-md text-xs font-mono transition-all flex items-center gap-1.5 ${
+          aria-pressed={language === lang.code}
+          className={`relative px-2.5 py-1 rounded-md text-xs font-mono transition-colors flex items-center justify-center gap-1.5 ${
             language === lang.code
               ? 'text-white'
-              : 'text-white/60 hover:text-white/60'
+              : 'text-white/60 hover:text-white/80'
           }`}
         >
-          {language === lang.code && (
-            <motion.div
-              layoutId="language-indicator"
-              className="absolute inset-0 bg-white/10 rounded-md"
-              transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-            />
-          )}
-          <span className="relative z-10">{lang.flag}</span>
-          <span className="relative z-10">{lang.label}</span>
+          <span>{lang.flag}</span>
+          <span>{lang.label}</span>
         </button>
       ))}
     </div>

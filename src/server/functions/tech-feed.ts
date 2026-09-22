@@ -805,103 +805,137 @@ async function fetchCNKI(): Promise<TechItem[]> {
 // SERVER FUNCTIONS
 // ============================================================================
 
+/** Fetch every source, categorize, translate, and derive stats. */
+async function buildTechFeed() {
+  // Fetch from all sources in parallel
+  const [
+    githubItems,
+    arxivItems,
+    hnItems,
+    semanticScholarItems,
+    pubmedItems,
+    halItems,
+    ciniiItems,
+    cnkiItems,
+  ] = await Promise.all([
+    fetchGitHubTrending(),
+    fetchArxivPapers(),
+    fetchHackerNews(),
+    fetchSemanticScholar(),
+    fetchPubMed(),
+    fetchHAL(),
+    fetchCiNii(),
+    fetchCNKI(),
+  ])
+
+  // Combine all items
+  let allItems = [
+    ...githubItems,
+    ...arxivItems,
+    ...hnItems,
+    ...semanticScholarItems,
+    ...pubmedItems,
+    ...halItems,
+    ...ciniiItems,
+    ...cnkiItems,
+  ]
+
+  // Translate non-English items
+  const nonEnglishItems = allItems.filter(
+    (item) => item.originalLanguage !== 'en',
+  )
+
+  if (nonEnglishItems.length > 0) {
+    try {
+      const translations = await batchTranslate(nonEnglishItems)
+
+      // Apply translations to items
+      allItems = allItems.map((item) => {
+        const translation = translations.get(item.id)
+        if (translation) {
+          return {
+            ...item,
+            translations: translation,
+          }
+        }
+        return item
+      })
+    } catch (error) {
+      console.error('Translation batch error:', error)
+    }
+  }
+
+  // Sort by date
+  allItems.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
+
+  // Calculate stats
+  const stats = {
+    totalSignals: allItems.length,
+    anomaliesThisWeek: allItems.filter((i) => i.isAnomaly).length,
+    activeChains: 0,
+    topCategory: 'ai' as TechCategory,
+    avgImpactScore:
+      Math.round(
+        (allItems.reduce((sum, i) => sum + i.impactScore, 0) /
+          allItems.length) *
+          10,
+      ) / 10,
+    sourceCount: new Set(allItems.map((i) => i.source)).size,
+    languageCount: new Set(allItems.map((i) => i.originalLanguage)).size,
+  }
+
+  // Find top category
+  const categoryCount: Record<string, number> = {}
+  allItems.forEach((item) => {
+    categoryCount[item.category] = (categoryCount[item.category] || 0) + 1
+  })
+  stats.topCategory =
+    (Object.entries(categoryCount).sort(
+      ([, a], [, b]) => b - a,
+    )[0]?.[0] as TechCategory) || 'ai'
+
+  return {
+    items: allItems.map((item) => ({
+      ...item,
+      publishedAt: item.publishedAt.toISOString(),
+    })),
+    stats,
+    fetchedAt: new Date().toISOString(),
+  }
+}
+
+type TechFeedPayload = Awaited<ReturnType<typeof buildTechFeed>>
+
+// The aggregated feed is served stale-while-revalidate: once built, a request
+// never waits on the upstream APIs again — a snapshot older than this is
+// returned immediately while one background rebuild refreshes it. Only the
+// first request after boot, or after a forced refresh, waits.
+const FEED_FRESH_MS = CACHE_TTL.DEFAULT
+const FEED_SNAPSHOT_TTL_MS = 24 * CACHE_TTL.HOUR
+let feedRefresh: Promise<TechFeedPayload> | null = null
+
+function refreshTechFeed(): Promise<TechFeedPayload> {
+  feedRefresh ??= buildTechFeed()
+    .then((payload) => {
+      setCache(CACHE_KEYS.TECH_FEED, payload, FEED_SNAPSHOT_TTL_MS)
+      return payload
+    })
+    .finally(() => {
+      feedRefresh = null
+    })
+  return feedRefresh
+}
+
 export const fetchTechFeedFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    // Fetch from all sources in parallel
-    const [
-      githubItems,
-      arxivItems,
-      hnItems,
-      semanticScholarItems,
-      pubmedItems,
-      halItems,
-      ciniiItems,
-      cnkiItems,
-    ] = await Promise.all([
-      fetchGitHubTrending(),
-      fetchArxivPapers(),
-      fetchHackerNews(),
-      fetchSemanticScholar(),
-      fetchPubMed(),
-      fetchHAL(),
-      fetchCiNii(),
-      fetchCNKI(),
-    ])
-
-    // Combine all items
-    let allItems = [
-      ...githubItems,
-      ...arxivItems,
-      ...hnItems,
-      ...semanticScholarItems,
-      ...pubmedItems,
-      ...halItems,
-      ...ciniiItems,
-      ...cnkiItems,
-    ]
-
-    // Translate non-English items
-    const nonEnglishItems = allItems.filter(
-      (item) => item.originalLanguage !== 'en',
-    )
-
-    if (nonEnglishItems.length > 0) {
-      try {
-        const translations = await batchTranslate(nonEnglishItems)
-
-        // Apply translations to items
-        allItems = allItems.map((item) => {
-          const translation = translations.get(item.id)
-          if (translation) {
-            return {
-              ...item,
-              translations: translation,
-            }
-          }
-          return item
-        })
-      } catch (error) {
-        console.error('Translation batch error:', error)
-      }
+    const snapshot = getCached<TechFeedPayload>(CACHE_KEYS.TECH_FEED)
+    if (!snapshot) return refreshTechFeed()
+    if (Date.now() - Date.parse(snapshot.fetchedAt) > FEED_FRESH_MS) {
+      refreshTechFeed().catch((error: unknown) =>
+        console.error('[TechFeed] background refresh failed:', error),
+      )
     }
-
-    // Sort by date
-    allItems.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
-
-    // Calculate stats
-    const stats = {
-      totalSignals: allItems.length,
-      anomaliesThisWeek: allItems.filter((i) => i.isAnomaly).length,
-      activeChains: 0,
-      topCategory: 'ai' as TechCategory,
-      avgImpactScore:
-        Math.round(
-          (allItems.reduce((sum, i) => sum + i.impactScore, 0) /
-            allItems.length) *
-            10,
-        ) / 10,
-      sourceCount: new Set(allItems.map((i) => i.source)).size,
-      languageCount: new Set(allItems.map((i) => i.originalLanguage)).size,
-    }
-
-    // Find top category
-    const categoryCount: Record<string, number> = {}
-    allItems.forEach((item) => {
-      categoryCount[item.category] = (categoryCount[item.category] || 0) + 1
-    })
-    stats.topCategory =
-      (Object.entries(categoryCount).sort(
-        ([, a], [, b]) => b - a,
-      )[0]?.[0] as TechCategory) || 'ai'
-
-    return {
-      items: allItems.map((item) => ({
-        ...item,
-        publishedAt: item.publishedAt.toISOString(),
-      })),
-      stats,
-      fetchedAt: new Date().toISOString(),
-    }
+    return snapshot
   },
 )
 
