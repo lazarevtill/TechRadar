@@ -28,7 +28,7 @@ Single test file / single case:
 
 ```bash
 bunx vitest run scripts/generate-feed/__tests__/momentum.test.ts
-bunx vitest run chrome-extension/lib/__tests__/scoring.test.js -t 'maps popularity'
+bunx vitest run chrome-extension/lib/__tests__/backend.test.js -t 'names the server'
 ```
 
 `server.ts` and `scripts/` use Bun APIs (`Bun.serve`, `Bun.Glob`, `import.meta.main`), so those two entry points require Bun specifically; the Vite app and vitest also run under Node 22+.
@@ -39,7 +39,7 @@ Secrets live in the gitignored `.env` (Bun loads it for `bun run …`):
 - `MYMEMORY_EMAIL` — optional; raises the keyless MyMemory translation quota tenfold. Without it a shared IP exhausts the daily quota quickly and non-English items keep their original text for an hour.
 - `ANTHROPIC_API_KEY` — only `generate:feed` (locally or as a GitHub Actions secret).
 
-Build and the extension need no secrets. Neither key may reach client code, `public/data`, or the extension.
+Build and the extension need no secrets. Neither key may reach client code, `public/data`, or the extension — the extension only ever talks to the server.
 
 Docker: `docker compose up --build` locally; `.github/workflows/publish-image.yml` pushes `ghcr.io/lazarevtill/techradar` on every push to `main`. `DIGEST_DATA_BASE_URL` points the server at another fork's data.
 
@@ -47,14 +47,14 @@ Docker: `docker compose up --build` locally; `.github/workflows/publish-image.ym
 
 ### Two independent clients, one set of data sources
 
-The repo ships **two separate applications** that share data sources but never talk to each other:
+The repo ships **two clients over one backend**:
 
 1. **Web dashboard** — TanStack Start (SSR) React app in `src/`, fetching through server functions with a server-side in-memory cache.
-2. **Chrome extension** — `chrome-extension/`, plain ES-module browser JS (MV3) that overrides the new-tab page, fetches GitHub/arXiv/HN **directly from the browser**, and caches in `chrome.storage.local`.
+2. **Chrome extension** — `chrome-extension/`, plain ES-module browser JS (MV3) that overrides the new-tab page. It is a **thin client**: it holds no keys and calls no third-party API. One request to `GET /api/extension-feed` (`src/routes/_api/api.extension-feed.ts`, CORS `*`, read-only) returns the same scored/categorized/translated feed the dashboard uses (`getTechFeed`) plus digest and trends (`getDigest`/`getTrends`). CJK glyphs come from the same server via `/api/fonts/cjk` + `/api/fonts/file/$` (`src/server/utils/font-proxy.ts`: Google Noto Sans SC/JP relayed with a strict path allowlist — never widen it into an open proxy).
 
-The extension never calls this project's server. Its digest/trends come from `DATA_BASE_URLS` in `chrome-extension/lib/config.js` — raw.githubusercontent.com mirrors tried in order (`lazarevtill/TechRadar`, then upstream `liseren91/TechRadar`) — so extension digest data only changes when `public/data/*.json` is committed to a mirror's `main`. Mirrors must stay on raw.githubusercontent.com: it is the only host in the manifest's `host_permissions`, and widening that forces every install to re-approve. Pure logic lives in `chrome-extension/lib/*.js` precisely so vitest can import it without a browser.
+The server address is **build-time**: `EXTENSION_BACKEND_URL` (default `http://localhost:3000`; Docker build arg of the same name) is injected into `lib/config.js` (`__TECHRADAR_BACKEND_URL__` via `Bun.build` `define`) and written into the built manifest's `host_permissions` and CSP `connect-src`/`style-src`/`font-src` by `withBackendOrigin`. The source manifest targets localhost:3000 so loading `chrome-extension/` unpacked works. Offline behavior (`fetchAllData` in `app.js`): the last successful payload is kept in `chrome.storage.local` (`techRadarFeed`) and painted first; a failed refresh keeps it on screen, shows the connection banner with Retry, and is recorded (`lastError`) so later tabs retry instead of treating the copy as fresh. Pure logic lives in `chrome-extension/lib/*.js` so vitest can import it without a browser.
 
-The extension is **packaged, not zipped raw**: `scripts/build-extension.ts` walks the reference graph from `manifest.json` (icons, new-tab page → HTML `src`/`href` → CSS `url()` → relative JS imports), fails the build on any missing reference, bundles each page script with its `lib/` imports into one minified file (`Bun.build`), minifies CSS, and copies the rest. Tests, READMEs and dev tools are never shipped because nothing references them. Output is reproducible (sorted entries, fixed timestamps). The dashboard's "Download Extension" (`extension-download.ts`) serves that prebuilt zip — the Docker runtime image contains `dist/` but not `chrome-extension/` — and CI (`verify.yml`) uploads it as an artifact. Startup is stale-while-revalidate: `app.js` paints cached feed/digest/trends immediately and refreshes all three in parallel.
+The extension is **packaged, not zipped raw**: `scripts/build-extension.ts` walks the reference graph from `manifest.json` (icons, new-tab page → HTML `src`/`href` → CSS `url()` → relative JS imports), fails the build on any missing reference, bundles each page script with its `lib/` imports into one minified file (`Bun.build`), minifies CSS, and copies the rest. Tests, READMEs and dev tools are never shipped because nothing references them. Output is reproducible (sorted entries, fixed timestamps). The dashboard's "Download Extension" (`extension-download.ts`) serves that prebuilt zip — the Docker runtime image contains `dist/` but not `chrome-extension/` — and CI (`verify.yml`) uploads it as an artifact. Startup is stale-while-revalidate: `app.js` paints the saved payload immediately and refreshes it with one backend request.
 
 ### Feed pipeline (`src/server/functions/tech-feed.ts`, ~1200 lines — the core of the app)
 
@@ -103,6 +103,6 @@ File-based routing under `src/routes/`: `_public/` is the dashboard (`/`), `_api
 - `vitest.config.ts` uses an explicit `include` (`{src,scripts,chrome-extension}/**/__tests__/**/*.test.{ts,js}`) so the live-network harness `src/server/functions/__tests__/tech-feed-tests.ts` stays out of `bun run test`; run it with `bun run test:parsers`. Environment is `node` — anything needing a DOM must opt in per file.
 - Jev answers what the question literally says (see docs.typesafe.ai `model-jaggedness`). Point it at direct state — one item per request — rather than indexing into a shared array; a batched `stories[i]` experiment misclassified far more often. Keep arithmetic, dates, and counts in code.
 - `public/data/history.json` snapshots before 2026-09-22 were counted with keyword matching; later ones come from Jev, so topic momentum across that boundary compares two methods.
-- Extension checks over plain HTTP (serving `dist/extension/unpacked`) show two harness-only errors: arXiv sends no CORS header to a `http://localhost` origin (inside Chrome, `host_permissions` bypass CORS) and `favicon.ico` 404s.
+- To check the extension outside Chrome, build it for a test server (`EXTENSION_BACKEND_URL=http://localhost:3100 bun run build:extension`), run the server on that port, and serve `dist/extension/unpacked` over HTTP; `chrome.storage` falls back to `localStorage`.
 - `bun run test:parsers` is currently broken: it calls `createServerFn` functions outside the Start runtime ("No Start context found in AsyncLocalStorage"). The in-app `/test-parsers` page runs the same checks inside the server; to verify sources end to end, count `source:` values in the SSR payload of `/`.
 - `docs/superpowers/` holds the original design/plan documents for the extension-hardening + digest work; they describe intent, not necessarily current state.

@@ -992,17 +992,23 @@ function refreshTechFeed(): Promise<TechFeedPayload> {
   return feedRefresh
 }
 
+/**
+ * The aggregated feed, stale-while-revalidate. Shared by the dashboard's
+ * server function and the extension endpoint (routes/_api/api.extension-feed).
+ */
+export async function getTechFeed(): Promise<TechFeedPayload> {
+  const snapshot = getCached<TechFeedPayload>(CACHE_KEYS.TECH_FEED)
+  if (!snapshot) return refreshTechFeed()
+  if (Date.now() - Date.parse(snapshot.fetchedAt) > FEED_FRESH_MS) {
+    refreshTechFeed().catch((error: unknown) =>
+      console.error('[TechFeed] background refresh failed:', error),
+    )
+  }
+  return snapshot
+}
+
 export const fetchTechFeedFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const snapshot = getCached<TechFeedPayload>(CACHE_KEYS.TECH_FEED)
-    if (!snapshot) return refreshTechFeed()
-    if (Date.now() - Date.parse(snapshot.fetchedAt) > FEED_FRESH_MS) {
-      refreshTechFeed().catch((error: unknown) =>
-        console.error('[TechFeed] background refresh failed:', error),
-      )
-    }
-    return snapshot
-  },
+  getTechFeed,
 )
 
 const filterSchema = z

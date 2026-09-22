@@ -13,6 +13,9 @@ import { Route as PublicRouteImport } from './routes/_public'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicTestParsersRouteImport } from './routes/_public/test-parsers'
+import { Route as ApiApiExtensionFeedRouteImport } from './routes/_api/api.extension-feed'
+import { Route as ApiApiFontsCjkRouteImport } from './routes/_api/api.fonts.cjk'
+import { Route as ApiApiFontsFileSplatRouteImport } from './routes/_api/api.fonts.file.$'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -33,16 +36,37 @@ const PublicTestParsersRoute = PublicTestParsersRouteImport.update({
   path: '/test-parsers',
   getParentRoute: () => PublicRoute,
 } as any)
+const ApiApiExtensionFeedRoute = ApiApiExtensionFeedRouteImport.update({
+  id: '/_api/api/extension-feed',
+  path: '/api/extension-feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiApiFontsCjkRoute = ApiApiFontsCjkRouteImport.update({
+  id: '/_api/api/fonts/cjk',
+  path: '/api/fonts/cjk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiApiFontsFileSplatRoute = ApiApiFontsFileSplatRouteImport.update({
+  id: '/_api/api/fonts/file/$',
+  path: '/api/fonts/file/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
   '/hello': typeof ApiHelloRoute
   '/test-parsers': typeof PublicTestParsersRoute
+  '/api/extension-feed': typeof ApiApiExtensionFeedRoute
+  '/api/fonts/cjk': typeof ApiApiFontsCjkRoute
+  '/api/fonts/file/$': typeof ApiApiFontsFileSplatRoute
 }
 export interface FileRoutesByTo {
   '/hello': typeof ApiHelloRoute
   '/test-parsers': typeof PublicTestParsersRoute
   '/': typeof PublicIndexRoute
+  '/api/extension-feed': typeof ApiApiExtensionFeedRoute
+  '/api/fonts/cjk': typeof ApiApiFontsCjkRoute
+  '/api/fonts/file/$': typeof ApiApiFontsFileSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,23 +74,44 @@ export interface FileRoutesById {
   '/_api/hello': typeof ApiHelloRoute
   '/_public/test-parsers': typeof PublicTestParsersRoute
   '/_public/': typeof PublicIndexRoute
+  '/_api/api/extension-feed': typeof ApiApiExtensionFeedRoute
+  '/_api/api/fonts/cjk': typeof ApiApiFontsCjkRoute
+  '/_api/api/fonts/file/$': typeof ApiApiFontsFileSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/hello' | '/test-parsers'
+  fullPaths:
+    | '/'
+    | '/hello'
+    | '/test-parsers'
+    | '/api/extension-feed'
+    | '/api/fonts/cjk'
+    | '/api/fonts/file/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/hello' | '/test-parsers' | '/'
+  to:
+    | '/hello'
+    | '/test-parsers'
+    | '/'
+    | '/api/extension-feed'
+    | '/api/fonts/cjk'
+    | '/api/fonts/file/$'
   id:
     | '__root__'
     | '/_public'
     | '/_api/hello'
     | '/_public/test-parsers'
     | '/_public/'
+    | '/_api/api/extension-feed'
+    | '/_api/api/fonts/cjk'
+    | '/_api/api/fonts/file/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
   ApiHelloRoute: typeof ApiHelloRoute
+  ApiApiExtensionFeedRoute: typeof ApiApiExtensionFeedRoute
+  ApiApiFontsCjkRoute: typeof ApiApiFontsCjkRoute
+  ApiApiFontsFileSplatRoute: typeof ApiApiFontsFileSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +144,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicTestParsersRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_api/api/extension-feed': {
+      id: '/_api/api/extension-feed'
+      path: '/api/extension-feed'
+      fullPath: '/api/extension-feed'
+      preLoaderRoute: typeof ApiApiExtensionFeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_api/api/fonts/cjk': {
+      id: '/_api/api/fonts/cjk'
+      path: '/api/fonts/cjk'
+      fullPath: '/api/fonts/cjk'
+      preLoaderRoute: typeof ApiApiFontsCjkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_api/api/fonts/file/$': {
+      id: '/_api/api/fonts/file/$'
+      path: '/api/fonts/file/$'
+      fullPath: '/api/fonts/file/$'
+      preLoaderRoute: typeof ApiApiFontsFileSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -118,6 +184,9 @@ const PublicRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
   ApiHelloRoute: ApiHelloRoute,
+  ApiApiExtensionFeedRoute: ApiApiExtensionFeedRoute,
+  ApiApiFontsCjkRoute: ApiApiFontsCjkRoute,
+  ApiApiFontsFileSplatRoute: ApiApiFontsFileSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

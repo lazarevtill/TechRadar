@@ -68,20 +68,26 @@ export async function loadDataFile(
   }
 }
 
+export function getDigest(): Promise<DigestFile> {
+  return getOrSetCache(
+    CACHE_KEYS.DIGEST,
+    async () => DigestFileSchema.parse(await loadDataFile('digest.json')),
+    CACHE_TTL.HOUR,
+  )
+}
+
+export function getTrends(): Promise<TrendsFile> {
+  return getOrSetCache(
+    CACHE_KEYS.TRENDS,
+    async () => TrendsFileSchema.parse(await loadDataFile('trends.json')),
+    CACHE_TTL.HOUR,
+  )
+}
+
 export const fetchDigestFn = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<DigestFile> =>
-    getOrSetCache(
-      CACHE_KEYS.DIGEST,
-      async () => DigestFileSchema.parse(await loadDataFile('digest.json')),
-      CACHE_TTL.HOUR,
-    ),
+  getDigest,
 )
 
 export const fetchTrendsFn = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<TrendsFile> =>
-    getOrSetCache(
-      CACHE_KEYS.TRENDS,
-      async () => TrendsFileSchema.parse(await loadDataFile('trends.json')),
-      CACHE_TTL.HOUR,
-    ),
+  getTrends,
 )

@@ -20,11 +20,14 @@
   --accent: #e0a458;
   --accent-soft: rgba(224, 164, 88, 0.14);
   --danger: #e07c7c;
+  /* Noto Sans SC/JP come from the TechRadar server (/api/fonts/cjk) and are
+     only used for CJK characters the system fonts cannot draw. */
   --font-sans:
     system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    sans-serif;
+    'Noto Sans SC', 'Noto Sans JP', sans-serif;
   --font-mono:
-    ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', 'Noto Sans SC',
+    'Noto Sans JP', monospace;
 }
 
 html,
@@ -134,6 +137,41 @@ a {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--fg-3);
+}
+
+.status.offline {
+  color: var(--danger);
+}
+
+/* ---------- Connection banner ---------- */
+
+.connection-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 auto;
+  max-width: var(--page-max, 1400px);
+  padding: 0.6rem 1.5rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--fg-2);
+  font-size: 0.8rem;
+}
+
+.connection-banner.hidden {
+  display: none;
+}
+
+.connection-banner p {
+  flex: 1;
+  margin: 0;
+}
+
+.connection-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--danger);
+  flex: none;
 }
 
 /* ---------- Controls ---------- */

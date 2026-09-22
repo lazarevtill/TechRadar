@@ -1,25 +1,22 @@
-import { calculateMaturity, computeSignals } from './lib/scoring.js'
-import { categorizeByKeywords, CATEGORY_KEYWORDS } from './lib/categorize.js'
 import { seededJitter } from './lib/jitter.js'
-import { BoundedCache } from './lib/lru-cache.js'
 import {
-  DIGEST_TTL_MS,
-  TRENDS_TTL_MS,
-  TRANSLATION_CACHE_MAX,
-  TRANSLATION_TTL_MS,
+  BACKEND_URL,
+  CACHE_DURATION_MS,
+  REFRESH_INTERVAL_MS,
 } from './lib/config.js'
-import { fetchDataFile } from './lib/data-source.js'
+import { fetchBackendFeed, panelData } from './lib/backend.js'
 import { trajectoryMeta, sparklineBars } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
 import { icon, CATEGORY_ICON } from './lib/icons.js'
-import { detectLanguage, MYMEMORY_CODES } from './lib/detect-language.js'
 
 /**
  * Tech Evolution Radar - Chrome extension new-tab page.
  *
- * Fetches GitHub, arXiv and Hacker News directly from the browser, ranks
- * items among their source peers (lib/scoring.js), and paints a calm,
- * text-first page. Nothing is emphasized without a stated reason.
+ * Renders what the TechRadar server returns from /api/extension-feed: every
+ * source, Jev categories and judgments, translations and signal scores are
+ * produced server-side, where the API keys live. This page makes no
+ * third-party requests and holds no keys. Nothing is emphasized without a
+ * stated reason.
  */
 
 // ============================================
@@ -27,10 +24,9 @@ import { detectLanguage, MYMEMORY_CODES } from './lib/detect-language.js'
 // ============================================
 
 const CONFIG = {
-  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes
-  REFRESH_INTERVAL: 10 * 60 * 1000, // 10 minutes
-  MAX_FEED_ITEMS: 30,
-  MYMEMORY_API: 'https://api.mymemory.translated.net/get',
+  CACHE_DURATION: CACHE_DURATION_MS,
+  REFRESH_INTERVAL: REFRESH_INTERVAL_MS,
+  MAX_FEED_ITEMS: 40,
 }
 
 const CATEGORY_CONFIG = {
@@ -42,6 +38,7 @@ const CATEGORY_CONFIG = {
   quantum: { label: 'Quantum', color: '#e08fb5' },
   space: { label: 'Space', color: '#7fb0e8' },
   cybersecurity: { label: 'Security', color: '#e07c7c' },
+  uncategorized: { label: 'Unclassified', color: '#8a8a90' },
 }
 
 const MATURITY_CONFIG = {
@@ -51,10 +48,16 @@ const MATURITY_CONFIG = {
   'mass-market': { label: 'Mass market', color: '#a5d6a7' },
 }
 
+// Every source the server aggregates (src/lib/tech-categories.ts).
 const SOURCE_CONFIG = {
-  github: { label: 'GitHub', unit: 'stars' },
-  arxiv: { label: 'arXiv', unit: null },
-  hackernews: { label: 'Hacker News', unit: 'points' },
+  github: { label: 'GitHub' },
+  arxiv: { label: 'arXiv' },
+  hackernews: { label: 'Hacker News' },
+  openalex: { label: 'OpenAlex' },
+  pubmed: { label: 'PubMed' },
+  hal: { label: 'HAL (France)' },
+  cinii: { label: 'CiNii (Japan)' },
+  'openalex-zh': { label: 'OpenAlex (China)' },
 }
 
 const ACCENT = '#e0a458'
@@ -67,7 +70,8 @@ const translations = {
   en: {
     loading: 'Loading…',
     appTitle: 'Tech Evolution Radar',
-    appSubtitle: 'GitHub, arXiv and Hacker News, fetched from this browser',
+    appSubtitle:
+      'Eight research and engineering sources, via your TechRadar server',
     howItWorks: 'How it works',
     totalSignals: 'Signals',
     highlighted: 'Highlighted',
@@ -92,8 +96,27 @@ const translations = {
     retry: 'Retry',
     signals: 'signals',
     from: 'from',
-    unscoredNote:
-      'arXiv reports no attention metric, so its items are unscored',
+    unscoredNote: 'items without an attention metric are unscored',
+    judged: 'judged by Jev',
+    backendUnreachable: 'Cannot reach the TechRadar server',
+    backendHint:
+      'This extension shows data prepared by your TechRadar server. Start it (docker compose up -d) or check the address:',
+    showingCached: 'Showing the last saved copy',
+    offline: 'Offline',
+    notConnected: 'Not connected to the TechRadar server',
+    savedFrom: 'showing data saved',
+    noSavedData: 'nothing saved yet',
+    retrying: 'Retrying…',
+    citations: 'citations',
+    reasonConverging: 'Converging',
+    reasonConvergingDesc:
+      'The same tracked topic appears on three or more sources in this fetch',
+    reasonNovel: 'New capability',
+    reasonNovelDesc:
+      'Jev judges it likely to describe a capability not available before',
+    reasonUnderRadar: 'Under the radar',
+    reasonUnderRadarDesc:
+      'Judged a new capability while still drawing little attention',
     fastRising: 'Fast-rising',
     fastRisingDesc:
       'gaining attention much faster than its peers on the same source',
@@ -104,8 +127,6 @@ const translations = {
     daysAgo: 'd ago',
     hoursAgo: 'h ago',
     minutesAgo: 'm ago',
-    translateToRussian: 'Translate to Russian',
-    translating: 'Translating…',
     showOriginal: 'Original',
     showTranslation: 'Translation',
     machineTranslated: 'machine-translated',
@@ -115,26 +136,27 @@ const translations = {
     trendsEmpty: 'Topic momentum will appear once the daily digest has data',
     infoSources: 'Sources',
     infoSourcesText:
-      'Repositories created this week on GitHub, the newest arXiv submissions, and the Hacker News front page, fetched directly from this browser and cached locally for five minutes.',
+      'GitHub, arXiv, Hacker News, OpenAlex, PubMed, HAL, CiNii and Chinese-language OpenAlex research, fetched by your TechRadar server. This page only talks to that server and keeps the last copy for five minutes, so a new tab paints instantly.',
     infoScoring: 'Signal score',
     infoScoringText:
-      'Stars and points are on different scales, and arXiv has none, so every item is placed among its own source’s peers: reach (percentile of stars or points), velocity (percentile of engagement per day of age) and recency (age decay per source). Items with no attention metric are shown but not scored.',
+      'Every item is placed among its own source’s peers: reach (percentile of its attention metric), velocity (engagement per day of age) and recency, combined with Jev’s novelty and substance judgments. Items with nothing measurable are shown but not scored.',
     infoHighlights: 'Highlights',
     infoHighlightsText:
-      'An item is emphasized only when its velocity is a robust outlier among at least four peers from the same source. The reason is always shown. The full dashboard adds Jev’s novelty and topic judgments; this page cannot, because it holds no API key.',
+      'An item is emphasized only with a stated reason: fast-rising among its source peers, the same topic on several sources, a new capability judged by Jev, or strong substance with little attention yet.',
     infoMaturity: 'Maturity',
     infoMaturityText:
-      'Research, prototype, early adopter and mass market come from star or point counts in code. The radar draws them as rings; angle carries no meaning.',
+      'Research, prototype, early adopter and mass market come from stars, points or citations. The radar draws them as rings; angle carries no meaning.',
     infoDigest: 'AI blog digest',
     infoDigestText:
-      'A daily digest of engineering blogs, rewritten into a headline plus three takeaways in English and Russian, read from the project’s public data.',
+      'A daily digest of engineering blogs, rewritten into a headline plus three takeaways in English and Russian, served by the same TechRadar server.',
     footerVersion: 'Chrome extension',
-    footerSubtitle: 'Live data from GitHub, arXiv and Hacker News',
+    footerSubtitle: 'Data prepared by your TechRadar server',
   },
   ru: {
     loading: 'Загрузка…',
     appTitle: 'Радар эволюции технологий',
-    appSubtitle: 'GitHub, arXiv и Hacker News, запросы из этого браузера',
+    appSubtitle:
+      'Восемь источников исследований и разработок через ваш сервер TechRadar',
     howItWorks: 'Как это работает',
     totalSignals: 'Сигналы',
     highlighted: 'Выделено',
@@ -159,8 +181,27 @@ const translations = {
     retry: 'Повторить',
     signals: 'сигналов',
     from: 'из',
-    unscoredNote:
-      'arXiv не сообщает метрику внимания, поэтому его записи без оценки',
+    unscoredNote: 'записи без метрики внимания не оцениваются',
+    judged: 'оценено Jev',
+    backendUnreachable: 'Нет связи с сервером TechRadar',
+    backendHint:
+      'Расширение показывает данные, подготовленные вашим сервером TechRadar. Запустите его (docker compose up -d) или проверьте адрес:',
+    showingCached: 'Показана последняя сохранённая копия',
+    offline: 'Нет связи',
+    notConnected: 'Нет соединения с сервером TechRadar',
+    savedFrom: 'показаны данные, сохранённые',
+    noSavedData: 'сохранённых данных пока нет',
+    retrying: 'Повтор…',
+    citations: 'цитирований',
+    reasonConverging: 'Совпадение тем',
+    reasonConvergingDesc:
+      'Одна и та же отслеживаемая тема встречается в трёх и более источниках',
+    reasonNovel: 'Новая возможность',
+    reasonNovelDesc:
+      'По оценке Jev, вероятно описывает возможность, которой раньше не было',
+    reasonUnderRadar: 'Вне поля зрения',
+    reasonUnderRadarDesc:
+      'Оценено как новая возможность, пока привлекая мало внимания',
     fastRising: 'Быстрый рост',
     fastRisingDesc:
       'набирает внимание заметно быстрее соседей по тому же источнику',
@@ -171,8 +212,6 @@ const translations = {
     daysAgo: 'д назад',
     hoursAgo: 'ч назад',
     minutesAgo: 'м назад',
-    translateToRussian: 'Перевести на русский',
-    translating: 'Перевод…',
     showOriginal: 'Оригинал',
     showTranslation: 'Перевод',
     machineTranslated: 'машинный перевод',
@@ -182,21 +221,21 @@ const translations = {
     trendsEmpty: 'Импульс тем появится, когда в дайджесте накопятся данные',
     infoSources: 'Источники',
     infoSourcesText:
-      'Репозитории, созданные на этой неделе на GitHub, новейшие статьи arXiv и главная Hacker News, запрошенные напрямую из браузера и кэшированные локально на пять минут.',
+      'GitHub, arXiv, Hacker News, OpenAlex, PubMed, HAL, CiNii и китаеязычные исследования OpenAlex — их собирает ваш сервер TechRadar. Страница обращается только к нему и хранит последнюю копию пять минут, поэтому новая вкладка открывается мгновенно.',
     infoScoring: 'Оценка сигнала',
     infoScoringText:
-      'Звёзды и очки в разных шкалах, а у arXiv их нет, поэтому каждая запись сравнивается с соседями по своему источнику: охват (перцентиль звёзд или очков), скорость (перцентиль вовлечённости в день возраста) и свежесть (затухание по возрасту для источника). Записи без метрики внимания показываются, но не оцениваются.',
+      'Каждая запись сравнивается с соседями по своему источнику: охват (перцентиль метрики внимания), скорость (вовлечённость в день возраста) и свежесть, вместе с оценками новизны и содержательности от Jev. Записи, для которых нечего измерить, показываются без оценки.',
     infoHighlights: 'Выделение',
     infoHighlightsText:
-      'Запись выделяется только когда её скорость — устойчивый выброс среди не менее чем четырёх соседей по источнику. Причина показывается всегда. Полная панель добавляет оценки новизны и тем от Jev; эта страница не может, потому что не хранит API-ключ.',
+      'Запись выделяется только с указанной причиной: быстрый рост среди соседей по источнику, одна тема в нескольких источниках, новая возможность по оценке Jev или сильное содержание при пока малом внимании.',
     infoMaturity: 'Зрелость',
     infoMaturityText:
-      'Исследование, прототип, ранние последователи и массовый рынок вычисляются в коде из числа звёзд или очков. Радар рисует их кольцами; угол ничего не значит.',
+      'Исследование, прототип, ранние последователи и массовый рынок вычисляются из звёзд, очков или цитирований. Радар рисует их кольцами; угол ничего не значит.',
     infoDigest: 'Дайджест AI-блогов',
     infoDigestText:
-      'Ежедневный дайджест инженерных блогов: заголовок и три вывода на английском и русском, из публичных данных проекта.',
+      'Ежедневный дайджест инженерных блогов: заголовок и три вывода на английском и русском, с того же сервера TechRadar.',
     footerVersion: 'Расширение Chrome',
-    footerSubtitle: 'Живые данные из GitHub, arXiv и Hacker News',
+    footerSubtitle: 'Данные подготовлены вашим сервером TechRadar',
   },
 }
 
@@ -210,6 +249,7 @@ const localizedCategories = {
     biotech: 'BioTech',
     energy: 'Energy',
     space: 'Space',
+    uncategorized: 'Unclassified',
   },
   ru: {
     ai: 'ИИ / ML',
@@ -220,6 +260,7 @@ const localizedCategories = {
     biotech: 'Биотех',
     energy: 'Энергетика',
     space: 'Космос',
+    uncategorized: 'Без категории',
   },
 }
 
@@ -252,8 +293,6 @@ let state = {
   language: 'en',
   lastFetched: null,
   expandedChain: null,
-  translations: {}, // Manual Russian translations: { itemId: { title, summary } }
-  translatingItems: new Set(),
   showOriginal: new Set(), // item ids showing original instead of translation
   trends: [],
   digest: [],
@@ -282,6 +321,9 @@ const elements = {
   feedCount: document.getElementById('feed-count'),
   radarCanvas: document.getElementById('radar-canvas'),
   radarTooltip: document.getElementById('radar-tooltip'),
+  connectionBanner: document.getElementById('connection-banner'),
+  connectionText: document.getElementById('connection-text'),
+  connectionRetry: document.getElementById('connection-retry'),
   radarLegend: document.getElementById('radar-legend'),
   highlights: document.getElementById('highlights'),
   evolutionChains: document.getElementById('evolution-chains'),
@@ -291,317 +333,6 @@ const elements = {
   infoBody: document.getElementById('info-body'),
   infoModal: document.getElementById('info-modal'),
   modalClose: document.getElementById('modal-close'),
-}
-
-// ============================================
-// TRANSLATION API
-// ============================================
-
-const translationCache = new BoundedCache(
-  TRANSLATION_CACHE_MAX,
-  TRANSLATION_TTL_MS,
-)
-
-// MyMemory's keyless quota is small; after a 429 stop for an hour rather
-// than re-sending every item on every refresh.
-const QUOTA_BACKOFF_MS = 60 * 60 * 1000
-let quotaBlockedUntil = 0
-
-function getTranslationCacheKey(text, from, to) {
-  return `${from}:${to}:${text.slice(0, 100)}`
-}
-
-async function translateText(text, fromLang, toLang) {
-  if (!text || text.trim().length === 0 || fromLang === toLang) return text
-  // Only the fields that are actually foreign go out: a repo name next to a
-  // Chinese description stays as it is.
-  if (toLang === 'en' && detectLanguage(text) === 'en') return text
-
-  const cacheKey = getTranslationCacheKey(text, fromLang, toLang)
-  const cached = translationCache.get(cacheKey)
-  if (cached !== undefined) return cached
-  if (Date.now() < quotaBlockedUntil) return text
-
-  try {
-    const truncatedText = text.slice(0, 500)
-    const pair = `${MYMEMORY_CODES[fromLang] ?? fromLang}|${MYMEMORY_CODES[toLang] ?? toLang}`
-    const url = `${CONFIG.MYMEMORY_API}?q=${encodeURIComponent(truncatedText)}&langpair=${encodeURIComponent(pair)}`
-    const response = await fetch(url)
-
-    if (response.status === 429) {
-      quotaBlockedUntil = Date.now() + QUOTA_BACKOFF_MS
-      return text
-    }
-    if (!response.ok) {
-      console.warn(`Translation API error: ${response.status}`)
-      return text
-    }
-
-    const data = await response.json()
-    if (data.responseStatus === 429 || data.quotaFinished === true) {
-      quotaBlockedUntil = Date.now() + QUOTA_BACKOFF_MS
-      return text
-    }
-    if (data.responseStatus === 200 && data.responseData?.translatedText) {
-      const translated = data.responseData.translatedText
-      translationCache.set(cacheKey, translated)
-      return translated
-    }
-    return text
-  } catch (error) {
-    console.error('Translation error:', error)
-    return text
-  }
-}
-
-/**
- * Non-English items get an English title and summary so a machine without
- * CJK fonts still reads them (the page ships no fonts and its CSP forbids
- * remote ones). Only title and summary go out; volume stays small.
- */
-async function translateNonEnglish(items) {
-  const foreign = items.filter(
-    (item) => item.originalLanguage !== 'en' && !item.translations?.en,
-  )
-  await Promise.all(
-    foreign.map(async (item) => {
-      const [title, summary] = await Promise.all([
-        translateText(item.title, item.originalLanguage, 'en'),
-        translateText(item.summary, item.originalLanguage, 'en'),
-      ])
-      if (title !== item.title || summary !== item.summary) {
-        item.translations = {
-          ...(item.translations || {}),
-          en: { title, summary },
-        }
-      }
-    }),
-  )
-}
-
-async function translateItemToRussian(itemId) {
-  const item = state.items.find((i) => i.id === itemId)
-  if (!item) return
-  if (state.translations[itemId] || state.translatingItems.has(itemId)) return
-
-  state.translatingItems.add(itemId)
-  renderFeed()
-
-  try {
-    const source = item.translations?.en ?? item
-    const from = item.translations?.en ? 'en' : item.originalLanguage
-    const [title, summary] = await Promise.all([
-      translateText(source.title, from, 'ru'),
-      translateText(source.summary, from, 'ru'),
-    ])
-    state.translations[itemId] = { title, summary }
-    saveTranslationsToCache()
-  } catch (error) {
-    console.error('Failed to translate item:', error)
-  } finally {
-    state.translatingItems.delete(itemId)
-    renderFeed()
-  }
-}
-
-async function saveTranslationsToCache() {
-  const data = { translations: state.translations, timestamp: Date.now() }
-  return new Promise((resolve) => {
-    if (chrome?.storage?.local) {
-      chrome.storage.local.set({ techRadarTranslations: data }, resolve)
-    } else {
-      localStorage.setItem('techRadarTranslations', JSON.stringify(data))
-      resolve()
-    }
-  })
-}
-
-async function loadTranslationsFromCache() {
-  return new Promise((resolve) => {
-    if (chrome?.storage?.local) {
-      chrome.storage.local.get(['techRadarTranslations'], (result) => {
-        if (result.techRadarTranslations) {
-          state.translations = result.techRadarTranslations.translations || {}
-        }
-        resolve()
-      })
-    } else {
-      const cached = localStorage.getItem('techRadarTranslations')
-      if (cached) {
-        const data = JSON.parse(cached)
-        state.translations = data.translations || {}
-      }
-      resolve()
-    }
-  })
-}
-
-// ============================================
-// API FETCHERS
-// ============================================
-
-async function fetchGitHubTrending() {
-  try {
-    const oneWeekAgo = new Date()
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-    const dateStr = oneWeekAgo.toISOString().split('T')[0]
-
-    const queries = ['machine-learning', 'llm', 'artificial-intelligence']
-    const allRepos = []
-
-    for (const query of queries) {
-      const response = await fetch(
-        `https://api.github.com/search/repositories?q=${query}+created:>${dateStr}&sort=stars&order=desc&per_page=5`,
-        {
-          headers: {
-            Accept: 'application/vnd.github.v3+json',
-            'User-Agent': 'TechEvolutionRadar-Extension/1.0',
-          },
-        },
-      )
-
-      if (response.status === 403 || response.status === 429) {
-        console.warn('GitHub rate limit hit; skipping remaining GitHub queries')
-        break
-      }
-      if (response.ok) {
-        const data = await response.json()
-        allRepos.push(...(data.items || []))
-      }
-    }
-
-    const seen = new Set()
-    return allRepos
-      .filter((repo) => {
-        if (seen.has(repo.id)) return false
-        seen.add(repo.id)
-        return true
-      })
-      .slice(0, 10)
-      .map((repo) => {
-        const description = repo.description || ''
-        return {
-          id: `gh-${repo.id}`,
-          title: repo.full_name,
-          summary:
-            description ||
-            `A new ${repo.language || 'tech'} project with ${repo.stargazers_count.toLocaleString()} stars.`,
-          source: 'github',
-          sourceUrl: repo.html_url,
-          category: categorizeByKeywords(description || repo.name),
-          maturityStage: calculateMaturity(repo.stargazers_count),
-          engagement: repo.stargazers_count,
-          publishedAt: new Date(repo.created_at),
-          originalLanguage: detectLanguage(description),
-        }
-      })
-  } catch (error) {
-    console.error('GitHub API error:', error)
-    return []
-  }
-}
-
-async function fetchArxivPapers() {
-  try {
-    const categories = ['cs.AI', 'cs.LG', 'cs.CL', 'quant-ph']
-    const query = categories.map((c) => `cat:${c}`).join('+OR+')
-
-    const response = await fetch(
-      `https://export.arxiv.org/api/query?search_query=${query}&start=0&max_results=10&sortBy=submittedDate&sortOrder=descending`,
-    )
-
-    if (!response.ok) throw new Error('arXiv API error')
-
-    const xmlText = await response.text()
-    const entries = []
-    const entryMatches = xmlText.match(/<entry>[\s\S]*?<\/entry>/g) || []
-
-    for (const entryXml of entryMatches) {
-      const getId = (xml) => (xml.match(/<id>(.*?)<\/id>/) || [])[1] || ''
-      const getTitle = (xml) =>
-        (xml.match(/<title>([\s\S]*?)<\/title>/) || [])[1]
-          ?.replace(/\s+/g, ' ')
-          .trim() || ''
-      const getSummary = (xml) =>
-        (xml.match(/<summary>([\s\S]*?)<\/summary>/) || [])[1]
-          ?.replace(/\s+/g, ' ')
-          .trim() || ''
-      const getPublished = (xml) =>
-        (xml.match(/<published>(.*?)<\/published>/) || [])[1] || ''
-
-      entries.push({
-        id: getId(entryXml),
-        title: getTitle(entryXml),
-        summary: getSummary(entryXml),
-        published: getPublished(entryXml),
-      })
-    }
-
-    return entries.slice(0, 8).map((entry, index) => ({
-      id: `arxiv-${entry.id.split('/').pop()}-${index}`,
-      title: entry.title,
-      summary:
-        entry.summary.slice(0, 200) + (entry.summary.length > 200 ? '...' : ''),
-      source: 'arxiv',
-      sourceUrl: entry.id.replace('http://', 'https://'),
-      category: categorizeByKeywords(entry.title + ' ' + entry.summary),
-      maturityStage: 'research',
-      // arXiv reports no attention metric: shown, never scored.
-      engagement: null,
-      publishedAt: new Date(entry.published),
-      originalLanguage: 'en',
-    }))
-  } catch (error) {
-    console.error('arXiv API error:', error)
-    return []
-  }
-}
-
-async function fetchHackerNews() {
-  try {
-    const topStoriesRes = await fetch(
-      'https://hacker-news.firebaseio.com/v0/topstories.json',
-    )
-    if (!topStoriesRes.ok) throw new Error('Failed to fetch HN')
-
-    const topStoryIds = await topStoriesRes.json()
-
-    const storyPromises = topStoryIds.slice(0, 30).map(async (id) => {
-      const res = await fetch(
-        `https://hacker-news.firebaseio.com/v0/item/${id}.json`,
-      )
-      if (!res.ok) return null
-      return res.json()
-    })
-
-    const stories = (await Promise.all(storyPromises)).filter(
-      (s) => s && s.type === 'story',
-    )
-
-    const techStories = stories.filter((story) => {
-      const title = story.title.toLowerCase()
-      return Object.values(CATEGORY_KEYWORDS)
-        .flat()
-        .some((kw) => title.includes(kw))
-    })
-
-    return techStories.slice(0, 10).map((story) => ({
-      id: `hn-${story.id}`,
-      title: story.title,
-      summary: `${story.score} points and ${story.descendants || 0} comments on Hacker News.`,
-      source: 'hackernews',
-      sourceUrl:
-        story.url || `https://news.ycombinator.com/item?id=${story.id}`,
-      category: categorizeByKeywords(story.title),
-      maturityStage: calculateMaturity(story.score * 10),
-      engagement: story.score,
-      publishedAt: new Date(story.time * 1000),
-      originalLanguage: detectLanguage(story.title),
-    }))
-  } catch (error) {
-    console.error('Hacker News API error:', error)
-    return []
-  }
 }
 
 // ============================================
@@ -640,25 +371,35 @@ function getLocalizedMaturity(stage) {
 }
 
 function engagementLine(item) {
-  const unit = SOURCE_CONFIG[item.source]?.unit
-  if (item.engagement === null || item.engagement === undefined || !unit)
-    return ''
-  const count = `${item.engagement.toLocaleString()} ${t(unit)}`
+  const engagement = item.signal?.engagement
+  const unit = item.signal?.engagementUnit
+  if (engagement === null || engagement === undefined || !unit) return ''
+  const count = `${engagement.toLocaleString()} ${t(unit)}`
   const velocity = item.signal?.velocity
   if (!velocity || velocity < 1) return count
   return `${count} · ${Math.round(velocity).toLocaleString()}${t('perDay')}`
 }
 
-/** Text to show for an item in the current language, honoring toggles. */
+/**
+ * Text to show for an item in the current language, honoring toggles. The
+ * server attaches only translations that really happened (it never passes
+ * the original off as one).
+ */
 function displayText(item) {
-  const manualRu = state.translations[item.id]
-  if (state.showOriginal.has(item.id))
-    return { title: item.title, summary: item.summary, translated: false }
-  if (state.language === 'ru' && manualRu)
-    return { ...manualRu, translated: true }
-  if (item.translations?.en)
-    return { ...item.translations.en, translated: true }
-  return { title: item.title, summary: item.summary, translated: false }
+  const original = {
+    title: item.title,
+    summary: item.summary,
+    translated: false,
+  }
+  if (
+    state.showOriginal.has(item.id) ||
+    item.originalLanguage === state.language
+  )
+    return original
+  const translated =
+    item.translations?.[state.language] ??
+    (item.originalLanguage === 'en' ? null : item.translations?.en)
+  return translated ? { ...translated, translated: true } : original
 }
 
 function escapeHtml(text) {
@@ -688,54 +429,58 @@ function reviveItems(items) {
   }))
 }
 
-function rankItems(items) {
-  const signals = computeSignals(items)
-  for (const item of items) item.signal = signals.get(item.id)
-  items.sort((a, b) => b.publishedAt - a.publishedAt)
+/** Header counts, derived from the server's items (no scoring happens here). */
+function statsFor(items) {
   return {
     totalSignals: items.length,
-    highlighted: items.filter((i) => i.signal.reasons.length > 0).length,
+    highlighted: items.filter((i) => i.signal?.reasons.length > 0).length,
     sourceCount: new Set(items.map((i) => i.source)).size,
-    scored: items.filter((i) => i.signal.score !== null).length,
+    scored: items.filter((i) => i.signal && i.signal.score !== null).length,
+    judged: items.filter((i) => i.signal && i.signal.novelty !== null).length,
   }
 }
 
-async function fetchAllData() {
+function applyPayload(payload) {
+  state.items = reviveItems(payload.feed.items).sort(
+    (a, b) => b.publishedAt - a.publishedAt,
+  )
+  state.stats = statsFor(state.items)
+  state.digest = panelData(payload.digest, 'items')
+  state.trends = panelData(payload.trends, 'topics')
+}
+
+async function fetchAllData(force = false) {
   state.isLoading = true
   updateStatusBadge(true)
 
   try {
-    // Stale-while-revalidate: paint whatever is cached right away, so a new
-    // tab never waits on GitHub/arXiv/HN just because the cache aged out.
+    // Stale-while-revalidate: paint the last copy right away, so a new tab
+    // never waits on the network just because the cache aged out.
     const cached = await getCachedData()
     if (cached) {
-      state.items = reviveItems(cached.items)
-      state.stats = rankItems(state.items)
+      applyPayload(cached.payload)
       state.lastFetched = new Date(cached.timestamp)
-      state.error = null
-      if (Date.now() - cached.timestamp < CONFIG.CACHE_DURATION) return
+      // A copy is only "fresh" if the last attempt succeeded: after a failure,
+      // every new tab asks the server again and keeps the banner until it
+      // answers.
+      const fresh = Date.now() - cached.timestamp < CONFIG.CACHE_DURATION
+      if (!force && fresh && !cached.lastError) {
+        state.error = null
+        return
+      }
+      if (cached.lastError) state.error = cached.lastError
       render()
     }
 
-    const [githubItems, arxivItems, hnItems] = await Promise.all([
-      fetchGitHubTrending(),
-      fetchArxivPapers(),
-      fetchHackerNews(),
-    ])
-
-    const allItems = [...githubItems, ...arxivItems, ...hnItems]
-    await translateNonEnglish(allItems)
-    const stats = rankItems(allItems)
-
-    state.items = allItems
-    state.stats = stats
+    const payload = await fetchBackendFeed()
+    applyPayload(payload)
     state.lastFetched = new Date()
     state.error = null
-
-    await cacheData({ items: allItems, timestamp: Date.now() })
+    await cacheData({ payload, timestamp: Date.now(), lastError: null })
   } catch (error) {
     console.error('Failed to fetch data:', error)
     state.error = error.message
+    await recordFailure(error.message)
   } finally {
     state.isLoading = false
     updateStatusBadge(false)
@@ -743,82 +488,36 @@ async function fetchAllData() {
   }
 }
 
-async function fetchTrends(force = false) {
-  try {
-    const cachedRaw = await new Promise((resolve) => {
-      if (chrome?.storage?.local)
-        chrome.storage.local.get(['techRadarTrends'], (r) =>
-          resolve(r.techRadarTrends || null),
-        )
-      else
-        resolve(JSON.parse(localStorage.getItem('techRadarTrends') || 'null'))
-    })
-    if (cachedRaw) {
-      state.trends = cachedRaw.topics || []
-      if (!force && Date.now() - cachedRaw.timestamp < TRENDS_TTL_MS) return
-    }
-    const data = await fetchDataFile('trends.json')
-    state.trends = data.topics || []
-    const toStore = { topics: state.trends, timestamp: Date.now() }
-    if (chrome?.storage?.local)
-      chrome.storage.local.set({ techRadarTrends: toStore })
-    else localStorage.setItem('techRadarTrends', JSON.stringify(toStore))
-  } catch (e) {
-    console.warn('trends fetch failed', e)
-  }
-}
-
-async function fetchDigest(force = false) {
-  try {
-    const cachedRaw = await new Promise((resolve) => {
-      if (chrome?.storage?.local)
-        chrome.storage.local.get(['techRadarDigest'], (r) =>
-          resolve(r.techRadarDigest || null),
-        )
-      else
-        resolve(JSON.parse(localStorage.getItem('techRadarDigest') || 'null'))
-    })
-    if (cachedRaw) {
-      state.digest = cachedRaw.items || []
-      if (!force && Date.now() - cachedRaw.timestamp < DIGEST_TTL_MS) return
-    }
-    const data = await fetchDataFile('digest.json')
-    state.digest = data.items || []
-    const toStore = { items: state.digest, timestamp: Date.now() }
-    if (chrome?.storage?.local)
-      chrome.storage.local.set({ techRadarDigest: toStore })
-    else localStorage.setItem('techRadarDigest', JSON.stringify(toStore))
-  } catch (e) {
-    console.warn('digest fetch failed', e)
-  }
-}
-
 async function getCachedData() {
   return new Promise((resolve) => {
     if (chrome?.storage?.local) {
-      chrome.storage.local.get(['techRadarCache'], (result) => {
-        resolve(result.techRadarCache || null)
+      chrome.storage.local.get(['techRadarFeed'], (result) => {
+        resolve(result.techRadarFeed || null)
       })
     } else {
-      const cached = localStorage.getItem('techRadarCache')
+      const cached = localStorage.getItem('techRadarFeed')
       resolve(cached ? JSON.parse(cached) : null)
     }
   })
 }
 
+/** Keep the saved copy, but remember that refreshing it failed. */
+async function recordFailure(message) {
+  const cached = await getCachedData()
+  if (cached) await cacheData({ ...cached, lastError: message })
+}
+
 async function cacheData(data) {
-  // The signal object is recomputed on load; the raw fields are enough.
-  const items = data.items.map((item) => {
-    const { signal, ...rest } = item
-    void signal
-    return rest
-  })
-  const payload = { items, timestamp: data.timestamp }
+  const payload = {
+    payload: data.payload,
+    timestamp: data.timestamp,
+    lastError: data.lastError ?? null,
+  }
   return new Promise((resolve) => {
     if (chrome?.storage?.local) {
-      chrome.storage.local.set({ techRadarCache: payload }, resolve)
+      chrome.storage.local.set({ techRadarFeed: payload }, resolve)
     } else {
-      localStorage.setItem('techRadarCache', JSON.stringify(payload))
+      localStorage.setItem('techRadarFeed', JSON.stringify(payload))
       resolve()
     }
   })
@@ -845,7 +544,9 @@ function render() {
   elements.loading.classList.add('hidden')
   elements.mainContent.classList.remove('hidden')
 
+  renderConnectionBanner()
   renderStats()
+  renderSourceFilter()
   renderCategoryFilters()
   renderHighlights()
   renderTrends()
@@ -866,11 +567,13 @@ function showErrorState() {
   }
   host.classList.remove('hidden')
   host.innerHTML = `
-    <p>${escapeHtml(t('error'))}</p>
+    <p>${escapeHtml(t('backendUnreachable'))}</p>
+    <p class="error-detail">${escapeHtml(t('backendHint'))} <code>${escapeHtml(BACKEND_URL)}</code></p>
+    <p class="error-detail">${escapeHtml(state.error ?? '')}</p>
     <button id="error-retry" class="btn">${escapeHtml(t('retry'))}</button>`
   host.querySelector('#error-retry').addEventListener('click', async () => {
     host.classList.add('hidden')
-    await fetchAllData()
+    await fetchAllData(true)
   })
 }
 
@@ -883,11 +586,28 @@ function renderStats() {
   const parts = [
     `${s.totalSignals} ${t('signals')} ${t('from')} ${s.sourceCount} ${t('sources').toLowerCase()}`,
   ]
-  if (s.highlighted > 0)
-    parts.push(`${s.highlighted} ${t('fastRising').toLowerCase()}`)
-  if (state.items.some((i) => i.source === 'arxiv'))
-    parts.push(t('unscoredNote'))
+  if (s.judged > 0) parts.push(`${s.judged} ${t('judged')}`)
+  if (s.scored < s.totalSignals) parts.push(t('unscoredNote'))
   elements.summaryLine.textContent = parts.join(' · ')
+}
+
+/** One option per source present in the feed, in SOURCE_CONFIG order. */
+function renderSourceFilter() {
+  const present = new Set(state.items.map((i) => i.source))
+  const select = elements.sourceFilter
+  const allOption = select.querySelector('option[value="all"]')
+  const options = Object.entries(SOURCE_CONFIG)
+    .filter(([key]) => present.has(key))
+    .map(([key, cfg]) => {
+      const option = document.createElement('option')
+      option.value = key
+      option.textContent = cfg.label
+      return option
+    })
+  select.replaceChildren(allOption, ...options)
+  if (state.activeSource !== 'all' && !present.has(state.activeSource))
+    state.activeSource = 'all'
+  select.value = state.activeSource
 }
 
 function renderCategoryFilters() {
@@ -912,11 +632,26 @@ function renderCategoryFilters() {
     .join('')
 }
 
+// Server reason ids (src/lib/signal-model.ts SignalReason) → i18n keys.
+const REASON_KEYS = {
+  'fast-rising': ['fastRising', 'fastRisingDesc'],
+  converging: ['reasonConverging', 'reasonConvergingDesc'],
+  novel: ['reasonNovel', 'reasonNovelDesc'],
+  'under-the-radar': ['reasonUnderRadar', 'reasonUnderRadarDesc'],
+}
+
+function reasonLabel(reason) {
+  const keys = REASON_KEYS[reason]
+  return keys ? { label: t(keys[0]), desc: t(keys[1]) } : null
+}
+
 function reasonChips(item) {
   return (item.signal?.reasons || [])
+    .map(reasonLabel)
+    .filter(Boolean)
     .map(
-      (r) =>
-        `<span class="chip-reason" title="${escapeHtml(t('fastRisingDesc'))}">${escapeHtml(r === 'fast-rising' ? t('fastRising') : r)}</span>`,
+      ({ label, desc }) =>
+        `<span class="chip-reason" title="${escapeHtml(desc)}">${escapeHtml(label)}</span>`,
     )
     .join('')
 }
@@ -1073,10 +808,8 @@ function renderFeed() {
   elements.feedList.innerHTML = filteredItems
     .map((item) => {
       const text = displayText(item)
-      const manualRu = state.translations[item.id]
-      const isTranslating = state.translatingItems.has(item.id)
       const hasTranslation =
-        !!item.translations?.en || (state.language === 'ru' && !!manualRu)
+        !!item.translations?.[state.language] || !!item.translations?.en
       const showingOriginal = state.showOriginal.has(item.id)
       const highlighted = item.signal?.reasons.length > 0
       const engagement = engagementLine(item)
@@ -1088,17 +821,6 @@ function renderFeed() {
         )
         if (text.translated)
           controls.push(`<span>${escapeHtml(t('machineTranslated'))}</span>`)
-      }
-      if (
-        state.language === 'ru' &&
-        !manualRu &&
-        item.originalLanguage !== 'ru'
-      ) {
-        controls.push(
-          isTranslating
-            ? `<span>${escapeHtml(t('translating'))}</span>`
-            : `<button class="btn btn-text" data-action="translate">${escapeHtml(t('translateToRussian'))}</button>`,
-        )
       }
       const lang = text.translated
         ? ''
@@ -1131,8 +853,7 @@ function renderFeed() {
     el.querySelectorAll('[data-action]').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation()
-        if (btn.dataset.action === 'translate') translateItemToRussian(itemId)
-        else if (btn.dataset.action === 'toggle') {
+        if (btn.dataset.action === 'toggle') {
           if (state.showOriginal.has(itemId)) state.showOriginal.delete(itemId)
           else state.showOriginal.add(itemId)
           renderFeed()
@@ -1289,10 +1010,12 @@ function showRadarTooltip(point) {
     .filter(Boolean)
     .join(' · ')
   const children = [title, meta]
-  if (item.signal?.reasons.length) {
+  for (const r of item.signal?.reasons ?? []) {
+    const label = reasonLabel(r)
+    if (!label) continue
     const reason = document.createElement('span')
     reason.className = 'chip-reason'
-    reason.textContent = t('fastRising')
+    reason.textContent = label.label
     children.push(reason)
   }
   tip.replaceChildren(...children)
@@ -1351,9 +1074,40 @@ function setupRadarInteractions() {
   canvas.addEventListener('blur', () => setRadarHover(null))
 }
 
+function formatSavedAt(date) {
+  return date.toLocaleString(state.language === 'ru' ? 'ru-RU' : 'en-GB', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+/**
+ * The saved copy stays on screen after a failed refresh; this banner says so,
+ * names the server, and offers a retry. Hidden again on the next success.
+ */
+function renderConnectionBanner() {
+  const offline = Boolean(state.error)
+  elements.statusBadge.classList.toggle('offline', offline)
+  elements.connectionBanner.classList.toggle('hidden', !offline)
+  if (!offline) return
+  const saved = state.lastFetched
+    ? `${t('savedFrom')} ${formatSavedAt(state.lastFetched)}`
+    : t('noSavedData')
+  elements.connectionText.textContent = `${t('notConnected')} (${BACKEND_URL}) — ${saved}.`
+  elements.connectionText.title = state.error
+  elements.connectionRetry.textContent = state.isLoading
+    ? t('retrying')
+    : t('retry')
+  elements.connectionRetry.disabled = state.isLoading
+}
+
 function updateStatusBadge(syncing) {
   if (syncing) {
     elements.statusText.textContent = `${t('syncing')}…`
+  } else if (state.error) {
+    elements.statusText.textContent = t('offline')
   } else {
     const when = state.lastFetched
       ? state.lastFetched.toLocaleTimeString([], {
@@ -1383,12 +1137,19 @@ function updateTranslations() {
 function setupEventListeners() {
   setupRadarInteractions()
 
+  elements.connectionRetry.addEventListener('click', async () => {
+    state.isLoading = true
+    renderConnectionBanner()
+    await fetchAllData(true)
+  })
+  // Coming back online: refresh right away instead of waiting for the timer.
+  window.addEventListener('online', () => {
+    if (state.error) fetchAllData(true)
+  })
+
   elements.refreshBtn.addEventListener('click', async () => {
     elements.refreshBtn.classList.add('spinning')
-    await fetchAllData()
-    await fetchTrends(true)
-    await fetchDigest(true)
-    render()
+    await fetchAllData(true)
     elements.refreshBtn.classList.remove('spinning')
   })
 
@@ -1462,9 +1223,29 @@ async function loadLanguagePreference() {
 // INITIALIZATION
 // ============================================
 
+/**
+ * CJK glyphs, relayed by the backend: the CSP allows no other font host, and
+ * without them Chinese/Japanese titles render as boxes on machines lacking
+ * CJK system fonts. Only the unicode-range slices actually used download.
+ */
+function loadCjkFonts() {
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = `${BACKEND_URL.replace(/\/$/, '')}/api/fonts/cjk`
+  document.head.append(link)
+}
+
 async function init() {
+  loadCjkFonts()
   await loadLanguagePreference()
-  await loadTranslationsFromCache()
+  // Caches from versions that fetched sources in the browser.
+  if (chrome?.storage?.local)
+    chrome.storage.local.remove([
+      'techRadarCache',
+      'techRadarDigest',
+      'techRadarTrends',
+      'techRadarTranslations',
+    ])
 
   elements.langEn.setAttribute('aria-pressed', String(state.language === 'en'))
   elements.langRu.setAttribute('aria-pressed', String(state.language === 'ru'))
@@ -1472,13 +1253,8 @@ async function init() {
   updateTranslations()
 
   setupEventListeners()
-  // All three read their caches first and only then hit the network, so run
-  // them together: the first paint no longer waits on the slowest source.
-  await Promise.all([
-    fetchAllData(),
-    fetchTrends().then(render),
-    fetchDigest().then(render),
-  ])
+  // One request to the server carries feed, digest and trends.
+  await fetchAllData()
 
   setInterval(fetchAllData, CONFIG.REFRESH_INTERVAL)
 }

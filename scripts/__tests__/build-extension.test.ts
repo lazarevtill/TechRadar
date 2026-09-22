@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
+  extensionBackendUrl,
+  withBackendOrigin,
   collectExtensionFiles,
   manifestEntries,
   planBuild,
@@ -95,5 +97,46 @@ describe('collectExtensionFiles', () => {
         'newtab.html',
       ],
     })
+  })
+})
+
+describe('extensionBackendUrl', () => {
+  it('defaults to the local server and trims trailing slashes', () => {
+    expect(extensionBackendUrl({})).toBe('http://localhost:3000')
+    expect(
+      extensionBackendUrl({
+        EXTENSION_BACKEND_URL: 'https://radar.example.com/',
+      }),
+    ).toBe('https://radar.example.com')
+  })
+  it('rejects non-URLs and non-http schemes', () => {
+    expect(() =>
+      extensionBackendUrl({ EXTENSION_BACKEND_URL: 'radar.example.com' }),
+    ).toThrow(/not a URL/)
+    expect(() =>
+      extensionBackendUrl({ EXTENSION_BACKEND_URL: 'ftp://x.example' }),
+    ).toThrow(/http\(s\)/)
+  })
+})
+
+describe('withBackendOrigin', () => {
+  it('limits host_permissions and connect-src to the backend origin', () => {
+    const out = withBackendOrigin(
+      {
+        host_permissions: ['https://api.github.com/*'],
+        content_security_policy: {
+          extension_pages:
+            "default-src 'self'; connect-src 'self' https://api.github.com; img-src 'self' data:",
+        },
+      },
+      'https://radar.example.com/base',
+    )
+    expect(out.host_permissions).toEqual(['https://radar.example.com/*'])
+    expect(
+      (out.content_security_policy as { extension_pages: string })
+        .extension_pages,
+    ).toBe(
+      "default-src 'self'; connect-src 'self' https://radar.example.com; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://radar.example.com; font-src https://radar.example.com",
+    )
   })
 })

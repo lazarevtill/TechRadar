@@ -11,7 +11,10 @@ COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
 COPY . .
-RUN bun run build
+# The server the downloadable Chrome extension will read from; its manifest is
+# limited to this origin (scripts/build-extension.ts). Default: local Docker.
+ARG EXTENSION_BACKEND_URL=http://localhost:3000
+RUN EXTENSION_BACKEND_URL=$EXTENSION_BACKEND_URL bun run build
 
 FROM oven/bun:1.4.2-slim AS runtime
 WORKDIR /app
