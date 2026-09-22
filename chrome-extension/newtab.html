@@ -54,6 +54,27 @@
               </button>
             </div>
             <button
+              id="settings-btn"
+              class="btn btn-icon"
+              title="Settings"
+              aria-label="Settings"
+              data-i18n-attr="settingsTitle"
+            >
+              <svg
+                class="icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+            <button
               id="refresh-btn"
               class="btn btn-icon"
               title="Refresh data"
@@ -83,6 +104,7 @@
         >
           <span class="connection-dot" aria-hidden="true"></span>
           <p id="connection-text"></p>
+          <button id="connection-settings" class="btn" type="button"></button>
           <button id="connection-retry" class="btn" type="button"></button>
         </div>
 
@@ -112,7 +134,7 @@
 
           <div class="grid">
             <!-- Radar -->
-            <section class="panel radar-section">
+            <section class="panel radar-section" data-panel="radar">
               <div class="panel-head">
                 <h2 data-i18n="liveRadar">Radar</h2>
                 <span class="hint" data-i18n="radarHint"
@@ -142,7 +164,7 @@
 
             <!-- Right column -->
             <div class="column">
-              <section class="panel">
+              <section class="panel" data-panel="highlights">
                 <div class="panel-head">
                   <h2 data-i18n="highlightsTitle">Highlights</h2>
                   <span class="hint" data-i18n="highlightsHint"
@@ -152,7 +174,7 @@
                 <div id="highlights"></div>
               </section>
 
-              <section class="panel">
+              <section class="panel" data-panel="trends">
                 <div class="panel-head">
                   <h2 data-i18n="trendsTitle">Topic momentum</h2>
                   <span class="hint" id="chain-count"></span>
@@ -163,7 +185,7 @@
           </div>
 
           <!-- Feed -->
-          <section class="panel">
+          <section class="panel" data-panel="feed">
             <div class="panel-head">
               <h2 data-i18n="liveFeed">Feed</h2>
               <span class="hint" id="feed-count"></span>
@@ -176,7 +198,7 @@
           </section>
 
           <!-- Digest -->
-          <section class="panel">
+          <section class="panel" data-panel="digest">
             <div class="panel-head">
               <h2 data-i18n="newsDigest">AI blog digest</h2>
               <span class="hint" data-i18n="newsSubtitle"
@@ -216,6 +238,164 @@
         </div>
         <div class="modal-body" id="info-body"></div>
       </div>
+    </div>
+
+    <div
+      id="settings-modal"
+      class="modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-heading"
+    >
+      <div class="modal-backdrop"></div>
+      <form
+        class="modal-content settings"
+        id="settings-form"
+        tabindex="-1"
+        novalidate
+      >
+        <div class="modal-header">
+          <h3 id="settings-heading" data-i18n="settingsTitle">Settings</h3>
+          <button
+            type="button"
+            id="settings-close"
+            class="btn btn-icon"
+            aria-label="Close"
+          >
+            <svg
+              class="icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+            <legend data-i18n="settingsServer">TechRadar server</legend>
+            <label for="set-backend" data-i18n="settingsServerUrl"
+              >Server address</label
+            >
+            <div class="field-row">
+              <input
+                id="set-backend"
+                class="input"
+                type="text"
+                inputmode="url"
+                spellcheck="false"
+                autocomplete="off"
+                placeholder="http://localhost:3000"
+              />
+              <button
+                type="button"
+                id="set-test"
+                class="btn"
+                data-i18n="settingsTest"
+              >
+                Test connection
+              </button>
+            </div>
+            <p
+              class="field-help"
+              id="set-backend-status"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </fieldset>
+
+          <fieldset>
+            <legend data-i18n="settingsDisplay">Display</legend>
+            <div class="field-grid">
+              <label for="set-language" data-i18n="settingsLanguage"
+                >Language</label
+              >
+              <select id="set-language" class="select">
+                <option value="en">English</option>
+                <option value="ru">Русский</option>
+              </select>
+              <label for="set-refresh" data-i18n="settingsRefresh"
+                >Auto-refresh</label
+              >
+              <select id="set-refresh" class="select"></select>
+              <label for="set-feed-size" data-i18n="settingsFeedSize"
+                >Feed items</label
+              >
+              <select id="set-feed-size" class="select"></select>
+              <label for="set-default-source" data-i18n="settingsDefaultSource"
+                >Default source</label
+              >
+              <select id="set-default-source" class="select"></select>
+              <label
+                for="set-default-category"
+                data-i18n="settingsDefaultCategory"
+                >Default category</label
+              >
+              <select id="set-default-category" class="select"></select>
+            </div>
+            <label class="check">
+              <input type="checkbox" id="set-new-tab" />
+              <span data-i18n="settingsNewTab">Open links in a new tab</span>
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend data-i18n="settingsPanels">Panels</legend>
+            <div class="check-grid" id="set-panels"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend data-i18n="settingsData">Saved data</legend>
+            <p class="field-help" id="set-saved-info"></p>
+            <div class="field-row">
+              <button
+                type="button"
+                id="set-clear"
+                class="btn"
+                data-i18n="settingsClear"
+              >
+                Clear saved data
+              </button>
+              <button
+                type="button"
+                id="set-reset"
+                class="btn"
+                data-i18n="settingsReset"
+              >
+                Reset to defaults
+              </button>
+            </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+          <p
+            class="field-help"
+            id="set-form-status"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <button
+            type="button"
+            id="set-cancel"
+            class="btn"
+            data-i18n="settingsCancel"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="set-save"
+            class="btn btn-primary"
+            data-i18n="settingsSave"
+          >
+            Save
+          </button>
+        </div>
+      </form>
     </div>
 
     <script type="module" src="app.js"></script>

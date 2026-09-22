@@ -1,9 +1,15 @@
 import { seededJitter } from './lib/jitter.js'
+import { CACHE_DURATION_MS } from './lib/config.js'
 import {
-  BACKEND_URL,
-  CACHE_DURATION_MS,
-  REFRESH_INTERVAL_MS,
-} from './lib/config.js'
+  DEFAULT_SETTINGS,
+  FEED_SIZE_CHOICES,
+  PANELS,
+  REFRESH_CHOICES,
+  loadSettings,
+  normalizeBackendUrl,
+  sanitizeSettings,
+  saveSettings,
+} from './lib/settings.js'
 import { fetchBackendFeed, panelData } from './lib/backend.js'
 import { trajectoryMeta, sparklineBars } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
@@ -25,8 +31,6 @@ import { icon, CATEGORY_ICON } from './lib/icons.js'
 
 const CONFIG = {
   CACHE_DURATION: CACHE_DURATION_MS,
-  REFRESH_INTERVAL: REFRESH_INTERVAL_MS,
-  MAX_FEED_ITEMS: 40,
 }
 
 const CATEGORY_CONFIG = {
@@ -103,6 +107,43 @@ const translations = {
       'This extension shows data prepared by your TechRadar server. Start it (docker compose up -d) or check the address:',
     showingCached: 'Showing the last saved copy',
     offline: 'Offline',
+    settings: 'Settings',
+    settingsTitle: 'Settings',
+    settingsServer: 'TechRadar server',
+    settingsServerUrl: 'Server address',
+    settingsTest: 'Test connection',
+    settingsTesting: 'Testing…',
+    settingsTestOk: 'Connected: {items} signals from {sources} sources.',
+    settingsTestFail: 'Could not load the feed: {error}',
+    urlEmpty: 'Enter the server address, e.g. http://localhost:3000',
+    urlInvalid: 'This is not a valid address',
+    urlScheme: 'Only http:// and https:// addresses are supported',
+    settingsDisplay: 'Display',
+    settingsLanguage: 'Language',
+    settingsRefresh: 'Auto-refresh',
+    refreshOff: 'Off',
+    everyMinutes: 'Every {n} min',
+    settingsFeedSize: 'Feed items',
+    settingsDefaultSource: 'Default source',
+    settingsDefaultCategory: 'Default category',
+    allCategories: 'All categories',
+    settingsNewTab: 'Open links in a new tab',
+    settingsPanels: 'Panels',
+    panelRadar: 'Radar',
+    panelHighlights: 'Highlights',
+    panelTrends: 'Topic momentum',
+    panelFeed: 'Feed',
+    panelDigest: 'AI blog digest',
+    settingsData: 'Saved data',
+    savedInfo: 'Saved copy from {time}: {items} signals.',
+    savedNone: 'Nothing saved yet.',
+    settingsClear: 'Clear saved data',
+    settingsCleared: 'Saved data cleared.',
+    settingsReset: 'Reset to defaults',
+    settingsResetDone: 'Defaults restored — press Save to apply.',
+    settingsCancel: 'Cancel',
+    settingsSave: 'Save',
+    settingsSaved: 'Saved.',
     notConnected: 'Not connected to the TechRadar server',
     savedFrom: 'showing data saved',
     noSavedData: 'nothing saved yet',
@@ -188,6 +229,44 @@ const translations = {
       'Расширение показывает данные, подготовленные вашим сервером TechRadar. Запустите его (docker compose up -d) или проверьте адрес:',
     showingCached: 'Показана последняя сохранённая копия',
     offline: 'Нет связи',
+    settings: 'Настройки',
+    settingsTitle: 'Настройки',
+    settingsServer: 'Сервер TechRadar',
+    settingsServerUrl: 'Адрес сервера',
+    settingsTest: 'Проверить связь',
+    settingsTesting: 'Проверка…',
+    settingsTestOk: 'Подключено: {items} сигналов из {sources} источников.',
+    settingsTestFail: 'Не удалось загрузить ленту: {error}',
+    urlEmpty: 'Укажите адрес сервера, например http://localhost:3000',
+    urlInvalid: 'Это не похоже на адрес',
+    urlScheme: 'Поддерживаются только адреса http:// и https://',
+    settingsDisplay: 'Отображение',
+    settingsLanguage: 'Язык',
+    settingsRefresh: 'Автообновление',
+    refreshOff: 'Выключено',
+    everyMinutes: 'Каждые {n} мин',
+    settingsFeedSize: 'Записей в ленте',
+    settingsDefaultSource: 'Источник по умолчанию',
+    settingsDefaultCategory: 'Категория по умолчанию',
+    allCategories: 'Все категории',
+    settingsNewTab: 'Открывать ссылки в новой вкладке',
+    settingsPanels: 'Панели',
+    panelRadar: 'Радар',
+    panelHighlights: 'Главное',
+    panelTrends: 'Импульс тем',
+    panelFeed: 'Лента',
+    panelDigest: 'Дайджест AI-блогов',
+    settingsData: 'Сохранённые данные',
+    savedInfo: 'Копия от {time}: {items} сигналов.',
+    savedNone: 'Пока ничего не сохранено.',
+    settingsClear: 'Очистить сохранённые данные',
+    settingsCleared: 'Сохранённые данные удалены.',
+    settingsReset: 'Сбросить настройки',
+    settingsResetDone:
+      'Значения по умолчанию восстановлены — нажмите «Сохранить».',
+    settingsCancel: 'Отмена',
+    settingsSave: 'Сохранить',
+    settingsSaved: 'Сохранено.',
     notConnected: 'Нет соединения с сервером TechRadar',
     savedFrom: 'показаны данные, сохранённые',
     noSavedData: 'сохранённых данных пока нет',
@@ -292,6 +371,7 @@ let state = {
   activeSource: 'all',
   language: 'en',
   lastFetched: null,
+  settings: sanitizeSettings(null),
   expandedChain: null,
   showOriginal: new Set(), // item ids showing original instead of translation
   trends: [],
@@ -324,6 +404,10 @@ const elements = {
   connectionBanner: document.getElementById('connection-banner'),
   connectionText: document.getElementById('connection-text'),
   connectionRetry: document.getElementById('connection-retry'),
+  connectionSettings: document.getElementById('connection-settings'),
+  settingsBtn: document.getElementById('settings-btn'),
+  settingsModal: document.getElementById('settings-modal'),
+  settingsForm: document.getElementById('settings-form'),
   radarLegend: document.getElementById('radar-legend'),
   highlights: document.getElementById('highlights'),
   evolutionChains: document.getElementById('evolution-chains'),
@@ -414,6 +498,13 @@ function safeUrl(url) {
   return /^https?:\/\//i.test(u) ? u : '#'
 }
 
+/** Anchor attributes for item links, per the "open in a new tab" setting. */
+function linkTarget() {
+  return state.settings.openLinksInNewTab
+    ? ' target="_blank" rel="noopener noreferrer"'
+    : ' rel="noreferrer"'
+}
+
 function dot(color) {
   return `<span class="dot" style="background:${color}" aria-hidden="true"></span>`
 }
@@ -445,6 +536,12 @@ function applyPayload(payload) {
     (a, b) => b.publishedAt - a.publishedAt,
   )
   state.stats = statsFor(state.items)
+  // A default filter (from settings) that this feed doesn't contain would
+  // show an empty page; fall back to everything.
+  if (!state.items.some((i) => i.category === state.activeCategory))
+    state.activeCategory = 'all'
+  if (!state.items.some((i) => i.source === state.activeSource))
+    state.activeSource = 'all'
   state.digest = panelData(payload.digest, 'items')
   state.trends = panelData(payload.trends, 'topics')
 }
@@ -472,7 +569,7 @@ async function fetchAllData(force = false) {
       render()
     }
 
-    const payload = await fetchBackendFeed()
+    const payload = await fetchBackendFeed(fetch, state.settings.backendUrl)
     applyPayload(payload)
     state.lastFetched = new Date()
     state.error = null
@@ -544,6 +641,7 @@ function render() {
   elements.loading.classList.add('hidden')
   elements.mainContent.classList.remove('hidden')
 
+  applyPanels()
   renderConnectionBanner()
   renderStats()
   renderSourceFilter()
@@ -568,9 +666,17 @@ function showErrorState() {
   host.classList.remove('hidden')
   host.innerHTML = `
     <p>${escapeHtml(t('backendUnreachable'))}</p>
-    <p class="error-detail">${escapeHtml(t('backendHint'))} <code>${escapeHtml(BACKEND_URL)}</code></p>
+    <p class="error-detail">${escapeHtml(t('backendHint'))} <code>${escapeHtml(state.settings.backendUrl)}</code></p>
     <p class="error-detail">${escapeHtml(state.error ?? '')}</p>
-    <button id="error-retry" class="btn">${escapeHtml(t('retry'))}</button>`
+    <div class="field-row">
+      <button id="error-settings" class="btn">${escapeHtml(t('settings'))}</button>
+      <button id="error-retry" class="btn">${escapeHtml(t('retry'))}</button>
+    </div>`
+  host
+    .querySelector('#error-settings')
+    .addEventListener('click', () =>
+      openSettings(host.querySelector('#error-settings')),
+    )
   host.querySelector('#error-retry').addEventListener('click', async () => {
     host.classList.add('hidden')
     await fetchAllData(true)
@@ -670,7 +776,7 @@ function renderHighlights() {
       const text = displayText(item)
       return `
         <div class="highlight">
-          <a class="highlight-title" href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(text.title)}</a>
+          <a class="highlight-title" href="${escapeHtml(safeUrl(item.sourceUrl))}"${linkTarget()}>${escapeHtml(text.title)}</a>
           <div class="highlight-meta">
             ${dot(CATEGORY_CONFIG[item.category]?.color || '#8a8a90')}
             <span>${escapeHtml(SOURCE_CONFIG[item.source]?.label || item.source)}</span>
@@ -721,7 +827,7 @@ function renderTrends() {
         ? `<div class="topic-signals">${signals
             .map(
               (s) => `
-              <a class="topic-signal" href="${escapeHtml(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.title)}<span>${escapeHtml((SOURCE_META[s.source] && SOURCE_META[s.source].label) || s.source)} · ${escapeHtml(formatTimeAgo(new Date(s.publishedAt)))}</span></a>`,
+              <a class="topic-signal" href="${escapeHtml(safeUrl(s.url))}"${linkTarget()}>${escapeHtml(s.title)}<span>${escapeHtml((SOURCE_META[s.source] && SOURCE_META[s.source].label) || s.source)} · ${escapeHtml(formatTimeAgo(new Date(s.publishedAt)))}</span></a>`,
             )
             .join('')}</div>`
         : `<p class="topic-signals empty">${escapeHtml(t('noItems'))}</p>`
@@ -781,7 +887,7 @@ function renderNews() {
               .map((tw) => `<li>${escapeHtml(tw)}</li>`)
               .join('')}
           </ul>
-          <a class="news-read" href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(t('readOriginal'))}${icon('external')}</a>
+          <a class="news-read" href="${escapeHtml(safeUrl(item.sourceUrl))}"${linkTarget()}>${escapeHtml(t('readOriginal'))}${icon('external')}</a>
         </article>`
     })
     .join('')
@@ -797,7 +903,7 @@ function renderFeed() {
   if (state.activeSource !== 'all') {
     filteredItems = filteredItems.filter((i) => i.source === state.activeSource)
   }
-  filteredItems = filteredItems.slice(0, CONFIG.MAX_FEED_ITEMS)
+  filteredItems = filteredItems.slice(0, state.settings.feedSize)
   elements.feedCount.textContent = `${filteredItems.length} ${t('signals')}`
 
   if (filteredItems.length === 0) {
@@ -829,8 +935,8 @@ function renderFeed() {
       return `
         <article class="feed-item${highlighted ? ' highlighted' : ''}" data-id="${escapeHtml(item.id)}"${lang}>
           <div class="feed-item-header">
-            <h3 class="feed-item-title"><a href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer">${escapeHtml(text.title)}</a></h3>
-            <a class="feed-link" href="${escapeHtml(safeUrl(item.sourceUrl))}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(SOURCE_CONFIG[item.source]?.label || item.source)}">${icon('external')}</a>
+            <h3 class="feed-item-title"><a href="${escapeHtml(safeUrl(item.sourceUrl))}"${linkTarget()}>${escapeHtml(text.title)}</a></h3>
+            <a class="feed-link" href="${escapeHtml(safeUrl(item.sourceUrl))}"${linkTarget()} aria-label="${escapeHtml(SOURCE_CONFIG[item.source]?.label || item.source)}">${icon('external')}</a>
           </div>
           <p class="feed-item-summary">${escapeHtml(text.summary)}</p>
           <div class="feed-item-meta">
@@ -899,6 +1005,9 @@ function renderRadar() {
   const centerX = width / 2
   const centerY = height / 2
   const maxRadius = Math.min(width, height) / 2 - 24
+  // Hidden by the user (Settings → Panels) or not laid out yet: there is no
+  // room to draw, and arc() throws on the resulting negative radii.
+  if (!state.settings.panels.radar || maxRadius <= 0) return
 
   ctx.clearRect(0, 0, width, height)
 
@@ -1038,7 +1147,9 @@ function setRadarHover(point) {
 }
 
 function openRadarItem(point) {
-  window.open(safeUrl(point.item.sourceUrl), '_blank')
+  if (state.settings.openLinksInNewTab)
+    window.open(safeUrl(point.item.sourceUrl), '_blank', 'noopener')
+  else window.location.href = safeUrl(point.item.sourceUrl)
 }
 
 function setupRadarInteractions() {
@@ -1095,12 +1206,13 @@ function renderConnectionBanner() {
   const saved = state.lastFetched
     ? `${t('savedFrom')} ${formatSavedAt(state.lastFetched)}`
     : t('noSavedData')
-  elements.connectionText.textContent = `${t('notConnected')} (${BACKEND_URL}) — ${saved}.`
+  elements.connectionText.textContent = `${t('notConnected')} (${state.settings.backendUrl}) — ${saved}.`
   elements.connectionText.title = state.error
   elements.connectionRetry.textContent = state.isLoading
     ? t('retrying')
     : t('retry')
   elements.connectionRetry.disabled = state.isLoading
+  elements.connectionSettings.textContent = t('settings')
 }
 
 function updateStatusBadge(syncing) {
@@ -1119,11 +1231,24 @@ function updateStatusBadge(syncing) {
   }
 }
 
+/** t() with {placeholders} filled from `vars`. */
+function fmt(key, vars = {}) {
+  return t(key).replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ''))
+}
+
 function updateTranslations() {
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.dataset.i18n
     const value = translations[state.language][key]
     if (value) el.textContent = value
+  })
+  // Icon-only controls: translate their accessible name, not their content.
+  document.querySelectorAll('[data-i18n-attr]').forEach((el) => {
+    const value = translations[state.language][el.dataset.i18nAttr]
+    if (value) {
+      el.title = value
+      el.setAttribute('aria-label', value)
+    }
   })
   document.querySelector('.footer-version').textContent = t('footerVersion')
   document.querySelector('.footer-subtitle').textContent = t('footerSubtitle')
@@ -1136,6 +1261,7 @@ function updateTranslations() {
 
 function setupEventListeners() {
   setupRadarInteractions()
+  setupSettings()
 
   elements.connectionRetry.addEventListener('click', async () => {
     state.isLoading = true
@@ -1220,6 +1346,261 @@ async function loadLanguagePreference() {
 }
 
 // ============================================
+// SETTINGS
+// ============================================
+
+let refreshTimer = null
+
+function scheduleRefresh() {
+  clearInterval(refreshTimer)
+  refreshTimer = null
+  const minutes = state.settings.refreshMinutes
+  if (minutes > 0) refreshTimer = setInterval(fetchAllData, minutes * 60_000)
+}
+
+/** Show/hide panels; the two-column grid collapses when one side is empty. */
+function applyPanels() {
+  const { panels } = state.settings
+  for (const name of PANELS)
+    document
+      .querySelector(`[data-panel="${name}"]`)
+      ?.classList.toggle('hidden', !panels[name])
+  const column = document.querySelector('.grid > .column')
+  const rightVisible = panels.highlights || panels.trends
+  column?.classList.toggle('hidden', !rightVisible)
+  document
+    .querySelector('.grid')
+    ?.classList.toggle('single', !panels.radar || !rightVisible)
+  document
+    .querySelector('.grid')
+    ?.classList.toggle('hidden', !panels.radar && !rightVisible)
+}
+
+const PANEL_LABELS = {
+  radar: 'panelRadar',
+  highlights: 'panelHighlights',
+  trends: 'panelTrends',
+  feed: 'panelFeed',
+  digest: 'panelDigest',
+}
+
+const $ = (id) => document.getElementById(id)
+let settingsOpener = null
+
+function setStatus(el, text, kind) {
+  el.textContent = text
+  el.classList.toggle('ok', kind === 'ok')
+  el.classList.toggle('bad', kind === 'bad')
+}
+
+function urlError(code) {
+  return t(
+    { empty: 'urlEmpty', invalid: 'urlInvalid', scheme: 'urlScheme' }[code] ??
+      'urlInvalid',
+  )
+}
+
+function option(value, label) {
+  const o = document.createElement('option')
+  o.value = String(value)
+  o.textContent = label
+  return o
+}
+
+async function describeSaved() {
+  const cached = await getCachedData()
+  return cached
+    ? fmt('savedInfo', {
+        time: formatSavedAt(new Date(cached.timestamp)),
+        items: cached.payload?.feed?.items?.length ?? 0,
+      })
+    : t('savedNone')
+}
+
+function fillSettingsForm(settings) {
+  $('set-backend').value = settings.backendUrl
+  $('set-backend').removeAttribute('aria-invalid')
+  setStatus($('set-backend-status'), '')
+  setStatus($('set-form-status'), '')
+  $('set-language').value = state.language
+  $('set-refresh').replaceChildren(
+    ...REFRESH_CHOICES.map((n) =>
+      option(n, n === 0 ? t('refreshOff') : fmt('everyMinutes', { n })),
+    ),
+  )
+  $('set-refresh').value = String(settings.refreshMinutes)
+  $('set-feed-size').replaceChildren(
+    ...FEED_SIZE_CHOICES.map((n) => option(n, String(n))),
+  )
+  $('set-feed-size').value = String(settings.feedSize)
+  $('set-default-source').replaceChildren(
+    option('all', t('allSources')),
+    ...Object.entries(SOURCE_CONFIG).map(([k, cfg]) => option(k, cfg.label)),
+  )
+  $('set-default-source').value = settings.defaultSource
+  $('set-default-category').replaceChildren(
+    option('all', t('allCategories')),
+    ...Object.keys(CATEGORY_CONFIG).map((k) =>
+      option(k, getLocalizedCategory(k)),
+    ),
+  )
+  $('set-default-category').value = settings.defaultCategory
+  $('set-new-tab').checked = settings.openLinksInNewTab
+  $('set-panels').replaceChildren(
+    ...PANELS.map((name) => {
+      const label = document.createElement('label')
+      label.className = 'check'
+      const box = document.createElement('input')
+      box.type = 'checkbox'
+      box.name = name
+      box.checked = settings.panels[name]
+      const text = document.createElement('span')
+      text.textContent = t(PANEL_LABELS[name])
+      label.append(box, text)
+      return label
+    }),
+  )
+  describeSaved().then((text) => ($('set-saved-info').textContent = text))
+}
+
+/** The form's values, or null (with the field marked) if the URL is bad. */
+function readSettingsForm() {
+  const url = normalizeBackendUrl($('set-backend').value)
+  if (!url.ok) {
+    $('set-backend').setAttribute('aria-invalid', 'true')
+    setStatus($('set-backend-status'), urlError(url.error), 'bad')
+    $('set-backend').focus()
+    return null
+  }
+  $('set-backend').removeAttribute('aria-invalid')
+  return sanitizeSettings({
+    backendUrl: url.url,
+    refreshMinutes: Number($('set-refresh').value),
+    feedSize: Number($('set-feed-size').value),
+    openLinksInNewTab: $('set-new-tab').checked,
+    defaultSource: $('set-default-source').value,
+    defaultCategory: $('set-default-category').value,
+    panels: Object.fromEntries(
+      [...$('set-panels').querySelectorAll('input')].map((b) => [
+        b.name,
+        b.checked,
+      ]),
+    ),
+  })
+}
+
+function openSettings(opener) {
+  settingsOpener = opener ?? elements.settingsBtn
+  fillSettingsForm(state.settings)
+  elements.settingsModal.classList.remove('hidden')
+  $('set-backend').focus()
+}
+
+function closeSettings() {
+  elements.settingsModal.classList.add('hidden')
+  settingsOpener?.focus()
+}
+
+async function testConnection() {
+  const url = normalizeBackendUrl($('set-backend').value)
+  const status = $('set-backend-status')
+  if (!url.ok) {
+    setStatus(status, urlError(url.error), 'bad')
+    return
+  }
+  $('set-backend').value = url.url
+  $('set-test').disabled = true
+  setStatus(status, t('settingsTesting'))
+  try {
+    const payload = await fetchBackendFeed(fetch, url.url)
+    const items = payload.feed.items
+    setStatus(
+      status,
+      fmt('settingsTestOk', {
+        items: items.length,
+        sources: new Set(items.map((i) => i.source)).size,
+      }),
+      'ok',
+    )
+  } catch (error) {
+    setStatus(status, fmt('settingsTestFail', { error: error.message }), 'bad')
+  } finally {
+    $('set-test').disabled = false
+  }
+}
+
+async function clearSavedData() {
+  await new Promise((resolve) => {
+    if (chrome?.storage?.local)
+      chrome.storage.local.remove(['techRadarFeed'], resolve)
+    else {
+      localStorage.removeItem('techRadarFeed')
+      resolve()
+    }
+  })
+  setStatus($('set-form-status'), t('settingsCleared'), 'ok')
+  $('set-saved-info').textContent = t('savedNone')
+}
+
+async function submitSettings(e) {
+  e.preventDefault()
+  const next = readSettingsForm()
+  if (!next) return
+  const serverChanged = next.backendUrl !== state.settings.backendUrl
+  state.settings = await saveSettings(next)
+  const lang = $('set-language').value
+  if (lang !== state.language) setLanguage(lang)
+  if (!state.items.some((i) => i.source === state.activeSource))
+    state.activeSource = state.settings.defaultSource
+  scheduleRefresh()
+  setStatus($('set-form-status'), t('settingsSaved'), 'ok')
+  closeSettings()
+  if (serverChanged) {
+    // The saved copy belongs to the previous server; don't show it as this one's.
+    await clearSavedData()
+    state.items = []
+    state.digest = []
+    state.trends = []
+    state.lastFetched = null
+    loadCjkFonts()
+    await fetchAllData(true)
+  } else {
+    render()
+  }
+}
+
+function setupSettings() {
+  elements.settingsBtn.addEventListener('click', () =>
+    openSettings(elements.settingsBtn),
+  )
+  elements.connectionSettings.addEventListener('click', () =>
+    openSettings(elements.connectionSettings),
+  )
+  elements.settingsForm.addEventListener('submit', submitSettings)
+  $('settings-close').addEventListener('click', closeSettings)
+  $('set-cancel').addEventListener('click', closeSettings)
+  elements.settingsModal
+    .querySelector('.modal-backdrop')
+    .addEventListener('click', closeSettings)
+  $('set-test').addEventListener('click', testConnection)
+  $('set-clear').addEventListener('click', clearSavedData)
+  $('set-reset').addEventListener('click', () => {
+    fillSettingsForm(sanitizeSettings(DEFAULT_SETTINGS))
+    setStatus($('set-form-status'), t('settingsResetDone'))
+  })
+  $('set-backend').addEventListener('input', () =>
+    $('set-backend').removeAttribute('aria-invalid'),
+  )
+  document.addEventListener('keydown', (e) => {
+    if (
+      e.key === 'Escape' &&
+      !elements.settingsModal.classList.contains('hidden')
+    )
+      closeSettings()
+  })
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 
@@ -1229,13 +1610,20 @@ async function loadLanguagePreference() {
  * CJK system fonts. Only the unicode-range slices actually used download.
  */
 function loadCjkFonts() {
-  const link = document.createElement('link')
-  link.rel = 'stylesheet'
-  link.href = `${BACKEND_URL.replace(/\/$/, '')}/api/fonts/cjk`
-  document.head.append(link)
+  let link = document.getElementById('cjk-fonts')
+  if (!link) {
+    link = document.createElement('link')
+    link.id = 'cjk-fonts'
+    link.rel = 'stylesheet'
+    document.head.append(link)
+  }
+  link.href = `${state.settings.backendUrl}/api/fonts/cjk`
 }
 
 async function init() {
+  state.settings = await loadSettings()
+  state.activeSource = state.settings.defaultSource
+  state.activeCategory = state.settings.defaultCategory
   loadCjkFonts()
   await loadLanguagePreference()
   // Caches from versions that fetched sources in the browser.
@@ -1255,8 +1643,7 @@ async function init() {
   setupEventListeners()
   // One request to the server carries feed, digest and trends.
   await fetchAllData()
-
-  setInterval(fetchAllData, CONFIG.REFRESH_INTERVAL)
+  scheduleRefresh()
 }
 
 document.addEventListener('DOMContentLoaded', init)

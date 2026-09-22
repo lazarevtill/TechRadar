@@ -9,8 +9,15 @@ what `GET /api/extension-feed` returns.
 ## Features
 
 - **One request per refresh** to your TechRadar server: feed, AI blog digest
-  and topic momentum arrive together. The page's CSP and `host_permissions`
-  name only that server.
+  and topic momentum arrive together. The extension asks for no host
+  permissions; the server's endpoints send CORS headers.
+- **Settings** (gear button, also offered on the offline banner and the error
+  screen): server address with validation and **Test connection**, language,
+  auto-refresh (off / 5 / 10 / 30 / 60 min), feed size, default source and
+  category, open links in a new tab, which panels to show, and **Clear saved
+  data** / **Reset to defaults**. Stored in `chrome.storage.sync`, so they
+  follow your Chrome profile. Changing the server discards the copy saved
+  from the previous one.
 - **Offline-first**: the last successful response is saved in
   `chrome.storage.local` and painted immediately on every new tab. If the
   server cannot be reached, the saved data stays on screen with a banner —
@@ -32,26 +39,24 @@ what `GET /api/extension-feed` returns.
 ## Installation
 
 1. Run the server: `docker compose up -d` (serves `http://localhost:3000`).
-2. Build the extension for it: `bun run build:extension`, or use **Download
+2. Build the extension: `bun run build:extension`, or use **Download
    Extension** on the dashboard.
 3. Open `chrome://extensions/`, enable **Developer mode**, click **Load
    unpacked** and select `dist/extension/unpacked` (or the extracted
    `tech-radar-extension` folder).
+4. If your server is not at `http://localhost:3000`, open **Settings** (gear
+   icon) and enter its address — `localhost:3000`, a LAN address such as
+   `192.168.1.20:3000`, or `radar.example.com` (bare hosts get `https://`,
+   local and LAN hosts `http://`). **Test connection** shows what the server
+   returns before you save.
 
-### Pointing at another server
-
-The server address is fixed at build time:
+A different default for fresh installs can be baked in at build time:
 
 ```bash
 EXTENSION_BACKEND_URL=https://radar.example.com bun run build:extension
-# Docker image with a matching "Download Extension":
+# Docker image whose "Download Extension" uses that default:
 EXTENSION_BACKEND_URL=https://radar.example.com docker compose up --build -d
 ```
-
-`scripts/build-extension.ts` writes that origin into `lib/config.js`
-(`__TECHRADAR_BACKEND_URL__`) and into the built manifest's
-`host_permissions` and CSP (`connect-src`, `style-src`, `font-src`). Loading
-`chrome-extension/` unpacked from source uses `http://localhost:3000`.
 
 ## File structure
 
@@ -63,7 +68,8 @@ chrome-extension/
 ├── app.js               # Loading, offline state, rendering
 ├── lib/                 # Pure modules, unit-tested with vitest
 │   ├── backend.js       # GET /api/extension-feed + payload checks
-│   ├── config.js        # Server URL (build-time) and cache timings
+│   ├── config.js        # Default server URL (build-time) and cache timing
+│   ├── settings.js      # Settings: defaults, validation, URL normalization
 │   ├── icons.js         # Inline SVG icons
 │   ├── digest.js, trends-view.js, jitter.js
 │   └── __tests__/
@@ -76,16 +82,18 @@ the page loads (tests, this README and dev tools are never packaged).
 
 ## Troubleshooting
 
-- **"Not connected to the TechRadar server"**: start it (`docker compose up
--d`) or check that the extension was built for the right address (shown in
-  the banner), then press **Retry**.
+- **"Not connected to the TechRadar server"**: start it (`docker compose up -d`),
+  or open **Settings** from the banner and check the address with **Test
+  connection**, then press **Retry**.
 - **Stale numbers**: the saved copy refreshes every 10 minutes and on the
   refresh button; the server itself serves a snapshot at most 5 minutes old.
 
 ## Permissions
 
-- **storage**: the saved feed and preferences
-- **host_permissions**: your TechRadar server only
+- **storage**: the saved feed and your settings
+- No host permissions. The CSP keeps scripts local (`script-src 'self'`) and
+  allows remote requests only for data, styles and fonts, because the server
+  address is a user setting.
 
 ## License
 

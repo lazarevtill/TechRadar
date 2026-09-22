@@ -5,7 +5,6 @@ import {
   mkdirSync,
   readFileSync,
   rmSync,
-  writeFileSync,
 } from 'node:fs'
 import { dirname, join, normalize, posix } from 'node:path'
 import { ZipArchive } from 'archiver'
@@ -35,7 +34,8 @@ export const UNPACKED_DIR = 'unpacked'
 export const DEFAULT_BACKEND_URL = 'http://localhost:3000'
 
 /**
- * The TechRadar server the built extension reads from. Must be an http(s)
+ * The TechRadar server a fresh install reads from; users can change it in the
+ * extension's Settings (stored in chrome.storage.sync). Must be an http(s)
  * origin (optionally with a path prefix); a typo fails the build instead of
  * shipping an extension that can reach nothing.
  */
@@ -55,42 +55,6 @@ export function extensionBackendUrl(
   if (url.protocol !== 'http:' && url.protocol !== 'https:')
     throw new Error(`EXTENSION_BACKEND_URL must be http(s): ${raw}`)
   return raw
-}
-
-/**
- * The manifest may reach only the backend: host_permissions and every CSP
- * directive that loads remote content (connect-src for the feed, style-src
- * and font-src for the CJK font relay) name exactly its origin.
- */
-export function withBackendOrigin(
-  manifest: Record<string, unknown>,
-  backendUrl: string,
-): Record<string, unknown> {
-  const origin = new URL(backendUrl).origin
-  const csp = manifest.content_security_policy as
-    { extension_pages?: string } | undefined
-  const wanted: Record<string, string> = {
-    'connect-src': `'self' ${origin}`,
-    'style-src': `'self' 'unsafe-inline' ${origin}`,
-    'font-src': origin,
-  }
-  const directives = (csp?.extension_pages ?? "default-src 'self'")
-    .split(';')
-    .map((d) => d.trim())
-    .filter(Boolean)
-    .map((d) => {
-      const name = d.split(/\s+/)[0]
-      return name in wanted ? `${name} ${wanted[name]}` : d
-    })
-  for (const [name, value] of Object.entries(wanted)) {
-    if (!directives.some((d) => d.startsWith(`${name} `)))
-      directives.push(`${name} ${value}`)
-  }
-  return {
-    ...manifest,
-    host_permissions: [`${origin}/*`],
-    content_security_policy: { ...csp, extension_pages: directives.join('; ') },
-  }
 }
 
 type Read = (relPath: string) => string | null
@@ -256,15 +220,7 @@ export async function buildExtension(root = process.cwd()): Promise<{
   }
   for (const file of plan.copies) {
     mkdirSync(dirname(join(stageDir, file)), { recursive: true })
-    if (file === 'manifest.json') {
-      const manifest = JSON.parse(readFileSync(join(extDir, file), 'utf8'))
-      writeFileSync(
-        join(stageDir, file),
-        JSON.stringify(withBackendOrigin(manifest, backendUrl), null, 2) + '\n',
-      )
-    } else {
-      copyFileSync(join(extDir, file), join(stageDir, file))
-    }
+    copyFileSync(join(extDir, file), join(stageDir, file))
   }
   const shipped = [...plan.scripts, ...plan.styles, ...plan.copies].sort()
   for (const file of shipped) {

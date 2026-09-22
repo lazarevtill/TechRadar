@@ -3,7 +3,8 @@ services:
     build:
       context: .
       args:
-        # Where the "Download Extension" build points; set for a deployed host.
+        # Default server address of the "Download Extension" build (changeable
+        # in the extension's Settings); set for a deployed host.
         EXTENSION_BACKEND_URL: ${EXTENSION_BACKEND_URL:-http://localhost:3000}
     image: ghcr.io/lazarevtill/techradar:latest
     ports:
