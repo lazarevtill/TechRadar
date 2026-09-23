@@ -1,11 +1,8 @@
 import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   fetchTechFeedFn,
-  fetchGitHubFeedFn,
-  fetchArxivFeedFn,
-  fetchHackerNewsFeedFn,
-  fetchMultilingualFeedFn,
   invalidateTechFeedCacheFn,
+  type InvalidateResult,
   type TechFeedStats,
 } from '@/server/functions/tech-feed'
 import type {
@@ -56,7 +53,7 @@ export interface UseTechFeedResult {
   error: Error | null
   refetch: () => void
   /** Force refresh - invalidates server cache and refetches fresh data */
-  forceRefresh: () => Promise<void>
+  forceRefresh: (token?: string) => Promise<InvalidateResult>
   fetchedAt: Date | null
   /** Themes the radar discovered itself. */
   themes: DiscoveredTheme[]
@@ -80,18 +77,16 @@ export function useTechFeed(): UseTechFeedResult {
 
   const queryClient = useQueryClient()
 
-  // Force refresh - invalidates server cache first, then refetches. The
-  // rebuild also writes history, so views derived from it (source health,
-  // the weekly report) are refreshed after it.
-  const forceRefresh = async () => {
-    try {
-      await invalidateTechFeedCacheFn()
-    } catch (err) {
-      console.error('[TechFeed] Failed to invalidate cache:', err)
-    }
+  // Force refresh - clears the server caches (operator token and throttle
+  // apply), then refetches. The rebuild also writes history, so views derived
+  // from it (source health, the weekly report) are refreshed after it.
+  const forceRefresh = async (token?: string): Promise<InvalidateResult> => {
+    const result = await invalidateTechFeedCacheFn({ data: { token } })
+    if (!result.ok) return result
     await refetch()
     void queryClient.invalidateQueries({ queryKey: ['health'] })
     void queryClient.invalidateQueries({ queryKey: ['weekly-report'] })
+    return result
   }
 
   return {
@@ -106,80 +101,6 @@ export function useTechFeed(): UseTechFeedResult {
     fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
     themes: data?.themes ?? [],
     trackRecord: data?.trackRecord ?? null,
-  }
-}
-
-// Individual source hooks for more granular control
-export function useGitHubFeed() {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['github-feed'],
-    queryFn: () => fetchGitHubFeedFn(),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-  return {
-    items: data ? transformItems(data.items) : [],
-    isLoading,
-    isError,
-    error: error as Error | null,
-    refetch,
-    fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
-  }
-}
-
-export function useArxivFeed() {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['arxiv-feed'],
-    queryFn: () => fetchArxivFeedFn(),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-  return {
-    items: data ? transformItems(data.items) : [],
-    isLoading,
-    isError,
-    error: error as Error | null,
-    refetch,
-    fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
-  }
-}
-
-export function useHackerNewsFeed() {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['hackernews-feed'],
-    queryFn: () => fetchHackerNewsFeedFn(),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-  return {
-    items: data ? transformItems(data.items) : [],
-    isLoading,
-    isError,
-    error: error as Error | null,
-    refetch,
-    fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
-  }
-}
-
-// Multilingual sources hook
-export function useMultilingualFeed() {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['multilingual-feed'],
-    queryFn: () => fetchMultilingualFeedFn(),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-  return {
-    items: data ? transformItems(data.items) : [],
-    isLoading,
-    isError,
-    error: error as Error | null,
-    refetch,
-    fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
   }
 }
 

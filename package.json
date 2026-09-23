@@ -10,7 +10,6 @@
     "build:extension": "bun run scripts/build-extension.ts",
     "serve": "vite preview",
     "test": "vitest run",
-    "test:parsers": "bun run src/server/functions/__tests__/run-tests.ts",
     "lint": "eslint",
     "typecheck": "./node_modules/typescript-7/bin/tsc --noEmit",
     "format:check": "prettier --check .",

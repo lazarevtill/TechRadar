@@ -47,6 +47,15 @@ export interface Translations {
   topicsEmpty: string
   discoveredTitle: string
   healthCol: string
+  adminTokenNeeded: string
+  adminToken: string
+  rebuildThrottled: string
+  rebuildHint: string
+  healthUnavailable: string
+  healthAllOk: string
+  feedAge: string
+  storageSize: string
+  healthDetailNeedsToken: string
   healthOk: string
   healthDegraded: string
   healthDown: string
@@ -240,7 +249,6 @@ export interface Translations {
   // Sources
   github: string
   arxiv: string
-  techcrunch: string
   hackerNews: string
   openAlex: string
   pubmed: string
@@ -320,10 +328,23 @@ export const translations: Record<Language, Translations> = {
     topicsEmpty: 'No tracked topic appears on more than one source',
     discoveredTitle: 'Discovered by the radar',
     healthCol: 'Health',
+    adminTokenNeeded: 'This server requires the operator token (ADMIN_TOKEN).',
+    adminToken: 'Operator token',
+    rebuildThrottled:
+      'A rebuild just ran; the next one is possible in {s} s. The feed also rebuilds on its own every few minutes.',
+    rebuildHint: 'Clear the source caches and rebuild the feed now',
+    healthUnavailable:
+      'Source health is unavailable (the history store did not answer).',
+    healthAllOk: 'All sources report',
+    feedAge: 'feed built {m} min ago',
+    storageSize: 'history {mb} MB',
+    healthDetailNeedsToken:
+      'Usage and storage are shown with the operator token.',
     healthOk: 'ok',
     healthDegraded: 'thin',
     healthDown: 'down',
-    usageToday: 'Jev today: {sent} requests sent, {cached} answered from cache',
+    usageToday:
+      'Jev today: {sent} requests sent, {cached} answered from cache · {failed} failed calls',
     lastBackup: 'last backup',
     weekTitle: 'This week',
     weekNewItems: '{n} new items',
@@ -522,7 +543,6 @@ export const translations: Record<Language, Translations> = {
 
     github: 'GitHub',
     arxiv: 'arXiv',
-    techcrunch: 'TechCrunch',
     hackerNews: 'Hacker News',
     openAlex: 'OpenAlex',
     pubmed: 'PubMed',
@@ -598,10 +618,22 @@ export const translations: Record<Language, Translations> = {
     topicsEmpty: 'Ни одна тема не встречается более чем в одном источнике',
     discoveredTitle: 'Найдено радаром',
     healthCol: 'Состояние',
+    adminTokenNeeded: 'Этому серверу нужен токен оператора (ADMIN_TOKEN).',
+    adminToken: 'Токен оператора',
+    rebuildThrottled:
+      'Пересборка только что была; следующая возможна через {s} с. Лента и так пересобирается каждые несколько минут.',
+    rebuildHint: 'Сбросить кэши источников и пересобрать ленту сейчас',
+    healthUnavailable:
+      'Состояние источников недоступно (хранилище истории не ответило).',
+    healthAllOk: 'Все источники отвечают',
+    feedAge: 'лента собрана {m} мин назад',
+    storageSize: 'история {mb} МБ',
+    healthDetailNeedsToken: 'Расход и хранилище видны с токеном оператора.',
     healthOk: 'в норме',
     healthDegraded: 'мало данных',
     healthDown: 'не отвечает',
-    usageToday: 'Jev сегодня: отправлено {sent}, из кэша {cached}',
+    usageToday:
+      'Jev сегодня: отправлено {sent}, из кэша {cached} · ошибок {failed}',
     lastBackup: 'последняя копия',
     weekTitle: 'Эта неделя',
     weekNewItems: '{n} новых записей',
@@ -801,7 +833,6 @@ export const translations: Record<Language, Translations> = {
 
     github: 'GitHub',
     arxiv: 'arXiv',
-    techcrunch: 'TechCrunch',
     hackerNews: 'Hacker News',
     openAlex: 'OpenAlex',
     pubmed: 'PubMed',
@@ -871,7 +902,6 @@ export const getLocalizedLanguages = (lang: Language) => ({
 export const getLocalizedSources = (lang: Language) => ({
   github: translations[lang].github,
   arxiv: translations[lang].arxiv,
-  techcrunch: translations[lang].techcrunch,
   hackernews: translations[lang].hackerNews,
   openalex: translations[lang].openAlex,
   pubmed: translations[lang].pubmed,

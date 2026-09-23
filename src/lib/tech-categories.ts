@@ -20,7 +20,6 @@ export type TechCategory =
 export type DataSource =
   | 'github'
   | 'arxiv'
-  | 'techcrunch'
   | 'hackernews'
   | 'openalex' // Most-cited recent peer-reviewed work (OpenAlex)
   | 'pubmed' // Biomedical research
@@ -137,7 +136,6 @@ export const SOURCE_CONFIG: Record<
 > = {
   github: { label: 'GitHub', language: 'en' },
   arxiv: { label: 'arXiv', language: 'en' },
-  techcrunch: { label: 'TechCrunch', language: 'en' },
   hackernews: { label: 'Hacker News', language: 'en' },
   openalex: { label: 'OpenAlex', language: 'en' },
   pubmed: { label: 'PubMed', language: 'en' },

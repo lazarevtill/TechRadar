@@ -61,6 +61,23 @@ describe('sourceHealth', () => {
   })
 })
 
+describe('expected sources', () => {
+  it('reports a source with no recent runs as down', async () => {
+    const db = await openDb(':memory:')
+    recordSourceRuns(
+      db,
+      [{ source: 'arxiv', items: 50, ms: 100, error: null }],
+      `${TODAY}T01:00:00Z`,
+    )
+    const health = sourceHealth(db, TODAY, ['arxiv', 'devto'])
+    expect(health.map((h) => [h.source, h.status])).toEqual([
+      ['arxiv', 'ok'],
+      ['devto', 'down'],
+    ])
+    expect(health[1].lastRun).toBeNull()
+  })
+})
+
 describe('usage ledger', () => {
   it('adds up counts per day and kind', async () => {
     const db = await openDb(':memory:')

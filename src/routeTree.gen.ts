@@ -10,9 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
-import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
-import { Route as PublicTestParsersRouteImport } from './routes/_public/test-parsers'
 import { Route as ApiApiExtensionFeedRouteImport } from './routes/_api/api.extension-feed'
 import { Route as ApiApiHealthRouteImport } from './routes/_api/api.health'
 import { Route as ApiApiReportRouteImport } from './routes/_api/api.report'
@@ -23,19 +21,9 @@ const PublicRoute = PublicRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiHelloRoute = ApiHelloRouteImport.update({
-  id: '/_api/hello',
-  path: '/hello',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicTestParsersRoute = PublicTestParsersRouteImport.update({
-  id: '/test-parsers',
-  path: '/test-parsers',
   getParentRoute: () => PublicRoute,
 } as any)
 const ApiApiExtensionFeedRoute = ApiApiExtensionFeedRouteImport.update({
@@ -66,8 +54,6 @@ const ApiApiFontsFileSplatRoute = ApiApiFontsFileSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
-  '/hello': typeof ApiHelloRoute
-  '/test-parsers': typeof PublicTestParsersRoute
   '/api/extension-feed': typeof ApiApiExtensionFeedRoute
   '/api/health': typeof ApiApiHealthRoute
   '/api/report': typeof ApiApiReportRoute
@@ -75,8 +61,6 @@ export interface FileRoutesByFullPath {
   '/api/fonts/file/$': typeof ApiApiFontsFileSplatRoute
 }
 export interface FileRoutesByTo {
-  '/hello': typeof ApiHelloRoute
-  '/test-parsers': typeof PublicTestParsersRoute
   '/': typeof PublicIndexRoute
   '/api/extension-feed': typeof ApiApiExtensionFeedRoute
   '/api/health': typeof ApiApiHealthRoute
@@ -87,8 +71,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_public': typeof PublicRouteWithChildren
-  '/_api/hello': typeof ApiHelloRoute
-  '/_public/test-parsers': typeof PublicTestParsersRoute
   '/_public/': typeof PublicIndexRoute
   '/_api/api/extension-feed': typeof ApiApiExtensionFeedRoute
   '/_api/api/health': typeof ApiApiHealthRoute
@@ -100,8 +82,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/hello'
-    | '/test-parsers'
     | '/api/extension-feed'
     | '/api/health'
     | '/api/report'
@@ -109,8 +89,6 @@ export interface FileRouteTypes {
     | '/api/fonts/file/$'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/hello'
-    | '/test-parsers'
     | '/'
     | '/api/extension-feed'
     | '/api/health'
@@ -120,8 +98,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_public'
-    | '/_api/hello'
-    | '/_public/test-parsers'
     | '/_public/'
     | '/_api/api/extension-feed'
     | '/_api/api/health'
@@ -132,7 +108,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
-  ApiHelloRoute: typeof ApiHelloRoute
   ApiApiExtensionFeedRoute: typeof ApiApiExtensionFeedRoute
   ApiApiHealthRoute: typeof ApiApiHealthRoute
   ApiApiReportRoute: typeof ApiApiReportRoute
@@ -149,25 +124,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_api/hello': {
-      id: '/_api/hello'
-      path: '/hello'
-      fullPath: '/hello'
-      preLoaderRoute: typeof ApiHelloRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_public/': {
       id: '/_public/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/test-parsers': {
-      id: '/_public/test-parsers'
-      path: '/test-parsers'
-      fullPath: '/test-parsers'
-      preLoaderRoute: typeof PublicTestParsersRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_api/api/extension-feed': {
@@ -209,12 +170,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface PublicRouteChildren {
-  PublicTestParsersRoute: typeof PublicTestParsersRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
-  PublicTestParsersRoute: PublicTestParsersRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 
@@ -223,7 +182,6 @@ const PublicRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
-  ApiHelloRoute: ApiHelloRoute,
   ApiApiExtensionFeedRoute: ApiApiExtensionFeedRoute,
   ApiApiHealthRoute: ApiApiHealthRoute,
   ApiApiReportRoute: ApiApiReportRoute,
@@ -233,12 +191,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

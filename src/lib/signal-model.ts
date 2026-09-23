@@ -108,7 +108,6 @@ export const RECENCY_HALF_LIFE_DAYS: Record<DataSource, number> = {
   hackernews: 1,
   github: 7,
   arxiv: 14,
-  techcrunch: 3,
   openalex: 45,
   'openalex-zh': 45,
   pubmed: 30,

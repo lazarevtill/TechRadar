@@ -50,7 +50,6 @@ export const CATEGORY_ICONS: Record<TechCategory, Icon> = {
 export const SOURCE_ICONS: Record<DataSource, Icon> = {
   github: GithubIcon,
   arxiv: FileText,
-  techcrunch: Newspaper,
   hackernews: MessageSquare,
   openalex: GraduationCap,
   pubmed: Stethoscope,

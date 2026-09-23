@@ -22,6 +22,7 @@ import {
 } from '@/server/utils/cache'
 import { fetchWithRetry } from '@/server/utils/fetch-utils'
 import { cleanText } from '@/server/utils/clean-text'
+import { isAuthorized } from '@/server/utils/admin'
 import { historyDb, historyDbFile, utcDay, type Db } from '@/server/store/db'
 import {
   dailyMaintenance,
@@ -380,6 +381,12 @@ function evaluateInBackground(db: Db, day: string) {
  */
 const SOURCE_BUDGET_MS = 30_000
 
+/** A short, loggable reason for a failed fetch. */
+function errorMessage(error: unknown): string {
+  const text = error instanceof Error ? error.message : String(error)
+  return text.slice(0, 200)
+}
+
 interface BudgetedRun {
   source: DataSource
   items: RawItem[]
@@ -396,13 +403,24 @@ async function withinBudget(
   const timeout = new Promise<null>((resolve) => {
     timer = setTimeout(() => resolve(null), SOURCE_BUDGET_MS)
   })
-  const items = await Promise.race([fetcher(), timeout])
+  // A fetcher that fails reports why (it rethrows after logging), so health
+  // and alerts can tell an outage from a quiet day. A rejection that arrives
+  // after the budget ran out is already too late to matter and is logged by
+  // the fetcher itself.
+  const run = fetcher().then(
+    (items) => ({ items, error: null as string | null }),
+    (error: unknown) => ({
+      items: [] as RawItem[],
+      error: errorMessage(error),
+    }),
+  )
+  const result = await Promise.race([run, timeout])
   clearTimeout(timer)
   return {
     source,
-    items: items ?? [],
+    items: result?.items ?? [],
     ms: Date.now() - started,
-    error: items === null ? 'timeout' : null,
+    error: result === null ? 'timeout' : result.error,
   }
 }
 
@@ -549,7 +567,7 @@ async function fetchGitHubTrending(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('GitHub API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -680,7 +698,7 @@ async function fetchArxivPapers(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('arXiv API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -750,7 +768,7 @@ async function fetchHackerNews(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('Hacker News API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -873,7 +891,7 @@ async function fetchOpenAlex(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('OpenAlex API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -901,7 +919,7 @@ async function fetchOpenAlexChinese(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('OpenAlex (zh) API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -995,7 +1013,7 @@ async function fetchPubMed(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('PubMed API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1057,7 +1075,7 @@ async function fetchHAL(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('HAL API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1148,7 +1166,7 @@ async function fetchCiNii(): Promise<RawItem[]> {
     return result
   } catch (error) {
     console.error('CiNii API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1231,7 +1249,7 @@ async function fetchHuggingFacePapers(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('Hugging Face papers API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1297,7 +1315,7 @@ async function fetchHuggingFaceModels(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('Hugging Face models API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1379,7 +1397,7 @@ async function fetchPreprints(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('bioRxiv/medRxiv API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1446,7 +1464,7 @@ async function fetchLobsters(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('Lobsters API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1509,7 +1527,7 @@ async function fetchDevTo(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('dev.to API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1650,7 +1668,8 @@ const FEED_FRESH_MS = CACHE_TTL.DEFAULT
 const FEED_SNAPSHOT_TTL_MS = 24 * CACHE_TTL.HOUR
 let feedRefresh: Promise<TechFeedPayload> | null = null
 
-function refreshTechFeed(): Promise<TechFeedPayload> {
+/** One single-flight rebuild; also driven by the scheduler (scheduler.ts). */
+export function refreshTechFeed(): Promise<TechFeedPayload> {
   feedRefresh ??= buildTechFeed()
     .then((payload) => {
       setCache(CACHE_KEYS.TECH_FEED, payload, FEED_SNAPSHOT_TTL_MS)
@@ -1717,81 +1736,34 @@ export const fetchFilteredFeedFn = createServerFn({ method: 'GET' })
     return { items, stats: result.stats, fetchedAt: result.fetchedAt }
   })
 
-// Fetch individual source data
-export const fetchGitHubFeedFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const items = await assembleItems(await fetchGitHubTrending())
-    return {
-      items: items.map((item) => ({
-        ...item,
-        publishedAt: item.publishedAt.toISOString(),
-      })),
-      fetchedAt: new Date().toISOString(),
-    }
-  },
-)
-
-export const fetchArxivFeedFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const items = await assembleItems(await fetchArxivPapers())
-    return {
-      items: items.map((item) => ({
-        ...item,
-        publishedAt: item.publishedAt.toISOString(),
-      })),
-      fetchedAt: new Date().toISOString(),
-    }
-  },
-)
-
-export const fetchHackerNewsFeedFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const items = await assembleItems(await fetchHackerNews())
-    return {
-      items: items.map((item) => ({
-        ...item,
-        publishedAt: item.publishedAt.toISOString(),
-      })),
-      fetchedAt: new Date().toISOString(),
-    }
-  },
-)
-
-export const fetchMultilingualFeedFn = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  const [halItems, ciniiItems, zhItems] = await Promise.all([
-    fetchHAL(),
-    fetchCiNii(),
-    fetchOpenAlexChinese(),
-  ])
-
-  const allItems = await assembleItems([...halItems, ...ciniiItems, ...zhItems])
-  const translations =
-    allItems.length > 0 ? await batchTranslate(allItems) : new Map()
-
-  return {
-    items: allItems.map((item) => ({
-      ...item,
-      publishedAt: item.publishedAt.toISOString(),
-      translations: translations.get(item.id),
-    })),
-    fetchedAt: new Date().toISOString(),
-  }
-})
-
 // ============================================================================
 // CACHE INVALIDATION
 // ============================================================================
 
 /**
- * Invalidate all tech feed caches
- * Call this when user manually refreshes
+ * A forced rebuild clears every source cache, so the next request re-fetches
+ * all sources. At most one per FORCED_REBUILD_INTERVAL_MS for the whole
+ * server, whoever asks — the scheduler already rebuilds every few minutes.
  */
-export const invalidateTechFeedCacheFn = createServerFn({
-  method: 'POST',
-}).handler(async () => {
-  const count = invalidateCacheByPrefix('tech-feed:')
-  console.log(`[TechFeed] Cache invalidated: ${count} entries cleared`)
-  return { invalidated: count }
-})
+export const FORCED_REBUILD_INTERVAL_MS = 2 * 60_000
+let lastForcedRebuild = 0
+
+export type InvalidateResult =
+  | { ok: true; invalidated: number }
+  | { ok: false; reason: 'unauthorized' }
+  | { ok: false; reason: 'throttled'; retryInMs: number }
+
+/** Clear the feed caches (operator panel "refresh" / "clear cache"). */
+export const invalidateTechFeedCacheFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({ token: z.string().max(200).optional() }).optional(),
+  )
+  .handler(async ({ data }): Promise<InvalidateResult> => {
+    if (!isAuthorized(data?.token)) return { ok: false, reason: 'unauthorized' }
+    const wait = lastForcedRebuild + FORCED_REBUILD_INTERVAL_MS - Date.now()
+    if (wait > 0) return { ok: false, reason: 'throttled', retryInMs: wait }
+    lastForcedRebuild = Date.now()
+    const count = invalidateCacheByPrefix('tech-feed:')
+    console.log(`[TechFeed] Cache invalidated: ${count} entries cleared`)
+    return { ok: true, invalidated: count }
+  })

@@ -35,7 +35,8 @@ export type SourceStatus = 'ok' | 'degraded' | 'down'
 export interface SourceHealth {
   source: string
   status: SourceStatus
-  lastRun: string
+  /** Null when the source has not run in the last 7 days. */
+  lastRun: string | null
   lastItems: number
   lastMs: number
   lastError: string | null
@@ -60,7 +61,11 @@ const median = (xs: number[]) => {
  * empty (or timed-out) runs in a row; `degraded` when the last run failed,
  * was empty, or returned under a third of its 7-day median.
  */
-export function sourceHealth(db: Db, today: string): SourceHealth[] {
+export function sourceHealth(
+  db: Db,
+  today: string,
+  expected: readonly string[] = [],
+): SourceHealth[] {
   const rows = db.all<{
     ts: string
     source: string
@@ -78,6 +83,19 @@ export function sourceHealth(db: Db, today: string): SourceHealth[] {
     list.push(r)
     bySource.set(r.source, list)
   }
+  // A source that should run but has no recent runs is down, not absent.
+  const missing = expected
+    .filter((s) => !bySource.has(s))
+    .map((source): SourceHealth => ({
+      source,
+      status: 'down',
+      lastRun: null,
+      lastItems: 0,
+      lastMs: 0,
+      lastError: 'no runs in the last 7 days',
+      typicalItems: 0,
+      lastGood: null,
+    }))
   return [...bySource]
     .map(([source, runs]): SourceHealth => {
       const last = runs[0]
@@ -102,6 +120,7 @@ export function sourceHealth(db: Db, today: string): SourceHealth[] {
         lastGood: runs.find((r) => r.items > 0)?.ts ?? null,
       }
     })
+    .concat(missing)
     .sort((a, b) => a.source.localeCompare(b.source))
 }
 

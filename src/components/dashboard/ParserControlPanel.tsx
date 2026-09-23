@@ -5,11 +5,10 @@
  * cache, and see per-source counts from the current fetch.
  */
 
-import { useState, useCallback, useMemo } from 'react'
-import { Play, RefreshCw, Trash2, ChevronDown, ChevronUp } from 'lucide-react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
+import { Play, ChevronDown, ChevronUp } from 'lucide-react'
 import { useLanguage, getLocalizedSources } from '@/lib/i18n'
 import { useTechFeed } from '@/hooks/use-tech-feed'
-import { invalidateTechFeedCacheFn } from '@/server/functions/tech-feed'
 import { SOURCE_CONFIG, type DataSource } from '@/lib/tech-categories'
 import { useQuery } from '@tanstack/react-query'
 import type { Health } from '@/server/functions/health'
@@ -24,6 +23,8 @@ interface SourceMetrics {
 
 type RunStatus = 'idle' | 'running' | 'completed' | 'failed'
 
+const TOKEN_KEY = 'tech-radar-admin-token'
+
 export function ParserControlPanel() {
   const { t, language } = useLanguage()
   const localizedSources = getLocalizedSources(language)
@@ -33,12 +34,28 @@ export function ParserControlPanel() {
   const [duration, setDuration] = useState<number | null>(null)
   const [lastRunAt, setLastRunAt] = useState<Date | null>(null)
   const [showSourceDetails, setShowSourceDetails] = useState(false)
+  // Operator token (ADMIN_TOKEN on the server), kept in this browser only.
+  const [token, setToken] = useState('')
+  const [tokenDraft, setTokenDraft] = useState('')
+  const [notice, setNotice] = useState<string | null>(null)
+  const [needsToken, setNeedsToken] = useState(false)
+  useEffect(() => {
+    try {
+      setToken(localStorage.getItem(TOKEN_KEY) ?? '')
+    } catch {
+      // No storage: the token applies to this page view only.
+    }
+  }, [])
   // Source health and the usage ledger, read only while the table is open.
-  const { data: health } = useQuery({
-    queryKey: ['health'],
-    queryFn: async (): Promise<Health | null> => {
-      const res = await fetch('/api/health')
-      return res.ok ? ((await res.json()) as Health) : null
+  const { data: health, isError: healthFailed } = useQuery({
+    queryKey: ['health', token],
+    queryFn: async (): Promise<Health> => {
+      const res = await fetch('/api/health', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      const body = (await res.json().catch(() => null)) as Health | null
+      if (!body?.sources) throw new Error(`HTTP ${res.status}`)
+      return body
     },
     enabled: showSourceDetails,
     staleTime: 60_000,
@@ -46,14 +63,14 @@ export function ParserControlPanel() {
   })
   const healthBySource = new Map(health?.sources.map((s) => [s.source, s]))
   const today = new Date().toISOString().slice(0, 10)
-  const jevToday = (health?.usage ?? []).filter(
-    (u) => u.day === today && u.kind.startsWith('jev'),
+  const usageToday = (health?.detail?.usage ?? []).filter(
+    (u) => u.day === today,
   )
+  const jevToday = usageToday.filter((u) => u.kind.startsWith('jev'))
 
   const sourceMetrics = useMemo((): SourceMetrics[] => {
     const bySource = new Map<DataSource, SourceMetrics>()
     for (const source of Object.keys(SOURCE_CONFIG) as DataSource[]) {
-      if (source === 'techcrunch') continue
       bySource.set(source, {
         source,
         count: 0,
@@ -87,27 +104,45 @@ export function ParserControlPanel() {
     [t],
   )
 
-  const handleRunParser = async () => {
+  const handleRunParser = async (withToken = token) => {
     setStatus('running')
+    setNotice(null)
     const startTime = Date.now()
     try {
-      await forceRefresh()
+      const result = await forceRefresh(withToken || undefined)
+      if (!result.ok) {
+        setStatus('idle')
+        if (result.reason === 'unauthorized') {
+          setNeedsToken(true)
+          setNotice(t.adminTokenNeeded)
+        } else
+          setNotice(
+            t.rebuildThrottled.replace(
+              '{s}',
+              String(Math.ceil(result.retryInMs / 1000)),
+            ),
+          )
+        return
+      }
+      setNeedsToken(false)
       setDuration(Date.now() - startTime)
       setLastRunAt(new Date())
       setStatus('completed')
     } catch (error) {
-      console.error('Parser run failed:', error)
+      console.error('Rebuild failed:', error)
       setStatus('failed')
     }
   }
 
-  const handleClearCache = async () => {
+  const saveToken = () => {
+    const next = tokenDraft.trim()
+    setToken(next)
     try {
-      await invalidateTechFeedCacheFn()
-      setStatus('idle')
-    } catch (error) {
-      console.error('Failed to clear cache:', error)
+      localStorage.setItem(TOKEN_KEY, next)
+    } catch {
+      // No storage: kept for this page view.
     }
+    void handleRunParser(next)
   }
 
   const statusText: Record<RunStatus, string> = {
@@ -206,51 +241,81 @@ export function ParserControlPanel() {
           </tbody>
         </table>
       )}
-      {showSourceDetails && health && (
-        <p className="px-4 py-2 border-b border-rule text-xs text-fg-3 num">
-          {t.usageToday
-            .replace(
-              '{sent}',
-              String(jevToday.reduce((n, u) => n + u.requests, 0)),
-            )
-            .replace(
-              '{cached}',
-              String(jevToday.reduce((n, u) => n + u.cached, 0)),
-            )}
-          {health.storage.lastBackup &&
-            ` · ${t.lastBackup}: ${health.storage.lastBackup}`}
+      {showSourceDetails && healthFailed && (
+        <p className="px-4 py-2 border-b border-rule text-xs text-danger">
+          {t.healthUnavailable}
         </p>
       )}
+      {showSourceDetails && health && (
+        <div className="px-4 py-2 border-b border-rule text-xs text-fg-3 space-y-1">
+          <p className={health.ok ? '' : 'text-danger'}>
+            {health.ok ? t.healthAllOk : health.problems.join(' · ')}
+            {health.feedAge !== null &&
+              ` · ${t.feedAge.replace('{m}', String(Math.round(health.feedAge / 60_000)))}`}
+          </p>
+          {health.detail ? (
+            <p className="num">
+              {t.usageToday
+                .replace(
+                  '{sent}',
+                  String(jevToday.reduce((n, u) => n + u.requests, 0)),
+                )
+                .replace(
+                  '{cached}',
+                  String(jevToday.reduce((n, u) => n + u.cached, 0)),
+                )
+                .replace(
+                  '{failed}',
+                  String(usageToday.reduce((n, u) => n + u.failed, 0)),
+                )}
+              {` · ${t.storageSize.replace('{mb}', (health.detail.storage.bytes / 1_048_576).toFixed(1))}`}
+              {` · ${t.lastBackup}: ${health.detail.storage.lastBackup ?? '–'}`}
+            </p>
+          ) : (
+            <p>{t.healthDetailNeedsToken}</p>
+          )}
+        </div>
+      )}
 
-      <div className="flex items-center gap-2 px-4 py-3">
+      <div className="flex flex-wrap items-center gap-2 px-4 py-3">
         <button
           onClick={() => void handleRunParser()}
           disabled={status === 'running' || isFetching}
           className="btn-primary"
+          title={t.rebuildHint}
         >
           <Play className="w-3.5 h-3.5" />
           {status === 'running' ? `${t.parserRunning}…` : t.runParser}
         </button>
-        <button
-          onClick={() => void forceRefresh()}
-          disabled={status === 'running' || isFetching}
-          className="btn"
-          title={t.forceRefresh}
-        >
-          <RefreshCw
-            className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`}
-          />
-          {t.forceRefresh}
-        </button>
-        <button
-          onClick={() => void handleClearCache()}
-          disabled={status === 'running' || isFetching}
-          className="btn hover:text-danger"
-          title={t.clearCache}
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-          {t.clearCache}
-        </button>
+        {needsToken && (
+          <form
+            className="flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault()
+              saveToken()
+            }}
+          >
+            <label htmlFor="admin-token" className="text-xs text-fg-3">
+              {t.adminToken}
+            </label>
+            <input
+              id="admin-token"
+              type="password"
+              autoComplete="off"
+              className="select w-48"
+              value={tokenDraft}
+              onChange={(e) => setTokenDraft(e.target.value)}
+            />
+            <button type="submit" className="btn">
+              {t.watchSave}
+            </button>
+          </form>
+        )}
+        {notice && (
+          <span className="text-xs text-fg-3" role="status">
+            {notice}
+          </span>
+        )}
       </div>
     </div>
   )
@@ -267,9 +332,15 @@ function HealthCell({ h }: { h: Health['sources'][number] | undefined }) {
   return (
     <td
       className={`px-4 py-2 text-right ${h.status === 'ok' ? 'text-fg-3' : 'text-danger'}`}
-      title={`${h.lastItems} / ${h.typicalItems} · ${(h.lastMs / 1000).toFixed(1)} s${h.lastError ? ` · ${h.lastError}` : ''}`}
     >
       {label}
+      {/* The reason is visible, not only in a tooltip. */}
+      <span className="block text-[11px] text-fg-3 num">
+        {h.lastRun
+          ? `${h.lastItems}/${h.typicalItems} · ${(h.lastMs / 1000).toFixed(1)} s`
+          : ''}
+        {h.lastError ? ` · ${h.lastError}` : ''}
+      </span>
     </td>
   )
 }
