@@ -1,4 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
+import { countUsage } from '@/server/utils/usage'
 import { z } from 'zod'
 import type { OriginalLanguage, TranslatedContent } from '@/lib/tech-categories'
 
@@ -86,6 +87,7 @@ async function translateText(
         'User-Agent': 'TechEvolutionRadar/1.0',
       },
     })
+    countUsage('translate', { requests: 1, units: truncatedText.length })
 
     if (response.status === 429) {
       noteQuotaExhausted('HTTP 429')

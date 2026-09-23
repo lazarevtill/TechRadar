@@ -22,7 +22,14 @@ import {
 } from '@/server/utils/cache'
 import { fetchWithRetry } from '@/server/utils/fetch-utils'
 import { cleanText } from '@/server/utils/clean-text'
-import { historyDb, utcDay, type Db } from '@/server/store/db'
+import { historyDb, historyDbFile, utcDay, type Db } from '@/server/store/db'
+import {
+  dailyMaintenance,
+  recordSourceRuns,
+  recordUsage,
+} from '@/server/store/ops'
+import { drainUsage } from '@/server/utils/usage'
+import { alertOnSourceChanges } from './health'
 import {
   evaluateDue,
   recordPredictions,
@@ -251,7 +258,10 @@ function toSnapshot(item: RawItem): SnapshotItem {
  * served without history (ranking falls back to within-fetch measures,
  * which is also what a brand-new install has) rather than going down.
  */
-async function withHistory(raw: RawItem[]): Promise<{
+async function withHistory(
+  raw: RawItem[],
+  runs: BudgetedRun[] = [],
+): Promise<{
   history: Map<string, HistoryContext> | undefined
   themes: Theme[]
   save: (items: TechItem[]) => TrackRecord | null
@@ -260,7 +270,19 @@ async function withHistory(raw: RawItem[]): Promise<{
   try {
     const db = await historyDb()
     const snapshot = raw.map(toSnapshot)
-    recordItems(db, snapshot, day, new Date().toISOString())
+    const now = new Date().toISOString()
+    recordItems(db, snapshot, day, now)
+    recordSourceRuns(
+      db,
+      runs.map((r) => ({ ...r, items: r.items.length })),
+      now,
+    )
+    const maintained = dailyMaintenance(db, day, historyDbFile())
+    if (maintained)
+      console.log(
+        `[history] daily maintenance: backup ${maintained.backup ?? 'skipped'}, ${maintained.deletedItems} expired items removed`,
+      )
+    alertOnSourceChanges(db, day)
     const found = await runDiscovery(db, day, themeAsker())
     if (found.added.length || found.retired.length || found.checked)
       console.log(
@@ -272,6 +294,8 @@ async function withHistory(raw: RawItem[]): Promise<{
       themes: activeThemes(db),
       save: (items) => {
         recordSignals(db, items, day)
+        // After ranking, so this rebuild's Jev signal calls are included.
+        recordUsage(db, day, drainUsage())
         recordPredictions(
           db,
           items.map((item) => ({
@@ -330,6 +354,42 @@ function evaluateInBackground(db: Db, day: string) {
     .finally(() => {
       evaluating = false
     })
+}
+
+/**
+ * A source gets SOURCE_BUDGET_MS (fetch plus Jev categorization) per
+ * rebuild. One slow upstream — bioRxiv's API regularly takes 40–60 s — must
+ * not hold the whole feed: past the budget the rebuild goes on without it and
+ * records a `timeout` run (see /api/health). The fetch itself is not
+ * cancelled; when it completes it fills its own cache, so the next rebuild
+ * picks it up.
+ */
+const SOURCE_BUDGET_MS = 30_000
+
+interface BudgetedRun {
+  source: DataSource
+  items: RawItem[]
+  ms: number
+  error: string | null
+}
+
+async function withinBudget(
+  source: DataSource,
+  fetcher: () => Promise<RawItem[]>,
+): Promise<BudgetedRun> {
+  const started = Date.now()
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const timeout = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), SOURCE_BUDGET_MS)
+  })
+  const items = await Promise.race([fetcher(), timeout])
+  clearTimeout(timer)
+  return {
+    source,
+    items: items ?? [],
+    ms: Date.now() - started,
+    error: items === null ? 'timeout' : null,
+  }
 }
 
 /** Discovered theme ids each item carries, by a code match on title terms. */
@@ -1486,26 +1546,30 @@ export function deriveStats(items: TechItem[]): TechFeedStats {
 async function buildTechFeed() {
   // Fetch from all sources in parallel. To add one, see CLAUDE.md
   // ("To add a data source").
-  const perSource = await Promise.all([
-    fetchGitHubTrending(),
-    fetchArxivPapers(),
-    fetchHackerNews(),
-    fetchOpenAlex(),
-    fetchPubMed(),
-    fetchHAL(),
-    fetchCiNii(),
-    fetchOpenAlexChinese(),
-    fetchHuggingFacePapers(),
-    fetchHuggingFaceModels(),
-    fetchPreprints(),
-    fetchLobsters(),
-    fetchDevTo(),
-  ])
+  const runs = await Promise.all(
+    (
+      [
+        ['github', fetchGitHubTrending],
+        ['arxiv', fetchArxivPapers],
+        ['hackernews', fetchHackerNews],
+        ['openalex', fetchOpenAlex],
+        ['pubmed', fetchPubMed],
+        ['hal', fetchHAL],
+        ['cinii', fetchCiNii],
+        ['openalex-zh', fetchOpenAlexChinese],
+        ['hf-papers', fetchHuggingFacePapers],
+        ['hf-models', fetchHuggingFaceModels],
+        ['biorxiv', fetchPreprints],
+        ['lobsters', fetchLobsters],
+        ['devto', fetchDevTo],
+      ] as const
+    ).map(([source, fetcher]) => withinBudget(source, fetcher)),
+  )
 
   // Rank the whole fetch together: percentiles are per source, convergence
   // needs every source at once.
-  const raw = perSource.flat()
-  const { history, themes, save } = await withHistory(raw)
+  const raw = runs.flatMap((r) => r.items)
+  const { history, themes, save } = await withHistory(raw, runs)
   let allItems = await assembleItems(raw, history, themesByItem(raw, themes))
   let record: TrackRecord | null = null
   try {

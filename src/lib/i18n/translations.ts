@@ -46,6 +46,12 @@ export interface Translations {
   topicsHint: string
   topicsEmpty: string
   discoveredTitle: string
+  healthCol: string
+  healthOk: string
+  healthDegraded: string
+  healthDown: string
+  usageToday: string
+  lastBackup: string
   weekTitle: string
   weekNewItems: string
   watchLabel: string
@@ -312,6 +318,12 @@ export const translations: Record<Language, Translations> = {
     topicsHint: 'Tracked topics and where they show up now',
     topicsEmpty: 'No tracked topic appears on more than one source',
     discoveredTitle: 'Discovered by the radar',
+    healthCol: 'Health',
+    healthOk: 'ok',
+    healthDegraded: 'thin',
+    healthDown: 'down',
+    usageToday: 'Jev today: {sent} requests sent, {cached} answered from cache',
+    lastBackup: 'last backup',
     weekTitle: 'This week',
     weekNewItems: '{n} new items',
     watchLabel: 'Watch',
@@ -583,6 +595,12 @@ export const translations: Record<Language, Translations> = {
     topicsHint: 'Отслеживаемые темы и где они встречаются сейчас',
     topicsEmpty: 'Ни одна тема не встречается более чем в одном источнике',
     discoveredTitle: 'Найдено радаром',
+    healthCol: 'Состояние',
+    healthOk: 'в норме',
+    healthDegraded: 'мало данных',
+    healthDown: 'не отвечает',
+    usageToday: 'Jev сегодня: отправлено {sent}, из кэша {cached}',
+    lastBackup: 'последняя копия',
     weekTitle: 'Эта неделя',
     weekNewItems: '{n} новых записей',
     watchLabel: 'Следить',

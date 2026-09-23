@@ -1,4 +1,5 @@
 import { TypeSafeClient, noul, score } from '@typesafe-ai/sdk'
+import { countUsage } from '@/server/utils/usage'
 import {
   contentHash,
   verdictStore,
@@ -185,6 +186,7 @@ export async function judgeSignals(
     }),
   )
   store.flush()
+  countUsage('jev-signal', { requests: sent, cached, failed })
   if (inputs.length)
     console.log(
       `[jev] signal: ${inputs.length} items, ${cached} cached, ${sent} sent${failed ? `, ${failed} failed` : ''}`,

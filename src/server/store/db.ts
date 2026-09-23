@@ -114,13 +114,14 @@ CREATE TABLE IF NOT EXISTS source_runs (
 );
 CREATE INDEX IF NOT EXISTS source_runs_source_ts ON source_runs(source, ts);
 
--- Paid calls per day, for the cost ledger.
+-- Paid and quota-limited calls per day, for the cost ledger.
 CREATE TABLE IF NOT EXISTS usage (
   day TEXT NOT NULL,
-  kind TEXT NOT NULL,        -- 'jev' | 'translate' | …
+  kind TEXT NOT NULL,        -- 'jev-categorize' | 'jev-signal' | 'jev-discovery' | 'translate'
   requests INTEGER NOT NULL DEFAULT 0,
   cached INTEGER NOT NULL DEFAULT 0,
-  input_tokens INTEGER NOT NULL DEFAULT 0,
+  failed INTEGER NOT NULL DEFAULT 0,
+  units INTEGER NOT NULL DEFAULT 0,  -- kind-specific (translate: characters)
   PRIMARY KEY (day, kind)
 );
 `
@@ -208,9 +209,14 @@ export async function openDb(file: string): Promise<Db> {
 
 let shared: Promise<Db> | null = null
 
+/** Path of the process-wide history database (HISTORY_DB). */
+export function historyDbFile(): string {
+  return resolve(process.env.HISTORY_DB ?? '.cache/history.db')
+}
+
 /** The process-wide history database. */
 export function historyDb(): Promise<Db> {
-  shared ??= openDb(resolve(process.env.HISTORY_DB ?? '.cache/history.db'))
+  shared ??= openDb(historyDbFile())
   return shared
 }
 

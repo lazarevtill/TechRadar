@@ -14,6 +14,7 @@ import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicTestParsersRouteImport } from './routes/_public/test-parsers'
 import { Route as ApiApiExtensionFeedRouteImport } from './routes/_api/api.extension-feed'
+import { Route as ApiApiHealthRouteImport } from './routes/_api/api.health'
 import { Route as ApiApiReportRouteImport } from './routes/_api/api.report'
 import { Route as ApiApiFontsCjkRouteImport } from './routes/_api/api.fonts.cjk'
 import { Route as ApiApiFontsFileSplatRouteImport } from './routes/_api/api.fonts.file.$'
@@ -42,6 +43,11 @@ const ApiApiExtensionFeedRoute = ApiApiExtensionFeedRouteImport.update({
   path: '/api/extension-feed',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiApiHealthRoute = ApiApiHealthRouteImport.update({
+  id: '/_api/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiApiReportRoute = ApiApiReportRouteImport.update({
   id: '/_api/api/report',
   path: '/api/report',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/hello': typeof ApiHelloRoute
   '/test-parsers': typeof PublicTestParsersRoute
   '/api/extension-feed': typeof ApiApiExtensionFeedRoute
+  '/api/health': typeof ApiApiHealthRoute
   '/api/report': typeof ApiApiReportRoute
   '/api/fonts/cjk': typeof ApiApiFontsCjkRoute
   '/api/fonts/file/$': typeof ApiApiFontsFileSplatRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByTo {
   '/test-parsers': typeof PublicTestParsersRoute
   '/': typeof PublicIndexRoute
   '/api/extension-feed': typeof ApiApiExtensionFeedRoute
+  '/api/health': typeof ApiApiHealthRoute
   '/api/report': typeof ApiApiReportRoute
   '/api/fonts/cjk': typeof ApiApiFontsCjkRoute
   '/api/fonts/file/$': typeof ApiApiFontsFileSplatRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   '/_public/test-parsers': typeof PublicTestParsersRoute
   '/_public/': typeof PublicIndexRoute
   '/_api/api/extension-feed': typeof ApiApiExtensionFeedRoute
+  '/_api/api/health': typeof ApiApiHealthRoute
   '/_api/api/report': typeof ApiApiReportRoute
   '/_api/api/fonts/cjk': typeof ApiApiFontsCjkRoute
   '/_api/api/fonts/file/$': typeof ApiApiFontsFileSplatRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
     | '/hello'
     | '/test-parsers'
     | '/api/extension-feed'
+    | '/api/health'
     | '/api/report'
     | '/api/fonts/cjk'
     | '/api/fonts/file/$'
@@ -103,6 +113,7 @@ export interface FileRouteTypes {
     | '/test-parsers'
     | '/'
     | '/api/extension-feed'
+    | '/api/health'
     | '/api/report'
     | '/api/fonts/cjk'
     | '/api/fonts/file/$'
@@ -113,6 +124,7 @@ export interface FileRouteTypes {
     | '/_public/test-parsers'
     | '/_public/'
     | '/_api/api/extension-feed'
+    | '/_api/api/health'
     | '/_api/api/report'
     | '/_api/api/fonts/cjk'
     | '/_api/api/fonts/file/$'
@@ -122,6 +134,7 @@ export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
   ApiHelloRoute: typeof ApiHelloRoute
   ApiApiExtensionFeedRoute: typeof ApiApiExtensionFeedRoute
+  ApiApiHealthRoute: typeof ApiApiHealthRoute
   ApiApiReportRoute: typeof ApiApiReportRoute
   ApiApiFontsCjkRoute: typeof ApiApiFontsCjkRoute
   ApiApiFontsFileSplatRoute: typeof ApiApiFontsFileSplatRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/api/extension-feed'
       fullPath: '/api/extension-feed'
       preLoaderRoute: typeof ApiApiExtensionFeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_api/api/health': {
+      id: '/_api/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_api/api/report': {
@@ -205,6 +225,7 @@ const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
   ApiHelloRoute: ApiHelloRoute,
   ApiApiExtensionFeedRoute: ApiApiExtensionFeedRoute,
+  ApiApiHealthRoute: ApiApiHealthRoute,
   ApiApiReportRoute: ApiApiReportRoute,
   ApiApiFontsCjkRoute: ApiApiFontsCjkRoute,
   ApiApiFontsFileSplatRoute: ApiApiFontsFileSplatRoute,

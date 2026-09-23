@@ -11,6 +11,8 @@ import { useLanguage, getLocalizedSources } from '@/lib/i18n'
 import { useTechFeed } from '@/hooks/use-tech-feed'
 import { invalidateTechFeedCacheFn } from '@/server/functions/tech-feed'
 import { SOURCE_CONFIG, type DataSource } from '@/lib/tech-categories'
+import { useQuery } from '@tanstack/react-query'
+import type { Health } from '@/server/functions/health'
 
 interface SourceMetrics {
   source: DataSource
@@ -31,6 +33,21 @@ export function ParserControlPanel() {
   const [duration, setDuration] = useState<number | null>(null)
   const [lastRunAt, setLastRunAt] = useState<Date | null>(null)
   const [showSourceDetails, setShowSourceDetails] = useState(false)
+  // Source health and the usage ledger, read only while the table is open.
+  const { data: health } = useQuery({
+    queryKey: ['health'],
+    queryFn: async (): Promise<Health | null> => {
+      const res = await fetch('/api/health')
+      return res.ok ? ((await res.json()) as Health) : null
+    },
+    enabled: showSourceDetails,
+    staleTime: 60_000,
+  })
+  const healthBySource = new Map(health?.sources.map((s) => [s.source, s]))
+  const today = new Date().toISOString().slice(0, 10)
+  const jevToday = (health?.usage ?? []).filter(
+    (u) => u.day === today && u.kind.startsWith('jev'),
+  )
 
   const sourceMetrics = useMemo((): SourceMetrics[] => {
     const bySource = new Map<DataSource, SourceMetrics>()
@@ -164,6 +181,9 @@ export function ParserControlPanel() {
                 {t.judged}
               </th>
               <th className="px-4 py-2 font-normal text-right">{t.updated}</th>
+              <th className="px-4 py-2 font-normal text-right">
+                {t.healthCol}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-rule">
@@ -179,10 +199,26 @@ export function ParserControlPanel() {
                 <td className="px-4 py-2 text-right">
                   {m.lastItem ? formatTimeAgo(m.lastItem) : '–'}
                 </td>
+                <HealthCell h={healthBySource.get(m.source)} />
               </tr>
             ))}
           </tbody>
         </table>
+      )}
+      {showSourceDetails && health && (
+        <p className="px-4 py-2 border-b border-rule text-xs text-fg-3 num">
+          {t.usageToday
+            .replace(
+              '{sent}',
+              String(jevToday.reduce((n, u) => n + u.requests, 0)),
+            )
+            .replace(
+              '{cached}',
+              String(jevToday.reduce((n, u) => n + u.cached, 0)),
+            )}
+          {health.storage.lastBackup &&
+            ` · ${t.lastBackup}: ${health.storage.lastBackup}`}
+        </p>
       )}
 
       <div className="flex items-center gap-2 px-4 py-3">
@@ -216,5 +252,23 @@ export function ParserControlPanel() {
         </button>
       </div>
     </div>
+  )
+}
+
+function HealthCell({ h }: { h: Health['sources'][number] | undefined }) {
+  const { t } = useLanguage()
+  if (!h) return <td className="px-4 py-2 text-right text-fg-3">–</td>
+  const label = {
+    ok: t.healthOk,
+    degraded: t.healthDegraded,
+    down: t.healthDown,
+  }[h.status]
+  return (
+    <td
+      className={`px-4 py-2 text-right ${h.status === 'ok' ? 'text-fg-3' : 'text-danger'}`}
+      title={`${h.lastItems} / ${h.typicalItems} · ${(h.lastMs / 1000).toFixed(1)} s${h.lastError ? ` · ${h.lastError}` : ''}`}
+    >
+      {label}
+    </td>
   )
 }
