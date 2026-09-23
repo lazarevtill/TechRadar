@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as ApiApiExportRouteImport } from './routes/_api/api.export'
 import { Route as ApiApiExtensionFeedRouteImport } from './routes/_api/api.extension-feed'
 import { Route as ApiApiHealthRouteImport } from './routes/_api/api.health'
 import { Route as ApiApiReportRouteImport } from './routes/_api/api.report'
@@ -25,6 +26,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PublicRoute,
+} as any)
+const ApiApiExportRoute = ApiApiExportRouteImport.update({
+  id: '/_api/api/export',
+  path: '/api/export',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiApiExtensionFeedRoute = ApiApiExtensionFeedRouteImport.update({
   id: '/_api/api/extension-feed',
@@ -54,6 +60,7 @@ const ApiApiFontsFileSplatRoute = ApiApiFontsFileSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/api/export': typeof ApiApiExportRoute
   '/api/extension-feed': typeof ApiApiExtensionFeedRoute
   '/api/health': typeof ApiApiHealthRoute
   '/api/report': typeof ApiApiReportRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
+  '/api/export': typeof ApiApiExportRoute
   '/api/extension-feed': typeof ApiApiExtensionFeedRoute
   '/api/health': typeof ApiApiHealthRoute
   '/api/report': typeof ApiApiReportRoute
@@ -72,6 +80,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_public': typeof PublicRouteWithChildren
   '/_public/': typeof PublicIndexRoute
+  '/_api/api/export': typeof ApiApiExportRoute
   '/_api/api/extension-feed': typeof ApiApiExtensionFeedRoute
   '/_api/api/health': typeof ApiApiHealthRoute
   '/_api/api/report': typeof ApiApiReportRoute
@@ -82,6 +91,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/api/export'
     | '/api/extension-feed'
     | '/api/health'
     | '/api/report'
@@ -90,6 +100,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api/export'
     | '/api/extension-feed'
     | '/api/health'
     | '/api/report'
@@ -99,6 +110,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_public'
     | '/_public/'
+    | '/_api/api/export'
     | '/_api/api/extension-feed'
     | '/_api/api/health'
     | '/_api/api/report'
@@ -108,6 +120,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   PublicRoute: typeof PublicRouteWithChildren
+  ApiApiExportRoute: typeof ApiApiExportRoute
   ApiApiExtensionFeedRoute: typeof ApiApiExtensionFeedRoute
   ApiApiHealthRoute: typeof ApiApiHealthRoute
   ApiApiReportRoute: typeof ApiApiReportRoute
@@ -130,6 +143,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRoute
+    }
+    '/_api/api/export': {
+      id: '/_api/api/export'
+      path: '/api/export'
+      fullPath: '/api/export'
+      preLoaderRoute: typeof ApiApiExportRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_api/api/extension-feed': {
       id: '/_api/api/extension-feed'
@@ -182,6 +202,7 @@ const PublicRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   PublicRoute: PublicRouteWithChildren,
+  ApiApiExportRoute: ApiApiExportRoute,
   ApiApiExtensionFeedRoute: ApiApiExtensionFeedRoute,
   ApiApiHealthRoute: ApiApiHealthRoute,
   ApiApiReportRoute: ApiApiReportRoute,
