@@ -1376,6 +1376,69 @@ async function fetchLobsters(): Promise<RawItem[]> {
   }
 }
 
+interface DevToArticle {
+  id: number
+  title: string
+  description?: string
+  url: string
+  published_at: string
+  public_reactions_count: number
+  comments_count: number
+  tag_list: string[]
+  canonical_url?: string
+}
+
+/** dev.to's most-reacted articles of the last day: what practitioners try. */
+async function fetchDevTo(): Promise<RawItem[]> {
+  const cached = getCached<RawItem[]>(CACHE_KEYS.DEVTO)
+  if (cached) return cached
+
+  try {
+    const res = await fetchWithRetry(
+      'https://dev.to/api/articles?top=1&per_page=30',
+      { retries: 2, baseDelay: 500, timeout: 15_000 },
+    )
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    const articles = (await res.json()) as DevToArticle[]
+
+    const candidates = articles.map((a): RawItem => {
+      const id = `devto-${a.id}`
+      const summary = a.description ?? ''
+      return {
+        id,
+        title: a.title,
+        summary,
+        source: 'devto',
+        sourceUrl: a.url,
+        category: 'uncategorized',
+        maturityStage: calculateMaturityStage({
+          score: a.public_reactions_count,
+          source: 'devto',
+        }),
+        publishedAt: new Date(a.published_at),
+        originalLanguage: detectLanguage(`${a.title} ${summary}`),
+        engagement: a.public_reactions_count,
+        engagementUnit: 'reactions',
+        // A cross-post names its original, which may be on another source.
+        refs:
+          a.canonical_url && a.canonical_url !== a.url ? [a.canonical_url] : [],
+        jev: {
+          id,
+          title: a.title,
+          summary,
+          evidence: { tags: a.tag_list },
+        },
+      }
+    })
+    const items = (await applyCategories(candidates)).slice(0, 25)
+    setCache(CACHE_KEYS.DEVTO, items, CACHE_TTL.DEFAULT)
+    return items
+  } catch (error) {
+    console.error('dev.to API error:', error)
+    return []
+  }
+}
+
 // ============================================================================
 // SERVER FUNCTIONS
 // ============================================================================
@@ -1436,6 +1499,7 @@ async function buildTechFeed() {
     fetchHuggingFaceModels(),
     fetchPreprints(),
     fetchLobsters(),
+    fetchDevTo(),
   ])
 
   // Rank the whole fetch together: percentiles are per source, convergence

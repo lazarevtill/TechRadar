@@ -36,6 +36,8 @@ export function engagementUnitLabel(
       return t.upvotes
     case 'likes':
       return t.likes
+    case 'reactions':
+      return t.reactions
   }
 }
 

@@ -60,7 +60,9 @@ export function recordPredictions(
       day,
       item.source,
       // Metric sources: the engagement then. Others: sources reached then.
-      item.engagement ?? item.signal.linkedSources,
+      METRIC_SOURCES.has(item.source)
+        ? item.engagement
+        : item.signal.linkedSources,
     )
   db.transaction(() => {
     for (const peers of bySource.values()) {
@@ -116,6 +118,7 @@ export const METRIC_SOURCES: ReadonlySet<DataSource> = new Set<DataSource>([
   'hf-papers',
   'openalex',
   'openalex-zh',
+  'devto',
 ])
 
 /**

@@ -55,6 +55,7 @@ export const SOURCE_ICON = {
   'hf-models': 'bot',
   biorxiv: 'dna',
   lobsters: 'message',
+  devto: 'file',
 }
 
 /** SVG markup for a named icon. Unknown names render nothing. */

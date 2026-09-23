@@ -143,3 +143,25 @@ describe('predictions', () => {
     expect(novel).toMatchObject({ evaluated: 1, hits: 1 })
   })
 })
+
+describe('prediction baselines', () => {
+  it('uses engagement for re-readable sources and sources reached otherwise', async () => {
+    const db = await openDb(':memory:')
+    recordPredictions(
+      db,
+      [
+        { ...p('arxiv-2609.1', null, ['fast-rising'], 'arxiv') },
+        { ...p('devto-1', 40, ['fast-rising'], 'devto') },
+      ],
+      DAY,
+    )
+    const base = Object.fromEntries(
+      db
+        .all<{ subject: string; baseline: number }>(
+          "SELECT subject, baseline FROM predictions WHERE reason = 'fast-rising'",
+        )
+        .map((r) => [r.subject, r.baseline]),
+    )
+    expect(base).toEqual({ 'arxiv-2609.1': 1, 'devto-1': 40 })
+  })
+})

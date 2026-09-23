@@ -98,6 +98,7 @@ export interface Translations {
   citations: string
   upvotes: string
   likes: string
+  reactions: string
   whyItMatters: string
   viewOn: string
   ago: string
@@ -242,6 +243,7 @@ export interface Translations {
   hfModels: string
   preprints: string
   lobsters: string
+  devto: string
   cinii: string
 
   // Language names
@@ -364,6 +366,7 @@ export const translations: Record<Language, Translations> = {
     citations: 'citations',
     upvotes: 'upvotes',
     likes: 'likes',
+    reactions: 'reactions',
     whyItMatters: 'Context',
     viewOn: 'Open on',
     ago: 'ago',
@@ -515,6 +518,7 @@ export const translations: Record<Language, Translations> = {
     hfModels: 'HF Models',
     preprints: 'bioRxiv / medRxiv',
     lobsters: 'Lobsters',
+    devto: 'DEV',
     cinii: 'CiNii (Japan)',
 
     english: 'English',
@@ -633,6 +637,7 @@ export const translations: Record<Language, Translations> = {
     citations: 'цитирований',
     upvotes: 'голосов',
     likes: 'лайков',
+    reactions: 'реакций',
     whyItMatters: 'Контекст',
     viewOn: 'Открыть на',
     ago: 'назад',
@@ -784,6 +789,7 @@ export const translations: Record<Language, Translations> = {
     hfModels: 'Модели HF',
     preprints: 'bioRxiv / medRxiv',
     lobsters: 'Lobsters',
+    devto: 'DEV',
     cinii: 'CiNii (Япония)',
 
     english: 'Английский',
@@ -853,6 +859,7 @@ export const getLocalizedSources = (lang: Language) => ({
   'hf-models': translations[lang].hfModels,
   biorxiv: translations[lang].preprints,
   lobsters: translations[lang].lobsters,
+  devto: translations[lang].devto,
   cinii: translations[lang].cinii,
 })
 

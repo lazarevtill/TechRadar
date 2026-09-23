@@ -37,7 +37,7 @@ export type SignalReason =
   'fast-rising' | 'converging' | 'cross-source' | 'novel' | 'under-the-radar'
 
 export type EngagementUnit =
-  'stars' | 'points' | 'citations' | 'upvotes' | 'likes'
+  'stars' | 'points' | 'citations' | 'upvotes' | 'likes' | 'reactions'
 
 export interface SignalMetrics {
   /** Raw attention count the source reports, if any. */
@@ -118,6 +118,7 @@ export const RECENCY_HALF_LIFE_DAYS: Record<DataSource, number> = {
   'hf-models': 7,
   biorxiv: 14,
   lobsters: 1,
+  devto: 2,
 }
 
 export const SIGNAL_WEIGHTS = {

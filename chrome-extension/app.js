@@ -77,6 +77,7 @@ const SOURCE_CONFIG = {
   'hf-models': { label: 'HF Models' },
   biorxiv: { label: 'bioRxiv / medRxiv' },
   lobsters: { label: 'Lobsters' },
+  devto: { label: 'DEV' },
 }
 
 const ACCENT = '#e0a458'
@@ -207,6 +208,7 @@ const translations = {
     citations: 'citations',
     upvotes: 'upvotes',
     likes: 'likes',
+    reactions: 'reactions',
     reasonConverging: 'Converging',
     reasonConvergingDesc:
       'The strongest item of a tracked topic that appears on four or more sources in this fetch',
@@ -384,6 +386,7 @@ const translations = {
     citations: 'цитирований',
     upvotes: 'голосов',
     likes: 'лайков',
+    reactions: 'реакций',
     reasonConverging: 'Совпадение тем',
     reasonConvergingDesc:
       'Самая сильная запись по отслеживаемой теме, которая встречается в четырёх и более источниках',

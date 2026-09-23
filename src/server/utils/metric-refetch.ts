@@ -68,6 +68,15 @@ const READERS: Partial<Record<DataSource, [prefix: string, Reader]>> = {
         )
       )?.upvotes ?? null,
   ],
+  devto: [
+    'devto-',
+    async (id) =>
+      (
+        await json<{ public_reactions_count?: number }>(
+          `https://dev.to/api/articles/${id}`,
+        )
+      )?.public_reactions_count ?? null,
+  ],
   openalex: [
     'oa-',
     async (id) =>

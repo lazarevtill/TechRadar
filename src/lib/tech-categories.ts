@@ -30,6 +30,7 @@ export type DataSource =
   | 'hf-models' // Models trending on the Hugging Face Hub
   | 'biorxiv' // bioRxiv and medRxiv preprints
   | 'lobsters' // Lobsters front page
+  | 'devto' // dev.to top articles of the day
   | 'cinii' // Japanese research
 
 export type OriginalLanguage =
@@ -146,5 +147,6 @@ export const SOURCE_CONFIG: Record<
   'hf-models': { label: 'HF Models', language: 'en' },
   biorxiv: { label: 'bioRxiv / medRxiv', language: 'en' },
   lobsters: { label: 'Lobsters', language: 'en' },
+  devto: { label: 'DEV', language: 'en' },
   cinii: { label: 'CiNii (Japan)', language: 'ja' },
 }
