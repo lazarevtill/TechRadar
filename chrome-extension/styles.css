@@ -332,6 +332,9 @@ a {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1.5rem;
+  /* Each side keeps its own height: expanding a topic on the right must not
+     stretch (and redraw) the chart on the left. */
+  align-items: start;
 }
 .column {
   display: flex;
@@ -429,12 +432,11 @@ a {
   display: flex;
   flex-direction: column;
 }
-/* The chart fills whatever height the grid row gives the panel (the right
-   column usually sets it), instead of a fixed canvas leaving an empty band. */
+/* The chart's height comes from the viewport, not from the grid row, so
+   content changes in the right column never resize it. */
 .chart-body {
   position: relative;
-  flex: 1;
-  min-height: 460px;
+  height: clamp(460px, calc(100vh - 260px), 760px);
   display: flex;
 }
 .radar-container {
@@ -1045,7 +1047,9 @@ a {
 }
 
 .track-record {
-  margin: 0.5rem 0 0;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--rule);
   font-size: 11px;
   color: var(--fg-3);
 }

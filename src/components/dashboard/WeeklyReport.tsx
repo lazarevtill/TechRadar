@@ -108,7 +108,7 @@ export function WeeklyReport() {
                         {w.items.map((i) => (
                           <li key={i.id} className="truncate">
                             <span className="text-fg-3">
-                              {sources[i.source]}{' '}
+                              {sources[i.source] ?? i.source}{' '}
                             </span>
                             <a
                               href={i.url}
@@ -209,7 +209,7 @@ export function WeeklyReport() {
                       {w.items[0].title}
                     </a>
                     <span className="ml-auto text-fg-3 shrink-0">
-                      {w.sources.map((s) => sources[s]).join(' · ')}
+                      {w.sources.map((s) => sources[s] ?? s).join(' · ')}
                     </span>
                   </li>
                 ))}

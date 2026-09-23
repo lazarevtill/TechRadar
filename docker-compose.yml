@@ -21,10 +21,16 @@ services:
       OPENALEX_MAILTO: ${OPENALEX_MAILTO:-}
       # Optional, server-side only: more GitHub searches per refresh.
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      # Optional webhooks ({"text": ...}): weekly report and source alerts.
+      REPORT_WEBHOOK_URL: ${REPORT_WEBHOOK_URL:-}
+      REPORT_WATCH: ${REPORT_WATCH:-}
+      ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
       # Point at a different fork's generated data if needed:
       # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
     volumes:
-      # Jev verdicts: survive rebuilds, so unchanged items are never re-sent.
+      # Jev verdicts and the history store (with its daily backups): survive
+      # rebuilds, so unchanged items are never re-sent and history accumulates.
       - techradar-cache:/app/.cache
     restart: unless-stopped
 
