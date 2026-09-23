@@ -20,6 +20,7 @@ function run() {
     'public/data/digest.json',
     'public/data/trends.json',
     'public/data/history.json',
+    'public/data/topic-tags.json',
   ]
   let bad = false
   for (const f of files) {

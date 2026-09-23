@@ -21,6 +21,7 @@ import {
   CACHE_TTL,
 } from '@/server/utils/cache'
 import { fetchWithRetry } from '@/server/utils/fetch-utils'
+import { cleanText } from '@/server/utils/clean-text'
 import {
   categorizeItems,
   type CategorizeInput,
@@ -127,7 +128,20 @@ type RawItem = Omit<TechItem, 'signal'> & {
  * Set each item's category from Jev's verdict and drop items Jev judged
  * outside every radar area. See src/server/utils/jev-categorize.ts.
  */
-async function applyCategories(items: RawItem[]): Promise<RawItem[]> {
+async function applyCategories(raw: RawItem[]): Promise<RawItem[]> {
+  // Every source passes through here, so markup and entities are removed
+  // once, before the UI, Jev (tags cost tokens) or the translator see text.
+  const items = raw.map((item) => ({
+    ...item,
+    title: cleanText(item.title),
+    summary: cleanText(item.summary),
+    whyItMatters: item.whyItMatters && cleanText(item.whyItMatters),
+    jev: {
+      ...item.jev,
+      title: cleanText(item.jev.title),
+      summary: item.jev.summary && cleanText(item.jev.summary),
+    },
+  }))
   const verdicts = await categorizeItems(items.map((item) => item.jev))
   return items.flatMap((item) => {
     const verdict = verdicts.get(item.id) ?? 'uncategorized'
@@ -496,13 +510,6 @@ const OPENALEX_FIELDS = '17|22|31|21|13'
 const OPENALEX_SELECT =
   'id,doi,title,publication_date,cited_by_count,language,abstract_inverted_index,authorships,primary_topic,primary_location'
 
-function stripTags(html: string): string {
-  return html
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
 function isoDaysAgo(days: number): string {
   return new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10)
 }
@@ -756,7 +763,8 @@ async function fetchHAL(): Promise<RawItem[]> {
 
     const candidates = docs.map((doc): RawItem => {
       const title = doc.title_s?.[0] || 'Untitled'
-      const abstract = doc.abstract_s?.[0] || ''
+      // Clean before cutting to 300 chars, or the cut counts markup.
+      const abstract = cleanText(doc.abstract_s?.[0])
       const lang = doc.language_s?.[0] || 'fr'
       const detectedLang = lang === 'en' ? 'en' : 'fr'
 
@@ -834,7 +842,7 @@ async function fetchCiNii(): Promise<RawItem[]> {
     const articles: CiNiiArticle[] = items
     const candidates = articles.map((item, index): RawItem => {
       const title = item.title || 'Japanese Research Article'
-      const description = stripTags(item.description ?? '')
+      const description = cleanText(item.description)
       // '@id' is the article's stable URI; a timestamped id would change on
       // every fetch and defeat the per-item Jev verdict cache.
       const id = `cinii-${item['@id'] || index}`
@@ -1047,15 +1055,25 @@ async function fetchPreprints(): Promise<RawItem[]> {
       ['biorxiv', 2],
       ['medrxiv', 7],
     ]
+    // Each server independently: bioRxiv's API regularly takes 40-60 s even
+    // for a one-day window (measured 2026-09-23), and a timeout there used to
+    // discard medRxiv's results as well. medRxiv answers in ~20 s, so the
+    // per-request timeout sits above that. This fetch runs in the background
+    // stale-while-revalidate rebuild, so only a cold boot ever waits on it.
     const perServer = await Promise.all(
       windows.map(async ([server, days]) => {
-        const res = await fetchWithRetry(
-          `https://api.biorxiv.org/details/${server}/${isoDaysAgo(days)}/${isoDaysAgo(0)}/0/json`,
-          { retries: 1, baseDelay: 1000, timeout: 20_000 },
-        )
-        if (!res.ok) return []
-        const data = (await res.json()) as { collection?: PreprintRecord[] }
-        return (data.collection ?? []).map((r) => ({ ...r, server }))
+        try {
+          const res = await fetchWithRetry(
+            `https://api.biorxiv.org/details/${server}/${isoDaysAgo(days)}/${isoDaysAgo(0)}/0/json`,
+            { retries: 1, baseDelay: 1000, timeout: 35_000 },
+          )
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
+          const data = (await res.json()) as { collection?: PreprintRecord[] }
+          return (data.collection ?? []).map((r) => ({ ...r, server }))
+        } catch (error) {
+          console.error(`[preprints] ${server} unavailable:`, String(error))
+          return []
+        }
       }),
     )
     const seen = new Set<string>()
@@ -1065,7 +1083,7 @@ async function fetchPreprints(): Promise<RawItem[]> {
 
     const candidates = records.map((r): RawItem => {
       const id = `bx-${r.doi}`
-      const abstract = r.abstract ?? ''
+      const abstract = cleanText(r.abstract)
       const server = r.server === 'medrxiv' ? 'medRxiv' : 'bioRxiv'
       return {
         id,

@@ -1,6 +1,10 @@
 import { TypeSafeClient, choice } from '@typesafe-ai/sdk'
 import type { TechCategory } from '@/lib/tech-categories'
-import { getCached, setCache, CACHE_TTL } from '@/server/utils/cache'
+import {
+  contentHash,
+  verdictStore,
+  type VerdictStore,
+} from '@/server/utils/verdict-store'
 
 /**
  * Category assignment for live feed items, decided by TypeSafe's Jev model.
@@ -57,10 +61,10 @@ export function buildCategoryRequest(input: CategorizeInput) {
   }
 }
 
-const CACHE_PREFIX = 'jev:area:'
-// Items keep their id across feed refreshes, so a verdict is reused for a day
-// instead of being re-bought every 5-minute feed cycle.
-const VERDICT_TTL_MS = 24 * CACHE_TTL.HOUR
+// Verdicts persist across restarts (verdict-store.ts), keyed by item id and a
+// hash of the exact request — text, question and options — so only new or
+// edited items are ever sent.
+const STORE_PREFIX = 'area:'
 
 let client: TypeSafeClient | null | undefined
 
@@ -94,29 +98,43 @@ async function askJev(input: CategorizeInput): Promise<RadarArea | 'none'> {
 export async function categorizeItems(
   inputs: CategorizeInput[],
   ask: Ask = askJev,
+  store: VerdictStore = verdictStore(),
 ): Promise<Map<string, CategoryVerdict>> {
   const verdicts = new Map<string, CategoryVerdict>()
   const skipAll = ask === askJev && getClient() === null
+  let cached = 0
+  let sent = 0
+  let failed = 0
   await Promise.all(
     inputs.map(async (input) => {
-      const cached = getCached<RadarArea | 'none'>(CACHE_PREFIX + input.id)
-      if (cached) {
-        verdicts.set(input.id, cached)
+      const key = STORE_PREFIX + input.id
+      const hash = contentHash(buildCategoryRequest(input))
+      const known = store.get<RadarArea | 'none'>(key, hash)
+      if (known) {
+        cached++
+        verdicts.set(input.id, known)
         return
       }
       if (skipAll) {
         verdicts.set(input.id, 'uncategorized')
         return
       }
+      sent++
       try {
         const verdict = await ask(input)
-        setCache(CACHE_PREFIX + input.id, verdict, VERDICT_TTL_MS)
+        store.set(key, hash, verdict)
         verdicts.set(input.id, verdict)
       } catch (error) {
+        failed++
         console.error(`[jev] categorize ${input.id} failed:`, error)
         verdicts.set(input.id, 'uncategorized')
       }
     }),
   )
+  store.flush()
+  if (inputs.length)
+    console.log(
+      `[jev] categorize: ${inputs.length} items, ${cached} cached, ${sent} sent${failed ? `, ${failed} failed` : ''}`,
+    )
   return verdicts
 }

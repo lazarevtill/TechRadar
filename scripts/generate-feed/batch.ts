@@ -205,6 +205,9 @@ export async function summarizeAll(
   const items: Array<{ post: RawPost; summary: SummarizeResult }> = []
   const failures: Array<{ url: string; reason: string }> = []
   const pending = new Map<number, RawPost>(posts.map((p, i) => [i, p]))
+  // Nothing new to summarize (every post reused from the last digest): don't
+  // create an empty batch, which the API rejects.
+  if (posts.length === 0) return { items, failures }
 
   if (opts.useBatch !== false) {
     try {

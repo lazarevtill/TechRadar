@@ -21,3 +21,6 @@ package-lock.json
 
 # Local browser-automation output
 .playwright-mcp/
+
+# Paid Jev verdicts (src/server/utils/verdict-store.ts)
+.cache/

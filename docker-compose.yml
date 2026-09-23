@@ -23,4 +23,10 @@ services:
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       # Point at a different fork's generated data if needed:
       # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
+    volumes:
+      # Jev verdicts: survive rebuilds, so unchanged items are never re-sent.
+      - techradar-cache:/app/.cache
     restart: unless-stopped
+
+volumes:
+  techradar-cache:
