@@ -33,6 +33,15 @@ export interface WatchResult {
   items: ReportItem[]
 }
 
+/** A lab, company or person publishing repeatedly (GitHub/HF owner). */
+export interface Maker {
+  name: string
+  thisWeek: number
+  lastWeek: number
+  sources: DataSource[]
+  items: ReportItem[]
+}
+
 export interface WeeklyReport {
   from: string
   to: string
@@ -46,10 +55,14 @@ export interface WeeklyReport {
   /** Largest observed attention growth within the week. */
   risers: Array<ReportItem & { from: number; to: number }>
   watch: WatchResult[]
+  /** Owners with the most new works this week, across sources. */
+  makers: Maker[]
   trackRecord: TrackRecord
 }
 
 const LIMIT = 8
+/** New works in the week that make an owner worth listing. */
+const MAKER_MIN_WORKS = 2
 
 export function weeklyReport(
   db: Db,
@@ -201,6 +214,71 @@ export function weeklyReport(
     }
   })
 
+  // Makers: the owner part of github:/hf: identity keys. One count per
+  // work, so a model and its repo from the same lab count once.
+  const makerRows = db.all<{
+    key: string
+    id: string
+    source: DataSource
+    title: string
+    url: string
+    first_seen: string
+  }>(
+    `SELECT k.key, i.id, i.source, i.title, i.url, i.first_seen
+       FROM item_keys k JOIN items i ON i.id = k.item_id
+      WHERE (k.key LIKE 'github:%' OR k.key LIKE 'hf:%')
+        AND substr(i.first_seen, 1, 10) >= ?`,
+    prevFrom,
+  )
+  const byMaker = new Map<
+    string,
+    {
+      thisWeek: Set<string>
+      lastWeek: Set<string>
+      sources: Set<DataSource>
+      items: Map<string, ReportItem>
+    }
+  >()
+  for (const r of makerRows) {
+    const name = r.key.slice(r.key.indexOf(':') + 1).split('/')[0]
+    if (!name) continue
+    const m = byMaker.get(name) ?? {
+      thisWeek: new Set(),
+      lastWeek: new Set(),
+      sources: new Set(),
+      items: new Map(),
+    }
+    const work = works.workOf.get(r.id) ?? r.id
+    if (r.first_seen.slice(0, 10) >= from) {
+      m.thisWeek.add(work)
+      m.sources.add(r.source)
+      if (!m.items.has(work))
+        m.items.set(work, {
+          id: r.id,
+          source: r.source,
+          title: r.title,
+          url: r.url,
+        })
+    } else m.lastWeek.add(work)
+    byMaker.set(name, m)
+  }
+  const makers: Maker[] = [...byMaker]
+    .filter(([, m]) => m.thisWeek.size >= MAKER_MIN_WORKS)
+    .map(([name, m]) => ({
+      name,
+      thisWeek: m.thisWeek.size,
+      lastWeek: m.lastWeek.size,
+      sources: [...m.sources],
+      items: [...m.items.values()].slice(0, 3),
+    }))
+    .sort(
+      (a, b) =>
+        b.thisWeek - a.thisWeek ||
+        b.sources.length - a.sources.length ||
+        a.name.localeCompare(b.name),
+    )
+    .slice(0, LIMIT)
+
   return {
     from,
     to: today,
@@ -218,6 +296,7 @@ export function weeklyReport(
     crossSource,
     risers,
     watch: watchResults,
+    makers,
     trackRecord: trackRecord(db, today),
   }
 }
@@ -246,6 +325,13 @@ export function reportText(r: WeeklyReport, baseUrl?: string): string {
     lines.push('', 'Fastest growing:')
     for (const x of r.risers)
       lines.push(`  ${x.title} (${x.source}): ${x.from} → ${x.to}`)
+  }
+  if (r.makers.length) {
+    lines.push('', 'Most active makers (new works this week):')
+    for (const m of r.makers)
+      lines.push(
+        `  ${m.name}: ${m.thisWeek} (was ${m.lastWeek}) on ${m.sources.join(', ')}`,
+      )
   }
   for (const w of r.watch) {
     lines.push('', `Watch "${w.term}": ${w.thisWeek} (was ${w.lastWeek})`)

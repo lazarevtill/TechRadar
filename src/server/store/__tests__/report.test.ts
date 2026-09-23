@@ -140,6 +140,31 @@ describe('weeklyReport', () => {
     })
     expect(r.watch[1]).toMatchObject({ thisWeek: 0, items: [] })
 
+    // 'lab' shipped the repo; its paper links to it, so that is one work.
+    expect(r.makers).toEqual([])
+    recordItems(
+      db,
+      [
+        snap('gh-10', 'github', 'lab/other', 'https://github.com/lab/other', 5),
+        snap(
+          'hfm-lab/m1',
+          'hf-models',
+          'lab/m1',
+          'https://huggingface.co/lab/m1',
+          9,
+        ),
+      ],
+      '2026-09-22',
+      '2026-09-22T11:00:00Z',
+    )
+    const withMakers = weeklyReport(db, '2026-09-22', [])
+    expect(withMakers.makers[0]).toMatchObject({
+      name: 'lab',
+      thisWeek: 3,
+      lastWeek: 0,
+    })
+    expect(withMakers.makers[0].sources.sort()).toEqual(['github', 'hf-models'])
+
     const text = reportText(r)
     // The paper and its Hugging Face page are one work; with the repo and the
     // summary-only mention that makes three.

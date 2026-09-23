@@ -206,6 +206,7 @@ const translations = {
       'Terms that suddenly appeared across several sources and that Jev confirmed name a technology. Added automatically (at most 3 a day, 20 in total) and retired after two quiet weeks.',
     discoveredSince: 'since {date}',
     healthOk: 'Server: all sources report',
+    weekMakers: 'Most active makers (new works)',
     topicOrigin: 'first seen on {source}, {date}',
     a11yLanguage: 'Language',
     tickWeeks: '{n}w',
@@ -403,6 +404,7 @@ const translations = {
       'Термины, внезапно появившиеся в нескольких источниках, которые Jev подтвердил как названия технологий. Добавляются автоматически (не более 3 в день и 20 всего) и снимаются после двух тихих недель.',
     discoveredSince: 'с {date}',
     healthOk: 'Сервер: все источники отвечают',
+    weekMakers: 'Самые активные авторы (новые работы)',
     topicOrigin: 'впервые: {source}, {date}',
     a11yLanguage: 'Язык',
     tickWeeks: '{n} нед',
@@ -1268,6 +1270,15 @@ function renderWeek() {
         .map(
           (x) =>
             `<li class="week-row">${link(x)}<span class="num muted">${x.from} → ${x.to}</span></li>`,
+        )
+        .join('')}</ul></div>`,
+    )
+  if (r.makers?.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekMakers'))}</h3><ul>${r.makers
+        .map(
+          (m) =>
+            `<li class="week-row"><span>${escapeHtml(m.name)} <span class="muted">${escapeHtml(m.sources.map(sourceLabel).join(' · '))}</span></span><span class="num">${m.thisWeek}</span></li>`,
         )
         .join('')}</ul></div>`,
     )

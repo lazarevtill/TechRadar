@@ -62,6 +62,7 @@ export interface Translations {
   usageToday: string
   lastBackup: string
   weekTitle: string
+  weekMakers: string
   topicHistoryLabel: string
   topicOrigin: string
   trackRecordNotJudged: string
@@ -349,6 +350,8 @@ export const translations: Record<Language, Translations> = {
       'Jev today: {sent} requests sent, {cached} answered from cache · {failed} failed calls',
     lastBackup: 'last backup',
     weekTitle: 'This week',
+    weekMakers:
+      'Most active makers (labs, companies, people publishing new work on several fronts)',
     topicHistoryLabel: '{total} new works in 30 days, {week} in the last 7',
     topicOrigin: 'first seen on {source}, {date}',
     trackRecordNotJudged:
@@ -642,6 +645,8 @@ export const translations: Record<Language, Translations> = {
       'Jev сегодня: отправлено {sent}, из кэша {cached} · ошибок {failed}',
     lastBackup: 'последняя копия',
     weekTitle: 'Эта неделя',
+    weekMakers:
+      'Самые активные авторы (лаборатории, компании, люди с новыми работами)',
     topicHistoryLabel: '{total} новых работ за 30 дней, {week} за последние 7',
     topicOrigin: 'впервые: {source}, {date}',
     trackRecordNotJudged:

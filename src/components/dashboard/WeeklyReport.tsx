@@ -100,6 +100,7 @@ export function WeeklyReport() {
       ) : report.topics.length +
           report.risers.length +
           report.crossSource.length +
+          report.makers.length +
           report.watch.length ===
         0 ? (
         <p className="px-4 py-6 text-xs text-fg-3">{t.weekNothing}</p>
@@ -212,6 +213,43 @@ export function WeeklyReport() {
               </ul>
             )}
           </section>
+
+          {report.makers.length > 0 && (
+            <section className="md:col-span-2">
+              <h3 className="text-[11px] uppercase tracking-wide text-fg-3 mb-1">
+                {t.weekMakers}
+              </h3>
+              <ul className="space-y-1">
+                {report.makers.map((m) => (
+                  <li key={m.name} className="min-w-0">
+                    <span className="text-fg">{m.name}</span>{' '}
+                    <span className="num text-fg-2">
+                      {m.thisWeek} (
+                      {t.weekWas.replace('{n}', String(m.lastWeek))})
+                    </span>{' '}
+                    <span className="text-fg-3">
+                      {m.sources.map((s) => sources[s] ?? s).join(' · ')}
+                    </span>
+                    <span className="block truncate text-fg-3">
+                      {m.items.map((i, n) => (
+                        <span key={i.id}>
+                          {n > 0 && ' · '}
+                          <a
+                            href={i.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-fg"
+                          >
+                            {i.title}
+                          </a>
+                        </span>
+                      ))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {report.crossSource.length > 0 && (
             <section className="md:col-span-2">
