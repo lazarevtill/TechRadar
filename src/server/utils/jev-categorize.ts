@@ -1,4 +1,5 @@
 import { TypeSafeClient, choice } from '@typesafe-ai/sdk'
+import { countUsage } from '@/server/utils/usage'
 import type { TechCategory } from '@/lib/tech-categories'
 import {
   contentHash,
@@ -132,6 +133,7 @@ export async function categorizeItems(
     }),
   )
   store.flush()
+  countUsage('jev-categorize', { requests: sent, cached, failed })
   if (inputs.length)
     console.log(
       `[jev] categorize: ${inputs.length} items, ${cached} cached, ${sent} sent${failed ? `, ${failed} failed` : ''}`,

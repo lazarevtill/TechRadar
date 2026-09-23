@@ -1,5 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
-import { fetchBackendFeed, panelData, FEED_PATH } from '../backend.js'
+import {
+  fetchBackendFeed,
+  fetchReport,
+  panelData,
+  FEED_PATH,
+} from '../backend.js'
 
 const ok = (body) => vi.fn(async () => new Response(JSON.stringify(body)))
 
@@ -36,5 +41,34 @@ describe('panelData', () => {
     expect(panelData({ items: [1] }, 'items')).toEqual([1])
     expect(panelData({ error: 'HTTP 404' }, 'items')).toEqual([])
     expect(panelData(undefined, 'topics')).toEqual([])
+  })
+})
+
+describe('fetchReport', () => {
+  it('sends watch terms only over HTTPS or to a local server', async () => {
+    for (const base of [
+      'https://radar.example.com',
+      'http://192.168.1.5:3000',
+    ]) {
+      const f = ok({ topics: [], watch: [] })
+      const r = await fetchReport(f, base, ['Mamba'])
+      expect(f.mock.calls[0][0]).toContain('watch=Mamba')
+      expect(r.watchWithheld).toBeUndefined()
+    }
+    const f = ok({ topics: [], watch: [] })
+    const r = await fetchReport(f, 'http://radar.example.com', ['Mamba'])
+    expect(f.mock.calls[0][0]).toBe('http://radar.example.com/api/report')
+    expect(r.watchWithheld).toBe(true)
+  })
+
+  it('passes watch terms and checks the shape', async () => {
+    const fetchImpl = ok({ topics: [], watch: [] })
+    await fetchReport(fetchImpl, 'http://localhost:3000', ['Mamba', 'GRPO'])
+    expect(fetchImpl.mock.calls[0][0]).toBe(
+      'http://localhost:3000/api/report?watch=Mamba%2CGRPO',
+    )
+    await expect(
+      fetchReport(ok({ error: 'x' }), 'http://localhost:3000'),
+    ).rejects.toThrow('unexpected report')
   })
 })

@@ -86,6 +86,12 @@ export function FeedItem({ item }: FeedItemProps) {
   )
   const highlighted = item.signal.reasons.length > 0
   const engagement = engagementLine(item.signal, t)
+  // One link per other source carrying the same work.
+  const otherSources = (item.linked ?? []).filter(
+    (link, i, all) =>
+      link.source !== item.source &&
+      all.findIndex((l) => l.source === link.source) === i,
+  )
 
   return (
     <article
@@ -142,6 +148,25 @@ export function FeedItem({ item }: FeedItemProps) {
             {reasonLabel(reason, item.signal, t)}
           </span>
         ))}
+        {otherSources.length > 0 && (
+          <span>
+            {t.alsoOn}{' '}
+            {otherSources.map((link, i) => (
+              <span key={link.id}>
+                {i > 0 && ', '}
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-fg-2 hover:text-fg underline-offset-2 hover:underline"
+                  title={link.title}
+                >
+                  {localizedSources[link.source]}
+                </a>
+              </span>
+            ))}
+          </span>
+        )}
         {item.originalLanguage !== 'en' && (
           <span
             className="chip-muted font-mono uppercase"

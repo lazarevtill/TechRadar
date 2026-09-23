@@ -158,6 +158,7 @@ export const CACHE_KEYS = {
   HF_MODELS: 'tech-feed:hf-models',
   PREPRINTS: 'tech-feed:biorxiv',
   LOBSTERS: 'tech-feed:lobsters',
+  DEVTO: 'tech-feed:devto',
   MULTILINGUAL: 'tech-feed:multilingual',
   DIGEST: 'digest:latest',
   TRENDS: 'digest:trends',

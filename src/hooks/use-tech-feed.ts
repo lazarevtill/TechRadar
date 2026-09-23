@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from '@tanstack/react-query'
+import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   fetchTechFeedFn,
   fetchGitHubFeedFn,
@@ -16,6 +16,9 @@ import type {
   OriginalLanguage,
 } from '@/lib/tech-categories'
 
+import type { DiscoveredTheme } from '@/lib/trend-topics'
+import type { TrackRecord } from '@/server/store/predictions'
+
 export type { TechFeedStats }
 
 // Transform serialized items back to proper TechItem format
@@ -31,7 +34,13 @@ function transformItems(
 export const EMPTY_STATS: TechFeedStats = {
   totalSignals: 0,
   highlighted: 0,
-  byReason: { 'fast-rising': 0, converging: 0, novel: 0, 'under-the-radar': 0 },
+  byReason: {
+    'fast-rising': 0,
+    converging: 0,
+    'cross-source': 0,
+    novel: 0,
+    'under-the-radar': 0,
+  },
   judged: 0,
   topCategory: 'ai',
   sourceCount: 0,
@@ -49,6 +58,10 @@ export interface UseTechFeedResult {
   /** Force refresh - invalidates server cache and refetches fresh data */
   forceRefresh: () => Promise<void>
   fetchedAt: Date | null
+  /** Themes the radar discovered itself. */
+  themes: DiscoveredTheme[]
+  /** How past highlights turned out; null without the history store. */
+  trackRecord: TrackRecord | null
 }
 
 /** Shared with the route loader, which prefetches it during SSR. */
@@ -65,14 +78,20 @@ export function useTechFeed(): UseTechFeedResult {
     retry: 2,
   })
 
-  // Force refresh - invalidates server cache first, then refetches
+  const queryClient = useQueryClient()
+
+  // Force refresh - invalidates server cache first, then refetches. The
+  // rebuild also writes history, so views derived from it (source health,
+  // the weekly report) are refreshed after it.
   const forceRefresh = async () => {
     try {
       await invalidateTechFeedCacheFn()
     } catch (err) {
       console.error('[TechFeed] Failed to invalidate cache:', err)
     }
-    void refetch()
+    await refetch()
+    void queryClient.invalidateQueries({ queryKey: ['health'] })
+    void queryClient.invalidateQueries({ queryKey: ['weekly-report'] })
   }
 
   return {
@@ -85,6 +104,8 @@ export function useTechFeed(): UseTechFeedResult {
     refetch,
     forceRefresh,
     fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
+    themes: data?.themes ?? [],
+    trackRecord: data?.trackRecord ?? null,
   }
 }
 

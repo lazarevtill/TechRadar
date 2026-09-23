@@ -139,15 +139,24 @@ describe('topicRows', () => {
     expect(rows[0]).toEqual({
       topic: 'rag',
       label: 'RAG',
+      discovered: false,
       items: 2,
       sources: 2,
     })
     expect(rows[1]).toEqual({
       topic: 'agents',
       label: 'agents',
+      discovered: false,
       items: 3,
       sources: 1,
     })
+  })
+
+  it('marks themes the server discovered and names them without the prefix', () => {
+    const [row] = topicRows([
+      item('a', 'ai', 'research', { topics: ['auto:mamba3'] }),
+    ])
+    expect(row).toMatchObject({ label: 'mamba3', discovered: true })
   })
 })
 

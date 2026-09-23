@@ -181,7 +181,9 @@ export function topicRows(items, labels = {}) {
   return [...byTopic.values()]
     .map((r) => ({
       topic: r.topic,
-      label: labels[r.topic] ?? r.topic,
+      label: labels[r.topic] ?? r.topic.replace(/^auto:/, ''),
+      // A theme the server discovered itself (id `auto:<term>`).
+      discovered: r.topic.startsWith('auto:'),
       items: r.items,
       sources: r.sources.size,
     }))

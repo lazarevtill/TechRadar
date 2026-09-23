@@ -19,10 +19,12 @@ import {
   sanitizeSettings,
   saveSettings,
 } from './lib/settings.js'
-import { fetchBackendFeed, panelData } from './lib/backend.js'
+import { fetchBackendFeed, fetchReport, panelData } from './lib/backend.js'
 import { trajectoryMeta, sparklineBars } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
 import { icon, CATEGORY_ICON } from './lib/icons.js'
+import { trackRecordSummary } from './lib/track-record.js'
+import { parseWatchTerms, watchHits } from './lib/watch.js'
 
 /**
  * Tech Evolution Radar - Chrome extension new-tab page.
@@ -75,6 +77,7 @@ const SOURCE_CONFIG = {
   'hf-models': { label: 'HF Models' },
   biorxiv: { label: 'bioRxiv / medRxiv' },
   lobsters: { label: 'Lobsters' },
+  devto: { label: 'DEV' },
 }
 
 const ACCENT = '#e0a458'
@@ -88,7 +91,7 @@ const translations = {
     loading: 'Loading…',
     appTitle: 'Tech Evolution Radar',
     appSubtitle:
-      'Twelve research and engineering sources, via your TechRadar server',
+      'Thirteen research and engineering sources, via your TechRadar server',
     howItWorks: 'How it works',
     totalSignals: 'Signals',
     highlighted: 'Highlighted',
@@ -171,6 +174,24 @@ const translations = {
     panelHighlights: 'Highlights',
     panelTrends: 'Topic momentum',
     panelFeed: 'Feed',
+    panelWeek: 'This week',
+    settingsWatch: 'Watch terms',
+    settingsWatchHint:
+      'Comma-separated; marked in the feed and followed in This week',
+    weekTitle: 'This week',
+    weekLoading: 'Loading the weekly report…',
+    weekUnavailable: 'The weekly report is unavailable on this server.',
+    weekWatch: 'Watch terms, items this week',
+    weekWas: 'last week {n}',
+    weekTopics: 'Topics, items this week',
+    weekRisers: 'Fastest growing',
+    weekCrossSource: 'Same work on several sources',
+    weekNewThemes: 'New themes',
+    weekNothing:
+      'Nothing to compare yet; the history grows with every day the server runs.',
+    weekWatchWithheld:
+      'Watch terms are sent only over HTTPS or to a local server, so this report leaves them out.',
+    watched: 'watch',
     panelDigest: 'AI blog digest',
     settingsData: 'Saved data',
     savedInfo: 'Saved copy from {time}: {items} signals.',
@@ -189,9 +210,20 @@ const translations = {
     citations: 'citations',
     upvotes: 'upvotes',
     likes: 'likes',
+    reactions: 'reactions',
     reasonConverging: 'Converging',
     reasonConvergingDesc:
       'The strongest item of a tracked topic that appears on four or more sources in this fetch',
+    reasonCrossSource: 'Cross-source',
+    reasonCrossSourceDesc:
+      'The same work (by arXiv id, DOI, repository or link) appears on several sources, e.g. a paper, its code and a discussion',
+    alsoOn: 'also on',
+    discovered: 'discovered',
+    trackRecord: 'Track record',
+    trackRecordHint:
+      'How past highlights turned out after 14 days: the share that grew more than the median of a random sample from the same source. A random pick scores about 50%.',
+    trackRecordPending: 'measuring {n} highlights · first results on {date}',
+    trackDiscovered: 'Discovered themes',
     reasonNovel: 'New capability',
     reasonNovelDesc:
       'Jev judges it likely to describe a capability not available before',
@@ -217,7 +249,7 @@ const translations = {
     trendsEmpty: 'Topic momentum will appear once the daily digest has data',
     infoSources: 'Sources',
     infoSourcesText:
-      'GitHub, arXiv, Hacker News, Lobsters, Hugging Face papers and models, bioRxiv and medRxiv, OpenAlex, PubMed, HAL, CiNii and Chinese-language OpenAlex research, fetched by your TechRadar server. This page only talks to that server and keeps the last copy for five minutes, so a new tab paints instantly.',
+      'GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face papers and models, bioRxiv and medRxiv, OpenAlex, PubMed, HAL, CiNii and Chinese-language OpenAlex research, fetched by your TechRadar server. This page only talks to that server and keeps the last copy for five minutes, so a new tab paints instantly.',
     infoScoring: 'Signal score',
     infoScoringText:
       'Every item is placed among its own source’s peers: reach (percentile of its attention metric), velocity (engagement per day of age) and recency, combined with Jev’s novelty and substance judgments. Items with nothing measurable are shown but not scored.',
@@ -237,7 +269,7 @@ const translations = {
     loading: 'Загрузка…',
     appTitle: 'Радар эволюции технологий',
     appSubtitle:
-      'Двенадцать источников исследований и разработок через ваш сервер TechRadar',
+      'Тринадцать источников исследований и разработок через ваш сервер TechRadar',
     howItWorks: 'Как это работает',
     totalSignals: 'Сигналы',
     highlighted: 'Выделено',
@@ -321,6 +353,24 @@ const translations = {
     panelHighlights: 'Главное',
     panelTrends: 'Импульс тем',
     panelFeed: 'Лента',
+    panelWeek: 'Эта неделя',
+    settingsWatch: 'Отслеживаемые термины',
+    settingsWatchHint:
+      'Через запятую; отмечаются в ленте и отслеживаются в разделе «Эта неделя»',
+    weekTitle: 'Эта неделя',
+    weekLoading: 'Загружаем недельный отчёт…',
+    weekUnavailable: 'Недельный отчёт на этом сервере недоступен.',
+    weekWatch: 'Ваши термины, записей за неделю',
+    weekWas: 'неделей раньше {n}',
+    weekTopics: 'Темы, записей за неделю',
+    weekRisers: 'Быстрее всего растут',
+    weekCrossSource: 'Одна работа в нескольких источниках',
+    weekNewThemes: 'Новые темы',
+    weekNothing:
+      'Сравнивать пока не с чем: история растёт с каждым днём работы сервера.',
+    weekWatchWithheld:
+      'Отслеживаемые термины отправляются только по HTTPS или на локальный сервер, поэтому в этом отчёте их нет.',
+    watched: 'слежу',
     panelDigest: 'Дайджест AI-блогов',
     settingsData: 'Сохранённые данные',
     savedInfo: 'Копия от {time}: {items} сигналов.',
@@ -340,9 +390,20 @@ const translations = {
     citations: 'цитирований',
     upvotes: 'голосов',
     likes: 'лайков',
+    reactions: 'реакций',
     reasonConverging: 'Совпадение тем',
     reasonConvergingDesc:
       'Самая сильная запись по отслеживаемой теме, которая встречается в четырёх и более источниках',
+    reasonCrossSource: 'В нескольких источниках',
+    reasonCrossSourceDesc:
+      'Одна и та же работа (по arXiv id, DOI, репозиторию или ссылке) есть в нескольких источниках: например, статья, её код и обсуждение',
+    alsoOn: 'также в',
+    discovered: 'найдено',
+    trackRecord: 'Точность',
+    trackRecordHint:
+      'Как сработали прошлые выделения через 14 дней: доля тех, что выросли сильнее медианы случайной выборки из того же источника. Случайный выбор даёт около 50%.',
+    trackRecordPending: 'измеряем {n} выделений · первые результаты {date}',
+    trackDiscovered: 'Найденные темы',
     reasonNovel: 'Новая возможность',
     reasonNovelDesc:
       'По оценке Jev, вероятно описывает возможность, которой раньше не было',
@@ -368,7 +429,7 @@ const translations = {
     trendsEmpty: 'Импульс тем появится, когда в дайджесте накопятся данные',
     infoSources: 'Источники',
     infoSourcesText:
-      'GitHub, arXiv, Hacker News, Lobsters, статьи и модели Hugging Face, bioRxiv и medRxiv, OpenAlex, PubMed, HAL, CiNii и китаеязычные исследования OpenAlex — их собирает ваш сервер TechRadar. Страница обращается только к нему и хранит последнюю копию пять минут, поэтому новая вкладка открывается мгновенно.',
+      'GitHub, arXiv, Hacker News, Lobsters, DEV, статьи и модели Hugging Face, bioRxiv и medRxiv, OpenAlex, PubMed, HAL, CiNii и китаеязычные исследования OpenAlex — их собирает ваш сервер TechRadar. Страница обращается только к нему и хранит последнюю копию пять минут, поэтому новая вкладка открывается мгновенно.',
     infoScoring: 'Оценка сигнала',
     infoScoringText:
       'Каждая запись сравнивается с соседями по своему источнику: охват (перцентиль метрики внимания), скорость (вовлечённость в день возраста) и свежесть, вместе с оценками новизны и содержательности от Jev. Записи, для которых нечего измерить, показываются без оценки.',
@@ -444,6 +505,11 @@ let state = {
   activeMaturity: 'all',
   activeTopic: 'all',
   topicLabels: {},
+  trackRecord: null,
+  /** Watch term the feed is filtered by, or null. */
+  activeWatch: null,
+  /** Weekly report: null (not loaded), { error } or the report. */
+  report: null,
   feedLimit: 40,
   expandedChain: null,
   showOriginal: new Set(), // item ids showing original instead of translation
@@ -638,6 +704,7 @@ function applyPayload(payload) {
   if (!state.items.some((i) => i.source === state.activeSource))
     state.activeSource = 'all'
   state.topicLabels = payload.topicLabels ?? {}
+  state.trackRecord = trackRecordSummary(payload.feed.trackRecord)
   if (state.activeTopic !== 'all' && !state.topicLabels[state.activeTopic])
     state.activeTopic = 'all'
   state.digest = panelData(payload.digest, 'items')
@@ -680,6 +747,7 @@ async function fetchAllData(force = false) {
     state.isLoading = false
     updateStatusBadge(false)
     render()
+    loadReport()
   }
 }
 
@@ -747,6 +815,7 @@ function render() {
   renderHighlights()
   renderTrends()
   renderNews()
+  renderWeek()
   renderFeed()
   renderRadar()
   renderInfo()
@@ -849,6 +918,7 @@ function renderCategoryFilters() {
 const REASON_KEYS = {
   'fast-rising': ['fastRising', 'fastRisingDesc'],
   converging: ['reasonConverging', 'reasonConvergingDesc'],
+  'cross-source': ['reasonCrossSource', 'reasonCrossSourceDesc'],
   novel: ['reasonNovel', 'reasonNovelDesc'],
   'under-the-radar': ['reasonUnderRadar', 'reasonUnderRadarDesc'],
 }
@@ -856,6 +926,21 @@ const REASON_KEYS = {
 function reasonLabel(reason) {
   const keys = REASON_KEYS[reason]
   return keys ? { label: t(keys[0]), desc: t(keys[1]) } : null
+}
+
+/** One link per other source carrying the same work (item.linked). */
+function alsoOn(item) {
+  const seen = new Set([item.source])
+  const links = (item.linked || []).filter(
+    (l) => !seen.has(l.source) && seen.add(l.source),
+  )
+  if (links.length === 0) return ''
+  return `<span>${escapeHtml(t('alsoOn'))} ${links
+    .map(
+      (l) =>
+        `<a href="${escapeHtml(safeUrl(l.url))}"${linkTarget()} title="${escapeHtml(l.title)}">${escapeHtml(SOURCE_CONFIG[l.source]?.label || l.source)}</a>`,
+    )
+    .join(', ')}</span>`
 }
 
 function reasonChips(item) {
@@ -869,19 +954,39 @@ function reasonChips(item) {
     .join('')
 }
 
+function trackRecordHtml() {
+  const record = state.trackRecord
+  if (!record) return ''
+  const body = record.rates
+    ? record.rates
+        .map((r) => {
+          const label =
+            r.reason === 'discovered'
+              ? t('trackDiscovered')
+              : (reasonLabel(r.reason)?.label ?? r.reason)
+          return `<span>${escapeHtml(label)} <span class="num">${r.pct}%</span> (${r.n})</span>`
+        })
+        .join(' · ')
+    : escapeHtml(
+        fmt('trackRecordPending', { n: record.pending, date: record.date }),
+      )
+  return `<p class="track-record" title="${escapeHtml(t('trackRecordHint'))}">${escapeHtml(t('trackRecord'))}: ${body}</p>`
+}
+
 function renderHighlights() {
   const top = state.items
     .filter((i) => i.signal?.reasons.length > 0)
     .sort((a, b) => (b.signal.score ?? 0) - (a.signal.score ?? 0))
     .slice(0, 6)
   if (top.length === 0) {
-    elements.highlights.innerHTML = `<p class="empty">${escapeHtml(t('highlightsEmpty'))}</p>`
+    elements.highlights.innerHTML = `<p class="empty">${escapeHtml(t('highlightsEmpty'))}</p>${trackRecordHtml()}`
     return
   }
-  elements.highlights.innerHTML = top
-    .map((item) => {
-      const text = displayText(item)
-      return `
+  elements.highlights.innerHTML =
+    top
+      .map((item) => {
+        const text = displayText(item)
+        return `
         <div class="highlight">
           <a class="highlight-title" href="${escapeHtml(safeUrl(item.sourceUrl))}"${linkTarget()}>${escapeHtml(text.title)}</a>
           <div class="highlight-meta">
@@ -891,8 +996,8 @@ function renderHighlights() {
             ${reasonChips(item)}
           </div>
         </div>`
-    })
-    .join('')
+      })
+      .join('') + trackRecordHtml()
 }
 
 function sparklineSvg(counts, color) {
@@ -970,6 +1075,86 @@ function renderTrends() {
   })
 }
 
+/** Fetch the weekly report for the reader's watch terms (panel only). */
+async function loadReport() {
+  if (!state.settings.panels.week) return
+  try {
+    state.report = await fetchReport(
+      fetch,
+      state.settings.backendUrl,
+      state.settings.watchTerms,
+    )
+  } catch (error) {
+    state.report = { error: error.message }
+  }
+  renderWeek()
+}
+
+function renderWeek() {
+  const box = $('week-report')
+  if (!box) return
+  const r = state.report
+  $('week-range').textContent = r && !r.error ? `${r.from} – ${r.to}` : ''
+  if (!r) {
+    box.innerHTML = `<p class="empty">${escapeHtml(t('weekLoading'))}</p>`
+    return
+  }
+  if (r.error) {
+    box.innerHTML = `<p class="empty">${escapeHtml(t('weekUnavailable'))}</p>`
+    return
+  }
+  const link = (i) =>
+    `<a href="${escapeHtml(safeUrl(i.url))}"${linkTarget()}>${escapeHtml(i.title)}</a>`
+  const sourceLabel = (s) => SOURCE_CONFIG[s]?.label || s
+  const blocks = []
+  if (r.watch.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekWatch'))}</h3><ul>${r.watch
+        .map(
+          (w) =>
+            `<li><button class="link-btn" data-watch="${escapeHtml(w.term)}">${escapeHtml(w.term)}</button> <span class="num">${w.thisWeek}</span> <span class="muted">(${escapeHtml(fmt('weekWas', { n: w.lastWeek }))})</span>${w.items.length ? `<ul class="week-items">${w.items.map((i) => `<li><span class="muted">${escapeHtml(sourceLabel(i.source))}</span> ${link(i)}</li>`).join('')}</ul>` : ''}</li>`,
+        )
+        .join('')}</ul></div>`,
+    )
+  if (r.topics.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekTopics'))}</h3><ul>${r.topics
+        .map((x) => {
+          const d = x.thisWeek - x.lastWeek
+          return `<li class="week-row"><span>${escapeHtml(x.label)}</span><span class="num">${x.thisWeek}</span><span class="num ${d > 0 ? 'rising' : 'muted'}">${d > 0 ? `+${d}` : d}</span></li>`
+        })
+        .join(
+          '',
+        )}</ul>${r.themes.added.length ? `<p class="muted">${escapeHtml(t('weekNewThemes'))}: ${escapeHtml(r.themes.added.map((x) => x.label).join(', '))}</p>` : ''}</div>`,
+    )
+  if (r.risers.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekRisers'))}</h3><ul>${r.risers
+        .map(
+          (x) =>
+            `<li class="week-row">${link(x)}<span class="num muted">${x.from} → ${x.to}</span></li>`,
+        )
+        .join('')}</ul></div>`,
+    )
+  if (r.crossSource.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekCrossSource'))}</h3><ul>${r.crossSource
+        .map(
+          (w) =>
+            `<li class="week-row">${link(w.items[0])}<span class="muted">${escapeHtml(w.sources.map(sourceLabel).join(' · '))}</span></li>`,
+        )
+        .join('')}</ul></div>`,
+    )
+  const withheld = r.watchWithheld
+    ? `<p class="empty">${escapeHtml(t('weekWatchWithheld'))}</p>`
+    : ''
+  box.innerHTML =
+    withheld +
+    (blocks.length
+      ? `<div class="week-grid">${blocks.join('')}</div>`
+      : `<p class="empty">${escapeHtml(t('weekNothing'))}</p>`)
+}
+
 function renderNews() {
   if (!elements.newsList) return
   if (!state.digest || state.digest.length === 0) {
@@ -1012,6 +1197,7 @@ function filterItems({ ignoreSource = false } = {}) {
         i.maturityStage === state.activeMaturity) &&
       (state.activeTopic === 'all' ||
         (i.signal?.topics ?? []).includes(state.activeTopic)) &&
+      (!state.activeWatch || watchHits(i, [state.activeWatch]).length > 0) &&
       (ignoreSource ||
         state.activeSource === 'all' ||
         i.source === state.activeSource),
@@ -1034,6 +1220,7 @@ function renderActiveFilters() {
     chip('maturity', getLocalizedMaturity(state.activeMaturity))
   if (state.activeTopic !== 'all')
     chip('topic', state.topicLabels[state.activeTopic] ?? state.activeTopic)
+  if (state.activeWatch) chip('watch', state.activeWatch)
   if (state.activeSource !== 'all')
     chip(
       'source',
@@ -1098,6 +1285,13 @@ function renderFeed() {
             ${engagement ? `<span class="num">${escapeHtml(engagement)}</span>` : ''}
             <span class="num">${escapeHtml(t('signal'))} ${item.signal?.score === null || item.signal?.score === undefined ? '–' : item.signal.score.toFixed(2)}</span>
             ${reasonChips(item)}
+            ${watchHits(item, state.settings.watchTerms)
+              .map(
+                (term) =>
+                  `<button class="chip-muted chip-watch" data-watch="${escapeHtml(term)}">${escapeHtml(t('watched'))}: ${escapeHtml(term)}</button>`,
+              )
+              .join('')}
+            ${alsoOn(item)}
             ${item.originalLanguage && item.originalLanguage !== 'en' ? `<span class="chip-muted">${escapeHtml(item.originalLanguage)}</span>` : ''}
             ${controls.join('')}
           </div>
@@ -1379,7 +1573,7 @@ function renderTopics(items) {
       return `<button class="tv-row${converging ? ' converging' : ''}" data-topic="${escapeHtml(r.topic)}" aria-pressed="${state.activeTopic === r.topic}">
         <span>${escapeHtml(r.label)}</span>
         <span class="tv-bar"><span style="width:${Math.round((r.items / maxItems) * 100)}%"></span></span>
-        <span class="tv-meta">${r.sources} ${escapeHtml(plural(r.sources, 'sourcesN'))} · ${r.items} ${escapeHtml(plural(r.items, 'itemsN'))}${converging ? ` · ${escapeHtml(t('converging'))}` : ''}</span>
+        <span class="tv-meta">${r.sources} ${escapeHtml(plural(r.sources, 'sourcesN'))} · ${r.items} ${escapeHtml(plural(r.items, 'itemsN'))}${converging ? ` · ${escapeHtml(t('converging'))}` : ''}${r.discovered ? ` · ${escapeHtml(t('discovered'))}` : ''}</span>
       </button>`
     })
     .join('')}</div>`
@@ -1587,6 +1781,17 @@ function setupEventListeners() {
     renderFeed()
     renderRadar()
   }
+  // A watch term (feed chip or This week) filters the feed to its items.
+  document.addEventListener('click', (e) => {
+    const term = e.target.closest('[data-watch]')?.dataset.watch
+    if (!term) return
+    state.activeWatch = state.activeWatch === term ? null : term
+    refilter()
+    document
+      .querySelector('[data-panel="feed"]')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+
   elements.categoryFilters.addEventListener('click', (e) => {
     const btn = e.target.closest('.chip')
     if (!btn) return
@@ -1636,6 +1841,7 @@ function setupEventListeners() {
     if (key === 'category' || key === 'all') state.activeCategory = 'all'
     if (key === 'maturity' || key === 'all') state.activeMaturity = 'all'
     if (key === 'topic' || key === 'all') state.activeTopic = 'all'
+    if (key === 'watch' || key === 'all') state.activeWatch = null
     if (key === 'source' || key === 'all') {
       state.activeSource = 'all'
       elements.sourceFilter.value = 'all'
@@ -1734,6 +1940,7 @@ const PANEL_LABELS = {
   highlights: 'panelHighlights',
   trends: 'panelTrends',
   feed: 'panelFeed',
+  week: 'panelWeek',
   digest: 'panelDigest',
 }
 
@@ -1803,6 +2010,7 @@ function fillSettingsForm(settings) {
   )
   $('set-default-category').value = settings.defaultCategory
   $('set-new-tab').checked = settings.openLinksInNewTab
+  $('set-watch').value = settings.watchTerms.join(', ')
   $('set-panels').replaceChildren(
     ...PANELS.map((name) => {
       const label = document.createElement('label')
@@ -1838,6 +2046,7 @@ function readSettingsForm() {
     defaultSource: $('set-default-source').value,
     defaultCategory: $('set-default-category').value,
     defaultView: $('set-default-view').value,
+    watchTerms: parseWatchTerms($('set-watch').value),
     panels: Object.fromEntries(
       [...$('set-panels').querySelectorAll('input')].map((b) => [
         b.name,
@@ -1926,6 +2135,7 @@ async function submitSettings(e) {
     await fetchAllData(true)
   } else {
     render()
+    loadReport()
   }
 }
 

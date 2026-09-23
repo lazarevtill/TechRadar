@@ -36,10 +36,12 @@ export const Route = createFileRoute('/_api/api/extension-feed')({
             feed,
             digest,
             trends,
-            // Names for the topic ids in item.signal.topics (additive field).
-            topicLabels: Object.fromEntries(
-              Object.entries(TOPIC_LABELS).map(([id, t]) => [id, t.label]),
-            ),
+            // Names for the topic ids in item.signal.topics (additive field),
+            // tracked topics and the themes the radar discovered itself.
+            topicLabels: Object.fromEntries([
+              ...Object.entries(TOPIC_LABELS).map(([id, t]) => [id, t.label]),
+              ...(feed.themes ?? []).map((t) => [t.id, t.label]),
+            ]),
           },
           {
             headers: {

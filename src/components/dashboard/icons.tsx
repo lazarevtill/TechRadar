@@ -10,6 +10,7 @@ import {
   FileText,
   GraduationCap,
   Link,
+  Link2,
   MessageSquare,
   Rocket,
   Shield,
@@ -60,11 +61,13 @@ export const SOURCE_ICONS: Record<DataSource, Icon> = {
   'hf-models': Boxes,
   biorxiv: FlaskConical,
   lobsters: MessageSquare,
+  devto: Newspaper,
 }
 
 export const REASON_ICONS: Record<SignalReason, Icon> = {
   'fast-rising': TrendingUp,
   converging: Layers,
+  'cross-source': Link2,
   novel: Sparkles,
   'under-the-radar': EyeOff,
 }

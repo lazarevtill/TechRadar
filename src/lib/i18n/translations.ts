@@ -32,6 +32,9 @@ export interface Translations {
   reasonUnderRadar: string
   reasonUnderRadarDesc: string
   onSources: string
+  reasonCrossSource: string
+  reasonCrossSourceDesc: string
+  sameWorkOn: string
 
   // Highlights panel
   highlightsTitle: string
@@ -42,6 +45,36 @@ export interface Translations {
   topicsTitle: string
   topicsHint: string
   topicsEmpty: string
+  discoveredTitle: string
+  healthCol: string
+  healthOk: string
+  healthDegraded: string
+  healthDown: string
+  usageToday: string
+  lastBackup: string
+  weekTitle: string
+  weekNewItems: string
+  watchLabel: string
+  watchPlaceholder: string
+  watchSave: string
+  weekUnavailable: string
+  weekRequestFailed: string
+  watchTitle: string
+  weekWas: string
+  weekTopics: string
+  weekThemesAdded: string
+  weekThemesRetired: string
+  weekRisers: string
+  weekNoRisers: string
+  weekCrossSource: string
+  trackRecord: string
+  trackRecordHint: string
+  trackRecordPending: string
+  trackDiscovered: string
+  alsoOn: string
+  discoveredHint: string
+  discoveredTag: string
+  discoveredSince: string
   items: string
 
   // Radar
@@ -72,6 +105,7 @@ export interface Translations {
   citations: string
   upvotes: string
   likes: string
+  reactions: string
   whyItMatters: string
   viewOn: string
   ago: string
@@ -216,6 +250,7 @@ export interface Translations {
   hfModels: string
   preprints: string
   lobsters: string
+  devto: string
   cinii: string
 
   // Language names
@@ -241,7 +276,7 @@ export interface Translations {
 export const translations: Record<Language, Translations> = {
   en: {
     appTitle: 'Tech Evolution Radar',
-    appSubtitle: 'Research and engineering signals from twelve sources',
+    appSubtitle: 'Research and engineering signals from thirteen sources',
     signals: 'signals',
     updated: 'Updated',
     updating: 'Updating',
@@ -271,6 +306,10 @@ export const translations: Record<Language, Translations> = {
     reasonUnderRadarDesc:
       'Judged a new capability while still drawing little attention',
     onSources: 'on {n} sources',
+    reasonCrossSource: 'Cross-source',
+    reasonCrossSourceDesc:
+      'The same work (by arXiv id, DOI, repository or link) appears on several sources, e.g. a paper, its code and a discussion',
+    sameWorkOn: 'same work on {n} sources',
 
     highlightsTitle: 'Highlights',
     highlightsHint: 'Only items with a stated reason',
@@ -279,6 +318,40 @@ export const translations: Record<Language, Translations> = {
     topicsTitle: 'Topics across sources',
     topicsHint: 'Tracked topics and where they show up now',
     topicsEmpty: 'No tracked topic appears on more than one source',
+    discoveredTitle: 'Discovered by the radar',
+    healthCol: 'Health',
+    healthOk: 'ok',
+    healthDegraded: 'thin',
+    healthDown: 'down',
+    usageToday: 'Jev today: {sent} requests sent, {cached} answered from cache',
+    lastBackup: 'last backup',
+    weekTitle: 'This week',
+    weekNewItems: '{n} new items',
+    watchLabel: 'Watch',
+    watchPlaceholder:
+      'terms to follow, comma-separated (e.g. Mamba, GRPO, perovskite)',
+    watchSave: 'Save',
+    weekUnavailable:
+      'The weekly report needs the history store, which is unavailable on this server.',
+    weekRequestFailed: 'Could not load the weekly report. It retries shortly.',
+    watchTitle: 'Your watch terms (items this week)',
+    weekWas: 'last week {n}',
+    weekTopics: 'Topics, items this week',
+    weekThemesAdded: 'New themes',
+    weekThemesRetired: 'Gone quiet',
+    weekRisers: 'Fastest growing',
+    weekNoRisers: 'Growth appears after an item is seen on two different days.',
+    weekCrossSource: 'Same work on several sources',
+    trackRecord: 'Track record',
+    trackRecordHint:
+      'How past highlights turned out after {days} days: the share that grew more than the median of a random sample from the same source. A random pick scores about 50%. For discovered themes: the share that kept appearing.',
+    trackRecordPending: 'measuring {n} highlights · first results on {date}',
+    trackDiscovered: 'Discovered themes',
+    alsoOn: 'also on',
+    discoveredHint:
+      'Terms that suddenly appeared across several sources and that Jev confirmed name a technology. Added automatically (at most 3 a day, 20 in total) and retired after two quiet weeks.',
+    discoveredTag: 'discovered',
+    discoveredSince: 'since {date}',
     items: 'items',
 
     liveRadar: 'Radar',
@@ -307,6 +380,7 @@ export const translations: Record<Language, Translations> = {
     citations: 'citations',
     upvotes: 'upvotes',
     likes: 'likes',
+    reactions: 'reactions',
     whyItMatters: 'Context',
     viewOn: 'Open on',
     ago: 'ago',
@@ -399,7 +473,7 @@ export const translations: Record<Language, Translations> = {
     infoSubtitle: 'What is measured, what is judged, and what is highlighted',
     infoSourcesTitle: 'Sources',
     infoSourcesDesc:
-      'GitHub repositories created this week, new arXiv submissions across ten fields, the Hacker News and Lobsters front pages, Hugging Face Daily Papers and trending models, bioRxiv and medRxiv preprints, the most-cited recent journal and conference work on OpenAlex, PubMed, HAL (France), CiNii (Japan) and Chinese-language journals on OpenAlex. All fetched by the server (GitHub optionally with a token), cached for five minutes, and served stale-while-revalidate.',
+      'GitHub repositories created this week, new arXiv submissions across ten fields, the Hacker News and Lobsters front pages, the most-reacted DEV (dev.to) articles of the day, Hugging Face Daily Papers and trending models, bioRxiv and medRxiv preprints, the most-cited recent journal and conference work on OpenAlex, PubMed, HAL (France), CiNii (Japan) and Chinese-language journals on OpenAlex. All fetched by the server (GitHub optionally with a token), cached for five minutes, and served stale-while-revalidate.',
     infoCategoriesTitle: 'Categories',
     infoCategoriesDesc:
       'Each item is assigned to one of eight areas by TypeSafe’s Jev model, one request per item. Items outside every area are dropped. Without a key, items show as unclassified; nothing is guessed from keywords.',
@@ -458,6 +532,7 @@ export const translations: Record<Language, Translations> = {
     hfModels: 'HF Models',
     preprints: 'bioRxiv / medRxiv',
     lobsters: 'Lobsters',
+    devto: 'DEV',
     cinii: 'CiNii (Japan)',
 
     english: 'English',
@@ -472,14 +547,14 @@ export const translations: Record<Language, Translations> = {
 
     footerVersion: 'Tech Evolution Radar',
     footerSubtitle:
-      'Live data from GitHub, arXiv, Hacker News, Lobsters, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL and CiNii',
+      'Live data from GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL and CiNii',
 
     loading: 'Loading',
     error: 'Error',
   },
   ru: {
     appTitle: 'Радар эволюции технологий',
-    appSubtitle: 'Сигналы из исследований и инженерии, двенадцать источников',
+    appSubtitle: 'Сигналы из исследований и инженерии, тринадцать источников',
     signals: 'сигналов',
     updated: 'Обновлено',
     updating: 'Обновление',
@@ -509,6 +584,10 @@ export const translations: Record<Language, Translations> = {
     reasonUnderRadarDesc:
       'Оценено как новая возможность, пока привлекая мало внимания',
     onSources: 'в {n} источниках',
+    reasonCrossSource: 'В нескольких источниках',
+    reasonCrossSourceDesc:
+      'Одна и та же работа (по arXiv id, DOI, репозиторию или ссылке) есть в нескольких источниках: например, статья, её код и обсуждение',
+    sameWorkOn: 'одна работа в {n} источниках',
 
     highlightsTitle: 'Главное',
     highlightsHint: 'Только сигналы с указанной причиной',
@@ -517,6 +596,41 @@ export const translations: Record<Language, Translations> = {
     topicsTitle: 'Темы в разных источниках',
     topicsHint: 'Отслеживаемые темы и где они встречаются сейчас',
     topicsEmpty: 'Ни одна тема не встречается более чем в одном источнике',
+    discoveredTitle: 'Найдено радаром',
+    healthCol: 'Состояние',
+    healthOk: 'в норме',
+    healthDegraded: 'мало данных',
+    healthDown: 'не отвечает',
+    usageToday: 'Jev сегодня: отправлено {sent}, из кэша {cached}',
+    lastBackup: 'последняя копия',
+    weekTitle: 'Эта неделя',
+    weekNewItems: '{n} новых записей',
+    watchLabel: 'Следить',
+    watchPlaceholder:
+      'термины через запятую (например, Mamba, GRPO, перовскит)',
+    watchSave: 'Сохранить',
+    weekUnavailable:
+      'Недельному отчёту нужно хранилище истории, а на этом сервере оно недоступно.',
+    weekRequestFailed:
+      'Не удалось загрузить недельный отчёт. Скоро попробуем снова.',
+    watchTitle: 'Ваши термины (записи за неделю)',
+    weekWas: 'неделей раньше {n}',
+    weekTopics: 'Темы, записей за неделю',
+    weekThemesAdded: 'Новые темы',
+    weekThemesRetired: 'Затихли',
+    weekRisers: 'Быстрее всего растут',
+    weekNoRisers: 'Рост виден, когда запись встречена в два разных дня.',
+    weekCrossSource: 'Одна работа в нескольких источниках',
+    trackRecord: 'Точность',
+    trackRecordHint:
+      'Как сработали прошлые выделения через {days} дней: доля тех, что выросли сильнее медианы случайной выборки из того же источника. Случайный выбор даёт около 50%. Для найденных тем — доля тех, что продолжили появляться.',
+    trackRecordPending: 'измеряем {n} выделений · первые результаты {date}',
+    trackDiscovered: 'Найденные темы',
+    alsoOn: 'также в',
+    discoveredHint:
+      'Термины, внезапно появившиеся в нескольких источниках, которые Jev подтвердил как названия технологий. Добавляются автоматически (не более 3 в день и 20 всего) и снимаются после двух тихих недель.',
+    discoveredTag: 'найдено',
+    discoveredSince: 'с {date}',
     items: 'записей',
 
     liveRadar: 'Радар',
@@ -545,6 +659,7 @@ export const translations: Record<Language, Translations> = {
     citations: 'цитирований',
     upvotes: 'голосов',
     likes: 'лайков',
+    reactions: 'реакций',
     whyItMatters: 'Контекст',
     viewOn: 'Открыть на',
     ago: 'назад',
@@ -638,7 +753,7 @@ export const translations: Record<Language, Translations> = {
     infoSubtitle: 'Что измеряется, что оценивается и что выделяется',
     infoSourcesTitle: 'Источники',
     infoSourcesDesc:
-      'Репозитории GitHub, созданные на этой неделе, новые статьи arXiv по десяти направлениям, главные страницы Hacker News и Lobsters, Hugging Face Daily Papers и популярные модели, препринты bioRxiv и medRxiv, самые цитируемые свежие журнальные и конференционные работы в OpenAlex, PubMed, HAL (Франция), CiNii (Япония) и китайскоязычные журналы в OpenAlex. Всё собирает сервер (GitHub — при желании с токеном), кэш на пять минут, отдаётся по схеме stale-while-revalidate.',
+      'Репозитории GitHub, созданные на этой неделе, новые статьи arXiv по десяти направлениям, главные страницы Hacker News и Lobsters, самые популярные за день статьи DEV (dev.to), Hugging Face Daily Papers и популярные модели, препринты bioRxiv и medRxiv, самые цитируемые свежие журнальные и конференционные работы в OpenAlex, PubMed, HAL (Франция), CiNii (Япония) и китайскоязычные журналы в OpenAlex. Всё собирает сервер (GitHub — при желании с токеном), кэш на пять минут, отдаётся по схеме stale-while-revalidate.',
     infoCategoriesTitle: 'Категории',
     infoCategoriesDesc:
       'Каждую запись относит к одной из восьми областей модель Jev от TypeSafe, по одному запросу на запись. Записи вне всех областей отбрасываются. Без ключа записи показываются как «без категории»; по ключевым словам ничего не угадывается.',
@@ -696,6 +811,7 @@ export const translations: Record<Language, Translations> = {
     hfModels: 'Модели HF',
     preprints: 'bioRxiv / medRxiv',
     lobsters: 'Lobsters',
+    devto: 'DEV',
     cinii: 'CiNii (Япония)',
 
     english: 'Английский',
@@ -710,7 +826,7 @@ export const translations: Record<Language, Translations> = {
 
     footerVersion: 'Радар эволюции технологий',
     footerSubtitle:
-      'Живые данные из GitHub, arXiv, Hacker News, Lobsters, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL и CiNii',
+      'Живые данные из GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL и CiNii',
 
     loading: 'Загрузка',
     error: 'Ошибка',
@@ -765,6 +881,7 @@ export const getLocalizedSources = (lang: Language) => ({
   'hf-models': translations[lang].hfModels,
   biorxiv: translations[lang].preprints,
   lobsters: translations[lang].lobsters,
+  devto: translations[lang].devto,
   cinii: translations[lang].cinii,
 })
 
@@ -774,6 +891,10 @@ export const getLocalizedReasons = (lang: Language) => {
   return {
     'fast-rising': { label: t.reasonFastRising, desc: t.reasonFastRisingDesc },
     converging: { label: t.reasonConverging, desc: t.reasonConvergingDesc },
+    'cross-source': {
+      label: t.reasonCrossSource,
+      desc: t.reasonCrossSourceDesc,
+    },
     novel: { label: t.reasonNovel, desc: t.reasonNovelDesc },
     'under-the-radar': {
       label: t.reasonUnderRadar,

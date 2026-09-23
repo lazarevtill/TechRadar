@@ -11,6 +11,7 @@ import { CategoryDot } from './icons'
 
 const REASON_ORDER: SignalReason[] = [
   'fast-rising',
+  'cross-source',
   'converging',
   'novel',
   'under-the-radar',
@@ -22,7 +23,7 @@ const REASON_ORDER: SignalReason[] = [
  * claims a breakthrough.
  */
 export function StatsPanel() {
-  const { items, stats, isLoading } = useTechFeed()
+  const { items, stats, isLoading, trackRecord } = useTechFeed()
   const { t, language } = useLanguage()
   const localizedCategories = getLocalizedCategories(language)
   const localizedMaturity = getLocalizedMaturity(language)
@@ -87,6 +88,42 @@ export function StatsPanel() {
             </li>
           ))}
         </ul>
+
+        {trackRecord && (
+          <p className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-fg-3">
+            <abbr
+              className="no-underline cursor-help uppercase tracking-wide text-[11px]"
+              title={t.trackRecordHint.replace(
+                '{days}',
+                String(trackRecord.horizonDays),
+              )}
+            >
+              {t.trackRecord}
+            </abbr>
+            {trackRecord.firstResultsOn ? (
+              <span>
+                {t.trackRecordPending
+                  .replace('{n}', String(trackRecord.pending))
+                  .replace('{date}', trackRecord.firstResultsOn)}
+              </span>
+            ) : (
+              trackRecord.reasons
+                .filter((r) => r.hitRate !== null)
+                .map((r) => (
+                  <span key={r.reason}>
+                    {r.reason === 'discovered'
+                      ? t.trackDiscovered
+                      : (reasons[r.reason as SignalReason]?.label ??
+                        r.reason)}{' '}
+                    <span className="num text-fg">
+                      {Math.round(r.hitRate! * 100)}%
+                    </span>{' '}
+                    <span className="num">({r.evaluated})</span>
+                  </span>
+                ))
+            )}
+          </p>
+        )}
       </div>
 
       <div className="space-y-4">

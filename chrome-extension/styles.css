@@ -332,6 +332,9 @@ a {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 1.5rem;
+  /* Each side keeps its own height: expanding a topic on the right must not
+     stretch (and redraw) the chart on the left. */
+  align-items: start;
 }
 .column {
   display: flex;
@@ -429,12 +432,11 @@ a {
   display: flex;
   flex-direction: column;
 }
-/* The chart fills whatever height the grid row gives the panel (the right
-   column usually sets it), instead of a fixed canvas leaving an empty band. */
+/* The chart's height comes from the viewport, not from the grid row, so
+   content changes in the right column never resize it. */
 .chart-body {
   position: relative;
-  flex: 1;
-  min-height: 460px;
+  height: clamp(460px, calc(100vh - 260px), 760px);
   display: flex;
 }
 .radar-container {
@@ -1042,4 +1044,84 @@ a {
   min-height: 60vh;
   color: var(--fg-2);
   font-size: 0.85rem;
+}
+
+.track-record {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--rule);
+  font-size: 11px;
+  color: var(--fg-3);
+}
+
+.chip-watch {
+  cursor: pointer;
+  background: transparent;
+  font: inherit;
+}
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 12px;
+}
+.week-block h3 {
+  margin: 0 0 0.35rem;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+}
+.week-block ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.week-block li {
+  margin: 0.15rem 0;
+}
+.week-block a {
+  color: var(--fg-2);
+  text-decoration: none;
+}
+.week-block a:hover {
+  color: var(--fg);
+}
+.week-row {
+  display: flex;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.week-row > :first-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.week-items {
+  padding-left: 0.75rem !important;
+}
+.week-items li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.week-block .muted {
+  color: var(--fg-3);
+}
+.week-block .rising {
+  color: var(--accent);
 }

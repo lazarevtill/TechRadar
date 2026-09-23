@@ -30,6 +30,7 @@ export type DataSource =
   | 'hf-models' // Models trending on the Hugging Face Hub
   | 'biorxiv' // bioRxiv and medRxiv preprints
   | 'lobsters' // Lobsters front page
+  | 'devto' // dev.to top articles of the day
   | 'cinii' // Japanese research
 
 export type OriginalLanguage =
@@ -59,6 +60,10 @@ export interface TechItem {
   maturityStage: MaturityStage
   /** Ranking, highlight reasons and their inputs (src/lib/signal-model.ts). */
   signal: SignalMetrics
+  /** The same work on other sources (server/store/identity.ts), if any. */
+  linked?: Array<{ id: string; source: DataSource; title: string; url: string }>
+  /** When the radar first saw this item (ISO); absent without history. */
+  firstSeen?: string
   publishedAt: Date
   whyItMatters?: string
   // Multilingual support
@@ -142,5 +147,6 @@ export const SOURCE_CONFIG: Record<
   'hf-models': { label: 'HF Models', language: 'en' },
   biorxiv: { label: 'bioRxiv / medRxiv', language: 'en' },
   lobsters: { label: 'Lobsters', language: 'en' },
+  devto: { label: 'DEV', language: 'en' },
   cinii: { label: 'CiNii (Japan)', language: 'ja' },
 }

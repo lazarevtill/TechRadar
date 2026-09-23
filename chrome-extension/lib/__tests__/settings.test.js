@@ -35,6 +35,16 @@ describe('normalizeBackendUrl', () => {
 })
 
 describe('sanitizeSettings', () => {
+  it('keeps valid watch terms and drops the rest', () => {
+    expect(
+      sanitizeSettings({ watchTerms: ['Mamba', 'mamba', 'x', 'GRPO'] })
+        .watchTerms,
+    ).toEqual(['Mamba', 'GRPO'])
+    expect(sanitizeSettings({ watchTerms: 'not a list' }).watchTerms).toEqual(
+      [],
+    )
+  })
+
   it('returns defaults for nothing stored', () => {
     expect(sanitizeSettings(undefined)).toEqual({
       ...DEFAULT_SETTINGS,

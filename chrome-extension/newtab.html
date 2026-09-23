@@ -191,6 +191,15 @@
             </div>
           </div>
 
+          <!-- This week -->
+          <section class="panel" data-panel="week">
+            <div class="panel-head">
+              <h2 data-i18n="weekTitle">This week</h2>
+              <span class="hint" id="week-range"></span>
+            </div>
+            <div id="week-report"></div>
+          </section>
+
           <!-- Feed -->
           <section class="panel" data-panel="feed">
             <div class="panel-head">
@@ -354,6 +363,20 @@
               <input type="checkbox" id="set-new-tab" />
               <span data-i18n="settingsNewTab">Open links in a new tab</span>
             </label>
+          </fieldset>
+
+          <fieldset>
+            <legend data-i18n="settingsWatch">Watch terms</legend>
+            <label for="set-watch" data-i18n="settingsWatchHint"
+              >Comma-separated; marked in the feed and followed in This
+              week</label
+            >
+            <input
+              id="set-watch"
+              class="input"
+              type="text"
+              spellcheck="false"
+            />
           </fieldset>
 
           <fieldset>
