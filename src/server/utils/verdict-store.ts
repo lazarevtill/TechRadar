@@ -21,6 +21,7 @@ import { dirname, resolve } from 'node:path'
  */
 
 export const RETENTION_DAYS = 30
+const SEEN_REFRESH_MS = 86_400_000
 const FILE_VERSION = 1
 
 interface Entry {
@@ -85,8 +86,13 @@ export class VerdictStore {
     this.load()
     const entry = this.entries.get(key)
     if (!entry || entry.h !== hash) return undefined
-    entry.s = this.now()
-    this.dirty = true
+    // Expiry counts in days, so last-seen only needs refreshing once a day;
+    // otherwise every rebuild would rewrite the whole file for nothing.
+    const now = this.now()
+    if (now - entry.s >= SEEN_REFRESH_MS) {
+      entry.s = now
+      this.dirty = true
+    }
     return entry.v as T
   }
 

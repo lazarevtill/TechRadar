@@ -13,3 +13,5 @@ docker-compose.yml
 docs
 AGENTS.md
 CLAUDE.md
+.cache
+.playwright-mcp

@@ -13,6 +13,8 @@ todos.json
 .eslintcache
 .superpowers/
 .env.*
+# Templates with placeholders only (no values) are tracked.
+!deploy/vps/.env.prod.example
 *.key
 public/data/*.local.json
 
@@ -24,3 +26,6 @@ package-lock.json
 
 # Paid Jev verdicts (src/server/utils/verdict-store.ts)
 .cache/
+
+# VPS deployment: host-side backups (deploy/vps)
+/backups

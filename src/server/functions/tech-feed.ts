@@ -22,14 +22,14 @@ import {
 } from '@/server/utils/cache'
 import { fetchWithRetry } from '@/server/utils/fetch-utils'
 import { cleanText } from '@/server/utils/clean-text'
-import { historyDb, historyDbFile, utcDay, type Db } from '@/server/store/db'
-import {
-  dailyMaintenance,
-  recordSourceRuns,
-  recordUsage,
-} from '@/server/store/ops'
+import { isAuthorized } from '@/server/utils/admin'
+import { contentHash } from '@/server/utils/verdict-store'
+import { historyDb, utcDay, type Db } from '@/server/store/db'
+import { recordSourceRuns, recordUsage } from '@/server/store/ops'
+import { topicSeries, type TopicSeries } from '@/server/store/series'
 import { drainUsage } from '@/server/utils/usage'
 import { alertOnSourceChanges } from './health'
+import { sendWatchAlerts } from './watch-alerts'
 import {
   evaluateDue,
   recordPredictions,
@@ -43,7 +43,7 @@ import {
   runDiscovery,
   type Theme,
 } from '@/server/store/discovery'
-import { extractTerms } from '@/server/store/terms'
+import { itemTerms } from '@/server/store/terms'
 import { themeAsker } from '@/server/utils/jev-theme'
 import {
   historyContext,
@@ -265,6 +265,8 @@ async function withHistory(
   history: Map<string, HistoryContext> | undefined
   themes: Theme[]
   save: (items: TechItem[]) => TrackRecord | null
+  flushUsage: () => void
+  series: (topics: string[]) => Record<string, TopicSeries>
 }> {
   const day = utcDay()
   try {
@@ -280,18 +282,14 @@ async function withHistory(
     // Optional steps: a failure is logged and never costs this rebuild its
     // history-based ranking.
     try {
-      const maintained = dailyMaintenance(db, day, historyDbFile())
-      if (maintained)
-        console.log(
-          `[history] daily maintenance: backup ${maintained.backup ?? 'skipped'}, ${maintained.deletedItems} expired items removed`,
-        )
-    } catch (error) {
-      console.error('[history] daily maintenance failed:', error)
-    }
-    try {
       alertOnSourceChanges(db, day)
     } catch (error) {
       console.error('[health] source alert check failed:', error)
+    }
+    try {
+      sendWatchAlerts(db, day, snapshot, now)
+    } catch (error) {
+      console.error('[watch] alert check failed:', error)
     }
     try {
       const found = await runDiscovery(db, day, themeAsker())
@@ -306,10 +304,12 @@ async function withHistory(
     return {
       history: historyContext(db, snapshot, day),
       themes: activeThemes(db),
+      // Called at the very end of a rebuild, after ranking and translation,
+      // so every paid call this rebuild made is on today's ledger.
+      flushUsage: () => recordUsage(db, day, drainUsage()),
+      series: (topics) => topicSeries(db, day, topics),
       save: (items) => {
         recordSignals(db, items, day)
-        // After ranking, so this rebuild's Jev signal calls are included.
-        recordUsage(db, day, drainUsage())
         recordPredictions(
           db,
           items.map((item) => ({
@@ -329,7 +329,13 @@ async function withHistory(
       '[history] store unavailable; ranking without history:',
       error,
     )
-    return { history: undefined, themes: [], save: () => null }
+    return {
+      history: undefined,
+      themes: [],
+      save: () => null,
+      flushUsage: () => {},
+      series: () => ({}),
+    }
   }
 }
 
@@ -380,11 +386,33 @@ function evaluateInBackground(db: Db, day: string) {
  */
 const SOURCE_BUDGET_MS = 30_000
 
+/** A short, loggable reason for a failed fetch. */
+function errorMessage(error: unknown): string {
+  const text = error instanceof Error ? error.message : String(error)
+  return text.slice(0, 200)
+}
+
 interface BudgetedRun {
   source: DataSource
   items: RawItem[]
   ms: number
   error: string | null
+}
+
+// One fetch per source at a time: a slow fetch still running from the last
+// rebuild is joined, not started again.
+const inFlight = new Map<DataSource, Promise<RawItem[]>>()
+
+function fetchOnce(
+  source: DataSource,
+  fetcher: () => Promise<RawItem[]>,
+): Promise<RawItem[]> {
+  let running = inFlight.get(source)
+  if (!running) {
+    running = fetcher().finally(() => inFlight.delete(source))
+    inFlight.set(source, running)
+  }
+  return running
 }
 
 async function withinBudget(
@@ -396,13 +424,24 @@ async function withinBudget(
   const timeout = new Promise<null>((resolve) => {
     timer = setTimeout(() => resolve(null), SOURCE_BUDGET_MS)
   })
-  const items = await Promise.race([fetcher(), timeout])
+  // A fetcher that fails reports why (it rethrows after logging), so health
+  // and alerts can tell an outage from a quiet day. A rejection that arrives
+  // after the budget ran out is already too late to matter and is logged by
+  // the fetcher itself.
+  const run = fetchOnce(source, fetcher).then(
+    (items) => ({ items, error: null as string | null }),
+    (error: unknown) => ({
+      items: [] as RawItem[],
+      error: errorMessage(error),
+    }),
+  )
+  const result = await Promise.race([run, timeout])
   clearTimeout(timer)
   return {
     source,
-    items: items ?? [],
+    items: result?.items ?? [],
     ms: Date.now() - started,
-    error: items === null ? 'timeout' : null,
+    error: result === null ? 'timeout' : result.error,
   }
 }
 
@@ -411,7 +450,7 @@ function themesByItem(raw: RawItem[], themes: Theme[]): Map<string, string[]> {
   const out = new Map<string, string[]>()
   if (!themes.length) return out
   for (const item of raw) {
-    const keys = new Set(extractTerms(item.title).map((t) => t.key))
+    const keys = new Set(itemTerms(item.title, item.summary).map((t) => t.key))
     const ids = themes.filter((t) => keys.has(t.term)).map((t) => t.id)
     if (ids.length) out.set(item.id, ids)
   }
@@ -549,7 +588,7 @@ async function fetchGitHubTrending(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('GitHub API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -680,7 +719,7 @@ async function fetchArxivPapers(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('arXiv API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -750,7 +789,7 @@ async function fetchHackerNews(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('Hacker News API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -873,7 +912,7 @@ async function fetchOpenAlex(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('OpenAlex API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -901,7 +940,7 @@ async function fetchOpenAlexChinese(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('OpenAlex (zh) API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -995,7 +1034,7 @@ async function fetchPubMed(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('PubMed API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1057,7 +1096,7 @@ async function fetchHAL(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('HAL API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1089,22 +1128,20 @@ async function fetchCiNii(): Promise<RawItem[]> {
       },
     )
 
-    if (!response.ok) {
-      // CiNii may require different approach, return empty for now
-      console.warn('CiNii API returned:', response.status)
-      return []
-    }
+    if (!response.ok) throw new Error(`CiNii HTTP ${response.status}`)
 
     const data = await response.json()
     const items = data['@graph'] || data.items || []
 
     const articles: CiNiiArticle[] = items
-    const candidates = articles.map((item, index): RawItem => {
+    const candidates = articles.map((item): RawItem => {
       const title = item.title || 'Japanese Research Article'
       const description = cleanText(item.description)
       // '@id' is the article's stable URI; a timestamped id would change on
       // every fetch and defeat the per-item Jev verdict cache.
-      const id = `cinii-${item['@id'] || index}`
+      // Without an '@id', the title identifies it (the list position would
+      // change between fetches and attach history to the wrong paper).
+      const id = `cinii-${item['@id'] || contentHash(title)}`
       const summary =
         description || 'Research article from CiNii Japanese academic database.'
 
@@ -1148,7 +1185,7 @@ async function fetchCiNii(): Promise<RawItem[]> {
     return result
   } catch (error) {
     console.error('CiNii API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1178,18 +1215,28 @@ async function fetchHuggingFacePapers(): Promise<RawItem[]> {
   try {
     // Daily Papers are published per day (none on some weekends).
     const days = Array.from({ length: 7 }, (_, i) => isoDaysAgo(i))
+    // Each day on its own: one failed day (HTTP error, timeout, network)
+    // must not discard the others.
     const perDay = await Promise.all(
       days.map(async (date) => {
-        const res = await fetchWithRetry(
-          `https://huggingface.co/api/daily_papers?date=${date}`,
-          { retries: 2, baseDelay: 500, timeout: 15_000 },
-        )
-        return res.ok ? ((await res.json()) as HFDailyPaper[]) : []
+        try {
+          const res = await fetchWithRetry(
+            `https://huggingface.co/api/daily_papers?date=${date}`,
+            { retries: 2, baseDelay: 500, timeout: 15_000 },
+          )
+          return res.ok ? ((await res.json()) as HFDailyPaper[]) : null
+        } catch (error) {
+          console.error(`[hf-papers] ${date} unavailable:`, String(error))
+          return null
+        }
       }),
     )
+    // Some days have no Daily Papers; every day failing is an outage.
+    if (perDay.every((d) => d === null))
+      throw new Error('every daily_papers request failed')
     const seen = new Set<string>()
     const papers = perDay
-      .flat()
+      .flatMap((d) => d ?? [])
       .filter(
         (p) => p.paper?.id && !seen.has(p.paper.id) && seen.add(p.paper.id),
       )
@@ -1231,7 +1278,7 @@ async function fetchHuggingFacePapers(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('Hugging Face papers API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1297,7 +1344,7 @@ async function fetchHuggingFaceModels(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('Hugging Face models API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1340,13 +1387,16 @@ async function fetchPreprints(): Promise<RawItem[]> {
           return (data.collection ?? []).map((r) => ({ ...r, server }))
         } catch (error) {
           console.error(`[preprints] ${server} unavailable:`, String(error))
-          return []
+          return null
         }
       }),
     )
+    // One server down still yields the other; both down is an outage.
+    if (perServer.every((r) => r === null))
+      throw new Error('bioRxiv and medRxiv both unavailable')
     const seen = new Set<string>()
     const records = perServer
-      .flat()
+      .flatMap((r) => r ?? [])
       .filter((r) => r.doi && !seen.has(r.doi) && seen.add(r.doi))
 
     const candidates = records.map((r): RawItem => {
@@ -1375,11 +1425,14 @@ async function fetchPreprints(): Promise<RawItem[]> {
       }
     })
     const items = (await applyCategories(candidates)).slice(0, 30)
-    setCache(CACHE_KEYS.PREPRINTS, items, CACHE_TTL.DEFAULT)
+    // bioRxiv/medRxiv publish daily and answer slowly (40–60 s): a result
+    // that finishes after the rebuild's budget must still be fresh for the
+    // next scheduled rebuild, so it is kept for an hour.
+    setCache(CACHE_KEYS.PREPRINTS, items, CACHE_TTL.HOUR)
     return items
   } catch (error) {
     console.error('bioRxiv/medRxiv API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1401,18 +1454,27 @@ async function fetchLobsters(): Promise<RawItem[]> {
   if (cached) return cached
 
   try {
+    // Each page on its own; the source fails only when both do.
     const pages = await Promise.all(
       [1, 2].map(async (page) => {
-        const res = await fetchWithRetry(
-          `https://lobste.rs/hottest.json?page=${page}`,
-          { retries: 2, baseDelay: 500, timeout: 15_000 },
-        )
-        return res.ok ? ((await res.json()) as LobstersStory[]) : []
+        try {
+          const res = await fetchWithRetry(
+            `https://lobste.rs/hottest.json?page=${page}`,
+            { retries: 2, baseDelay: 500, timeout: 15_000 },
+          )
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
+          return (await res.json()) as LobstersStory[]
+        } catch (error) {
+          console.error(`[lobsters] page ${page} unavailable:`, String(error))
+          return null
+        }
       }),
     )
+    if (pages.every((p) => p === null))
+      throw new Error('both Lobsters pages failed')
     const seen = new Set<string>()
     const stories = pages
-      .flat()
+      .flatMap((p) => p ?? [])
       .filter((s) => !seen.has(s.short_id) && seen.add(s.short_id))
 
     const candidates = stories.map((story): RawItem => {
@@ -1446,7 +1508,7 @@ async function fetchLobsters(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('Lobsters API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1509,7 +1571,7 @@ async function fetchDevTo(): Promise<RawItem[]> {
     return items
   } catch (error) {
     console.error('dev.to API error:', error)
-    return []
+    throw error
   }
 }
 
@@ -1583,11 +1645,19 @@ async function buildTechFeed() {
   // Rank the whole fetch together: percentiles are per source, convergence
   // needs every source at once.
   const raw = runs.flatMap((r) => r.items)
-  const { history, themes, save } = await withHistory(raw, runs)
+  const { history, themes, save, flushUsage, series } = await withHistory(
+    raw,
+    runs,
+  )
   let allItems = await assembleItems(raw, history, themesByItem(raw, themes))
   let record: TrackRecord | null = null
+  let topicHistory: Record<string, TopicSeries> = {}
   try {
     record = save(allItems)
+    // After today's observations are written, so today counts.
+    topicHistory = series([
+      ...new Set(allItems.flatMap((i) => i.signal.topics)),
+    ])
   } catch (error) {
     console.error('[history] could not record this fetch:', error)
   }
@@ -1618,6 +1688,12 @@ async function buildTechFeed() {
     }
   }
 
+  try {
+    flushUsage()
+  } catch (error) {
+    console.error('[history] could not record usage:', error)
+  }
+
   // Sort by date
   allItems.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
 
@@ -1636,6 +1712,8 @@ async function buildTechFeed() {
     })),
     /** How past highlights turned out (null without the history store). */
     trackRecord: record,
+    /** Per topic in this feed: new works per day (30 days) and its origin. */
+    topicSeries: topicHistory,
     fetchedAt: new Date().toISOString(),
   }
 }
@@ -1650,7 +1728,8 @@ const FEED_FRESH_MS = CACHE_TTL.DEFAULT
 const FEED_SNAPSHOT_TTL_MS = 24 * CACHE_TTL.HOUR
 let feedRefresh: Promise<TechFeedPayload> | null = null
 
-function refreshTechFeed(): Promise<TechFeedPayload> {
+/** One single-flight rebuild; also driven by the scheduler (scheduler.ts). */
+export function refreshTechFeed(): Promise<TechFeedPayload> {
   feedRefresh ??= buildTechFeed()
     .then((payload) => {
       setCache(CACHE_KEYS.TECH_FEED, payload, FEED_SNAPSHOT_TTL_MS)
@@ -1681,117 +1760,34 @@ export const fetchTechFeedFn = createServerFn({ method: 'GET' }).handler(
   getTechFeed,
 )
 
-const filterSchema = z
-  .object({
-    category: z.string().optional(),
-    source: z.string().optional(),
-    maturity: z.string().optional(),
-    highlightedOnly: z.boolean().optional(),
-    language: z.string().optional(),
-  })
-  .optional()
-
-export const fetchFilteredFeedFn = createServerFn({ method: 'GET' })
-  .inputValidator(filterSchema)
-  .handler(async ({ data }) => {
-    const result = await fetchTechFeedFn()
-
-    let items = result.items
-
-    if (data?.category && data.category !== 'all') {
-      items = items.filter((i) => i.category === data.category)
-    }
-    if (data?.source && data.source !== 'all') {
-      items = items.filter((i) => i.source === data.source)
-    }
-    if (data?.maturity && data.maturity !== 'all') {
-      items = items.filter((i) => i.maturityStage === data.maturity)
-    }
-    if (data?.highlightedOnly) {
-      items = items.filter((i) => i.signal.reasons.length > 0)
-    }
-    if (data?.language && data.language !== 'all') {
-      items = items.filter((i) => i.originalLanguage === data.language)
-    }
-
-    return { items, stats: result.stats, fetchedAt: result.fetchedAt }
-  })
-
-// Fetch individual source data
-export const fetchGitHubFeedFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const items = await assembleItems(await fetchGitHubTrending())
-    return {
-      items: items.map((item) => ({
-        ...item,
-        publishedAt: item.publishedAt.toISOString(),
-      })),
-      fetchedAt: new Date().toISOString(),
-    }
-  },
-)
-
-export const fetchArxivFeedFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const items = await assembleItems(await fetchArxivPapers())
-    return {
-      items: items.map((item) => ({
-        ...item,
-        publishedAt: item.publishedAt.toISOString(),
-      })),
-      fetchedAt: new Date().toISOString(),
-    }
-  },
-)
-
-export const fetchHackerNewsFeedFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const items = await assembleItems(await fetchHackerNews())
-    return {
-      items: items.map((item) => ({
-        ...item,
-        publishedAt: item.publishedAt.toISOString(),
-      })),
-      fetchedAt: new Date().toISOString(),
-    }
-  },
-)
-
-export const fetchMultilingualFeedFn = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  const [halItems, ciniiItems, zhItems] = await Promise.all([
-    fetchHAL(),
-    fetchCiNii(),
-    fetchOpenAlexChinese(),
-  ])
-
-  const allItems = await assembleItems([...halItems, ...ciniiItems, ...zhItems])
-  const translations =
-    allItems.length > 0 ? await batchTranslate(allItems) : new Map()
-
-  return {
-    items: allItems.map((item) => ({
-      ...item,
-      publishedAt: item.publishedAt.toISOString(),
-      translations: translations.get(item.id),
-    })),
-    fetchedAt: new Date().toISOString(),
-  }
-})
-
 // ============================================================================
 // CACHE INVALIDATION
 // ============================================================================
 
 /**
- * Invalidate all tech feed caches
- * Call this when user manually refreshes
+ * A forced rebuild clears every source cache, so the next request re-fetches
+ * all sources. At most one per FORCED_REBUILD_INTERVAL_MS for the whole
+ * server, whoever asks — the scheduler already rebuilds every few minutes.
  */
-export const invalidateTechFeedCacheFn = createServerFn({
-  method: 'POST',
-}).handler(async () => {
-  const count = invalidateCacheByPrefix('tech-feed:')
-  console.log(`[TechFeed] Cache invalidated: ${count} entries cleared`)
-  return { invalidated: count }
-})
+export const FORCED_REBUILD_INTERVAL_MS = 2 * 60_000
+let lastForcedRebuild = 0
+
+export type InvalidateResult =
+  | { ok: true; invalidated: number }
+  | { ok: false; reason: 'unauthorized' }
+  | { ok: false; reason: 'throttled'; retryInMs: number }
+
+/** Clear the feed caches (operator panel "refresh" / "clear cache"). */
+export const invalidateTechFeedCacheFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({ token: z.string().max(200).optional() }).optional(),
+  )
+  .handler(async ({ data }): Promise<InvalidateResult> => {
+    if (!isAuthorized(data?.token)) return { ok: false, reason: 'unauthorized' }
+    const wait = lastForcedRebuild + FORCED_REBUILD_INTERVAL_MS - Date.now()
+    if (wait > 0) return { ok: false, reason: 'throttled', retryInMs: wait }
+    lastForcedRebuild = Date.now()
+    const count = invalidateCacheByPrefix('tech-feed:')
+    console.log(`[TechFeed] Cache invalidated: ${count} entries cleared`)
+    return { ok: true, invalidated: count }
+  })

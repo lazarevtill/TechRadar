@@ -61,6 +61,23 @@ describe('sourceHealth', () => {
   })
 })
 
+describe('expected sources', () => {
+  it('reports a source with no recent runs as down', async () => {
+    const db = await openDb(':memory:')
+    recordSourceRuns(
+      db,
+      [{ source: 'arxiv', items: 50, ms: 100, error: null }],
+      `${TODAY}T01:00:00Z`,
+    )
+    const health = sourceHealth(db, TODAY, ['arxiv', 'devto'])
+    expect(health.map((h) => [h.source, h.status])).toEqual([
+      ['arxiv', 'ok'],
+      ['devto', 'down'],
+    ])
+    expect(health[1].lastRun).toBeNull()
+  })
+})
+
 describe('usage ledger', () => {
   it('adds up counts per day and kind', async () => {
     const db = await openDb(':memory:')
@@ -127,5 +144,27 @@ describe('retainDays', () => {
     expect(retainDays('30')).toBe(30)
     for (const bad of ['-30', '0', '1.5', 'abc', undefined])
       expect(retainDays(bad)).toBe(365)
+  })
+})
+
+describe('dailyMaintenance failure', () => {
+  it('retries the backup on the next run when it failed', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'radar-ops-'))
+    const db = await openDb(join(dir, 'history.db'))
+    // A backup directory that cannot be created: a file is in the way.
+    writeFileSync(join(dir, 'blocked'), '')
+    process.env.BACKUP_DIR = join(dir, 'blocked', 'sub')
+    try {
+      expect(() =>
+        dailyMaintenance(db, TODAY, join(dir, 'history.db')),
+      ).toThrow()
+    } finally {
+      delete process.env.BACKUP_DIR
+    }
+    // Not marked done: the next run (backups now possible) does it.
+    expect(dailyMaintenance(db, TODAY, join(dir, 'history.db'))?.backup).toBe(
+      join(dir, 'backups', `history-${TODAY}.db`),
+    )
+    db.close()
   })
 })

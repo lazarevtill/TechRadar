@@ -8,7 +8,11 @@ import {
   getLocalizedMaturity,
   getLocalizedSources,
   getLocalizedLanguages,
+  getLocalizedReasons,
 } from '@/lib/i18n'
+import { useWatchTerms } from '@/hooks/use-watch-terms'
+import { toggleFeedFocus, useFeedFocus } from '@/hooks/use-feed-focus'
+import { watchMatcher } from '@/lib/watch'
 import { getTranslatedContent } from '@/hooks/use-tech-feed'
 import { translateItemFn } from '@/server/functions/translation'
 import { engagementLine, formatScore, reasonLabel } from '@/lib/signal-format'
@@ -86,6 +90,16 @@ export function FeedItem({ item }: FeedItemProps) {
   )
   const highlighted = item.signal.reasons.length > 0
   const engagement = engagementLine(item.signal, t)
+  const reasons = getLocalizedReasons(language)
+  const [watchTerms] = useWatchTerms()
+  const focus = useFeedFocus()
+  const watched = watchTerms.filter((term) =>
+    watchMatcher(term)(`${item.title}\n${item.summary}`),
+  )
+  // How long the radar has been tracking it (shown from one day on).
+  const firstSeenDays = item.firstSeen
+    ? Math.floor((Date.now() - Date.parse(item.firstSeen)) / 86_400_000)
+    : -1
   // One link per other source carrying the same work.
   const otherSources = (item.linked ?? []).filter(
     (link, i, all) =>
@@ -144,10 +158,29 @@ export function FeedItem({ item }: FeedItemProps) {
           {t.signalScore.toLowerCase()} {formatScore(item.signal.score)}
         </span>
         {item.signal.reasons.map((reason) => (
-          <span key={reason} className="chip-reason">
+          <span
+            key={reason}
+            className="chip-reason"
+            title={reasons[reason].desc}
+          >
             {reasonLabel(reason, item.signal, t)}
           </span>
         ))}
+        {watched.map((term) => (
+          <button
+            key={term}
+            className="chip-muted hover:text-fg"
+            aria-pressed={focus.watch === term}
+            onClick={() => toggleFeedFocus('watch', term)}
+          >
+            {t.watchChip}: {term}
+          </button>
+        ))}
+        {firstSeenDays >= 1 && item.firstSeen && (
+          <span className="num">
+            {t.firstSeenOn.replace('{date}', item.firstSeen.slice(0, 10))}
+          </span>
+        )}
         {otherSources.length > 0 && (
           <span>
             {t.alsoOn}{' '}

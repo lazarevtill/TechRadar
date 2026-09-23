@@ -1,6 +1,7 @@
 import { useTechFeed } from '@/hooks/use-tech-feed'
 import { CATEGORY_CONFIG, MATURITY_CONFIG } from '@/lib/tech-categories'
 import type { SignalReason } from '@/lib/signal-model'
+import type { TrackRecord } from '@/server/store/predictions'
 import {
   useLanguage,
   getLocalizedCategories,
@@ -23,7 +24,7 @@ const REASON_ORDER: SignalReason[] = [
  * claims a breakthrough.
  */
 export function StatsPanel() {
-  const { items, stats, isLoading, trackRecord } = useTechFeed()
+  const { items, stats, isLoading, isError, trackRecord } = useTechFeed()
   const { t, language } = useLanguage()
   const localizedCategories = getLocalizedCategories(language)
   const localizedMaturity = getLocalizedMaturity(language)
@@ -74,6 +75,12 @@ export function StatsPanel() {
           ))}
         </dl>
 
+        {isError && stats.totalSignals === 0 && (
+          <p className="text-xs text-danger border-l-2 border-rule-strong pl-3">
+            {t.failedToFetchLiveData}
+          </p>
+        )}
+
         {stats.totalSignals > 0 && stats.judged === 0 && (
           <p className="text-xs text-fg-2 border-l-2 border-accent pl-3">
             {t.noJevKey}
@@ -90,39 +97,14 @@ export function StatsPanel() {
         </ul>
 
         {trackRecord && (
-          <p className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-fg-3">
-            <abbr
-              className="no-underline cursor-help uppercase tracking-wide text-[11px]"
-              title={t.trackRecordHint.replace(
-                '{days}',
-                String(trackRecord.horizonDays),
-              )}
-            >
-              {t.trackRecord}
-            </abbr>
-            {trackRecord.firstResultsOn ? (
-              <span>
-                {t.trackRecordPending
-                  .replace('{n}', String(trackRecord.pending))
-                  .replace('{date}', trackRecord.firstResultsOn)}
-              </span>
-            ) : (
-              trackRecord.reasons
-                .filter((r) => r.hitRate !== null)
-                .map((r) => (
-                  <span key={r.reason}>
-                    {r.reason === 'discovered'
-                      ? t.trackDiscovered
-                      : (reasons[r.reason as SignalReason]?.label ??
-                        r.reason)}{' '}
-                    <span className="num text-fg">
-                      {Math.round(r.hitRate! * 100)}%
-                    </span>{' '}
-                    <span className="num">({r.evaluated})</span>
-                  </span>
-                ))
-            )}
-          </p>
+          <TrackRecordLine
+            record={trackRecord}
+            labelFor={(reason) =>
+              reason === 'discovered'
+                ? t.trackDiscovered
+                : (reasons[reason as SignalReason]?.label ?? reason)
+            }
+          />
         )}
       </div>
 
@@ -183,6 +165,58 @@ export function StatsPanel() {
           </ul>
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * How past highlights turned out. Shows the pending state until the first
+ * results, then hit rates per reason, and always says how many could not be
+ * judged. Renders nothing when there is nothing to say.
+ */
+function TrackRecordLine({
+  record,
+  labelFor,
+}: {
+  record: TrackRecord
+  labelFor: (reason: string) => string
+}) {
+  const { t } = useLanguage()
+  const rated = record.reasons.filter((r) => r.hitRate !== null)
+  const notJudged = record.unavailable + record.unmatched
+  if (!record.firstResultsOn && rated.length === 0 && notJudged === 0)
+    return null
+  const hint = t.trackRecordHint.replace('{days}', String(record.horizonDays))
+  return (
+    <div className="text-xs text-fg-3">
+      <p className="flex flex-wrap gap-x-4 gap-y-1">
+        <span className="uppercase tracking-wide text-[11px]">
+          {t.trackRecord}
+        </span>
+        {record.firstResultsOn ? (
+          <span>
+            {t.trackRecordPending
+              .replace('{n}', String(record.pending))
+              .replace('{date}', record.firstResultsOn)}
+          </span>
+        ) : (
+          rated.map((r) => (
+            <span key={r.reason}>
+              {labelFor(r.reason)}{' '}
+              <span className="num text-fg">
+                {Math.round(r.hitRate! * 100)}%
+              </span>{' '}
+              <span className="num">({r.evaluated})</span>
+            </span>
+          ))
+        )}
+        {notJudged > 0 && (
+          <span className="num">
+            {t.trackRecordNotJudged.replace('{n}', String(notJudged))}
+          </span>
+        )}
+      </p>
+      <p className="mt-0.5 text-[11px]">{hint}</p>
     </div>
   )
 }

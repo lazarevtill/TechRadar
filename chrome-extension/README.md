@@ -2,7 +2,7 @@
 
 Replaces the new-tab page with a calm radar of research and engineering
 signals. The extension is a thin client: **it holds no API keys and calls no
-third-party API.** Your TechRadar server fetches all eight sources, runs Jev
+third-party API.** Your TechRadar server fetches all thirteen sources, runs Jev
 (categories, novelty, topics), translates, and scores; the extension renders
 what `GET /api/extension-feed` returns.
 

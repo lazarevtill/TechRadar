@@ -1,0 +1,49 @@
+# Production overlay for a VPS: TechRadar behind Caddy (automatic HTTPS),
+# backups on the host outside the data volume.
+#
+#   cp deploy/vps/.env.prod.example .env   # then fill it in
+#   docker compose -f docker-compose.yml -f deploy/vps/docker-compose.prod.yml up -d --build
+#
+# Requires DNS for $DOMAIN pointing at this host and ports 80/443 open.
+services:
+  # The app runs as uid 1000 (the image's `bun` user); a host directory that
+  # Docker creates is owned by root, so it is handed over first.
+  backups-init:
+    image: busybox:1
+    command: ['sh', '-c', 'mkdir -p /backups && chown 1000:1000 /backups']
+    volumes:
+      - ./backups:/backups
+
+  techradar:
+    depends_on:
+      backups-init:
+        condition: service_completed_successfully
+    # Only Caddy talks to the app; it is not published on the host.
+    ports: !reset []
+    expose:
+      - '3000'
+    environment:
+      BACKUP_DIR: /backups
+    volumes:
+      - techradar-cache:/app/.cache
+      - ./backups:/backups
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - techradar
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env, e.g. radar.example.com}
+    volumes:
+      - ./deploy/vps/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  caddy-data:
+  caddy-config:

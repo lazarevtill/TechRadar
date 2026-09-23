@@ -1,11 +1,8 @@
 import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   fetchTechFeedFn,
-  fetchGitHubFeedFn,
-  fetchArxivFeedFn,
-  fetchHackerNewsFeedFn,
-  fetchMultilingualFeedFn,
   invalidateTechFeedCacheFn,
+  type InvalidateResult,
   type TechFeedStats,
 } from '@/server/functions/tech-feed'
 import type {
@@ -17,7 +14,9 @@ import type {
 } from '@/lib/tech-categories'
 
 import type { DiscoveredTheme } from '@/lib/trend-topics'
+import { watchMatcher } from '@/lib/watch'
 import type { TrackRecord } from '@/server/store/predictions'
+import type { TopicSeries } from '@/server/store/series'
 
 export type { TechFeedStats }
 
@@ -56,12 +55,14 @@ export interface UseTechFeedResult {
   error: Error | null
   refetch: () => void
   /** Force refresh - invalidates server cache and refetches fresh data */
-  forceRefresh: () => Promise<void>
+  forceRefresh: (token?: string) => Promise<InvalidateResult>
   fetchedAt: Date | null
   /** Themes the radar discovered itself. */
   themes: DiscoveredTheme[]
   /** How past highlights turned out; null without the history store. */
   trackRecord: TrackRecord | null
+  /** Per topic: new works per day (last 30 days) and where it started. */
+  topicSeries: Record<string, TopicSeries>
 }
 
 /** Shared with the route loader, which prefetches it during SSR. */
@@ -80,18 +81,16 @@ export function useTechFeed(): UseTechFeedResult {
 
   const queryClient = useQueryClient()
 
-  // Force refresh - invalidates server cache first, then refetches. The
-  // rebuild also writes history, so views derived from it (source health,
-  // the weekly report) are refreshed after it.
-  const forceRefresh = async () => {
-    try {
-      await invalidateTechFeedCacheFn()
-    } catch (err) {
-      console.error('[TechFeed] Failed to invalidate cache:', err)
-    }
+  // Force refresh - clears the server caches (operator token and throttle
+  // apply), then refetches. The rebuild also writes history, so views derived
+  // from it (source health, the weekly report) are refreshed after it.
+  const forceRefresh = async (token?: string): Promise<InvalidateResult> => {
+    const result = await invalidateTechFeedCacheFn({ data: { token } })
+    if (!result.ok) return result
     await refetch()
     void queryClient.invalidateQueries({ queryKey: ['health'] })
     void queryClient.invalidateQueries({ queryKey: ['weekly-report'] })
+    return result
   }
 
   return {
@@ -106,80 +105,7 @@ export function useTechFeed(): UseTechFeedResult {
     fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
     themes: data?.themes ?? [],
     trackRecord: data?.trackRecord ?? null,
-  }
-}
-
-// Individual source hooks for more granular control
-export function useGitHubFeed() {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['github-feed'],
-    queryFn: () => fetchGitHubFeedFn(),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-  return {
-    items: data ? transformItems(data.items) : [],
-    isLoading,
-    isError,
-    error: error as Error | null,
-    refetch,
-    fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
-  }
-}
-
-export function useArxivFeed() {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['arxiv-feed'],
-    queryFn: () => fetchArxivFeedFn(),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-  return {
-    items: data ? transformItems(data.items) : [],
-    isLoading,
-    isError,
-    error: error as Error | null,
-    refetch,
-    fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
-  }
-}
-
-export function useHackerNewsFeed() {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['hackernews-feed'],
-    queryFn: () => fetchHackerNewsFeedFn(),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-  return {
-    items: data ? transformItems(data.items) : [],
-    isLoading,
-    isError,
-    error: error as Error | null,
-    refetch,
-    fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
-  }
-}
-
-// Multilingual sources hook
-export function useMultilingualFeed() {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['multilingual-feed'],
-    queryFn: () => fetchMultilingualFeedFn(),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  })
-
-  return {
-    items: data ? transformItems(data.items) : [],
-    isLoading,
-    isError,
-    error: error as Error | null,
-    refetch,
-    fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
+    topicSeries: data?.topicSeries ?? {},
   }
 }
 
@@ -191,6 +117,10 @@ export interface FilterOptions {
   highlightedOnly?: boolean
   sortBy?: 'recent' | 'signal' | 'engagement'
   language?: OriginalLanguage | 'all'
+  /** Tracked topic or discovered theme id carried by the item. */
+  topic?: string | null
+  /** Watch term mentioned in title or summary. */
+  watch?: string | null
 }
 
 export function useFilteredTechFeed(filters: FilterOptions = {}) {
@@ -226,6 +156,16 @@ export function useFilteredTechFeed(filters: FilterOptions = {}) {
   if (filters.language && filters.language !== 'all') {
     filteredItems = filteredItems.filter(
       (i) => i.originalLanguage === filters.language,
+    )
+  }
+  if (filters.topic) {
+    const topic = filters.topic
+    filteredItems = filteredItems.filter((i) => i.signal.topics.includes(topic))
+  }
+  if (filters.watch) {
+    const match = watchMatcher(filters.watch)
+    filteredItems = filteredItems.filter((i) =>
+      match(`${i.title}\n${i.summary}`),
     )
   }
 

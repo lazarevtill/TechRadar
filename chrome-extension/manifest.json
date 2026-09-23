@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Tech Evolution Radar",
   "short_name": "TechRadar",
-  "version": "1.5.0",
-  "description": "Replace your new tab with a calm tech radar: research and engineering signals from eight sources, prepared by your TechRadar server, plus a daily AI-blog digest.",
+  "version": "1.6.0",
+  "description": "Replace your new tab with a calm tech radar: research and engineering signals from thirteen sources, prepared by your TechRadar server, plus a daily AI-blog digest.",
   "chrome_url_overrides": {
     "newtab": "newtab.html"
   },

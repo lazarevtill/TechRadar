@@ -22,8 +22,9 @@ import { recordThemePrediction } from './predictions'
  *    MAX_CHECKS_PER_DAY Jev checks per UTC day. A theme with no new item for
  *    RETIRE_AFTER_QUIET_DAYS is retired, freeing its slot.
  *
- * Membership is a code term match against each item's title, so an auto
- * theme costs nothing per item.
+ * Membership is a code term match against each item's title and the names
+ * in its summary (terms.ts itemTerms), so an auto theme costs nothing per
+ * item.
  */
 
 export const DISCOVERY = {
@@ -340,7 +341,7 @@ export async function runDiscovery(
     result.checked++
     const accepted = p >= DISCOVERY.ACCEPT_P
     db.run(
-      `INSERT INTO themes (term, display, status, p, z, checked_day, added_day)
+      `INSERT OR IGNORE INTO themes (term, display, status, p, z, checked_day, added_day)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       c.term,
       c.display,

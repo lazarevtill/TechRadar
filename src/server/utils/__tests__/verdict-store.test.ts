@@ -49,6 +49,24 @@ describe('VerdictStore', () => {
     expect(later.get('area:kept', 'h')).toBe('space')
   })
 
+  it('does not rewrite the file when nothing new was seen today', () => {
+    const file = tempFile()
+    let now = Date.parse('2026-09-01T00:00:00Z')
+    const store = new VerdictStore(file, () => now)
+    store.set('area:x', 'h', 'ai')
+    store.flush()
+    const written = readFileSync(file, 'utf8')
+    now += 60_000
+    store.get('area:x', 'h')
+    rmSync(file)
+    store.flush() // nothing changed: no write
+    expect(() => readFileSync(file, 'utf8')).toThrow()
+    now += 86_400_000
+    store.get('area:x', 'h')
+    store.flush() // a day later last-seen moves: written again
+    expect(readFileSync(file, 'utf8')).not.toBe(written)
+  })
+
   it('ignores a corrupt file instead of failing the feed', () => {
     const store = new VerdictStore('/dev/null')
     expect(store.get('area:x', 'h')).toBeUndefined()

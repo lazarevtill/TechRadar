@@ -5,6 +5,9 @@ import { CATEGORY_CONFIG, type DataSource } from '@/lib/tech-categories'
 import { CONVERGENCE_MIN_SOURCES } from '@/lib/signal-model'
 import { useLanguage, getLocalizedSources } from '@/lib/i18n'
 import { CategoryDot } from './icons'
+import { Sparkline } from './Sparkline'
+import type { TopicSeries } from '@/server/store/series'
+import { toggleFeedFocus, useFeedFocus } from '@/hooks/use-feed-focus'
 
 interface TopicRow {
   id: string
@@ -20,7 +23,8 @@ interface TopicRow {
  * changes in months; this only reports what was observed.
  */
 export function TopicConvergence() {
-  const { items, themes } = useTechFeed()
+  const { items, themes, isError, isLoading, topicSeries } = useTechFeed()
+  const focus = useFeedFocus()
   const { t, language } = useLanguage()
   const localizedSources = getLocalizedSources(language)
 
@@ -62,53 +66,107 @@ export function TopicConvergence() {
       </div>
       {themes.length > 0 && (
         <div className="px-4 py-3 border-b border-rule">
-          <p className="text-[11px] uppercase tracking-wide text-fg-3 mb-2">
-            <abbr title={t.discoveredHint} className="no-underline cursor-help">
-              {t.discoveredTitle}
-            </abbr>
+          <p className="text-[11px] uppercase tracking-wide text-fg-3">
+            {t.discoveredTitle}
+          </p>
+          <p className="text-[11px] text-fg-3 mt-0.5 mb-2">
+            {t.discoveredHint}
           </p>
           <ul className="flex flex-wrap gap-1.5">
             {themes.map((theme) => (
-              <li
-                key={theme.id}
-                className="chip-muted"
-                title={t.discoveredSince.replace('{date}', theme.addedDay)}
-              >
-                {theme.label} <span className="num">{theme.items}</span>
+              <li key={theme.id}>
+                <button
+                  className="chip-muted hover:text-fg"
+                  aria-pressed={focus.topic === theme.id}
+                  onClick={() => toggleFeedFocus('topic', theme.id)}
+                >
+                  {theme.label} <span className="num">{theme.items}</span>
+                  <span className="num">
+                    · {t.discoveredSince.replace('{date}', theme.addedDay)}
+                  </span>
+                </button>
               </li>
             ))}
           </ul>
         </div>
       )}
       {rows.length === 0 ? (
-        <p className="px-4 py-6 text-xs text-fg-3">{t.topicsEmpty}</p>
+        <p className="px-4 py-6 text-xs text-fg-3">
+          {isLoading && items.length === 0
+            ? t.loadingLiveData
+            : isError && items.length === 0
+              ? t.failedToFetchLiveData
+              : t.topicsEmpty}
+        </p>
       ) : (
         <ul className="divide-y divide-rule">
           {rows.map((row) => {
             const converging = row.sources.length >= CONVERGENCE_MIN_SOURCES
             return (
-              <li key={row.id} className="px-4 py-3 text-xs">
-                <div className="flex items-center gap-2">
-                  <CategoryDot color={row.color} />
-                  <span className="text-fg text-sm">{row.label}</span>
-                  {row.id.startsWith('auto:') && (
-                    <span className="chip-muted">{t.discoveredTag}</span>
-                  )}
-                  <span
-                    className={`ml-auto num ${converging ? 'text-accent' : 'text-fg-3'}`}
-                  >
-                    {row.sources.length} {t.sources.toLowerCase()} · {row.count}{' '}
-                    {t.items}
+              <li key={row.id} className="text-xs">
+                {/* A row narrows the feed to the topic (again to clear). */}
+                <button
+                  className={`w-full text-left px-4 py-3 hover:bg-hover ${focus.topic === row.id ? 'bg-hover' : ''}`}
+                  aria-pressed={focus.topic === row.id}
+                  onClick={() => toggleFeedFocus('topic', row.id)}
+                >
+                  <span className="flex items-center gap-2">
+                    <CategoryDot color={row.color} />
+                    <span className="text-fg text-sm">{row.label}</span>
+                    {row.id.startsWith('auto:') && (
+                      <span className="chip-muted">{t.discoveredTag}</span>
+                    )}
+                    <span
+                      className={`ml-auto num ${converging ? 'text-accent' : 'text-fg-3'}`}
+                    >
+                      {row.sources.length} {t.sources.toLowerCase()} ·{' '}
+                      {row.count} {t.items}
+                    </span>
                   </span>
-                </div>
-                <p className="mt-1 text-fg-3 pl-4">
-                  {row.sources.map((s) => localizedSources[s]).join(' · ')}
-                </p>
+                  <span className="block mt-1 text-fg-3 pl-4">
+                    {row.sources.map((s) => localizedSources[s]).join(' · ')}
+                  </span>
+                  <TopicHistory
+                    series={topicSeries[row.id]}
+                    sourceName={(s) => localizedSources[s]}
+                  />
+                </button>
               </li>
             )
           })}
         </ul>
       )}
     </div>
+  )
+}
+
+/** The topic's last 30 days and where it was first seen. */
+function TopicHistory({
+  series,
+  sourceName,
+}: {
+  series: TopicSeries | undefined
+  sourceName: (s: DataSource) => string
+}) {
+  const { t } = useLanguage()
+  if (!series) return null
+  const total = series.counts.reduce((a, b) => a + b, 0)
+  const lastWeek = series.counts.slice(-7).reduce((a, b) => a + b, 0)
+  return (
+    <span className="mt-1.5 pl-4 flex items-center gap-2 text-[11px] text-fg-3">
+      <Sparkline
+        counts={series.counts}
+        label={t.topicHistoryLabel
+          .replace('{total}', String(total))
+          .replace('{week}', String(lastWeek))}
+      />
+      {series.origin && (
+        <span className="truncate">
+          {t.topicOrigin
+            .replace('{source}', sourceName(series.origin.source))
+            .replace('{date}', series.origin.day)}
+        </span>
+      )}
+    </span>
   )
 }

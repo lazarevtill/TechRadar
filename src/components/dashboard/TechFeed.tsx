@@ -1,7 +1,13 @@
 import { useState, useMemo, useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { RefreshCw } from 'lucide-react'
-import { useFilteredTechFeed, type FilterOptions } from '@/hooks/use-tech-feed'
+import {
+  useFilteredTechFeed,
+  useTechFeed,
+  type FilterOptions,
+} from '@/hooks/use-tech-feed'
+import { setFeedFocus, useFeedFocus } from '@/hooks/use-feed-focus'
+import { topicLabel } from '@/lib/trend-topics'
 import {
   CATEGORY_CONFIG,
   MATURITY_CONFIG,
@@ -74,6 +80,9 @@ export function TechFeed() {
   >('all')
   const [sortBy, setSortBy] = useState<SortOption>('recent')
   const [highlightedOnly, setHighlightedOnly] = useState(false)
+  // Topic and watch-term focus can be set from other panels.
+  const focus = useFeedFocus()
+  const { themes } = useTechFeed()
 
   const filters: FilterOptions = useMemo(
     () => ({
@@ -83,6 +92,8 @@ export function TechFeed() {
       highlightedOnly,
       sortBy,
       language: languageFilter,
+      topic: focus.topic,
+      watch: focus.watch,
     }),
     [
       categoryFilter,
@@ -91,6 +102,7 @@ export function TechFeed() {
       highlightedOnly,
       sortBy,
       languageFilter,
+      focus,
     ],
   )
 
@@ -124,10 +136,11 @@ export function TechFeed() {
     setSourceFilter('all')
     setLanguageFilter('all')
     setHighlightedOnly(false)
+    setFeedFocus({ topic: null, watch: null })
   }
 
   return (
-    <div className="panel">
+    <div className="panel scroll-mt-4" id="feed">
       <div className="panel-head">
         <h2 className="panel-title">{t.liveFeed}</h2>
         <span className="panel-hint num">
@@ -245,6 +258,30 @@ export function TechFeed() {
           ))}
         </div>
       </div>
+
+      {(focus.topic || focus.watch) && (
+        <div className="flex flex-wrap items-center gap-2 px-4 py-2 border-b border-rule text-xs">
+          <span className="text-fg-3">{t.focusedOn}</span>
+          {focus.topic && (
+            <button
+              className="chip-muted"
+              onClick={() => setFeedFocus({ topic: null })}
+              aria-label={`${t.clearFilter}: ${topicLabel(focus.topic, themes)}`}
+            >
+              {topicLabel(focus.topic, themes)} ×
+            </button>
+          )}
+          {focus.watch && (
+            <button
+              className="chip-muted"
+              onClick={() => setFeedFocus({ watch: null })}
+              aria-label={`${t.clearFilter}: ${focus.watch}`}
+            >
+              {t.watchChip}: {focus.watch} ×
+            </button>
+          )}
+        </div>
+      )}
 
       {isError && (
         <div className="px-4 py-3 border-b border-rule flex items-center gap-3 text-xs">

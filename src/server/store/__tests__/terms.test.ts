@@ -30,3 +30,17 @@ describe('extractTerms', () => {
     ).toBe('vLLM')
   })
 })
+
+describe('itemTerms', () => {
+  it('adds names from the summary, not word pairs', async () => {
+    const { itemTerms } = await import('../terms')
+    const keys = itemTerms(
+      'A faster attention kernel',
+      'We compare against FlashAttention3 and vLLM on long sequences.',
+    ).map((t) => t.key)
+    expect(keys).toContain('flashattention3')
+    expect(keys).toContain('vllm')
+    expect(keys).toContain('attention kernel') // title pair
+    expect(keys).not.toContain('long sequences') // summary pair
+  })
+})

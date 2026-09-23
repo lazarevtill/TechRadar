@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import {
   fetchBackendFeed,
+  fetchHealth,
   fetchReport,
   panelData,
   FEED_PATH,
@@ -70,5 +71,18 @@ describe('fetchReport', () => {
     await expect(
       fetchReport(ok({ error: 'x' }), 'http://localhost:3000'),
     ).rejects.toThrow('unexpected report')
+  })
+})
+
+describe('fetchHealth', () => {
+  it('keeps only well-formed parts of the answer', async () => {
+    const h = await fetchHealth(
+      ok({ ok: false, problems: 'down', sources: null }),
+      'http://localhost:3000',
+    )
+    expect(h).toEqual({ ok: false, problems: [], sources: [] })
+    await expect(
+      fetchHealth(ok({ status: 'fine' }), 'http://localhost:3000'),
+    ).rejects.toThrow()
   })
 })

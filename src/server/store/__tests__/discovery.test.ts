@@ -170,6 +170,14 @@ describe('runDiscovery', () => {
     })
     expect(back.added).toEqual(['orbit7'])
     expect(asked).toBe(0)
+    // The comeback is a new prediction, judged on its own.
+    expect(
+      db
+        .all<{ subject: string }>(
+          "SELECT subject FROM predictions WHERE reason = 'discovered' ORDER BY day",
+        )
+        .map((r) => r.subject),
+    ).toEqual(['auto:orbit7@2026-09-01', 'auto:orbit7@2026-09-20'])
   })
 })
 

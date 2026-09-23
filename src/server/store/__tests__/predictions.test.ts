@@ -251,3 +251,58 @@ describe('discovered theme outcomes', () => {
     })
   })
 })
+
+describe('failed metric reads', () => {
+  it('retries on later days and counts what is finally given up', async () => {
+    const db = await openDb(':memory:')
+    recordPredictions(
+      db,
+      [
+        p('gh-x', 100, ['novel']),
+        p('gh-c1', 100),
+        p('gh-c2', 100),
+        p('gh-c3', 100),
+      ],
+      DAY,
+    )
+    let reads = 0
+    const flaky: ReadMetric = async (id) => {
+      reads++
+      return id === 'gh-x' ? null : 120
+    }
+    // Two passes the same day: the failed read is tried once that day.
+    await evaluateDue(db, LATER, flaky)
+    await evaluateDue(db, LATER, flaky)
+    expect(reads).toBe(4)
+    expect(
+      db.get(
+        "SELECT outcome, attempts FROM predictions WHERE subject = 'gh-x'",
+      ),
+    ).toEqual({ outcome: null, attempts: 1 })
+    // Recovers on the next day.
+    await evaluateDue(db, '2026-09-17', async () => 500)
+    const record = trackRecord(db, '2026-09-17')
+    expect(record.reasons.find((r) => r.reason === 'novel')).toMatchObject({
+      evaluated: 1,
+      hits: 1,
+    })
+    expect(record.unavailable).toBe(0)
+  })
+
+  it('gives up after repeated failures and says so', async () => {
+    const db = await openDb(':memory:')
+    recordPredictions(
+      db,
+      [
+        p('gh-x', 100, ['novel']),
+        p('gh-c1', 100),
+        p('gh-c2', 100),
+        p('gh-c3', 100),
+      ],
+      DAY,
+    )
+    for (const day of ['2026-09-16', '2026-09-17', '2026-09-18'])
+      await evaluateDue(db, day, async (id) => (id === 'gh-x' ? null : 120))
+    expect(trackRecord(db, '2026-09-18').unavailable).toBe(1)
+  })
+})

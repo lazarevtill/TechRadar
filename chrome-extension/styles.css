@@ -1055,6 +1055,7 @@ a {
 }
 
 .chip-watch {
+  text-transform: none;
   cursor: pointer;
   background: transparent;
   font: inherit;
@@ -1124,4 +1125,60 @@ a {
 }
 .week-block .rising {
   color: var(--accent);
+}
+
+.tv-themes {
+  padding: 0 0 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+.tv-themes h3 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-3);
+}
+.tv-hint {
+  margin: 0.2rem 0 0.5rem;
+  font-size: 11px;
+  color: var(--fg-3);
+}
+.tv-theme-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.tv-theme {
+  /* Theme names keep their case (LLMs, vLLM); chip-muted is uppercase for
+     language codes. */
+  text-transform: none;
+  cursor: pointer;
+  background: transparent;
+  font: inherit;
+}
+.tv-theme[aria-pressed='true'] {
+  color: var(--fg);
+  border-color: var(--fg-3);
+}
+
+.footer-health.bad {
+  color: var(--danger, #e06c6c);
+}
+.track-record p {
+  margin: 0;
+}
+.track-record .track-hint {
+  margin-top: 0.15rem;
+  font-size: 10px;
+}
+
+.tv-history {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: var(--fg-3);
 }

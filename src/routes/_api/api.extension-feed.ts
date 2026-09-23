@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { getTechFeed } from '@/server/functions/tech-feed'
 import { getDigest, getTrends } from '@/server/functions/digest'
 import { TOPIC_LABELS } from '@/lib/trend-topics'
+import { CONVERGENCE_MIN_SOURCES } from '@/lib/signal-model'
 
 /**
  * Everything the Chrome extension shows, in one public read-only response.
@@ -36,6 +37,8 @@ export const Route = createFileRoute('/_api/api/extension-feed')({
             feed,
             digest,
             trends,
+            // Rule thresholds the extension displays (additive field).
+            thresholds: { convergenceMinSources: CONVERGENCE_MIN_SOURCES },
             // Names for the topic ids in item.signal.topics (additive field),
             // tracked topics and the themes the radar discovered itself.
             topicLabels: Object.fromEntries([
