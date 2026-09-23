@@ -107,3 +107,30 @@ describe('history store', () => {
     db.close()
   })
 })
+
+describe('item terms follow the current text', () => {
+  it('drops a summary name when the summary no longer mentions it', async () => {
+    const db = await openDb(':memory:')
+    const day = '2026-09-22'
+    recordItems(
+      db,
+      [item({ summary: 'Beats FlashAttention3 on long inputs' })],
+      day,
+      `${day}T01:00:00Z`,
+    )
+    const terms = () =>
+      db
+        .all<{ term: string }>(
+          "SELECT term FROM item_terms WHERE item_id = 'gh-1'",
+        )
+        .map((r) => r.term)
+    expect(terms()).toContain('flashattention3')
+    recordItems(
+      db,
+      [item({ summary: 'A faster kernel' })],
+      day,
+      `${day}T02:00:00Z`,
+    )
+    expect(terms()).not.toContain('flashattention3')
+  })
+})

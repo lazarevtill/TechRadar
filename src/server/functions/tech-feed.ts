@@ -1215,13 +1215,20 @@ async function fetchHuggingFacePapers(): Promise<RawItem[]> {
   try {
     // Daily Papers are published per day (none on some weekends).
     const days = Array.from({ length: 7 }, (_, i) => isoDaysAgo(i))
+    // Each day on its own: one failed day (HTTP error, timeout, network)
+    // must not discard the others.
     const perDay = await Promise.all(
       days.map(async (date) => {
-        const res = await fetchWithRetry(
-          `https://huggingface.co/api/daily_papers?date=${date}`,
-          { retries: 2, baseDelay: 500, timeout: 15_000 },
-        )
-        return res.ok ? ((await res.json()) as HFDailyPaper[]) : null
+        try {
+          const res = await fetchWithRetry(
+            `https://huggingface.co/api/daily_papers?date=${date}`,
+            { retries: 2, baseDelay: 500, timeout: 15_000 },
+          )
+          return res.ok ? ((await res.json()) as HFDailyPaper[]) : null
+        } catch (error) {
+          console.error(`[hf-papers] ${date} unavailable:`, String(error))
+          return null
+        }
       }),
     )
     // Some days have no Daily Papers; every day failing is an outage.
@@ -1447,19 +1454,27 @@ async function fetchLobsters(): Promise<RawItem[]> {
   if (cached) return cached
 
   try {
+    // Each page on its own; the source fails only when both do.
     const pages = await Promise.all(
       [1, 2].map(async (page) => {
-        const res = await fetchWithRetry(
-          `https://lobste.rs/hottest.json?page=${page}`,
-          { retries: 2, baseDelay: 500, timeout: 15_000 },
-        )
-        if (!res.ok) throw new Error(`page ${page}: HTTP ${res.status}`)
-        return (await res.json()) as LobstersStory[]
+        try {
+          const res = await fetchWithRetry(
+            `https://lobste.rs/hottest.json?page=${page}`,
+            { retries: 2, baseDelay: 500, timeout: 15_000 },
+          )
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
+          return (await res.json()) as LobstersStory[]
+        } catch (error) {
+          console.error(`[lobsters] page ${page} unavailable:`, String(error))
+          return null
+        }
       }),
     )
+    if (pages.every((p) => p === null))
+      throw new Error('both Lobsters pages failed')
     const seen = new Set<string>()
     const stories = pages
-      .flat()
+      .flatMap((p) => p ?? [])
       .filter((s) => !seen.has(s.short_id) && seen.add(s.short_id))
 
     const candidates = stories.map((story): RawItem => {

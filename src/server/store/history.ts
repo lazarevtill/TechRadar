@@ -84,6 +84,9 @@ export function recordItems(
           item.id,
           key,
         )
+      // The item's terms are exactly those of its current title and
+      // summary: an edit that drops a name must drop the association too.
+      db.run('DELETE FROM item_terms WHERE item_id = ?', item.id)
       for (const term of itemTerms(item.title, item.summary)) {
         db.run(
           'INSERT OR IGNORE INTO item_terms (item_id, term) VALUES (?, ?)',

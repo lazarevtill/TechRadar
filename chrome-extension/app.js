@@ -1208,13 +1208,16 @@ async function loadReport() {
       report,
     })
   } catch (error) {
-    // Offline or unreachable: keep showing the last report from this server
-    // (marked as saved); a server that answers without one says so.
-    const saved = savedReportFor(
-      await storageGet(REPORT_CACHE_KEY),
-      backendUrl,
-      watchTerms,
-    )
+    // Unreachable: keep showing the last report from this server (marked as
+    // saved). A server that answers with an error says so instead — a saved
+    // copy would hide that and could stay on screen indefinitely.
+    const saved = error.unreachable
+      ? savedReportFor(
+          await storageGet(REPORT_CACHE_KEY),
+          backendUrl,
+          watchTerms,
+        )
+      : null
     state.report = saved
       ? { ...saved.report, savedAt: saved.at }
       : { error: error.message, unreachable: Boolean(error.unreachable) }

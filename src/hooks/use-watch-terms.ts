@@ -15,7 +15,12 @@ const EMPTY: string[] = []
 let cachedRaw: string | null = null
 let cachedTerms: string[] = EMPTY
 
+// Without usable storage (private mode, blocked site data) the terms live
+// here for the page view.
+let memoryOnly: string[] | null = null
+
 function read(): string[] {
+  if (memoryOnly) return memoryOnly
   let raw: string | null = null
   try {
     raw = localStorage.getItem(KEY)
@@ -46,10 +51,13 @@ export function useWatchTerms(): [string[], (next: string[]) => void] {
   // The server render has no storage: no terms until hydration.
   const terms = useSyncExternalStore(subscribe, read, () => EMPTY)
   const setTerms = useCallback((next: string[]) => {
+    const terms = parseWatchTerms(next)
     try {
-      localStorage.setItem(KEY, parseWatchTerms(next).join(', '))
+      localStorage.setItem(KEY, terms.join(', '))
+      memoryOnly = null
     } catch {
-      // Private mode: nothing persists; the change still applies below.
+      // Storage refused: keep the terms in memory so they still apply.
+      memoryOnly = terms
     }
     window.dispatchEvent(new Event(EVENT))
   }, [])
