@@ -31,7 +31,13 @@ function transformItems(
 export const EMPTY_STATS: TechFeedStats = {
   totalSignals: 0,
   highlighted: 0,
-  byReason: { 'fast-rising': 0, converging: 0, novel: 0, 'under-the-radar': 0 },
+  byReason: {
+    'fast-rising': 0,
+    converging: 0,
+    'cross-source': 0,
+    novel: 0,
+    'under-the-radar': 0,
+  },
   judged: 0,
   topCategory: 'ai',
   sourceCount: 0,

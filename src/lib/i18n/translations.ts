@@ -32,6 +32,9 @@ export interface Translations {
   reasonUnderRadar: string
   reasonUnderRadarDesc: string
   onSources: string
+  reasonCrossSource: string
+  reasonCrossSourceDesc: string
+  sameWorkOn: string
 
   // Highlights panel
   highlightsTitle: string
@@ -271,6 +274,10 @@ export const translations: Record<Language, Translations> = {
     reasonUnderRadarDesc:
       'Judged a new capability while still drawing little attention',
     onSources: 'on {n} sources',
+    reasonCrossSource: 'Cross-source',
+    reasonCrossSourceDesc:
+      'The same work (by arXiv id, DOI, repository or link) appears on several sources, e.g. a paper, its code and a discussion',
+    sameWorkOn: 'same work on {n} sources',
 
     highlightsTitle: 'Highlights',
     highlightsHint: 'Only items with a stated reason',
@@ -509,6 +516,10 @@ export const translations: Record<Language, Translations> = {
     reasonUnderRadarDesc:
       'Оценено как новая возможность, пока привлекая мало внимания',
     onSources: 'в {n} источниках',
+    reasonCrossSource: 'В нескольких источниках',
+    reasonCrossSourceDesc:
+      'Одна и та же работа (по arXiv id, DOI, репозиторию или ссылке) есть в нескольких источниках: например, статья, её код и обсуждение',
+    sameWorkOn: 'одна работа в {n} источниках',
 
     highlightsTitle: 'Главное',
     highlightsHint: 'Только сигналы с указанной причиной',
@@ -774,6 +785,10 @@ export const getLocalizedReasons = (lang: Language) => {
   return {
     'fast-rising': { label: t.reasonFastRising, desc: t.reasonFastRisingDesc },
     converging: { label: t.reasonConverging, desc: t.reasonConvergingDesc },
+    'cross-source': {
+      label: t.reasonCrossSource,
+      desc: t.reasonCrossSourceDesc,
+    },
     novel: { label: t.reasonNovel, desc: t.reasonNovelDesc },
     'under-the-radar': {
       label: t.reasonUnderRadar,

@@ -10,6 +10,7 @@ import {
   FileText,
   GraduationCap,
   Link,
+  Link2,
   MessageSquare,
   Rocket,
   Shield,
@@ -65,6 +66,7 @@ export const SOURCE_ICONS: Record<DataSource, Icon> = {
 export const REASON_ICONS: Record<SignalReason, Icon> = {
   'fast-rising': TrendingUp,
   converging: Layers,
+  'cross-source': Link2,
   novel: Sparkles,
   'under-the-radar': EyeOff,
 }

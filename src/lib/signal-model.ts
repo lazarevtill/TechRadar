@@ -8,7 +8,10 @@
  * fetch:
  *
  * - `reach`         percentile of raw engagement within the source
- * - `velocityRank`  percentile of engagement per day of age within the source
+ * - `velocityRank`  percentile of attention gained per day within the source:
+ *                   observed growth since the previous day's observation when
+ *                   the item has history (server/store/history.ts), otherwise
+ *                   engagement per day of age (a new item's growth so far)
  * - `recency`       explicit age decay with a per-source half-life
  * - `novelty`       Jev's probability that the item describes a genuinely new
  *                   capability (see server/utils/jev-signal.ts)
@@ -16,6 +19,8 @@
  * - `convergence`   how many distinct sources carry the same tracked topic in
  *                   this fetch — one paper, one repo and one discussion on the
  *                   same topic is a stronger signal than any of them alone
+ * - `linkedSources` how many distinct sources carry *this same work* (linked
+ *                   by exact identifiers: arXiv id, DOI, repo, model, URL)
  *
  * `score` is a weighted mean of the components that are actually available;
  * a component that is missing (no engagement metric for the source, Jev not
@@ -29,7 +34,7 @@
 import type { DataSource } from './tech-categories'
 
 export type SignalReason =
-  'fast-rising' | 'converging' | 'novel' | 'under-the-radar'
+  'fast-rising' | 'converging' | 'cross-source' | 'novel' | 'under-the-radar'
 
 export type EngagementUnit =
   'stars' | 'points' | 'citations' | 'upvotes' | 'likes'
@@ -38,8 +43,10 @@ export interface SignalMetrics {
   /** Raw attention count the source reports, if any. */
   engagement: number | null
   engagementUnit: EngagementUnit | null
-  /** Engagement per day of age. */
+  /** Attention gained per day: observed growth, or engagement per day of age. */
   velocity: number | null
+  /** True when `velocity` is observed day-over-day growth, not an average. */
+  velocityObserved: boolean
   /** Percentile rank [0,1] of `engagement` among the source's items. */
   reach: number | null
   /** Percentile rank [0,1] of `velocity` among the source's items. */
@@ -54,6 +61,8 @@ export interface SignalMetrics {
   topics: string[]
   /** Distinct sources (including this item's) sharing one of its topics. */
   convergentSources: number
+  /** Distinct sources (including this item's) carrying this same work. */
+  linkedSources: number
   /** Composite [0,1] or null when nothing measurable was available. */
   score: number | null
   reasons: SignalReason[]
@@ -68,6 +77,12 @@ export interface SignalInput {
   engagementUnit: EngagementUnit | null
   /** Jev judgment, or null when unavailable. */
   judgment: SignalJudgment | null
+  /** Observed engagement gained per day since the last observation, if any. */
+  growth?: number | null
+  /** Distinct sources carrying the same work (1 = only this one). */
+  linkedSources?: number
+  /** Id shared by every item of the same work (see server/store/identity.ts). */
+  groupId?: string
 }
 
 export interface SignalJudgment {
@@ -114,6 +129,8 @@ export const NOVELTY_THRESHOLD = 0.5
 export const UNDER_RADAR_REACH = 0.5
 /** Robust z-score of log velocity at which an item is "fast-rising". */
 export const FAST_RISING_Z = 2
+/** Distinct sources carrying the same work to call it cross-source. */
+export const CROSS_SOURCE_MIN = 2
 /** Peers needed before an outlier call means anything. */
 export const MIN_PEERS_FOR_OUTLIER = 4
 
@@ -182,6 +199,14 @@ export function convergenceComponent(sources: number): number {
   return Math.min(1, Math.max(0, sources - 1) / 3)
 }
 
+/**
+ * The same *work* on several sources is stronger evidence than the same
+ * topic: 2 sources → 0.5, 3+ → 1.
+ */
+export function linkedComponent(sources: number): number {
+  return Math.min(1, Math.max(0, sources - 1) / 2)
+}
+
 interface Components {
   novelty: number | null
   convergence: number
@@ -239,7 +264,9 @@ export function computeSignals(
     const measured = peers.filter((p) => p.engagement !== null)
     const reachRanks = percentileRanks(measured.map((p) => p.engagement!))
     const velocities = measured.map((p) =>
-      velocityPerDay(p.engagement!, p.publishedAt, now),
+      typeof p.growth === 'number'
+        ? Math.max(0, p.growth)
+        : velocityPerDay(p.engagement!, p.publishedAt, now),
     )
     const velocityRanks = percentileRanks(velocities)
     const velocityZ = robustZScores(velocities.map((v) => Math.log1p(v)))
@@ -257,6 +284,7 @@ export function computeSignals(
       )
       const novelty = input.judgment?.novelty ?? null
       const substance = input.judgment?.substance ?? null
+      const linkedSources = Math.max(1, input.linkedSources ?? 1)
 
       const reasons: SignalReason[] = []
       if (
@@ -276,6 +304,7 @@ export function computeSignals(
         engagement: input.engagement,
         engagementUnit: input.engagementUnit,
         velocity: velocity === null ? null : Math.round(velocity * 10) / 10,
+        velocityObserved: m >= 0 && typeof input.growth === 'number',
         reach: reach === null ? null : Math.round(reach * 100) / 100,
         velocityRank:
           velocityRank === null ? null : Math.round(velocityRank * 100) / 100,
@@ -284,9 +313,13 @@ export function computeSignals(
         substance,
         topics,
         convergentSources,
+        linkedSources,
         score: compositeScore({
           novelty,
-          convergence: convergenceComponent(convergentSources),
+          convergence: Math.max(
+            convergenceComponent(convergentSources),
+            linkedComponent(linkedSources),
+          ),
           velocityRank,
           reach,
           substance,
@@ -296,6 +329,20 @@ export function computeSignals(
       })
     }
   }
+
+  // "Cross-source" marks a work, not each copy of it: only the top-scoring
+  // item of a group spanning enough sources carries it.
+  const bestByGroup = new Map<string, string>()
+  for (const input of inputs) {
+    if (!input.groupId || (input.linkedSources ?? 1) < CROSS_SOURCE_MIN)
+      continue
+    const score = out.get(input.id)!.score ?? -1
+    const current = bestByGroup.get(input.groupId)
+    if (!current || score > (out.get(current)!.score ?? -1))
+      bestByGroup.set(input.groupId, input.id)
+  }
+  for (const id of bestByGroup.values())
+    out.get(id)!.reasons.unshift('cross-source')
 
   // "Converging" marks a topic, not every item on it: once a topic spans
   // enough sources, only its highest-scoring item carries the reason, so a

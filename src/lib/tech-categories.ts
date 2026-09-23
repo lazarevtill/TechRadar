@@ -59,6 +59,10 @@ export interface TechItem {
   maturityStage: MaturityStage
   /** Ranking, highlight reasons and their inputs (src/lib/signal-model.ts). */
   signal: SignalMetrics
+  /** The same work on other sources (server/store/identity.ts), if any. */
+  linked?: Array<{ id: string; source: DataSource; title: string; url: string }>
+  /** When the radar first saw this item (ISO); absent without history. */
+  firstSeen?: string
   publishedAt: Date
   whyItMatters?: string
   // Multilingual support

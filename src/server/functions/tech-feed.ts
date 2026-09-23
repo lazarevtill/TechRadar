@@ -22,6 +22,14 @@ import {
 } from '@/server/utils/cache'
 import { fetchWithRetry } from '@/server/utils/fetch-utils'
 import { cleanText } from '@/server/utils/clean-text'
+import { historyDb, utcDay } from '@/server/store/db'
+import {
+  historyContext,
+  recordItems,
+  recordSignals,
+  type HistoryContext,
+  type SnapshotItem,
+} from '@/server/store/history'
 import {
   categorizeItems,
   type CategorizeInput,
@@ -60,6 +68,8 @@ interface ArxivEntry {
   authors: string[]
   categories: string[]
   link: string
+  /** Author comment: often "Code: https://github.com/…". */
+  comment: string
 }
 
 interface HNStory {
@@ -122,6 +132,12 @@ type RawItem = Omit<TechItem, 'signal'> & {
   engagement: number | null
   engagementUnit: EngagementUnit | null
   jev: CategorizeInput
+  /**
+   * Identifiers the source itself publishes for the same work — a paper's
+   * code repo, a model's arXiv tag — as URLs or `arxiv:`/`github:` keys.
+   * Only the history store reads them (cross-source linking).
+   */
+  refs?: string[]
 }
 
 /**
@@ -153,24 +169,90 @@ async function applyCategories(raw: RawItem[]): Promise<RawItem[]> {
  * Rank raw items: Jev's semantic judgments (cached per id) plus per-source
  * percentiles, velocity, recency and cross-source convergence, all in code.
  */
-async function assembleItems(raw: RawItem[]): Promise<TechItem[]> {
+async function assembleItems(
+  raw: RawItem[],
+  history?: Map<string, HistoryContext>,
+): Promise<TechItem[]> {
   const judgments = await judgeSignals(raw.map((item) => item.jev))
   const signals = computeSignals(
-    raw.map((item) => ({
-      id: item.id,
-      source: item.source,
-      publishedAt: item.publishedAt,
-      engagement: item.engagement,
-      engagementUnit: item.engagementUnit,
-      judgment: judgments.get(item.id) ?? null,
-    })),
+    raw.map((item) => {
+      const past = history?.get(item.id)
+      return {
+        id: item.id,
+        source: item.source,
+        publishedAt: item.publishedAt,
+        engagement: item.engagement,
+        engagementUnit: item.engagementUnit,
+        judgment: judgments.get(item.id) ?? null,
+        growth: past?.growth ?? null,
+        linkedSources: past?.linkedSources ?? 1,
+        groupId: past?.groupId,
+      }
+    }),
   )
-  return raw.map(({ engagement, engagementUnit, jev, ...item }) => {
+  return raw.map(({ engagement, engagementUnit, jev, refs, ...item }) => {
     void engagement
     void engagementUnit
     void jev
-    return { ...item, signal: signals.get(item.id)! }
+    void refs
+    const past = history?.get(item.id)
+    return {
+      ...item,
+      signal: signals.get(item.id)!,
+      ...(past?.linked.length ? { linked: past.linked } : {}),
+      ...(past ? { firstSeen: past.firstSeen } : {}),
+    }
   })
+}
+
+/** Links in free text (arXiv author comments). */
+function urlsIn(text: string): string[] {
+  return [...text.matchAll(/https?:\/\/[^\s"<>)]+/g)].map((m) =>
+    m[0].replace(/[.,;]+$/, ''),
+  )
+}
+
+function toSnapshot(item: RawItem): SnapshotItem {
+  return {
+    id: item.id,
+    source: item.source,
+    title: item.title,
+    sourceUrl: item.sourceUrl,
+    summary: item.summary,
+    category: item.category,
+    maturityStage: item.maturityStage,
+    publishedAt: item.publishedAt,
+    engagement: item.engagement,
+    refs: item.refs,
+  }
+}
+
+/**
+ * Record this fetch in the history store and read back growth and
+ * cross-source links. A storage failure is logged loudly and the feed is
+ * served without history (ranking falls back to within-fetch measures,
+ * which is also what a brand-new install has) rather than going down.
+ */
+async function withHistory(raw: RawItem[]): Promise<{
+  history: Map<string, HistoryContext> | undefined
+  save: (items: TechItem[]) => void
+}> {
+  const day = utcDay()
+  try {
+    const db = await historyDb()
+    const snapshot = raw.map(toSnapshot)
+    recordItems(db, snapshot, day, new Date().toISOString())
+    return {
+      history: historyContext(db, snapshot, day),
+      save: (items) => recordSignals(db, items, day),
+    }
+  } catch (error) {
+    console.error(
+      '[history] store unavailable; ranking without history:',
+      error,
+    )
+    return { history: undefined, save: () => {} }
+  }
 }
 
 function calculateMaturityStage(item: {
@@ -367,6 +449,12 @@ async function fetchArxivPapers(): Promise<RawItem[]> {
         const matches = xml.match(/term="([^"]+)"/g) || []
         return matches.map((m) => m.replace(/term="|"/g, ''))
       }
+      const getComment = (xml: string) => {
+        const match = xml.match(
+          /<arxiv:comment[^>]*>([\s\S]*?)<\/arxiv:comment>/,
+        )
+        return match ? match[1].replace(/\s+/g, ' ').trim() : ''
+      }
       const getAuthors = (xml: string) => {
         const matches = xml.match(/<name>(.*?)<\/name>/g) || []
         return matches.map((m) => m.replace(/<\/?name>/g, ''))
@@ -381,13 +469,20 @@ async function fetchArxivPapers(): Promise<RawItem[]> {
         categories: getCategories(entryXml),
         authors: getAuthors(entryXml),
         link: getId(entryXml),
+        comment: getComment(entryXml),
       })
     }
 
     const papers = entries.slice(0, 50)
-    const candidates = papers.map((entry, index): RawItem => {
-      const arxivId = entry.id.split('/').pop() || entry.id
-      const id = `arxiv-${arxivId}-${index}`
+    const candidates = papers.map((entry): RawItem => {
+      // The arXiv identifier without its version: stable for the life of the
+      // paper, so its history and cached Jev verdicts follow it. (The id used
+      // to include the list position, which changed on every fetch.)
+      const arxivId = (entry.id.split('/abs/').pop() || entry.id).replace(
+        /v\d+$/,
+        '',
+      )
+      const id = `arxiv-${arxivId}`
 
       return {
         id,
@@ -406,6 +501,7 @@ async function fetchArxivPapers(): Promise<RawItem[]> {
         // judgment and cross-source convergence only.
         engagement: null,
         engagementUnit: null,
+        refs: urlsIn(entry.comment),
         jev: {
           id,
           title: entry.title,
@@ -906,6 +1002,8 @@ interface HFDailyPaper {
     summary?: string
     upvotes?: number
     publishedAt?: string
+    githubRepo?: string
+    projectPage?: string
   }
 }
 
@@ -954,6 +1052,9 @@ async function fetchHuggingFacePapers(): Promise<RawItem[]> {
         originalLanguage: 'en',
         engagement: paper.upvotes ?? 0,
         engagementUnit: 'upvotes',
+        refs: [paper.githubRepo, paper.projectPage].filter(
+          (url): url is string => Boolean(url),
+        ),
         jev: {
           id,
           title: paper.title,
@@ -1016,6 +1117,10 @@ async function fetchHuggingFaceModels(): Promise<RawItem[]> {
         originalLanguage: 'en',
         engagement: model.likes ?? 0,
         engagementUnit: 'likes',
+        // `arxiv:2609.12345` tags name the paper the model implements.
+        refs: (model.tags ?? []).filter((t) =>
+          /^arxiv:\d{4}\.\d{4,5}$/.test(t),
+        ),
         jev: {
           id,
           title: model.id,
@@ -1202,6 +1307,7 @@ export function deriveStats(items: TechItem[]): TechFeedStats {
   const byReason: Record<SignalReason, number> = {
     'fast-rising': 0,
     converging: 0,
+    'cross-source': 0,
     novel: 0,
     'under-the-radar': 0,
   }
@@ -1245,7 +1351,10 @@ async function buildTechFeed() {
 
   // Rank the whole fetch together: percentiles are per source, convergence
   // needs every source at once.
-  let allItems = await assembleItems(perSource.flat())
+  const raw = perSource.flat()
+  const { history, save } = await withHistory(raw)
+  let allItems = await assembleItems(raw, history)
+  save(allItems)
 
   // Translate non-English items
   const nonEnglishItems = allItems.filter(

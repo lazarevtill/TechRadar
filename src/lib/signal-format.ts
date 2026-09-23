@@ -12,6 +12,8 @@ export function reasonLabel(
       return t.reasonFastRising
     case 'converging':
       return t.onSources.replace('{n}', String(signal.convergentSources))
+    case 'cross-source':
+      return t.sameWorkOn.replace('{n}', String(signal.linkedSources))
     case 'novel':
       return t.reasonNovel
     case 'under-the-radar':

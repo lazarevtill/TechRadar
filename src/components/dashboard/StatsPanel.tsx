@@ -11,6 +11,7 @@ import { CategoryDot } from './icons'
 
 const REASON_ORDER: SignalReason[] = [
   'fast-rising',
+  'cross-source',
   'converging',
   'novel',
   'under-the-radar',
