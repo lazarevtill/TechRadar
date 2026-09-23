@@ -29,6 +29,7 @@ import { recordSourceRuns, recordUsage } from '@/server/store/ops'
 import { topicSeries, type TopicSeries } from '@/server/store/series'
 import { drainUsage } from '@/server/utils/usage'
 import { alertOnSourceChanges } from './health'
+import { sendWatchAlerts } from './watch-alerts'
 import {
   evaluateDue,
   recordPredictions,
@@ -284,6 +285,11 @@ async function withHistory(
       alertOnSourceChanges(db, day)
     } catch (error) {
       console.error('[health] source alert check failed:', error)
+    }
+    try {
+      sendWatchAlerts(db, day, snapshot)
+    } catch (error) {
+      console.error('[watch] alert check failed:', error)
     }
     try {
       const found = await runDiscovery(db, day, themeAsker())

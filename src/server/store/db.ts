@@ -104,6 +104,15 @@ CREATE TABLE IF NOT EXISTS themes (
   retired_day TEXT
 );
 
+-- Works already announced for a server-side watch term (REPORT_WATCH),
+-- so each is announced once.
+CREATE TABLE IF NOT EXISTS watch_hits (
+  term TEXT NOT NULL,        -- lowercase
+  work TEXT NOT NULL,
+  day TEXT NOT NULL,
+  PRIMARY KEY (term, work)
+);
+
 -- One row per source per feed rebuild.
 CREATE TABLE IF NOT EXISTS source_runs (
   ts TEXT NOT NULL,
