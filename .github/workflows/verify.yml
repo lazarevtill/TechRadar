@@ -17,10 +17,16 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.2
+      # vitest runs on Node; the history store needs node:sqlite (22.13+).
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
       - run: bun install --frozen-lockfile
       - run: bun run lint
       - run: bun run format:check
       - run: bun run test
+      # Production uses Bun's SQLite driver, which vitest never loads.
+      - run: bun run scripts/smoke-store.ts
       - run: bun run build
       # `build` also packages the Chrome extension (scripts/build-extension.ts);
       # keep the zip so every commit has an installable build to download.

@@ -3,13 +3,12 @@ name: Publish image
 # The app is SSR on Bun, so it needs a runtime — there is no static-hosting
 # shortcut. This publishes a ready-to-run image to GHCR using the built-in
 # token, so deploying needs no third-party account or secret.
+# Runs only after Verify passed on main, so a red commit never ships.
 on:
-  push:
+  workflow_run:
+    workflows: [Verify]
+    types: [completed]
     branches: [main]
-    paths-ignore:
-      - 'public/data/**' # the daily data commit must not trigger a rebuild
-      - 'docs/**'
-      - '**.md'
   workflow_dispatch: {}
 
 permissions:
@@ -22,10 +21,14 @@ concurrency:
 
 jobs:
   publish:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The commit Verify checked, not whatever main is now.
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: docker/setup-buildx-action@v3
 
@@ -35,13 +38,40 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      # Tag with the commit that was verified (under workflow_run,
+      # github.sha is main's current head, which may be newer).
+      - id: commit
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
       - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=latest
-            type=sha,format=short
+            type=raw,value=sha-${{ steps.commit.outputs.short }}
+
+      # Build once, start it, and require a healthy answer before pushing.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: techradar:smoke
+          cache-from: type=gha
+      - name: Smoke-test the image
+        run: |
+          set -euo pipefail
+          # No scheduled rebuild: CI must not depend on upstream APIs.
+          docker run -d --name smoke -p 3000:3000 -e FEED_SCHEDULE_MINUTES=0 techradar:smoke
+          for i in $(seq 1 30); do
+            if curl -fsS localhost:3000/api/health -o health.json; then break; fi
+            sleep 2
+          done
+          cat health.json
+          # 13 expected sources are listed, and the store answered.
+          test "$(jq '.sources | length' health.json)" -ge 13
+          docker inspect --format '{{.State.Health.Status}}' smoke || true
+          docker rm -f smoke
 
       - uses: docker/build-push-action@v6
         with:
