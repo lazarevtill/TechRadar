@@ -243,7 +243,8 @@ describe('discovered theme outcomes', () => {
       '2026-09-20',
       '2026-09-20T00:00:00Z',
     )
-    await evaluateDue(db, '2026-09-25', async () => null)
+    // Evaluated months late: the cross-posted story still counts once.
+    await evaluateDue(db, '2026-12-25', async () => null)
     expect(db.get('SELECT outcome, outcome_value FROM predictions')).toEqual({
       outcome: 'miss',
       outcome_value: 1,

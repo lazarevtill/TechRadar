@@ -2,9 +2,9 @@ import type { DataSource } from '@/lib/tech-categories'
 import type { SignalMetrics } from '@/lib/signal-model'
 import { contentHash } from '@/server/utils/verdict-store'
 import { daysBefore, type Db } from './db'
+import { workGroups, workSources, type Works } from './works'
 
 const daysAfter = (day: string, n: number) => daysBefore(day, -n)
-import { workGroups, workSources, type Works } from './works'
 
 /**
  * The radar's track record: every highlight is a prediction ("this will
@@ -166,7 +166,17 @@ export async function evaluateDue(
   const metric = new Map<string, number | null>()
   let fetches = 0
   let evaluated = 0
-  let works: Works | null = null
+  // Works as seen from a prediction's day onward: every item that could
+  // count toward its outcome is included however late this pass runs.
+  const worksSince = new Map<string, Works>()
+  const worksFrom = (day: string) => {
+    let w = worksSince.get(day)
+    if (!w) {
+      w = workGroups(db, `${day}T00:00:00Z`)
+      worksSince.set(day, w)
+    }
+    return w
+  }
 
   for (const p of due) {
     if (p.reason === 'discovered') {
@@ -185,8 +195,8 @@ export async function evaluateDue(
           end,
         )
         .map((r) => r.id)
-      works ??= workGroups(db, `${daysBefore(today, 60)}T00:00:00Z`)
-      const after = new Set(ids.map((id) => works!.workOf.get(id) ?? id)).size
+      const works = worksFrom(p.day)
+      const after = new Set(ids.map((id) => works.workOf.get(id) ?? id)).size
       save(p, after >= (p.baseline ?? 0) ? 'hit' : 'miss', after)
       evaluated++
       continue
@@ -207,8 +217,10 @@ export async function evaluateDue(
         save(p, 'unavailable', null)
       else save(p, 'measured', Math.log1p(now) - Math.log1p(p.baseline))
     } else {
-      works ??= workGroups(db, daysBefore(today, 60))
-      const sourcesNow = Math.max(1, workSources(works, p.subject).size)
+      const sourcesNow = Math.max(
+        1,
+        workSources(worksFrom(p.day), p.subject).size,
+      )
       save(p, 'measured', Math.max(0, sourcesNow - (p.baseline ?? 1)))
     }
     evaluated++
