@@ -22,7 +22,14 @@ import {
 } from '@/server/utils/cache'
 import { fetchWithRetry } from '@/server/utils/fetch-utils'
 import { cleanText } from '@/server/utils/clean-text'
-import { historyDb, utcDay } from '@/server/store/db'
+import { historyDb, utcDay, type Db } from '@/server/store/db'
+import {
+  evaluateDue,
+  recordPredictions,
+  trackRecord,
+  type TrackRecord,
+} from '@/server/store/predictions'
+import { readMetric } from '@/server/utils/metric-refetch'
 import {
   activeThemes,
   runDiscovery,
@@ -246,7 +253,7 @@ function toSnapshot(item: RawItem): SnapshotItem {
 async function withHistory(raw: RawItem[]): Promise<{
   history: Map<string, HistoryContext> | undefined
   themes: Theme[]
-  save: (items: TechItem[]) => void
+  save: (items: TechItem[]) => TrackRecord | null
 }> {
   const day = utcDay()
   try {
@@ -258,18 +265,54 @@ async function withHistory(raw: RawItem[]): Promise<{
       console.log(
         `[discovery] ${found.candidates} candidates, ${found.checked} checked by Jev; added: ${found.added.join(', ') || 'none'}; rejected: ${found.rejected.join(', ') || 'none'}; retired: ${found.retired.join(', ') || 'none'}`,
       )
+    const engagement = new Map(snapshot.map((s) => [s.id, s.engagement]))
     return {
       history: historyContext(db, snapshot, day),
       themes: activeThemes(db),
-      save: (items) => recordSignals(db, items, day),
+      save: (items) => {
+        recordSignals(db, items, day)
+        recordPredictions(
+          db,
+          items.map((item) => ({
+            id: item.id,
+            source: item.source,
+            engagement: engagement.get(item.id) ?? null,
+            signal: item.signal,
+          })),
+          day,
+        )
+        evaluateInBackground(db, day)
+        return trackRecord(db, day)
+      },
     }
   } catch (error) {
     console.error(
       '[history] store unavailable; ranking without history:',
       error,
     )
-    return { history: undefined, themes: [], save: () => {} }
+    return { history: undefined, themes: [], save: () => null }
   }
+}
+
+let evaluating = false
+
+/** Check predictions whose horizon passed; one pass at a time. */
+function evaluateInBackground(db: Db, day: string) {
+  if (evaluating) return
+  evaluating = true
+  evaluateDue(db, day, readMetric)
+    .then(({ evaluated, pending }) => {
+      if (evaluated)
+        console.log(
+          `[track-record] evaluated ${evaluated} predictions, ${pending} still due`,
+        )
+    })
+    .catch((error: unknown) =>
+      console.error('[track-record] evaluation failed:', error),
+    )
+    .finally(() => {
+      evaluating = false
+    })
 }
 
 /** Discovered theme ids each item carries, by a code match on title terms. */
@@ -1383,7 +1426,12 @@ async function buildTechFeed() {
   const raw = perSource.flat()
   const { history, themes, save } = await withHistory(raw)
   let allItems = await assembleItems(raw, history, themesByItem(raw, themes))
-  save(allItems)
+  let record: TrackRecord | null = null
+  try {
+    record = save(allItems)
+  } catch (error) {
+    console.error('[history] could not record this fetch:', error)
+  }
 
   // Translate non-English items
   const nonEnglishItems = allItems.filter(
@@ -1426,6 +1474,8 @@ async function buildTechFeed() {
       addedDay: t.addedDay,
       items: allItems.filter((i) => i.signal.topics.includes(t.id)).length,
     })),
+    /** How past highlights turned out (null without the history store). */
+    trackRecord: record,
     fetchedAt: new Date().toISOString(),
   }
 }

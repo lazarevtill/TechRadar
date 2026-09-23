@@ -17,6 +17,7 @@ import type {
 } from '@/lib/tech-categories'
 
 import type { DiscoveredTheme } from '@/lib/trend-topics'
+import type { TrackRecord } from '@/server/store/predictions'
 
 export type { TechFeedStats }
 
@@ -59,6 +60,8 @@ export interface UseTechFeedResult {
   fetchedAt: Date | null
   /** Themes the radar discovered itself. */
   themes: DiscoveredTheme[]
+  /** How past highlights turned out; null without the history store. */
+  trackRecord: TrackRecord | null
 }
 
 /** Shared with the route loader, which prefetches it during SSR. */
@@ -96,6 +99,7 @@ export function useTechFeed(): UseTechFeedResult {
     forceRefresh,
     fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
     themes: data?.themes ?? [],
+    trackRecord: data?.trackRecord ?? null,
   }
 }
 

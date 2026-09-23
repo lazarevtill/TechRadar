@@ -1043,3 +1043,9 @@ a {
   color: var(--fg-2);
   font-size: 0.85rem;
 }
+
+.track-record {
+  margin: 0.5rem 0 0;
+  font-size: 11px;
+  color: var(--fg-3);
+}

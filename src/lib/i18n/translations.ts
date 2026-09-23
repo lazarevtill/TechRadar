@@ -46,6 +46,10 @@ export interface Translations {
   topicsHint: string
   topicsEmpty: string
   discoveredTitle: string
+  trackRecord: string
+  trackRecordHint: string
+  trackRecordPending: string
+  trackDiscovered: string
   alsoOn: string
   discoveredHint: string
   discoveredTag: string
@@ -292,6 +296,11 @@ export const translations: Record<Language, Translations> = {
     topicsHint: 'Tracked topics and where they show up now',
     topicsEmpty: 'No tracked topic appears on more than one source',
     discoveredTitle: 'Discovered by the radar',
+    trackRecord: 'Track record',
+    trackRecordHint:
+      'How past highlights turned out after {days} days: the share that grew more than the median of a random sample from the same source. A random pick scores about 50%. For discovered themes: the share that kept appearing.',
+    trackRecordPending: 'measuring {n} highlights · first results on {date}',
+    trackDiscovered: 'Discovered themes',
     alsoOn: 'also on',
     discoveredHint:
       'Terms that suddenly appeared across several sources and that Jev confirmed name a technology. Added automatically (at most 3 a day, 20 in total) and retired after two quiet weeks.',
@@ -540,6 +549,11 @@ export const translations: Record<Language, Translations> = {
     topicsHint: 'Отслеживаемые темы и где они встречаются сейчас',
     topicsEmpty: 'Ни одна тема не встречается более чем в одном источнике',
     discoveredTitle: 'Найдено радаром',
+    trackRecord: 'Точность',
+    trackRecordHint:
+      'Как сработали прошлые выделения через {days} дней: доля тех, что выросли сильнее медианы случайной выборки из того же источника. Случайный выбор даёт около 50%. Для найденных тем — доля тех, что продолжили появляться.',
+    trackRecordPending: 'измеряем {n} выделений · первые результаты {date}',
+    trackDiscovered: 'Найденные темы',
     alsoOn: 'также в',
     discoveredHint:
       'Термины, внезапно появившиеся в нескольких источниках, которые Jev подтвердил как названия технологий. Добавляются автоматически (не более 3 в день и 20 всего) и снимаются после двух тихих недель.',

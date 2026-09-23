@@ -1,0 +1,319 @@
+import type { DataSource } from '@/lib/tech-categories'
+import type { SignalMetrics } from '@/lib/signal-model'
+import { contentHash } from '@/server/utils/verdict-store'
+import { daysBefore, type Db } from './db'
+import { groupByKeys } from './identity'
+
+/**
+ * The radar's track record: every highlight is a prediction ("this will
+ * matter more than its peers"), and HORIZON_DAYS later it is checked.
+ *
+ * Outcomes are measured against a control group, never against an absolute
+ * bar. When items are highlighted, the same number of non-highlighted items
+ * from the same source and day is recorded as `control` (chosen by a hash of
+ * the id, so the choice is reproducible). At evaluation:
+ *
+ *  - sources with an attention metric (stars, points, likes, upvotes,
+ *    citations): growth = ln(1 + now) − ln(1 + then), re-read from the
+ *    source (metric-refetch.ts);
+ *  - sources without one (arXiv, PubMed, HAL, CiNii, bioRxiv): growth = the
+ *    number of other sources the work reached since, from the history store.
+ *
+ * A highlight is a hit when its growth beats the median control growth of its
+ * source. A random pick would hit about half the time — that is the bar.
+ *
+ * Discovered themes are predictions too (`discovered`, subject `auto:<term>`):
+ * a hit when, in the HORIZON_DAYS after it was added, new items carrying the
+ * term keep arriving at no less than half the daily rate of the burst that
+ * added it (burst: RECENT_DAYS = 7, horizon 14, so "after >= baseline").
+ */
+
+export const HORIZON_DAYS = 14
+/** Metric re-reads per evaluation pass (keyless APIs; spread over days). */
+export const EVAL_FETCHES_PER_PASS = 60
+
+export interface PredictionItem {
+  id: string
+  source: DataSource
+  engagement: number | null
+  signal: Pick<SignalMetrics, 'reasons' | 'linkedSources'>
+}
+
+/** Record today's highlights and a matching control sample, once per item. */
+export function recordPredictions(
+  db: Db,
+  items: PredictionItem[],
+  day: string,
+): void {
+  const bySource = new Map<DataSource, PredictionItem[]>()
+  for (const item of items) {
+    const list = bySource.get(item.source) ?? []
+    list.push(item)
+    bySource.set(item.source, list)
+  }
+  const insert = (item: PredictionItem, reason: string) =>
+    db.run(
+      `INSERT OR IGNORE INTO predictions (subject, reason, day, source, baseline)
+       VALUES (?, ?, ?, ?, ?)`,
+      item.id,
+      reason,
+      day,
+      item.source,
+      // Metric sources: the engagement then. Others: sources reached then.
+      item.engagement ?? item.signal.linkedSources,
+    )
+  db.transaction(() => {
+    for (const peers of bySource.values()) {
+      const highlighted = peers.filter((p) => p.signal.reasons.length > 0)
+      if (highlighted.length === 0) continue
+      for (const item of highlighted)
+        for (const reason of item.signal.reasons) insert(item, reason)
+      const controls = peers
+        .filter((p) => p.signal.reasons.length === 0)
+        .sort((a, b) => (contentHash(a.id) < contentHash(b.id) ? -1 : 1))
+        .slice(0, Math.max(3, highlighted.length))
+      for (const item of controls) insert(item, 'control')
+    }
+  })
+}
+
+/** Record a newly added discovered theme as a prediction. */
+export function recordThemePrediction(
+  db: Db,
+  term: string,
+  day: string,
+  recentArrivals: number,
+): void {
+  db.run(
+    `INSERT OR IGNORE INTO predictions (subject, reason, day, source, baseline)
+     VALUES (?, 'discovered', ?, NULL, ?)`,
+    `auto:${term}`,
+    day,
+    recentArrivals,
+  )
+}
+
+interface Due {
+  subject: string
+  reason: string
+  day: string
+  source: DataSource | null
+  baseline: number | null
+}
+
+/** Current attention metric for an item, or null if the source has none. */
+export type ReadMetric = (
+  itemId: string,
+  source: DataSource,
+) => Promise<number | null>
+
+/** Sources whose engagement can be read again later (metric-refetch.ts). */
+export const METRIC_SOURCES: ReadonlySet<DataSource> = new Set<DataSource>([
+  'github',
+  'hackernews',
+  'lobsters',
+  'hf-models',
+  'hf-papers',
+  'openalex',
+  'openalex-zh',
+])
+
+/**
+ * Evaluate predictions whose horizon has passed. Metric sources are re-read
+ * (at most EVAL_FETCHES_PER_PASS per pass; the rest wait for the next one).
+ * An item whose metric cannot be read is marked `unavailable`.
+ */
+export async function evaluateDue(
+  db: Db,
+  today: string,
+  readMetric: ReadMetric,
+): Promise<{ evaluated: number; pending: number }> {
+  const dueBy = daysBefore(today, HORIZON_DAYS)
+  const due = db.all<Due>(
+    `SELECT subject, reason, day, source, baseline FROM predictions
+      WHERE outcome IS NULL AND day <= ? ORDER BY day`,
+    dueBy,
+  )
+  if (due.length === 0) return { evaluated: 0, pending: 0 }
+
+  const save = (p: Due, outcome: string, value: number | null) =>
+    db.run(
+      `UPDATE predictions SET outcome = ?, outcome_value = ?, evaluated_day = ?
+        WHERE subject = ? AND reason = ?`,
+      outcome,
+      value,
+      today,
+      p.subject,
+      p.reason,
+    )
+
+  // One metric read per item, shared by all its reasons.
+  const metric = new Map<string, number | null>()
+  let fetches = 0
+  let evaluated = 0
+  let reach: Map<string, number> | null = null
+
+  for (const p of due) {
+    if (p.reason === 'discovered') {
+      const term = p.subject.slice('auto:'.length)
+      const after =
+        db.get<{ n: number }>(
+          `SELECT count(DISTINCT i.id) AS n FROM item_terms t JOIN items i ON i.id = t.item_id
+            WHERE t.term = ? AND substr(i.first_seen, 1, 10) > ?
+              AND substr(i.first_seen, 1, 10) <= ?`,
+          term,
+          p.day,
+          today,
+        )?.n ?? 0
+      save(p, after >= (p.baseline ?? 0) ? 'hit' : 'miss', after)
+      evaluated++
+      continue
+    }
+    if (!p.source) continue
+
+    if (METRIC_SOURCES.has(p.source)) {
+      if (!metric.has(p.subject)) {
+        if (fetches >= EVAL_FETCHES_PER_PASS) continue
+        fetches++
+        metric.set(
+          p.subject,
+          await readMetric(p.subject, p.source).catch(() => null),
+        )
+      }
+      const now = metric.get(p.subject)
+      if (now === null || now === undefined || p.baseline === null)
+        save(p, 'unavailable', null)
+      else save(p, 'measured', Math.log1p(now) - Math.log1p(p.baseline))
+    } else {
+      reach ??= reachBySubject(db, today)
+      const sourcesNow = reach.get(p.subject) ?? 1
+      save(p, 'measured', Math.max(0, sourcesNow - (p.baseline ?? 1)))
+    }
+    evaluated++
+  }
+  const pending =
+    db.get<{ n: number }>(
+      'SELECT count(*) AS n FROM predictions WHERE outcome IS NULL AND day <= ?',
+      dueBy,
+    )?.n ?? 0
+  return { evaluated, pending }
+}
+
+/** Distinct sources each item's work reached, over the last 60 days. */
+function reachBySubject(db: Db, today: string): Map<string, number> {
+  const rows = db.all<{ id: string; source: DataSource; key: string | null }>(
+    `SELECT i.id, i.source, k.key FROM items i
+       LEFT JOIN item_keys k ON k.item_id = i.id
+      WHERE i.last_seen >= ?`,
+    daysBefore(today, 60),
+  )
+  const keys = new Map<string, string[]>()
+  const source = new Map<string, DataSource>()
+  for (const r of rows) {
+    source.set(r.id, r.source)
+    const list = keys.get(r.id) ?? []
+    if (r.key) list.push(r.key)
+    keys.set(r.id, list)
+  }
+  const groups = groupByKeys(keys)
+  const sourcesByGroup = new Map<string, Set<DataSource>>()
+  for (const [id, group] of groups) {
+    const set = sourcesByGroup.get(group) ?? new Set()
+    set.add(source.get(id)!)
+    sourcesByGroup.set(group, set)
+  }
+  const out = new Map<string, number>()
+  for (const [id, group] of groups) out.set(id, sourcesByGroup.get(group)!.size)
+  return out
+}
+
+export interface ReasonRecord {
+  reason: string
+  /** Highlights evaluated against a control. */
+  evaluated: number
+  hits: number
+  /** hits / evaluated, or null when nothing is evaluated yet. */
+  hitRate: number | null
+}
+
+export interface TrackRecord {
+  horizonDays: number
+  reasons: ReasonRecord[]
+  /** Highlights still inside their horizon. */
+  pending: number
+  /** First day an outcome can exist, when nothing is evaluated yet. */
+  firstResultsOn: string | null
+}
+
+const median = (xs: number[]) => {
+  const s = [...xs].sort((a, b) => a - b)
+  const mid = Math.floor(s.length / 2)
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2
+}
+
+/** Hit rates per reason, each highlight judged against its source's controls. */
+export function trackRecord(db: Db, today: string): TrackRecord {
+  const measured = db.all<{
+    reason: string
+    source: string | null
+    day: string
+    outcome: string
+    outcome_value: number | null
+  }>(
+    `SELECT reason, source, day, outcome, outcome_value FROM predictions
+      WHERE outcome IS NOT NULL AND outcome != 'unavailable'`,
+  )
+  const controls = new Map<string, number[]>()
+  for (const m of measured)
+    if (m.reason === 'control' && m.outcome_value !== null) {
+      const list = controls.get(m.source!) ?? []
+      list.push(m.outcome_value)
+      controls.set(m.source!, list)
+    }
+  const bar = new Map([...controls].map(([s, xs]) => [s, median(xs)]))
+
+  const byReason = new Map<string, { evaluated: number; hits: number }>()
+  for (const m of measured) {
+    if (m.reason === 'control') continue
+    const entry = byReason.get(m.reason) ?? { evaluated: 0, hits: 0 }
+    if (m.reason === 'discovered') {
+      entry.evaluated++
+      if (m.outcome === 'hit') entry.hits++
+    } else {
+      const b = bar.get(m.source!)
+      if (b === undefined || m.outcome_value === null) continue
+      entry.evaluated++
+      if (m.outcome_value > b) entry.hits++
+    }
+    byReason.set(m.reason, entry)
+  }
+
+  const pending =
+    db.get<{ n: number }>(
+      `SELECT count(*) AS n FROM predictions
+        WHERE outcome IS NULL AND reason != 'control'`,
+    )?.n ?? 0
+  const first = db.get<{ day: string | null }>(
+    `SELECT min(day) AS day FROM predictions WHERE reason != 'control'`,
+  )?.day
+  const anyEvaluated = [...byReason.values()].some((r) => r.evaluated > 0)
+  let firstResultsOn: string | null = null
+  if (!anyEvaluated && first) {
+    const d = new Date(`${first}T00:00:00Z`)
+    d.setUTCDate(d.getUTCDate() + HORIZON_DAYS)
+    const due = d.toISOString().slice(0, 10)
+    firstResultsOn = due > today ? due : today
+  }
+
+  return {
+    horizonDays: HORIZON_DAYS,
+    reasons: [...byReason].map(([reason, r]) => ({
+      reason,
+      evaluated: r.evaluated,
+      hits: r.hits,
+      hitRate: r.evaluated ? r.hits / r.evaluated : null,
+    })),
+    pending,
+    firstResultsOn,
+  }
+}

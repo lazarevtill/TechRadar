@@ -23,6 +23,7 @@ import { fetchBackendFeed, panelData } from './lib/backend.js'
 import { trajectoryMeta, sparklineBars } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
 import { icon, CATEGORY_ICON } from './lib/icons.js'
+import { trackRecordSummary } from './lib/track-record.js'
 
 /**
  * Tech Evolution Radar - Chrome extension new-tab page.
@@ -197,6 +198,11 @@ const translations = {
       'The same work (by arXiv id, DOI, repository or link) appears on several sources, e.g. a paper, its code and a discussion',
     alsoOn: 'also on',
     discovered: 'discovered',
+    trackRecord: 'Track record',
+    trackRecordHint:
+      'How past highlights turned out after 14 days: the share that grew more than the median of a random sample from the same source. A random pick scores about 50%.',
+    trackRecordPending: 'measuring {n} highlights · first results on {date}',
+    trackDiscovered: 'Discovered themes',
     reasonNovel: 'New capability',
     reasonNovelDesc:
       'Jev judges it likely to describe a capability not available before',
@@ -353,6 +359,11 @@ const translations = {
       'Одна и та же работа (по arXiv id, DOI, репозиторию или ссылке) есть в нескольких источниках: например, статья, её код и обсуждение',
     alsoOn: 'также в',
     discovered: 'найдено',
+    trackRecord: 'Точность',
+    trackRecordHint:
+      'Как сработали прошлые выделения через 14 дней: доля тех, что выросли сильнее медианы случайной выборки из того же источника. Случайный выбор даёт около 50%.',
+    trackRecordPending: 'измеряем {n} выделений · первые результаты {date}',
+    trackDiscovered: 'Найденные темы',
     reasonNovel: 'Новая возможность',
     reasonNovelDesc:
       'По оценке Jev, вероятно описывает возможность, которой раньше не было',
@@ -454,6 +465,7 @@ let state = {
   activeMaturity: 'all',
   activeTopic: 'all',
   topicLabels: {},
+  trackRecord: null,
   feedLimit: 40,
   expandedChain: null,
   showOriginal: new Set(), // item ids showing original instead of translation
@@ -648,6 +660,7 @@ function applyPayload(payload) {
   if (!state.items.some((i) => i.source === state.activeSource))
     state.activeSource = 'all'
   state.topicLabels = payload.topicLabels ?? {}
+  state.trackRecord = trackRecordSummary(payload.feed.trackRecord)
   if (state.activeTopic !== 'all' && !state.topicLabels[state.activeTopic])
     state.activeTopic = 'all'
   state.digest = panelData(payload.digest, 'items')
@@ -895,19 +908,39 @@ function reasonChips(item) {
     .join('')
 }
 
+function trackRecordHtml() {
+  const record = state.trackRecord
+  if (!record) return ''
+  const body = record.rates
+    ? record.rates
+        .map((r) => {
+          const label =
+            r.reason === 'discovered'
+              ? t('trackDiscovered')
+              : (reasonLabel(r.reason)?.label ?? r.reason)
+          return `<span>${escapeHtml(label)} <span class="num">${r.pct}%</span> (${r.n})</span>`
+        })
+        .join(' · ')
+    : escapeHtml(
+        fmt('trackRecordPending', { n: record.pending, date: record.date }),
+      )
+  return `<p class="track-record" title="${escapeHtml(t('trackRecordHint'))}">${escapeHtml(t('trackRecord'))}: ${body}</p>`
+}
+
 function renderHighlights() {
   const top = state.items
     .filter((i) => i.signal?.reasons.length > 0)
     .sort((a, b) => (b.signal.score ?? 0) - (a.signal.score ?? 0))
     .slice(0, 6)
   if (top.length === 0) {
-    elements.highlights.innerHTML = `<p class="empty">${escapeHtml(t('highlightsEmpty'))}</p>`
+    elements.highlights.innerHTML = `<p class="empty">${escapeHtml(t('highlightsEmpty'))}</p>${trackRecordHtml()}`
     return
   }
-  elements.highlights.innerHTML = top
-    .map((item) => {
-      const text = displayText(item)
-      return `
+  elements.highlights.innerHTML =
+    top
+      .map((item) => {
+        const text = displayText(item)
+        return `
         <div class="highlight">
           <a class="highlight-title" href="${escapeHtml(safeUrl(item.sourceUrl))}"${linkTarget()}>${escapeHtml(text.title)}</a>
           <div class="highlight-meta">
@@ -917,8 +950,8 @@ function renderHighlights() {
             ${reasonChips(item)}
           </div>
         </div>`
-    })
-    .join('')
+      })
+      .join('') + trackRecordHtml()
 }
 
 function sparklineSvg(counts, color) {

@@ -2,6 +2,7 @@ import type { DataSource } from '@/lib/tech-categories'
 import { TOPIC_LABELS } from '@/lib/trend-topics'
 import { daysBefore, type Db } from './db'
 import { groupByKeys } from './identity'
+import { recordThemePrediction } from './predictions'
 
 /**
  * Theme discovery: the radar adds tracked themes by itself.
@@ -305,6 +306,7 @@ export async function runDiscovery(
         today,
         c.term,
       )
+      recordThemePrediction(db, c.term, today, c.recent)
       result.added.push(c.term)
       taken.push(c.term)
       room--
@@ -341,6 +343,7 @@ export async function runDiscovery(
       accepted ? today : null,
     )
     if (accepted) {
+      recordThemePrediction(db, c.term, today, c.recent)
       result.added.push(c.term)
       taken.push(c.term)
       room--
