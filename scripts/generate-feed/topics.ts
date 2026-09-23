@@ -1,5 +1,6 @@
 import { TypeSafeClient, noul } from '@typesafe-ai/sdk'
 import { TOPIC_LABELS, topicQuestion } from '../../src/lib/trend-topics'
+import { contentHash } from '../../src/server/utils/verdict-store'
 import type { SignalSnapshot, Signal } from './momentum'
 
 // Topic definitions live in src/lib/trend-topics.ts, shared with the live
@@ -55,16 +56,42 @@ export function createTopicAsker(
  * Topic ids per post, in input order. Throws if any request fails: trends
  * built from a partially tagged week would read as a real momentum drop.
  */
+/** Minimal store interface (src/server/utils/verdict-store.ts). */
+export interface TagStore {
+  get<T>(key: string, hash: string): T | undefined
+  set(key: string, hash: string, value: unknown): void
+}
+
+/**
+ * Topic ids per post, in input order. A post seen on a previous run is not
+ * sent again: the 7-day window used to re-tag every post on seven daily runs.
+ * The cache key is the post id; the hash covers the request (title, content,
+ * topic questions) and the threshold, so edits or topic changes re-tag.
+ * Throws if any request fails: trends built from a partially tagged week
+ * would read as a real momentum drop.
+ */
 export async function tagPosts(
-  posts: TopicPost[],
+  posts: Array<TopicPost & { id?: string }>,
   ask: AskTopics,
-): Promise<string[][]> {
-  const probabilities = await Promise.all(posts.map((p) => ask(p)))
-  return probabilities.map((byTopic) =>
-    Object.keys(TOPIC_LABELS).filter(
-      (id) => (byTopic[id] ?? 0) >= TOPIC_THRESHOLD,
-    ),
+  store?: TagStore,
+): Promise<{ tags: string[][]; sent: number }> {
+  let sent = 0
+  const tags = await Promise.all(
+    posts.map(async (post) => {
+      const key = post.id ? `topics:${post.id}` : null
+      const hash = contentHash([buildTopicRequest(post), TOPIC_THRESHOLD])
+      const known = key && store ? store.get<string[]>(key, hash) : undefined
+      if (known) return known
+      sent++
+      const byTopic = await ask(post)
+      const ids = Object.keys(TOPIC_LABELS).filter(
+        (id) => (byTopic[id] ?? 0) >= TOPIC_THRESHOLD,
+      )
+      if (key && store) store.set(key, hash, ids)
+      return ids
+    }),
   )
+  return { tags, sent }
 }
 
 export function snapshotFromTags(

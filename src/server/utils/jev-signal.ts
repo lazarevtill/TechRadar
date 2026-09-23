@@ -1,5 +1,9 @@
 import { TypeSafeClient, noul, score } from '@typesafe-ai/sdk'
-import { getCached, setCache, CACHE_TTL } from '@/server/utils/cache'
+import {
+  contentHash,
+  verdictStore,
+  type VerdictStore,
+} from '@/server/utils/verdict-store'
 import {
   TOPIC_FINGERPRINT,
   TOPIC_LABELS,
@@ -75,9 +79,11 @@ export function buildSignalRequest(input: SignalJudgeInput) {
   }
 }
 
-// The topic fingerprint invalidates judgments made against an older topic set.
-const CACHE_PREFIX = `jev:signal:${TOPIC_FINGERPRINT}:`
-const JUDGMENT_TTL_MS = 24 * CACHE_TTL.HOUR
+// Judgments persist across restarts (verdict-store.ts). The hash covers the
+// full request (item text, rubric, topic questions) plus the thresholds that
+// turn answers into the stored judgment, so changing any of them re-judges.
+const STORE_PREFIX = 'signal:'
+const JUDGMENT_RULES = { NOVEL_FROM_LEVEL, TOPIC_THRESHOLD, TOPIC_FINGERPRINT }
 
 let client: TypeSafeClient | null | undefined
 
@@ -145,29 +151,43 @@ async function askJev(input: SignalJudgeInput): Promise<SignalJudgment> {
 export async function judgeSignals(
   inputs: SignalJudgeInput[],
   ask: AskSignal = askJev,
+  store: VerdictStore = verdictStore(),
 ): Promise<Map<string, SignalJudgment | null>> {
   const judgments = new Map<string, SignalJudgment | null>()
   const skipAll = ask === askJev && getClient() === null
+  let cached = 0
+  let sent = 0
+  let failed = 0
   await Promise.all(
     inputs.map(async (input) => {
-      const cached = getCached<SignalJudgment>(CACHE_PREFIX + input.id)
-      if (cached) {
-        judgments.set(input.id, cached)
+      const key = STORE_PREFIX + input.id
+      const hash = contentHash([buildSignalRequest(input), JUDGMENT_RULES])
+      const known = store.get<SignalJudgment>(key, hash)
+      if (known) {
+        cached++
+        judgments.set(input.id, known)
         return
       }
       if (skipAll) {
         judgments.set(input.id, null)
         return
       }
+      sent++
       try {
         const judgment = await ask(input)
-        setCache(CACHE_PREFIX + input.id, judgment, JUDGMENT_TTL_MS)
+        store.set(key, hash, judgment)
         judgments.set(input.id, judgment)
       } catch (error) {
+        failed++
         console.error(`[jev] signal ${input.id} failed:`, error)
         judgments.set(input.id, null)
       }
     }),
   )
+  store.flush()
+  if (inputs.length)
+    console.log(
+      `[jev] signal: ${inputs.length} items, ${cached} cached, ${sent} sent${failed ? `, ${failed} failed` : ''}`,
+    )
   return judgments
 }

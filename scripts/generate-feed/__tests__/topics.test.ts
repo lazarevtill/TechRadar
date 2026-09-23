@@ -38,8 +38,32 @@ describe('tagPosts', () => {
           ? { 'llm-agents': 0.9, rag: TOPIC_THRESHOLD }
           : { 'llm-agents': 0.1, fusion: 0.49 },
     )
-    const tags = await tagPosts([{ title: 'agents' }, { title: 'other' }], ask)
+    const { tags, sent } = await tagPosts(
+      [{ title: 'agents' }, { title: 'other' }],
+      ask,
+    )
     expect(tags).toEqual([['llm-agents', 'rag'], []])
+    expect(sent).toBe(2)
+  })
+
+  it('tags a post once across runs, again only when its text changes', async () => {
+    const entries = new Map<string, { h: string; v: unknown }>()
+    const store = {
+      get: <T>(k: string, h: string) =>
+        entries.get(k)?.h === h ? (entries.get(k)!.v as T) : undefined,
+      set: (k: string, h: string, v: unknown) => void entries.set(k, { h, v }),
+    }
+    const ask = vi.fn(async (): Promise<Record<string, number>> => ({
+      'llm-agents': 0.9,
+    }))
+    const post = { id: 'd-1', title: 'agents', contentText: 'v1' }
+    const day1 = await tagPosts([post], ask, store)
+    const day2 = await tagPosts([post], ask, store)
+    expect(ask).toHaveBeenCalledTimes(1)
+    expect(day2).toEqual({ tags: [['llm-agents']], sent: 0 })
+    expect(day1.tags).toEqual(day2.tags)
+    await tagPosts([{ ...post, contentText: 'v2 edited' }], ask, store)
+    expect(ask).toHaveBeenCalledTimes(2)
   })
 
   it('propagates a failed request rather than publishing partial trends', async () => {

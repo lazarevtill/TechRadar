@@ -1,3 +1,5 @@
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { defineConfig } from 'vitest/config'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
 
@@ -12,5 +14,13 @@ export default defineConfig({
     include: ['{src,scripts,chrome-extension}/**/__tests__/**/*.test.{ts,js}'],
     exclude: ['**/node_modules/**', '**/dist/**'],
     environment: 'node',
+    // Paid-verdict store (src/server/utils/verdict-store.ts): tests must never
+    // write into the repo's .cache or reuse a developer's real verdicts.
+    env: {
+      JEV_CACHE_FILE: join(
+        tmpdir(),
+        `techradar-test-verdicts-${process.pid}.json`,
+      ),
+    },
   },
 })

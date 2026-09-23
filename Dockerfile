@@ -30,6 +30,11 @@ RUN bun install --frozen-lockfile --production
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/server.ts ./server.ts
 
+# Paid Jev verdicts persist here (src/server/utils/verdict-store.ts) so a
+# restart or redeploy doesn't re-send the whole feed. Mount a volume on it.
+RUN mkdir -p /app/.cache && chown bun:bun /app/.cache
+VOLUME /app/.cache
+
 # Runs as the image's non-root `bun` user.
 USER bun
 EXPOSE 3000

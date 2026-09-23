@@ -12,6 +12,7 @@ import {
 } from './topics'
 import { resolveProfile } from './model'
 import { createClient } from './client'
+import { VerdictStore } from '../../src/server/utils/verdict-store'
 
 const DATA_DIR = 'public/data'
 const DIGEST_MAX = 10
@@ -44,6 +45,19 @@ export function canonicalUrl(raw: string): string {
   }
 }
 
+/** Items of the published digest by id; invalid or missing file → empty. */
+function loadPreviousDigest(): Map<string, DigestItem> {
+  const path = `${DATA_DIR}/digest.json`
+  const out = new Map<string, DigestItem>()
+  if (!existsSync(path)) return out
+  const data = JSON.parse(readFileSync(path, 'utf8')) as { items?: unknown[] }
+  for (const raw of data.items ?? []) {
+    const parsed = DigestItemSchema.safeParse(raw)
+    if (parsed.success) out.set(parsed.data.id, parsed.data)
+  }
+  return out
+}
+
 function todayIso(): string {
   // Cron passes the date; fall back to now. Use date-only for snapshot bucketing.
   return new Date().toISOString().slice(0, 10)
@@ -74,8 +88,18 @@ async function main() {
       `[generate-feed] deduped ${posts.length - unique.length} cross-posted url(s)`,
     )
   }
-  // Only the posts we actually summarize get a body fetch.
-  const freshest = await enrichThinPosts(unique.slice(0, DIGEST_MAX))
+  // Posts already summarized on an earlier run keep that summary: consecutive
+  // digests overlap heavily (40% of summaries in a week were repeats), and
+  // each one is a paid Claude call. Only new posts get a body fetch + summary.
+  const freshestPosts = unique.slice(0, DIGEST_MAX)
+  const previous = loadPreviousDigest()
+  const toSummarize = freshestPosts.filter(
+    (p) => !previous.has(stableId(p.url)),
+  )
+  console.log(
+    `[generate-feed] ${freshestPosts.length - toSummarize.length} of ${freshestPosts.length} post(s) already summarized; summarizing ${toSummarize.length}`,
+  )
+  const freshest = await enrichThinPosts(toSummarize)
 
   // 1) News digest. The Message Batches API runs these at half price; nobody
   // waits on this job, so latency is the only cost. Set DIGEST_BATCH=0 to force
@@ -99,7 +123,7 @@ async function main() {
     { useBatch, timeoutMs: batchTimeoutMs },
   )
 
-  const items: DigestItem[] = []
+  const fresh = new Map<string, DigestItem>()
   let inputTokens = 0
   let outputTokens = 0
 
@@ -107,7 +131,8 @@ async function main() {
     inputTokens += summary.usage.inputTokens
     outputTokens += summary.usage.outputTokens
     try {
-      items.push(
+      fresh.set(
+        stableId(post.url),
         DigestItemSchema.parse({
           id: stableId(post.url),
           source: post.source,
@@ -125,6 +150,12 @@ async function main() {
   for (const f of failures) {
     console.warn(`::warning::[digest] skip ${f.url}: ${f.reason}`)
   }
+  // In the original newest-first order: reused summaries plus new ones.
+  const items: DigestItem[] = freshestPosts.flatMap((post) => {
+    const id = stableId(post.url)
+    const item = fresh.get(id) ?? previous.get(id)
+    return item ? [item] : []
+  })
 
   console.log(
     `[generate-feed] ${profile.model}: ${inputTokens} input / ${outputTokens} output tokens over ${items.length} item(s)`,
@@ -137,7 +168,7 @@ async function main() {
   // and trends all untouched and exits non-zero.
   if (items.length < MIN_DIGEST_ITEMS) {
     throw new Error(
-      `[generate-feed] only ${items.length}/${freshest.length} posts summarized ` +
+      `[generate-feed] only ${items.length}/${freshestPosts.length} posts summarized ` +
         `(minimum ${MIN_DIGEST_ITEMS}) — refusing to overwrite ${DATA_DIR}/digest.json`,
     )
   }
@@ -148,8 +179,19 @@ async function main() {
   console.log(
     `[generate-feed] tagging topics over ${recent.length} post(s) from the last 7 days`,
   )
-  const recentTags = await tagPosts(recent, askTopics)
+  // Tags persist per post in public/data (CI has no disk between runs), so a
+  // post is tagged once, not on each of the seven daily runs it is "recent".
+  const tagStore = new VerdictStore(`${DATA_DIR}/topic-tags.json`)
+  const { tags: recentTags, sent: tagged } = await tagPosts(
+    recent.map((p) => ({ ...p, id: stableId(p.url) })),
+    askTopics,
+    tagStore,
+  )
+  console.log(
+    `[generate-feed] topic tags: ${recent.length - tagged} cached, ${tagged} sent to Jev`,
+  )
 
+  tagStore.flush()
   writeFileSync(
     `${DATA_DIR}/digest.json`,
     JSON.stringify({ generatedAt: new Date().toISOString(), items }, null, 2),
