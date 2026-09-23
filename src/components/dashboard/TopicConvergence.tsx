@@ -5,6 +5,7 @@ import { CATEGORY_CONFIG, type DataSource } from '@/lib/tech-categories'
 import { CONVERGENCE_MIN_SOURCES } from '@/lib/signal-model'
 import { useLanguage, getLocalizedSources } from '@/lib/i18n'
 import { CategoryDot } from './icons'
+import { toggleFeedFocus, useFeedFocus } from '@/hooks/use-feed-focus'
 
 interface TopicRow {
   id: string
@@ -20,7 +21,8 @@ interface TopicRow {
  * changes in months; this only reports what was observed.
  */
 export function TopicConvergence() {
-  const { items, themes } = useTechFeed()
+  const { items, themes, isError, isLoading } = useTechFeed()
+  const focus = useFeedFocus()
   const { t, language } = useLanguage()
   const localizedSources = getLocalizedSources(language)
 
@@ -62,48 +64,67 @@ export function TopicConvergence() {
       </div>
       {themes.length > 0 && (
         <div className="px-4 py-3 border-b border-rule">
-          <p className="text-[11px] uppercase tracking-wide text-fg-3 mb-2">
-            <abbr title={t.discoveredHint} className="no-underline cursor-help">
-              {t.discoveredTitle}
-            </abbr>
+          <p className="text-[11px] uppercase tracking-wide text-fg-3">
+            {t.discoveredTitle}
+          </p>
+          <p className="text-[11px] text-fg-3 mt-0.5 mb-2">
+            {t.discoveredHint}
           </p>
           <ul className="flex flex-wrap gap-1.5">
             {themes.map((theme) => (
-              <li
-                key={theme.id}
-                className="chip-muted"
-                title={t.discoveredSince.replace('{date}', theme.addedDay)}
-              >
-                {theme.label} <span className="num">{theme.items}</span>
+              <li key={theme.id}>
+                <button
+                  className="chip-muted hover:text-fg"
+                  aria-pressed={focus.topic === theme.id}
+                  onClick={() => toggleFeedFocus('topic', theme.id)}
+                >
+                  {theme.label} <span className="num">{theme.items}</span>
+                  <span className="num">
+                    · {t.discoveredSince.replace('{date}', theme.addedDay)}
+                  </span>
+                </button>
               </li>
             ))}
           </ul>
         </div>
       )}
       {rows.length === 0 ? (
-        <p className="px-4 py-6 text-xs text-fg-3">{t.topicsEmpty}</p>
+        <p className="px-4 py-6 text-xs text-fg-3">
+          {isLoading && items.length === 0
+            ? t.loadingLiveData
+            : isError && items.length === 0
+              ? t.failedToFetchLiveData
+              : t.topicsEmpty}
+        </p>
       ) : (
         <ul className="divide-y divide-rule">
           {rows.map((row) => {
             const converging = row.sources.length >= CONVERGENCE_MIN_SOURCES
             return (
-              <li key={row.id} className="px-4 py-3 text-xs">
-                <div className="flex items-center gap-2">
-                  <CategoryDot color={row.color} />
-                  <span className="text-fg text-sm">{row.label}</span>
-                  {row.id.startsWith('auto:') && (
-                    <span className="chip-muted">{t.discoveredTag}</span>
-                  )}
-                  <span
-                    className={`ml-auto num ${converging ? 'text-accent' : 'text-fg-3'}`}
-                  >
-                    {row.sources.length} {t.sources.toLowerCase()} · {row.count}{' '}
-                    {t.items}
-                  </span>
-                </div>
-                <p className="mt-1 text-fg-3 pl-4">
-                  {row.sources.map((s) => localizedSources[s]).join(' · ')}
-                </p>
+              <li key={row.id} className="text-xs">
+                {/* A row narrows the feed to the topic (again to clear). */}
+                <button
+                  className={`w-full text-left px-4 py-3 hover:bg-hover ${focus.topic === row.id ? 'bg-hover' : ''}`}
+                  aria-pressed={focus.topic === row.id}
+                  onClick={() => toggleFeedFocus('topic', row.id)}
+                >
+                  <div className="flex items-center gap-2">
+                    <CategoryDot color={row.color} />
+                    <span className="text-fg text-sm">{row.label}</span>
+                    {row.id.startsWith('auto:') && (
+                      <span className="chip-muted">{t.discoveredTag}</span>
+                    )}
+                    <span
+                      className={`ml-auto num ${converging ? 'text-accent' : 'text-fg-3'}`}
+                    >
+                      {row.sources.length} {t.sources.toLowerCase()} ·{' '}
+                      {row.count} {t.items}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-fg-3 pl-4">
+                    {row.sources.map((s) => localizedSources[s]).join(' · ')}
+                  </p>
+                </button>
               </li>
             )
           })}

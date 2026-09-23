@@ -14,6 +14,7 @@ import type {
 } from '@/lib/tech-categories'
 
 import type { DiscoveredTheme } from '@/lib/trend-topics'
+import { watchMatcher } from '@/lib/watch'
 import type { TrackRecord } from '@/server/store/predictions'
 
 export type { TechFeedStats }
@@ -112,6 +113,10 @@ export interface FilterOptions {
   highlightedOnly?: boolean
   sortBy?: 'recent' | 'signal' | 'engagement'
   language?: OriginalLanguage | 'all'
+  /** Tracked topic or discovered theme id carried by the item. */
+  topic?: string | null
+  /** Watch term mentioned in title or summary. */
+  watch?: string | null
 }
 
 export function useFilteredTechFeed(filters: FilterOptions = {}) {
@@ -147,6 +152,16 @@ export function useFilteredTechFeed(filters: FilterOptions = {}) {
   if (filters.language && filters.language !== 'all') {
     filteredItems = filteredItems.filter(
       (i) => i.originalLanguage === filters.language,
+    )
+  }
+  if (filters.topic) {
+    const topic = filters.topic
+    filteredItems = filteredItems.filter((i) => i.signal.topics.includes(topic))
+  }
+  if (filters.watch) {
+    const match = watchMatcher(filters.watch)
+    filteredItems = filteredItems.filter((i) =>
+      match(`${i.title}\n${i.summary}`),
     )
   }
 

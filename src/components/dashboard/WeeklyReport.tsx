@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchWeeklyReportFn } from '@/server/functions/report'
 import { parseWatchTerms } from '@/lib/watch'
 import { useLanguage, getLocalizedSources } from '@/lib/i18n'
+import { useWatchTerms } from '@/hooks/use-watch-terms'
+import { toggleFeedFocus, useFeedFocus } from '@/hooks/use-feed-focus'
 
-const WATCH_KEY = 'tech-radar-watch'
-
-function loadWatch(): string[] {
-  try {
-    return parseWatchTerms(localStorage.getItem(WATCH_KEY))
-  } catch {
-    return []
-  }
-}
+const noop = () => () => {}
+/** False during the server render and hydration, true after. */
+const useHydrated = () =>
+  useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  )
 
 /**
  * "This week": what changed over the last seven days, from the server's
@@ -23,15 +24,13 @@ function loadWatch(): string[] {
 export function WeeklyReport() {
   const { t, language } = useLanguage()
   const sources = getLocalizedSources(language)
-  const [watch, setWatch] = useState<string[]>([])
+  const [watch, setWatch] = useWatchTerms()
+  const focus = useFeedFocus()
   const [draft, setDraft] = useState('')
-
-  // Read after mount: the server render has no localStorage.
-  useEffect(() => {
-    const saved = loadWatch()
-    setWatch(saved)
-    setDraft(saved.join(', '))
-  }, [])
+  const hydrated = useHydrated()
+  // The field shows the saved terms once they are known (after hydration)
+  // and whenever they change elsewhere.
+  useEffect(() => setDraft(watch.join(', ')), [watch])
 
   const {
     data: report,
@@ -40,6 +39,8 @@ export function WeeklyReport() {
   } = useQuery({
     queryKey: ['weekly-report', watch],
     queryFn: () => fetchWeeklyReportFn({ data: { watch } }),
+    // Wait for the saved terms instead of asking once without them.
+    enabled: hydrated,
     staleTime: 5 * 60 * 1000,
     // Same cadence as the feed, whose rebuilds write the history.
     refetchInterval: 10 * 60 * 1000,
@@ -49,11 +50,6 @@ export function WeeklyReport() {
     const terms = parseWatchTerms(draft)
     setWatch(terms)
     setDraft(terms.join(', '))
-    try {
-      localStorage.setItem(WATCH_KEY, terms.join(', '))
-    } catch {
-      // Private mode: the terms still apply to this page view.
-    }
   }
 
   return (
@@ -91,9 +87,22 @@ export function WeeklyReport() {
       </form>
 
       {!report ? (
-        <p className="px-4 py-6 text-xs text-fg-3">
-          {isLoading ? '…' : isError ? t.weekRequestFailed : t.weekUnavailable}
+        <p
+          className="px-4 py-6 text-xs text-fg-3"
+          aria-busy={!hydrated || isLoading}
+        >
+          {!hydrated || isLoading
+            ? t.weekLoading
+            : isError
+              ? t.weekRequestFailed
+              : t.weekUnavailable}
         </p>
+      ) : report.topics.length +
+          report.risers.length +
+          report.crossSource.length +
+          report.watch.length ===
+        0 ? (
+        <p className="px-4 py-6 text-xs text-fg-3">{t.weekNothing}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 px-4 py-3 text-xs">
           {report.watch.length > 0 && (
@@ -104,7 +113,13 @@ export function WeeklyReport() {
               <ul className="space-y-2">
                 {report.watch.map((w) => (
                   <li key={w.term}>
-                    <span className="text-fg">{w.term}</span>{' '}
+                    <button
+                      className="text-fg underline underline-offset-2 hover:text-accent"
+                      aria-pressed={focus.watch === w.term}
+                      onClick={() => toggleFeedFocus('watch', w.term)}
+                    >
+                      {w.term}
+                    </button>{' '}
                     <span className="num text-fg-2">
                       {w.thisWeek} (
                       {t.weekWas.replace('{n}', String(w.lastWeek))})

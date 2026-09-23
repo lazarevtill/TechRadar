@@ -2,7 +2,11 @@ import { useMemo } from 'react'
 import { useTechFeed, getTranslatedContent } from '@/hooks/use-tech-feed'
 import { CATEGORY_CONFIG } from '@/lib/tech-categories'
 import { reasonLabel } from '@/lib/signal-format'
-import { useLanguage, getLocalizedSources } from '@/lib/i18n'
+import {
+  useLanguage,
+  getLocalizedSources,
+  getLocalizedReasons,
+} from '@/lib/i18n'
 import { CategoryDot } from './icons'
 
 const MAX_HIGHLIGHTS = 8
@@ -12,9 +16,10 @@ const MAX_HIGHLIGHTS = 8
  * signal score; an empty list is a valid, honest result.
  */
 export function Highlights() {
-  const { items, isLoading } = useTechFeed()
+  const { items, isLoading, isError } = useTechFeed()
   const { t, language } = useLanguage()
   const localizedSources = getLocalizedSources(language)
+  const reasons = getLocalizedReasons(language)
   const targetLang = language === 'ru' ? 'ru' : 'en'
 
   const highlighted = useMemo(
@@ -37,7 +42,9 @@ export function Highlights() {
         <p className="px-4 py-6 text-xs text-fg-3">
           {isLoading && items.length === 0
             ? t.loadingLiveData
-            : t.highlightsEmpty}
+            : isError && items.length === 0
+              ? t.failedToFetchLiveData
+              : t.highlightsEmpty}
         </p>
       ) : (
         <ol className="divide-y divide-rule">
@@ -62,7 +69,11 @@ export function Highlights() {
                       : item.signal.score.toFixed(2)}
                   </span>
                   {item.signal.reasons.map((reason) => (
-                    <span key={reason} className="chip-reason">
+                    <span
+                      key={reason}
+                      className="chip-reason"
+                      title={reasons[reason].desc}
+                    >
                       {reasonLabel(reason, item.signal, t)}
                     </span>
                   ))}

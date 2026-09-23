@@ -49,7 +49,13 @@ export function engagementLine(
   if (signal.engagement === null || signal.engagementUnit === null) return null
   const count = `${signal.engagement.toLocaleString()} ${engagementUnitLabel(signal.engagementUnit, t)}`
   if (signal.velocity === null || signal.velocity < 1) return count
-  return `${count} · ${Math.round(signal.velocity).toLocaleString()}/${t.perDay.replace('per ', '')}`
+  // Measured growth (since the previous day's observation) and the estimate
+  // from age are different claims, so they read differently.
+  const n = Math.round(signal.velocity).toLocaleString()
+  const rate = (
+    signal.velocityObserved ? t.velocityMeasured : t.velocityEstimated
+  ).replace('{n}', n)
+  return `${count} · ${rate}`
 }
 
 export function formatScore(score: number | null): string {

@@ -6,24 +6,53 @@ import {
   weeklyReport,
   type WeeklyReport,
 } from '@/server/store/report'
-import { parseWatchTerms } from '@/lib/watch'
+import {
+  MAX_WATCH_TERM_LENGTH,
+  MAX_WATCH_TERMS,
+  parseWatchTerms,
+} from '@/lib/watch'
 
 export type ReportResult =
   { ok: true; report: WeeklyReport; text: string } | { ok: false }
 
+// Reports per watch set, reused for REPORT_CACHE_MS: building one scans a
+// fortnight of history, and the endpoint is public. At most
+// REPORT_CACHE_MAX sets are kept (oldest dropped first).
+const REPORT_CACHE_MS = 5 * 60_000
+const REPORT_CACHE_MAX = 200
+const reportCache = new Map<string, { at: number; result: ReportResult }>()
+
 /** The weekly report for these watch terms, from the history store. */
 export async function getWeeklyReport(watch: string[]): Promise<ReportResult> {
+  const key = watch
+    .map((w) => w.toLowerCase())
+    .sort()
+    .join('\n')
+  const hit = reportCache.get(key)
+  if (hit && Date.now() - hit.at < REPORT_CACHE_MS) return hit.result
+  let result: ReportResult
   try {
     const report = weeklyReport(await historyDb(), utcDay(), watch)
-    return { ok: true, report, text: reportText(report) }
+    result = { ok: true, report, text: reportText(report) }
   } catch (error) {
     console.error('[report] could not build the weekly report:', error)
     return { ok: false }
   }
+  reportCache.delete(key)
+  reportCache.set(key, { at: Date.now(), result })
+  if (reportCache.size > REPORT_CACHE_MAX)
+    reportCache.delete(reportCache.keys().next().value!)
+  return result
 }
 
 export const fetchWeeklyReportFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ watch: z.array(z.string()).max(20) }))
+  .inputValidator(
+    z.object({
+      watch: z
+        .array(z.string().max(MAX_WATCH_TERM_LENGTH))
+        .max(MAX_WATCH_TERMS),
+    }),
+  )
   .handler(async ({ data }) => {
     const result = await getWeeklyReport(parseWatchTerms(data.watch))
     return result.ok ? result.report : null

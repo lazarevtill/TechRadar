@@ -239,6 +239,11 @@ function SignalDetail({
         <span className="num">
           {days === 0 ? t.today : `${days}${t.daysAgo}`}
         </span>
+        {item.firstSeen && (
+          <span className="num">
+            {t.firstSeenOn.replace('{date}', item.firstSeen.slice(0, 10))}
+          </span>
+        )}
       </div>
 
       {s.reasons.length > 0 && (

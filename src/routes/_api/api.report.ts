@@ -27,7 +27,11 @@ export const Route = createFileRoute('/_api/api/report')({
           )
         if (params.get('format') === 'text')
           return new Response(result.text, {
-            headers: { ...CORS, 'Content-Type': 'text/plain; charset=utf-8' },
+            headers: {
+              ...CORS,
+              'Content-Type': 'text/plain; charset=utf-8',
+              'Cache-Control': 'public, max-age=300',
+            },
           })
         return Response.json(result.report, {
           headers: { ...CORS, 'Cache-Control': 'public, max-age=300' },

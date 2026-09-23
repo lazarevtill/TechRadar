@@ -62,6 +62,15 @@ export interface Translations {
   usageToday: string
   lastBackup: string
   weekTitle: string
+  trackRecordNotJudged: string
+  velocityMeasured: string
+  velocityEstimated: string
+  firstSeenOn: string
+  focusedOn: string
+  clearFilter: string
+  watchChip: string
+  weekLoading: string
+  weekNothing: string
   weekNewItems: string
   watchLabel: string
   watchPlaceholder: string
@@ -106,7 +115,6 @@ export interface Translations {
   novelty: string
   substance: string
   recency: string
-  perDay: string
   notMeasured: string
   noJudgment: string
   stars: string
@@ -117,7 +125,6 @@ export interface Translations {
   reactions: string
   whyItMatters: string
   viewOn: string
-  ago: string
   daysAgo: string
   today: string
   topics: string
@@ -147,7 +154,6 @@ export interface Translations {
   autoTranslated: string
   translateToRussian: string
   translating: string
-  translatedToRussian: string
   originalLanguage: string
 
   // Digest
@@ -199,8 +205,6 @@ export interface Translations {
   justNow: string
   minutesAgo: string
   hoursAgo: string
-  forceRefresh: string
-  clearCache: string
   sourceDetails: string
   judged: string
 
@@ -230,10 +234,6 @@ export interface Translations {
   prototype: string
   earlyAdopter: string
   massMarket: string
-  researchDesc: string
-  prototypeDesc: string
-  earlyAdopterDesc: string
-  massMarketDesc: string
 
   // Categories
   aiMl: string
@@ -347,6 +347,17 @@ export const translations: Record<Language, Translations> = {
       'Jev today: {sent} requests sent, {cached} answered from cache · {failed} failed calls',
     lastBackup: 'last backup',
     weekTitle: 'This week',
+    trackRecordNotJudged:
+      '{n} could not be judged (metric unreadable or no comparison group)',
+    velocityMeasured: '+{n}/day measured',
+    velocityEstimated: '≈{n}/day on average',
+    firstSeenOn: 'first seen {date}',
+    focusedOn: 'Showing only',
+    clearFilter: 'Remove filter',
+    watchChip: 'watch',
+    weekLoading: 'Loading the weekly report…',
+    weekNothing:
+      'Nothing to compare yet: the history grows with every day the server runs.',
     weekNewItems: '{n} new items',
     watchLabel: 'Watch',
     watchPlaceholder:
@@ -393,7 +404,6 @@ export const translations: Record<Language, Translations> = {
     novelty: 'Novelty',
     substance: 'Substance',
     recency: 'Recency',
-    perDay: 'per day',
     notMeasured: 'not measured',
     noJudgment: 'no judgment',
     stars: 'stars',
@@ -404,7 +414,6 @@ export const translations: Record<Language, Translations> = {
     reactions: 'reactions',
     whyItMatters: 'Context',
     viewOn: 'Open on',
-    ago: 'ago',
     daysAgo: 'd ago',
     today: 'Today',
     topics: 'Topics',
@@ -433,7 +442,6 @@ export const translations: Record<Language, Translations> = {
     autoTranslated: 'Machine-translated',
     translateToRussian: 'Translate to Russian',
     translating: 'Translating',
-    translatedToRussian: 'Translated to Russian',
     originalLanguage: 'Original language',
 
     digestTitle: 'AI blog digest',
@@ -485,8 +493,6 @@ export const translations: Record<Language, Translations> = {
     justNow: 'Just now',
     minutesAgo: 'min ago',
     hoursAgo: 'h ago',
-    forceRefresh: 'Force refresh',
-    clearCache: 'Clear cache',
     sourceDetails: 'Per source',
     judged: 'judged',
 
@@ -502,9 +508,9 @@ export const translations: Record<Language, Translations> = {
     infoScoringDesc:
       'Sources report attention on incomparable scales, and several report none. Every item is placed among its own source’s peers in the current fetch; absolute thresholds are not used. The score is a weighted mean of the components below that are actually available for the item. Missing components are left out, never guessed; an item with nothing measurable has no score.',
     infoReachDesc:
-      'Percentile of stars, points, upvotes, likes or citations within the source.',
+      'Percentile of stars, points, upvotes, likes, reactions or citations within the source.',
     infoVelocityDesc:
-      'Percentile of engagement per day of age within the source.',
+      'Percentile of engagement gained per day within the source. Measured from the previous day’s observation when the radar has one (shown as “+N/day measured”); otherwise averaged over the item’s age (“≈N/day on average”).',
     infoRecencyDesc:
       'Age decay with a half-life per source: one day for Hacker News, a week for GitHub, weeks for papers.',
     infoNoveltyDesc:
@@ -512,10 +518,10 @@ export const translations: Record<Language, Translations> = {
     infoSubstanceDesc:
       'Jev’s probability that the item is a concrete technical artifact rather than news or opinion.',
     infoConvergenceDesc:
-      'Jev tags each item with tracked topics; convergence counts the distinct sources carrying the same topic in this fetch.',
+      'Jev tags each item with tracked topics, and themes the radar discovered are matched by name; convergence counts the distinct sources carrying the same topic in this fetch, or the same work (by arXiv id, DOI, repository or link), whichever is higher.',
     infoHighlightsTitle: 'Highlights',
     infoHighlightsDesc:
-      'An item is emphasized only when an explicit rule fires, and the reason is shown with it: fast-rising (a robust outlier in velocity among its source peers), converging (the strongest item of a topic that is on four or more sources), new capability (novelty probability at or above 0.5), or under the radar (the same, while reach is still low).',
+      'An item is emphasized only when an explicit rule fires, and the reason is shown with it: fast-rising (a robust outlier in velocity among its source peers), cross-source (the strongest item of a work that appears on two or more sources), converging (the strongest item of a topic that is on four or more sources), new capability (novelty probability at or above 0.5), or under the radar (the same, while reach is still low).',
     infoMaturityTitle: 'Maturity',
     infoMaturityDesc:
       'Stage comes from counts in code: stars or points for engineering sources, citations for papers.',
@@ -526,10 +532,6 @@ export const translations: Record<Language, Translations> = {
     prototype: 'Prototype',
     earlyAdopter: 'Early adopter',
     massMarket: 'Mass market',
-    researchDesc: 'Academic papers and theoretical foundations',
-    prototypeDesc: 'Working demos and proof-of-concepts',
-    earlyAdopterDesc: 'Production use by innovators',
-    massMarketDesc: 'Widespread industry adoption',
 
     aiMl: 'AI / ML',
     energy: 'Energy',
@@ -636,6 +638,17 @@ export const translations: Record<Language, Translations> = {
       'Jev сегодня: отправлено {sent}, из кэша {cached} · ошибок {failed}',
     lastBackup: 'последняя копия',
     weekTitle: 'Эта неделя',
+    trackRecordNotJudged:
+      '{n} не удалось оценить (метрика недоступна или нет группы сравнения)',
+    velocityMeasured: '+{n}/день по замеру',
+    velocityEstimated: '≈{n}/день в среднем',
+    firstSeenOn: 'впервые замечено {date}',
+    focusedOn: 'Только',
+    clearFilter: 'Убрать фильтр',
+    watchChip: 'слежу',
+    weekLoading: 'Загружаем недельный отчёт…',
+    weekNothing:
+      'Сравнивать пока не с чем: история растёт с каждым днём работы сервера.',
     weekNewItems: '{n} новых записей',
     watchLabel: 'Следить',
     watchPlaceholder:
@@ -683,7 +696,6 @@ export const translations: Record<Language, Translations> = {
     novelty: 'Новизна',
     substance: 'Содержательность',
     recency: 'Свежесть',
-    perDay: 'в день',
     notMeasured: 'не измеряется',
     noJudgment: 'нет оценки',
     stars: 'звёзд',
@@ -694,7 +706,6 @@ export const translations: Record<Language, Translations> = {
     reactions: 'реакций',
     whyItMatters: 'Контекст',
     viewOn: 'Открыть на',
-    ago: 'назад',
     daysAgo: 'д назад',
     today: 'Сегодня',
     topics: 'Темы',
@@ -723,7 +734,6 @@ export const translations: Record<Language, Translations> = {
     autoTranslated: 'Машинный перевод',
     translateToRussian: 'Перевести на русский',
     translating: 'Перевод',
-    translatedToRussian: 'Переведено на русский',
     originalLanguage: 'Язык оригинала',
 
     digestTitle: 'Дайджест AI-блогов',
@@ -776,8 +786,6 @@ export const translations: Record<Language, Translations> = {
     justNow: 'Только что',
     minutesAgo: 'мин назад',
     hoursAgo: 'ч назад',
-    forceRefresh: 'Принудительное обновление',
-    clearCache: 'Очистить кэш',
     sourceDetails: 'По источникам',
     judged: 'оценено',
 
@@ -792,9 +800,10 @@ export const translations: Record<Language, Translations> = {
     infoScoringTitle: 'Оценка сигнала',
     infoScoringDesc:
       'Источники измеряют внимание в несопоставимых единицах, а некоторые не измеряют вовсе. Каждая запись сравнивается с соседями по своему источнику в текущей выборке; абсолютные пороги не используются. Оценка — взвешенное среднее тех компонентов ниже, которые для записи реально доступны. Недостающие компоненты не додумываются; запись, у которой нечего измерить, оценки не получает.',
-    infoReachDesc: 'Перцентиль звёзд, очков или цитирований внутри источника.',
+    infoReachDesc:
+      'Перцентиль звёзд, очков, голосов, лайков, реакций или цитирований внутри источника.',
     infoVelocityDesc:
-      'Перцентиль вовлечённости в расчёте на день возраста внутри источника.',
+      'Перцентиль прироста вовлечённости за день внутри источника. Если есть вчерашний замер, прирост измерен («+N/день по замеру»); иначе это среднее за возраст записи («≈N/день в среднем»).',
     infoRecencyDesc:
       'Затухание по возрасту с периодом полураспада на источник: день для Hacker News, неделя для GitHub, недели для статей.',
     infoNoveltyDesc:
@@ -802,10 +811,10 @@ export const translations: Record<Language, Translations> = {
     infoSubstanceDesc:
       'Вероятность по оценке Jev, что запись — конкретный технический артефакт, а не новость или мнение.',
     infoConvergenceDesc:
-      'Jev помечает записи отслеживаемыми темами; совпадение — число разных источников с одной темой в текущей выборке.',
+      'Jev помечает записи отслеживаемыми темами, а найденные радаром темы сопоставляются по названию; совпадение — число разных источников с одной темой в текущей выборке или с одной и той же работой (по arXiv id, DOI, репозиторию или ссылке), смотря что больше.',
     infoHighlightsTitle: 'Выделение',
     infoHighlightsDesc:
-      'Запись выделяется только когда срабатывает явное правило, и причина показывается рядом: быстрый рост (устойчивый выброс по скорости среди соседей по источнику), совпадение тем (самая сильная запись темы, которая есть в четырёх и более источниках), новая возможность (вероятность новизны не ниже 0,5) или вне поля зрения (то же при пока низком охвате).',
+      'Запись выделяется только когда срабатывает явное правило, и причина показывается рядом: быстрый рост (устойчивый выброс по скорости среди соседей по источнику), в нескольких источниках (самая сильная запись работы, которая есть в двух и более источниках), совпадение тем (самая сильная запись темы, которая есть в четырёх и более источниках), новая возможность (вероятность новизны не ниже 0,5) или вне поля зрения (то же при пока низком охвате).',
     infoMaturityTitle: 'Зрелость',
     infoMaturityDesc:
       'Стадия вычисляется в коде из счётчиков: звёзды или очки для инженерных источников, цитирования для статей.',
@@ -816,10 +825,6 @@ export const translations: Record<Language, Translations> = {
     prototype: 'Прототип',
     earlyAdopter: 'Ранние последователи',
     massMarket: 'Массовый рынок',
-    researchDesc: 'Научные статьи и теоретические основы',
-    prototypeDesc: 'Рабочие демо и доказательства концепции',
-    earlyAdopterDesc: 'Использование инноваторами в продакшене',
-    massMarketDesc: 'Широкое внедрение в индустрии',
 
     aiMl: 'ИИ / ML',
     energy: 'Энергетика',
