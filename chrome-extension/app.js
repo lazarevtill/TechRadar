@@ -19,12 +19,22 @@ import {
   sanitizeSettings,
   saveSettings,
 } from './lib/settings.js'
-import { fetchBackendFeed, fetchReport, panelData } from './lib/backend.js'
+import {
+  fetchBackendFeed,
+  fetchHealth,
+  fetchReport,
+  panelData,
+} from './lib/backend.js'
 import { trajectoryMeta, sparklineBars } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
 import { icon, CATEGORY_ICON } from './lib/icons.js'
 import { trackRecordSummary } from './lib/track-record.js'
 import { parseWatchTerms, watchHits } from './lib/watch.js'
+import {
+  REPORT_CACHE_KEY,
+  reportCacheId,
+  savedReportFor,
+} from './lib/report-cache.js'
 
 /**
  * Tech Evolution Radar - Chrome extension new-tab page.
@@ -98,7 +108,6 @@ const translations = {
     sources: 'Sources',
     scored: 'Scored',
     liveRadar: 'Radar',
-    radarHint: 'rings: maturity · dot size: reach · ring: fast-rising',
     highlightsTitle: 'Highlights',
     highlightsHint: 'only with a stated reason',
     highlightsEmpty: 'Nothing stands out in this fetch',
@@ -112,16 +121,13 @@ const translations = {
     live: 'Updated',
     syncing: 'Updating',
     noItems: 'No items found',
-    error: 'Failed to load data',
     retry: 'Retry',
-    signals: 'signals',
     from: 'from',
     unscoredNote: 'items without an attention metric are unscored',
     judged: 'judged by Jev',
     backendUnreachable: 'Cannot reach the TechRadar server',
     backendHint:
       'This extension shows data prepared by your TechRadar server. Start it (docker compose up -d) or check the address:',
-    showingCached: 'Showing the last saved copy',
     offline: 'Offline',
     all: 'All',
     viewRadar: 'Radar',
@@ -181,6 +187,9 @@ const translations = {
     weekTitle: 'This week',
     weekLoading: 'Loading the weekly report…',
     weekUnavailable: 'The weekly report is unavailable on this server.',
+    weekUnreachable:
+      'Cannot reach the server, and no weekly report was saved for it yet.',
+    weekSaved: 'Server unreachable — showing the report saved {time}.',
     weekWatch: 'Watch terms, items this week',
     weekWas: 'last week {n}',
     weekTopics: 'Topics, items this week',
@@ -192,6 +201,22 @@ const translations = {
     weekWatchWithheld:
       'Watch terms are sent only over HTTPS or to a local server, so this report leaves them out.',
     watched: 'watch',
+    discoveredTitle: 'Discovered by the radar',
+    discoveredHint:
+      'Terms that suddenly appeared across several sources and that Jev confirmed name a technology. Added automatically (at most 3 a day, 20 in total) and retired after two quiet weeks.',
+    discoveredSince: 'since {date}',
+    healthOk: 'Server: all sources report',
+    a11yLanguage: 'Language',
+    tickWeeks: '{n}w',
+    tickMonths: '{n}mo',
+    tickYears: '{n}y',
+    a11yRefresh: 'Refresh data',
+    a11yView: 'View',
+    a11yChart:
+      'Technology chart. Use arrow keys to move between signals and Enter to open one.',
+    a11ySource: 'Source',
+    a11yClose: 'Close',
+    healthProblems: 'Server: {list}',
     panelDigest: 'AI blog digest',
     settingsData: 'Saved data',
     savedInfo: 'Saved copy from {time}: {items} signals.',
@@ -221,7 +246,8 @@ const translations = {
     discovered: 'discovered',
     trackRecord: 'Track record',
     trackRecordHint:
-      'How past highlights turned out after 14 days: the share that grew more than the median of a random sample from the same source. A random pick scores about 50%.',
+      'How past highlights turned out after {days} days: the share that grew more than the median of a random sample from the same source and day. A random pick scores about 50%. For discovered themes: the share that kept appearing.',
+    trackRecordNotJudged: '{n} could not be judged',
     trackRecordPending: 'measuring {n} highlights · first results on {date}',
     trackDiscovered: 'Discovered themes',
     reasonNovel: 'New capability',
@@ -236,14 +262,15 @@ const translations = {
     signal: 'signal',
     stars: 'stars',
     points: 'points',
-    perDay: '/day',
+    velocityMeasured: '+{n}/day measured',
+    velocityEstimated: '≈{n}/day on average',
+    firstSeenOn: 'first seen {date}',
     daysAgo: 'd ago',
     hoursAgo: 'h ago',
     minutesAgo: 'm ago',
     showOriginal: 'Original',
     showTranslation: 'Translation',
     machineTranslated: 'machine-translated',
-    momentum: 'week over week',
     readOriginal: 'Read original',
     newsEmpty: 'Digest will appear after the next daily update',
     trendsEmpty: 'Topic momentum will appear once the daily digest has data',
@@ -252,10 +279,10 @@ const translations = {
       'GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face papers and models, bioRxiv and medRxiv, OpenAlex, PubMed, HAL, CiNii and Chinese-language OpenAlex research, fetched by your TechRadar server. This page only talks to that server and keeps the last copy for five minutes, so a new tab paints instantly.',
     infoScoring: 'Signal score',
     infoScoringText:
-      'Every item is placed among its own source’s peers: reach (percentile of its attention metric), velocity (engagement per day of age) and recency, combined with Jev’s novelty and substance judgments. Items with nothing measurable are shown but not scored.',
+      'Every item is placed among its own source’s peers: reach (percentile of its attention metric), velocity (engagement gained per day: measured since the previous day when the radar has seen the item before, “+N/day measured”, otherwise averaged over its age, “≈N/day on average”) and recency, combined with Jev’s novelty and substance judgments. Items with nothing measurable are shown but not scored.',
     infoHighlights: 'Highlights',
     infoHighlightsText:
-      'An item is emphasized only with a stated reason: fast-rising among its source peers, the same topic on several sources, a new capability judged by Jev, or strong substance with little attention yet.',
+      'An item is emphasized only with a stated reason: fast-rising among its source peers, the same work (paper, code, discussion) on several sources, the same topic on several sources, a new capability judged by Jev, or a new capability with little attention yet.',
     infoMaturity: 'Maturity',
     infoMaturityText:
       'Research, prototype, early adopter and mass market come from stars, points or citations. The radar draws them as rings; angle carries no meaning.',
@@ -276,7 +303,6 @@ const translations = {
     sources: 'Источники',
     scored: 'Оценено',
     liveRadar: 'Радар',
-    radarHint: 'кольца: зрелость · размер: охват · обводка: быстрый рост',
     highlightsTitle: 'Главное',
     highlightsHint: 'только с указанной причиной',
     highlightsEmpty: 'В этой выборке ничего не выделяется',
@@ -290,16 +316,13 @@ const translations = {
     live: 'Обновлено',
     syncing: 'Обновление',
     noItems: 'Ничего не найдено',
-    error: 'Не удалось загрузить данные',
     retry: 'Повторить',
-    signals: 'сигналов',
     from: 'из',
     unscoredNote: 'записи без метрики внимания не оцениваются',
     judged: 'оценено Jev',
     backendUnreachable: 'Нет связи с сервером TechRadar',
     backendHint:
       'Расширение показывает данные, подготовленные вашим сервером TechRadar. Запустите его (docker compose up -d) или проверьте адрес:',
-    showingCached: 'Показана последняя сохранённая копия',
     offline: 'Нет связи',
     all: 'Все',
     viewRadar: 'Радар',
@@ -360,6 +383,9 @@ const translations = {
     weekTitle: 'Эта неделя',
     weekLoading: 'Загружаем недельный отчёт…',
     weekUnavailable: 'Недельный отчёт на этом сервере недоступен.',
+    weekUnreachable:
+      'Сервер недоступен, а сохранённого недельного отчёта для него пока нет.',
+    weekSaved: 'Сервер недоступен — показан отчёт, сохранённый {time}.',
     weekWatch: 'Ваши термины, записей за неделю',
     weekWas: 'неделей раньше {n}',
     weekTopics: 'Темы, записей за неделю',
@@ -371,6 +397,22 @@ const translations = {
     weekWatchWithheld:
       'Отслеживаемые термины отправляются только по HTTPS или на локальный сервер, поэтому в этом отчёте их нет.',
     watched: 'слежу',
+    discoveredTitle: 'Найдено радаром',
+    discoveredHint:
+      'Термины, внезапно появившиеся в нескольких источниках, которые Jev подтвердил как названия технологий. Добавляются автоматически (не более 3 в день и 20 всего) и снимаются после двух тихих недель.',
+    discoveredSince: 'с {date}',
+    healthOk: 'Сервер: все источники отвечают',
+    a11yLanguage: 'Язык',
+    tickWeeks: '{n} нед',
+    tickMonths: '{n} мес',
+    tickYears: '{n} г',
+    a11yRefresh: 'Обновить данные',
+    a11yView: 'Вид',
+    a11yChart:
+      'Диаграмма технологий. Стрелки переходят между сигналами, Enter открывает сигнал.',
+    a11ySource: 'Источник',
+    a11yClose: 'Закрыть',
+    healthProblems: 'Сервер: {list}',
     panelDigest: 'Дайджест AI-блогов',
     settingsData: 'Сохранённые данные',
     savedInfo: 'Копия от {time}: {items} сигналов.',
@@ -401,7 +443,8 @@ const translations = {
     discovered: 'найдено',
     trackRecord: 'Точность',
     trackRecordHint:
-      'Как сработали прошлые выделения через 14 дней: доля тех, что выросли сильнее медианы случайной выборки из того же источника. Случайный выбор даёт около 50%.',
+      'Как сработали прошлые выделения через {days} дней: доля тех, что выросли сильнее медианы случайной выборки из того же источника и дня. Случайный выбор даёт около 50%. Для найденных тем — доля тех, что продолжили появляться.',
+    trackRecordNotJudged: '{n} не удалось оценить',
     trackRecordPending: 'измеряем {n} выделений · первые результаты {date}',
     trackDiscovered: 'Найденные темы',
     reasonNovel: 'Новая возможность',
@@ -416,14 +459,15 @@ const translations = {
     signal: 'сигнал',
     stars: 'звёзд',
     points: 'очков',
-    perDay: '/день',
+    velocityMeasured: '+{n}/день по замеру',
+    velocityEstimated: '≈{n}/день в среднем',
+    firstSeenOn: 'впервые замечено {date}',
     daysAgo: 'д назад',
     hoursAgo: 'ч назад',
     minutesAgo: 'м назад',
     showOriginal: 'Оригинал',
     showTranslation: 'Перевод',
     machineTranslated: 'машинный перевод',
-    momentum: 'неделя к неделе',
     readOriginal: 'Читать оригинал',
     newsEmpty: 'Дайджест появится после следующего суточного обновления',
     trendsEmpty: 'Импульс тем появится, когда в дайджесте накопятся данные',
@@ -432,10 +476,10 @@ const translations = {
       'GitHub, arXiv, Hacker News, Lobsters, DEV, статьи и модели Hugging Face, bioRxiv и medRxiv, OpenAlex, PubMed, HAL, CiNii и китаеязычные исследования OpenAlex — их собирает ваш сервер TechRadar. Страница обращается только к нему и хранит последнюю копию пять минут, поэтому новая вкладка открывается мгновенно.',
     infoScoring: 'Оценка сигнала',
     infoScoringText:
-      'Каждая запись сравнивается с соседями по своему источнику: охват (перцентиль метрики внимания), скорость (вовлечённость в день возраста) и свежесть, вместе с оценками новизны и содержательности от Jev. Записи, для которых нечего измерить, показываются без оценки.',
+      'Каждая запись сравнивается с соседями по своему источнику: охват (перцентиль метрики внимания), скорость (прирост вовлечённости за день: по замеру со вчерашнего дня, если радар уже видел запись, «+N/день по замеру», иначе в среднем за возраст, «≈N/день в среднем») и свежесть, вместе с оценками новизны и содержательности от Jev. Записи, для которых нечего измерить, показываются без оценки.',
     infoHighlights: 'Выделение',
     infoHighlightsText:
-      'Запись выделяется только с указанной причиной: быстрый рост среди соседей по источнику, одна тема в нескольких источниках, новая возможность по оценке Jev или сильное содержание при пока малом внимании.',
+      'Запись выделяется только с указанной причиной: быстрый рост среди соседей по источнику, одна и та же работа (статья, код, обсуждение) в нескольких источниках, одна тема в нескольких источниках, новая возможность по оценке Jev или новая возможность при пока малом внимании.',
     infoMaturity: 'Зрелость',
     infoMaturityText:
       'Исследование, прототип, ранние последователи и массовый рынок вычисляются из звёзд, очков или цитирований. Радар рисует их кольцами; угол ничего не значит.',
@@ -506,6 +550,12 @@ let state = {
   activeTopic: 'all',
   topicLabels: {},
   trackRecord: null,
+  /** Discovered themes (feed.themes). */
+  themes: [],
+  /** Sources on one topic that make it converging (server setting). */
+  convergenceMinSources: 4,
+  /** /api/health status part, or null. */
+  health: null,
   /** Watch term the feed is filtered by, or null. */
   activeWatch: null,
   /** Weekly report: null (not loaded), { error } or the report. */
@@ -622,7 +672,8 @@ function engagementLine(item) {
   const count = `${engagement.toLocaleString()} ${t(unit)}`
   const velocity = item.signal?.velocity
   if (!velocity || velocity < 1) return count
-  return `${count} · ${Math.round(velocity).toLocaleString()}${t('perDay')}`
+  // Measured day over day vs averaged over the item's age.
+  return `${count} · ${fmt(item.signal.velocityObserved ? 'velocityMeasured' : 'velocityEstimated', { n: Math.round(velocity).toLocaleString() })}`
 }
 
 /**
@@ -705,6 +756,9 @@ function applyPayload(payload) {
     state.activeSource = 'all'
   state.topicLabels = payload.topicLabels ?? {}
   state.trackRecord = trackRecordSummary(payload.feed.trackRecord)
+  state.themes = Array.isArray(payload.feed.themes) ? payload.feed.themes : []
+  state.convergenceMinSources =
+    payload.thresholds?.convergenceMinSources ?? state.convergenceMinSources
   if (state.activeTopic !== 'all' && !state.topicLabels[state.activeTopic])
     state.activeTopic = 'all'
   state.digest = panelData(payload.digest, 'items')
@@ -748,7 +802,37 @@ async function fetchAllData(force = false) {
     updateStatusBadge(false)
     render()
     loadReport()
+    loadHealth()
   }
+}
+
+function storageGet(key) {
+  return new Promise((resolve) => {
+    if (chrome?.storage?.local)
+      chrome.storage.local.get([key], (r) => resolve(r?.[key] ?? null))
+    else {
+      try {
+        resolve(JSON.parse(localStorage.getItem(key)))
+      } catch {
+        resolve(null)
+      }
+    }
+  })
+}
+
+function storageSet(key, value) {
+  return new Promise((resolve) => {
+    if (chrome?.storage?.local)
+      chrome.storage.local.set({ [key]: value }, resolve)
+    else {
+      try {
+        localStorage.setItem(key, JSON.stringify(value))
+      } catch {
+        // Storage full or blocked: the report is simply not kept offline.
+      }
+      resolve()
+    }
+  })
 }
 
 async function getCachedData() {
@@ -928,6 +1012,14 @@ function reasonLabel(reason) {
   return keys ? { label: t(keys[0]), desc: t(keys[1]) } : null
 }
 
+/** How long the radar has tracked the item, from one day on. */
+function firstSeenChip(item) {
+  if (!item.firstSeen) return ''
+  const days = (Date.now() - Date.parse(item.firstSeen)) / 86_400_000
+  if (!(days >= 1)) return ''
+  return `<span class="num">${escapeHtml(fmt('firstSeenOn', { date: item.firstSeen.slice(0, 10) }))}</span>`
+}
+
 /** One link per other source carrying the same work (item.linked). */
 function alsoOn(item) {
   const seen = new Set([item.source])
@@ -957,7 +1049,7 @@ function reasonChips(item) {
 function trackRecordHtml() {
   const record = state.trackRecord
   if (!record) return ''
-  const body = record.rates
+  const judged = record.rates
     ? record.rates
         .map((r) => {
           const label =
@@ -970,7 +1062,11 @@ function trackRecordHtml() {
     : escapeHtml(
         fmt('trackRecordPending', { n: record.pending, date: record.date }),
       )
-  return `<p class="track-record" title="${escapeHtml(t('trackRecordHint'))}">${escapeHtml(t('trackRecord'))}: ${body}</p>`
+  const notJudged = record.notJudged
+    ? ` · ${escapeHtml(fmt('trackRecordNotJudged', { n: record.notJudged }))}`
+    : ''
+  // The explanation is text, not a hover-only title.
+  return `<div class="track-record"><p>${escapeHtml(t('trackRecord'))}: ${judged}${notJudged}</p><p class="track-hint">${escapeHtml(fmt('trackRecordHint', { days: record.days }))}</p></div>`
 }
 
 function renderHighlights() {
@@ -1076,16 +1172,50 @@ function renderTrends() {
 }
 
 /** Fetch the weekly report for the reader's watch terms (panel only). */
+/** The server's public health (sources, feed age) for the footer line. */
+async function loadHealth() {
+  try {
+    state.health = await fetchHealth(fetch, state.settings.backendUrl)
+  } catch {
+    state.health = null
+  }
+  renderHealth()
+}
+
+function renderHealth() {
+  const el = $('footer-health')
+  if (!el) return
+  const h = state.health
+  el.textContent = !h
+    ? ''
+    : h.ok
+      ? t('healthOk')
+      : fmt('healthProblems', { list: h.problems.join(', ') })
+  el.classList.toggle('bad', Boolean(h && !h.ok))
+}
+
 async function loadReport() {
   if (!state.settings.panels.week) return
+  const { backendUrl, watchTerms } = state.settings
   try {
-    state.report = await fetchReport(
-      fetch,
-      state.settings.backendUrl,
-      state.settings.watchTerms,
-    )
+    const report = await fetchReport(fetch, backendUrl, watchTerms)
+    state.report = report
+    await storageSet(REPORT_CACHE_KEY, {
+      id: reportCacheId(backendUrl, watchTerms),
+      at: Date.now(),
+      report,
+    })
   } catch (error) {
-    state.report = { error: error.message }
+    // Offline or unreachable: keep showing the last report from this server
+    // (marked as saved); a server that answers without one says so.
+    const saved = savedReportFor(
+      await storageGet(REPORT_CACHE_KEY),
+      backendUrl,
+      watchTerms,
+    )
+    state.report = saved
+      ? { ...saved.report, savedAt: saved.at }
+      : { error: error.message, unreachable: Boolean(error.unreachable) }
   }
   renderWeek()
 }
@@ -1100,7 +1230,7 @@ function renderWeek() {
     return
   }
   if (r.error) {
-    box.innerHTML = `<p class="empty">${escapeHtml(t('weekUnavailable'))}</p>`
+    box.innerHTML = `<p class="empty">${escapeHtml(t(r.unreachable ? 'weekUnreachable' : 'weekUnavailable'))}</p>`
     return
   }
   const link = (i) =>
@@ -1112,7 +1242,7 @@ function renderWeek() {
       `<div class="week-block"><h3>${escapeHtml(t('weekWatch'))}</h3><ul>${r.watch
         .map(
           (w) =>
-            `<li><button class="link-btn" data-watch="${escapeHtml(w.term)}">${escapeHtml(w.term)}</button> <span class="num">${w.thisWeek}</span> <span class="muted">(${escapeHtml(fmt('weekWas', { n: w.lastWeek }))})</span>${w.items.length ? `<ul class="week-items">${w.items.map((i) => `<li><span class="muted">${escapeHtml(sourceLabel(i.source))}</span> ${link(i)}</li>`).join('')}</ul>` : ''}</li>`,
+            `<li><button class="link-btn" data-watch="${escapeHtml(w.term)}" aria-pressed="${state.activeWatch === w.term}">${escapeHtml(w.term)}</button> <span class="num">${w.thisWeek}</span> <span class="muted">(${escapeHtml(fmt('weekWas', { n: w.lastWeek }))})</span>${w.items.length ? `<ul class="week-items">${w.items.map((i) => `<li><span class="muted">${escapeHtml(sourceLabel(i.source))}</span> ${link(i)}</li>`).join('')}</ul>` : ''}</li>`,
         )
         .join('')}</ul></div>`,
     )
@@ -1145,9 +1275,13 @@ function renderWeek() {
         )
         .join('')}</ul></div>`,
     )
-  const withheld = r.watchWithheld
-    ? `<p class="empty">${escapeHtml(t('weekWatchWithheld'))}</p>`
-    : ''
+  const withheld =
+    (r.savedAt
+      ? `<p class="empty">${escapeHtml(fmt('weekSaved', { time: formatTimeAgo(new Date(r.savedAt)) }))}</p>`
+      : '') +
+    (r.watchWithheld
+      ? `<p class="empty">${escapeHtml(t('weekWatchWithheld'))}</p>`
+      : '')
   box.innerHTML =
     withheld +
     (blocks.length
@@ -1288,10 +1422,11 @@ function renderFeed() {
             ${watchHits(item, state.settings.watchTerms)
               .map(
                 (term) =>
-                  `<button class="chip-muted chip-watch" data-watch="${escapeHtml(term)}">${escapeHtml(t('watched'))}: ${escapeHtml(term)}</button>`,
+                  `<button class="chip-muted chip-watch" data-watch="${escapeHtml(term)}" aria-pressed="${state.activeWatch === term}">${escapeHtml(t('watched'))}: ${escapeHtml(term)}</button>`,
               )
               .join('')}
             ${alsoOn(item)}
+            ${firstSeenChip(item)}
             ${item.originalLanguage && item.originalLanguage !== 'en' ? `<span class="chip-muted">${escapeHtml(item.originalLanguage)}</span>` : ''}
             ${controls.join('')}
           </div>
@@ -1498,9 +1633,11 @@ function drawRadarFrame(ctx, { cx, cy, maxR, rings, sectors }) {
 function formatAgeTick(hours) {
   if (hours < 24) return `${hours}${t('hoursAgo').split(' ')[0]}`
   if (hours < 24 * 7) return `${hours / 24}${t('daysAgo').split(' ')[0]}`
-  if (hours < 24 * 30) return `${Math.round(hours / 24 / 7)}w`
-  if (hours < 24 * 365) return `${Math.round(hours / 24 / 30)}mo`
-  return '1y'
+  if (hours < 24 * 30)
+    return fmt('tickWeeks', { n: Math.round(hours / 24 / 7) })
+  if (hours < 24 * 365)
+    return fmt('tickMonths', { n: Math.round(hours / 24 / 30) })
+  return fmt('tickYears', { n: 1 })
 }
 
 function drawTimelineFrame(ctx, { plot, xTicks, yTicks }) {
@@ -1567,9 +1704,18 @@ function renderTopics(items) {
     return
   }
   const maxItems = Math.max(...rows.map((r) => r.items))
-  elements.htmlView.innerHTML = `<div class="tv-list">${rows
+  // Themes the server discovered itself, with when they were added.
+  const themes = state.themes.length
+    ? `<div class="tv-themes"><h3>${escapeHtml(t('discoveredTitle'))}</h3><p class="tv-hint">${escapeHtml(t('discoveredHint'))}</p><div class="tv-theme-list">${state.themes
+        .map(
+          (th) =>
+            `<button class="chip-muted tv-theme" data-topic="${escapeHtml(th.id)}" aria-pressed="${state.activeTopic === th.id}">${escapeHtml(th.label)} <span class="num">${th.items}</span> <span class="num">· ${escapeHtml(fmt('discoveredSince', { date: th.addedDay }))}</span></button>`,
+        )
+        .join('')}</div></div>`
+    : ''
+  elements.htmlView.innerHTML = `${themes}<div class="tv-list">${rows
     .map((r) => {
-      const converging = r.sources >= 4
+      const converging = r.sources >= state.convergenceMinSources
       return `<button class="tv-row${converging ? ' converging' : ''}" data-topic="${escapeHtml(r.topic)}" aria-pressed="${state.activeTopic === r.topic}">
         <span>${escapeHtml(r.label)}</span>
         <span class="tv-bar"><span style="width:${Math.round((r.items / maxItems) * 100)}%"></span></span>
@@ -1743,6 +1889,11 @@ function updateTranslations() {
       el.setAttribute('aria-label', value)
     }
   })
+  // Named regions and fields: accessible name only, no tooltip.
+  document.querySelectorAll('[data-i18n-label]').forEach((el) => {
+    const value = translations[state.language][el.dataset.i18nLabel]
+    if (value) el.setAttribute('aria-label', value)
+  })
   document.querySelector('.footer-version').textContent = t('footerVersion')
   document.querySelector('.footer-subtitle').textContent = t('footerSubtitle')
   updateStatusBadge(state.isLoading)
@@ -1787,6 +1938,7 @@ function setupEventListeners() {
     if (!term) return
     state.activeWatch = state.activeWatch === term ? null : term
     refilter()
+    renderWeek()
     document
       .querySelector('[data-panel="feed"]')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -1827,7 +1979,7 @@ function setupEventListeners() {
       refilter()
       return
     }
-    const row = e.target.closest('.tv-row')
+    const row = e.target.closest('.tv-row, .tv-theme')
     if (row) {
       state.activeTopic =
         state.activeTopic === row.dataset.topic ? 'all' : row.dataset.topic
@@ -2099,9 +2251,10 @@ async function testConnection() {
 async function clearSavedData() {
   await new Promise((resolve) => {
     if (chrome?.storage?.local)
-      chrome.storage.local.remove(['techRadarFeed'], resolve)
+      chrome.storage.local.remove(['techRadarFeed', REPORT_CACHE_KEY], resolve)
     else {
       localStorage.removeItem('techRadarFeed')
+      localStorage.removeItem(REPORT_CACHE_KEY)
       resolve()
     }
   })
@@ -2131,11 +2284,18 @@ async function submitSettings(e) {
     state.digest = []
     state.trends = []
     state.lastFetched = null
+    // Nothing from the previous server stays on screen.
+    state.report = null
+    state.trackRecord = null
+    state.topicLabels = {}
+    state.themes = []
+    state.health = null
     loadCjkFonts()
     await fetchAllData(true)
   } else {
     render()
     loadReport()
+    loadHealth()
   }
 }
 

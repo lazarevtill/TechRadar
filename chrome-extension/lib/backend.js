@@ -61,10 +61,34 @@ export async function fetchReport(fetchImpl, baseUrl, watchTerms = []) {
       ? `?watch=${encodeURIComponent(watchTerms.join(','))}`
       : ''
   const url = `${baseUrl.replace(/\/$/, '')}${REPORT_PATH}${query}`
-  const res = await fetchImpl(url)
+  let res
+  try {
+    res = await fetchImpl(url)
+  } catch (error) {
+    // Unreachable server, not a server without a report.
+    const unreachable = new Error(`cannot reach ${baseUrl} (${error.message})`)
+    unreachable.unreachable = true
+    throw unreachable
+  }
   if (!res.ok) throw new Error(`${url} answered HTTP ${res.status}`)
   const report = await res.json()
   if (!Array.isArray(report?.topics) || !Array.isArray(report?.watch))
     throw new Error(`${url} returned an unexpected report`)
   return withheld ? { ...report, watchWithheld: true } : report
+}
+
+export const HEALTH_PATH = '/api/health'
+
+/** The server's public health: ok, problems, per-source status. */
+export async function fetchHealth(fetchImpl, baseUrl) {
+  const url = `${baseUrl.replace(/\/$/, '')}${HEALTH_PATH}`
+  const res = await fetchImpl(url, { cache: 'no-store' })
+  const body = await res.json().catch(() => null)
+  if (!body || typeof body.ok !== 'boolean')
+    throw new Error(`${url} answered HTTP ${res.status}`)
+  return {
+    ok: body.ok,
+    problems: body.problems ?? [],
+    sources: body.sources ?? [],
+  }
 }
