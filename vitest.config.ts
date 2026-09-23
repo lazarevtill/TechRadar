@@ -19,7 +19,7 @@ export default defineConfig({
     env: {
       JEV_CACHE_FILE: join(
         tmpdir(),
-        `techradar-test-verdicts-${process.pid}.json`,
+        `techradar-test-verdicts-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.json`,
       ),
     },
   },

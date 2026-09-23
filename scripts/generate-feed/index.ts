@@ -50,7 +50,17 @@ function loadPreviousDigest(): Map<string, DigestItem> {
   const path = `${DATA_DIR}/digest.json`
   const out = new Map<string, DigestItem>()
   if (!existsSync(path)) return out
-  const data = JSON.parse(readFileSync(path, 'utf8')) as { items?: unknown[] }
+  let data: { items?: unknown[] }
+  try {
+    data = JSON.parse(readFileSync(path, 'utf8')) as { items?: unknown[] }
+  } catch (error) {
+    // A corrupt published file must not block the day's digest: warn loudly
+    // and summarize everything fresh (it is about to be overwritten anyway).
+    console.warn(
+      `::warning::[generate-feed] ${path} is not valid JSON; summarizing all posts: ${(error as Error).message}`,
+    )
+    return out
+  }
   for (const raw of data.items ?? []) {
     const parsed = DigestItemSchema.safeParse(raw)
     if (parsed.success) out.set(parsed.data.id, parsed.data)
