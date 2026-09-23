@@ -20,11 +20,13 @@ export function sendWatchAlerts(
   db: Db,
   day: string,
   items: SnapshotItem[],
+  /** When this rebuild recorded its items: only newer items are news. */
+  rebuildAt: string,
 ): void {
   const url = process.env.WATCH_WEBHOOK_URL || process.env.REPORT_WEBHOOK_URL
   const terms = parseWatchTerms(process.env.REPORT_WATCH)
   if (!url || terms.length === 0 || sending) return
-  const hits = newWatchHits(db, day, terms, items)
+  const hits = newWatchHits(db, day, terms, items, undefined, rebuildAt)
   if (hits.length === 0) return
   sending = true
   fetch(url, {

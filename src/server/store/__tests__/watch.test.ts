@@ -48,4 +48,43 @@ describe('newWatchHits', () => {
       ),
     ).toEqual(['hn-2'])
   })
+
+  it('records but does not announce an item the radar knew before', async () => {
+    const { recordItems } = await import('../history')
+    const db = await openDb(':memory:')
+    const day = '2026-09-23'
+    const snap = (id: string, title: string) => ({
+      id,
+      source: 'openalex' as const,
+      title,
+      sourceUrl: `https://doi.org/10.1/${id}`,
+      summary: '',
+      category: 'ai',
+      maturityStage: 'research',
+      publishedAt: new Date('2026-09-01T00:00:00Z'),
+      engagement: 1,
+    })
+    newWatchHits(db, day, ['Mamba'], []) // term known from now on
+    // Seen hours ago (its source was slow when the term was first checked).
+    recordItems(db, [snap('oa-1', 'Mamba survey')], day, `${day}T08:00:00Z`)
+    // This rebuild, at 10:00, sees it again plus a truly new one.
+    recordItems(
+      db,
+      [snap('oa-1', 'Mamba survey'), snap('oa-2', 'Mamba-4')],
+      day,
+      `${day}T10:00:00Z`,
+    )
+    const hits = newWatchHits(
+      db,
+      day,
+      ['Mamba'],
+      [
+        { ...item('oa-1', 'Mamba survey'), source: 'openalex' as const },
+        { ...item('oa-2', 'Mamba-4'), source: 'openalex' as const },
+      ],
+      undefined,
+      `${day}T10:00:00Z`,
+    )
+    expect(hits.map((h) => h.id)).toEqual(['oa-2'])
+  })
 })

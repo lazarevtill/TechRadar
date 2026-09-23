@@ -31,8 +31,27 @@ export function newWatchHits(
     sourceUrl: string
   }>,
   works: Works = workGroups(db, `${today}T00:00:00Z`),
+  /**
+   * Announce only items the radar first saw at or after this time (the
+   * current rebuild). An item it knew before — say from a source that timed
+   * out on the pass that recorded a new term — is recorded, not announced.
+   */
+  newSince?: string,
 ): WatchHit[] {
   const hits: WatchHit[] = []
+  const firstSeen = new Map(
+    newSince
+      ? db
+          .all<{ id: string; first_seen: string }>(
+            `SELECT id, first_seen FROM items
+              WHERE id IN (SELECT value FROM json_each(?))`,
+            JSON.stringify(items.map((i) => i.id)),
+          )
+          .map((r) => [r.id, r.first_seen])
+      : [],
+  )
+  const isNew = (id: string) =>
+    !newSince || (firstSeen.get(id) ?? newSince) >= newSince
   db.transaction(() => {
     for (const raw of terms) {
       const term = raw.toLowerCase()
@@ -52,7 +71,7 @@ export function newWatchHits(
         )?.n
         if (before || hits.some((h) => h.term === raw && h.work === work))
           continue
-        if (known)
+        if (known && isNew(item.id))
           // Announced once the alert is delivered (markAnnounced).
           hits.push({
             term: raw,

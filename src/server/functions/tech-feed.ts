@@ -287,7 +287,7 @@ async function withHistory(
       console.error('[health] source alert check failed:', error)
     }
     try {
-      sendWatchAlerts(db, day, snapshot)
+      sendWatchAlerts(db, day, snapshot, now)
     } catch (error) {
       console.error('[watch] alert check failed:', error)
     }
