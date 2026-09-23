@@ -28,6 +28,13 @@ export const STALE_FEED_MS = 30 * 60_000
 /** Sources that must report; one with no recent runs counts as down. */
 export const EXPECTED_SOURCES = Object.keys(SOURCE_CONFIG) as DataSource[]
 
+/** A backup older than two days means daily maintenance stopped. */
+function backupProblem(day: string | null, today: string): string[] {
+  if (historyDbFile() === ':memory:') return []
+  if (!day) return []
+  return day < daysBefore(today, 2) ? [`last backup is from ${day}`] : []
+}
+
 export interface Health {
   ok: boolean
   /** Why `ok` is false, in words. */
@@ -45,6 +52,7 @@ export async function getHealth(withDetail: boolean): Promise<Health> {
   const today = utcDay()
   const sources = sourceHealth(db, today, EXPECTED_SOURCES)
   const feed = getCached<{ fetchedAt: string }>(CACHE_KEYS.TECH_FEED)
+  const storage = storageInfo(historyDbFile())
   const feedAge = feed ? Date.now() - Date.parse(feed.fetchedAt) : null
   const problems = [
     ...sources
@@ -53,6 +61,7 @@ export async function getHealth(withDetail: boolean): Promise<Health> {
     ...(feedAge !== null && feedAge > STALE_FEED_MS
       ? [`feed is ${Math.round(feedAge / 60_000)} min old`]
       : []),
+    ...backupProblem(storage.lastBackupDay, today),
   ]
   return {
     ok: problems.length === 0,
@@ -62,7 +71,7 @@ export async function getHealth(withDetail: boolean): Promise<Health> {
     detail: withDetail
       ? {
           usage: usageSince(db, daysBefore(today, 6)),
-          storage: storageInfo(historyDbFile()),
+          storage,
         }
       : null,
   }

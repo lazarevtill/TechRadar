@@ -340,7 +340,7 @@ export async function runDiscovery(
     result.checked++
     const accepted = p >= DISCOVERY.ACCEPT_P
     db.run(
-      `INSERT INTO themes (term, display, status, p, z, checked_day, added_day)
+      `INSERT OR IGNORE INTO themes (term, display, status, p, z, checked_day, added_day)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       c.term,
       c.display,

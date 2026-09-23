@@ -1,4 +1,5 @@
 import { refreshTechFeed } from '@/server/functions/tech-feed'
+import { maintainHistory } from '@/server/functions/maintenance'
 
 /**
  * Rebuilds the feed on a fixed cadence, independent of traffic. Everything
@@ -31,11 +32,20 @@ export function startScheduler(): void {
     return
   }
   g[STARTED] = true
-  const run = () =>
-    refreshTechFeed().catch((error: unknown) =>
-      console.error('[scheduler] scheduled rebuild failed:', error),
-    )
-  setTimeout(run, FIRST_RUN_DELAY_MS).unref?.()
-  setInterval(run, minutes * 60_000).unref?.()
+  const run = async () => {
+    try {
+      await refreshTechFeed()
+    } catch (error) {
+      console.error('[scheduler] scheduled rebuild failed:', error)
+    }
+    // Daily retention and backup, after the rebuild and outside it.
+    try {
+      await maintainHistory()
+    } catch (error) {
+      console.error('[history] daily maintenance failed:', error)
+    }
+  }
+  setTimeout(() => void run(), FIRST_RUN_DELAY_MS).unref?.()
+  setInterval(() => void run(), minutes * 60_000).unref?.()
   console.log(`[scheduler] feed rebuild every ${minutes} min`)
 }

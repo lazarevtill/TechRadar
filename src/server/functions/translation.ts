@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { countUsage } from '@/server/utils/usage'
+import { contentHash } from '@/server/utils/verdict-store'
 import { z } from 'zod'
 import type { OriginalLanguage, TranslatedContent } from '@/lib/tech-categories'
 
@@ -23,8 +24,26 @@ const LANG_CODES: Record<OriginalLanguage, string> = {
   pt: 'pt',
 }
 
-// Cache for translations to avoid repeated API calls
+// Translations already fetched, least recently used evicted first. Bounded:
+// the on-demand server function lets any visitor add entries.
+export const TRANSLATION_CACHE_MAX = 5000
 const translationCache = new Map<string, string>()
+
+function cacheGet(key: string): string | undefined {
+  const hit = translationCache.get(key)
+  if (hit !== undefined) {
+    translationCache.delete(key)
+    translationCache.set(key, hit)
+  }
+  return hit
+}
+
+function cacheSet(key: string, value: string): void {
+  translationCache.delete(key)
+  translationCache.set(key, value)
+  if (translationCache.size > TRANSLATION_CACHE_MAX)
+    translationCache.delete(translationCache.keys().next().value!)
+}
 
 // MyMemory's keyless quota is small (~5k chars/day per IP; ~50k with a contact
 // email via MYMEMORY_EMAIL). Once it answers 429, stop calling it for a while
@@ -44,8 +63,10 @@ function noteQuotaExhausted(detail: string): void {
   )
 }
 
+// Keyed by a hash of the whole text: two texts that share a beginning
+// (a common fallback summary) must not get each other's translation.
 function getCacheKey(text: string, from: string, to: string): string {
-  return `${from}:${to}:${text.slice(0, 100)}`
+  return `${from}:${to}:${contentHash(text)}`
 }
 
 async function translateText(
@@ -64,7 +85,7 @@ async function translateText(
 
   // Check cache
   const cacheKey = getCacheKey(text, fromLang, toLang)
-  const cached = translationCache.get(cacheKey)
+  const cached = cacheGet(cacheKey)
   if (cached) return cached
   if (Date.now() < quotaBlockedUntil) return null
 
@@ -114,7 +135,7 @@ async function translateText(
       const translated = data.responseData.translatedText
 
       // Cache the result
-      translationCache.set(cacheKey, translated)
+      cacheSet(cacheKey, translated)
 
       return translated
     }
@@ -225,24 +246,6 @@ export async function batchTranslate(
 
   return results
 }
-
-// Server function to translate on demand
-const translateSchema = z.object({
-  text: z.string().max(1000),
-  fromLang: z.enum(['en', 'zh', 'ja', 'fr', 'de', 'es', 'ru', 'ko', 'pt']),
-  toLang: z.enum(['en', 'ru']),
-})
-
-export const translateTextFn = createServerFn({ method: 'POST' })
-  .inputValidator(translateSchema)
-  .handler(async ({ data }) => {
-    const translated = await translateText(
-      data.text,
-      data.fromLang as OriginalLanguage,
-      data.toLang,
-    )
-    return { translated }
-  })
 
 // Server function to translate full item content (title, summary, whyItMatters)
 const translateItemSchema = z.object({

@@ -2,7 +2,7 @@ import type { DataSource } from '@/lib/tech-categories'
 import { topicLabel, type DiscoveredTheme } from '@/lib/trend-topics'
 import { watchMatcher } from '@/lib/watch'
 import { daysBefore, type Db } from './db'
-import { activeThemes } from './discovery'
+import { activeThemes, THEME_PREFIX } from './discovery'
 import { trackRecord, type TrackRecord } from './predictions'
 import { workGroups } from './works'
 
@@ -65,6 +65,18 @@ export function weeklyReport(
     addedDay: t.addedDay,
     items: 0,
   }))
+  // Labels for every theme ever accepted: last week's counts can belong to
+  // a theme that has retired since.
+  const labels: DiscoveredTheme[] = db
+    .all<{ term: string; display: string; added_day: string | null }>(
+      "SELECT term, display, added_day FROM themes WHERE status != 'rejected'",
+    )
+    .map((t) => ({
+      id: `${THEME_PREFIX}${t.term}`,
+      label: t.display,
+      addedDay: t.added_day ?? '',
+      items: 0,
+    }))
 
   const newItems =
     db.get<{ n: number }>(
@@ -87,7 +99,7 @@ export function weeklyReport(
   for (const r of topicRows) {
     const entry = byTopic.get(r.topic) ?? {
       id: r.topic,
-      label: topicLabel(r.topic, discovered),
+      label: topicLabel(r.topic, labels),
       thisWeek: 0,
       lastWeek: 0,
     }

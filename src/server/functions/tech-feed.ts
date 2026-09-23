@@ -23,12 +23,9 @@ import {
 import { fetchWithRetry } from '@/server/utils/fetch-utils'
 import { cleanText } from '@/server/utils/clean-text'
 import { isAuthorized } from '@/server/utils/admin'
-import { historyDb, historyDbFile, utcDay, type Db } from '@/server/store/db'
-import {
-  dailyMaintenance,
-  recordSourceRuns,
-  recordUsage,
-} from '@/server/store/ops'
+import { contentHash } from '@/server/utils/verdict-store'
+import { historyDb, utcDay, type Db } from '@/server/store/db'
+import { recordSourceRuns, recordUsage } from '@/server/store/ops'
 import { drainUsage } from '@/server/utils/usage'
 import { alertOnSourceChanges } from './health'
 import {
@@ -266,6 +263,7 @@ async function withHistory(
   history: Map<string, HistoryContext> | undefined
   themes: Theme[]
   save: (items: TechItem[]) => TrackRecord | null
+  flushUsage: () => void
 }> {
   const day = utcDay()
   try {
@@ -280,15 +278,6 @@ async function withHistory(
     )
     // Optional steps: a failure is logged and never costs this rebuild its
     // history-based ranking.
-    try {
-      const maintained = dailyMaintenance(db, day, historyDbFile())
-      if (maintained)
-        console.log(
-          `[history] daily maintenance: backup ${maintained.backup ?? 'skipped'}, ${maintained.deletedItems} expired items removed`,
-        )
-    } catch (error) {
-      console.error('[history] daily maintenance failed:', error)
-    }
     try {
       alertOnSourceChanges(db, day)
     } catch (error) {
@@ -307,10 +296,11 @@ async function withHistory(
     return {
       history: historyContext(db, snapshot, day),
       themes: activeThemes(db),
+      // Called at the very end of a rebuild, after ranking and translation,
+      // so every paid call this rebuild made is on today's ledger.
+      flushUsage: () => recordUsage(db, day, drainUsage()),
       save: (items) => {
         recordSignals(db, items, day)
-        // After ranking, so this rebuild's Jev signal calls are included.
-        recordUsage(db, day, drainUsage())
         recordPredictions(
           db,
           items.map((item) => ({
@@ -330,7 +320,12 @@ async function withHistory(
       '[history] store unavailable; ranking without history:',
       error,
     )
-    return { history: undefined, themes: [], save: () => null }
+    return {
+      history: undefined,
+      themes: [],
+      save: () => null,
+      flushUsage: () => {},
+    }
   }
 }
 
@@ -394,6 +389,22 @@ interface BudgetedRun {
   error: string | null
 }
 
+// One fetch per source at a time: a slow fetch still running from the last
+// rebuild is joined, not started again.
+const inFlight = new Map<DataSource, Promise<RawItem[]>>()
+
+function fetchOnce(
+  source: DataSource,
+  fetcher: () => Promise<RawItem[]>,
+): Promise<RawItem[]> {
+  let running = inFlight.get(source)
+  if (!running) {
+    running = fetcher().finally(() => inFlight.delete(source))
+    inFlight.set(source, running)
+  }
+  return running
+}
+
 async function withinBudget(
   source: DataSource,
   fetcher: () => Promise<RawItem[]>,
@@ -407,7 +418,7 @@ async function withinBudget(
   // and alerts can tell an outage from a quiet day. A rejection that arrives
   // after the budget ran out is already too late to matter and is logged by
   // the fetcher itself.
-  const run = fetcher().then(
+  const run = fetchOnce(source, fetcher).then(
     (items) => ({ items, error: null as string | null }),
     (error: unknown) => ({
       items: [] as RawItem[],
@@ -1107,22 +1118,20 @@ async function fetchCiNii(): Promise<RawItem[]> {
       },
     )
 
-    if (!response.ok) {
-      // CiNii may require different approach, return empty for now
-      console.warn('CiNii API returned:', response.status)
-      return []
-    }
+    if (!response.ok) throw new Error(`CiNii HTTP ${response.status}`)
 
     const data = await response.json()
     const items = data['@graph'] || data.items || []
 
     const articles: CiNiiArticle[] = items
-    const candidates = articles.map((item, index): RawItem => {
+    const candidates = articles.map((item): RawItem => {
       const title = item.title || 'Japanese Research Article'
       const description = cleanText(item.description)
       // '@id' is the article's stable URI; a timestamped id would change on
       // every fetch and defeat the per-item Jev verdict cache.
-      const id = `cinii-${item['@id'] || index}`
+      // Without an '@id', the title identifies it (the list position would
+      // change between fetches and attach history to the wrong paper).
+      const id = `cinii-${item['@id'] || contentHash(title)}`
       const summary =
         description || 'Research article from CiNii Japanese academic database.'
 
@@ -1202,12 +1211,15 @@ async function fetchHuggingFacePapers(): Promise<RawItem[]> {
           `https://huggingface.co/api/daily_papers?date=${date}`,
           { retries: 2, baseDelay: 500, timeout: 15_000 },
         )
-        return res.ok ? ((await res.json()) as HFDailyPaper[]) : []
+        return res.ok ? ((await res.json()) as HFDailyPaper[]) : null
       }),
     )
+    // Some days have no Daily Papers; every day failing is an outage.
+    if (perDay.every((d) => d === null))
+      throw new Error('every daily_papers request failed')
     const seen = new Set<string>()
     const papers = perDay
-      .flat()
+      .flatMap((d) => d ?? [])
       .filter(
         (p) => p.paper?.id && !seen.has(p.paper.id) && seen.add(p.paper.id),
       )
@@ -1358,13 +1370,16 @@ async function fetchPreprints(): Promise<RawItem[]> {
           return (data.collection ?? []).map((r) => ({ ...r, server }))
         } catch (error) {
           console.error(`[preprints] ${server} unavailable:`, String(error))
-          return []
+          return null
         }
       }),
     )
+    // One server down still yields the other; both down is an outage.
+    if (perServer.every((r) => r === null))
+      throw new Error('bioRxiv and medRxiv both unavailable')
     const seen = new Set<string>()
     const records = perServer
-      .flat()
+      .flatMap((r) => r ?? [])
       .filter((r) => r.doi && !seen.has(r.doi) && seen.add(r.doi))
 
     const candidates = records.map((r): RawItem => {
@@ -1393,7 +1408,10 @@ async function fetchPreprints(): Promise<RawItem[]> {
       }
     })
     const items = (await applyCategories(candidates)).slice(0, 30)
-    setCache(CACHE_KEYS.PREPRINTS, items, CACHE_TTL.DEFAULT)
+    // bioRxiv/medRxiv publish daily and answer slowly (40–60 s): a result
+    // that finishes after the rebuild's budget must still be fresh for the
+    // next scheduled rebuild, so it is kept for an hour.
+    setCache(CACHE_KEYS.PREPRINTS, items, CACHE_TTL.HOUR)
     return items
   } catch (error) {
     console.error('bioRxiv/medRxiv API error:', error)
@@ -1425,7 +1443,8 @@ async function fetchLobsters(): Promise<RawItem[]> {
           `https://lobste.rs/hottest.json?page=${page}`,
           { retries: 2, baseDelay: 500, timeout: 15_000 },
         )
-        return res.ok ? ((await res.json()) as LobstersStory[]) : []
+        if (!res.ok) throw new Error(`page ${page}: HTTP ${res.status}`)
+        return (await res.json()) as LobstersStory[]
       }),
     )
     const seen = new Set<string>()
@@ -1601,7 +1620,7 @@ async function buildTechFeed() {
   // Rank the whole fetch together: percentiles are per source, convergence
   // needs every source at once.
   const raw = runs.flatMap((r) => r.items)
-  const { history, themes, save } = await withHistory(raw, runs)
+  const { history, themes, save, flushUsage } = await withHistory(raw, runs)
   let allItems = await assembleItems(raw, history, themesByItem(raw, themes))
   let record: TrackRecord | null = null
   try {
@@ -1634,6 +1653,12 @@ async function buildTechFeed() {
     } catch (error) {
       console.error('Translation batch error:', error)
     }
+  }
+
+  try {
+    flushUsage()
+  } catch (error) {
+    console.error('[history] could not record usage:', error)
   }
 
   // Sort by date

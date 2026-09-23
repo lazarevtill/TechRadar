@@ -182,10 +182,20 @@ export interface MaintenanceResult {
   deletedItems: number
 }
 
+/** Where daily backups go: BACKUP_DIR (e.g. a host-mounted directory, so
+ * a lost volume does not take the backups with it), else backups/ next to
+ * the database. */
+export function backupDir(file: string): string {
+  return process.env.BACKUP_DIR || join(dirname(file), 'backups')
+}
+
 /**
- * Once per UTC day: back up the database (VACUUM INTO, keeping the newest
- * BACKUPS_KEPT copies next to it under backups/) and delete history older
- * than RETAIN_DAYS. `file` is the database path, or ':memory:' (no backup).
+ * Once per UTC day: expire history older than RETAIN_DAYS, then back up the
+ * database (VACUUM INTO, keeping the newest BACKUPS_KEPT copies in
+ * backupDir). `file` is the database path, or ':memory:' (no backup).
+ * Runs from the scheduler, not inside a feed rebuild; VACUUM INTO is
+ * synchronous and blocks the process for its duration (about a second per
+ * 100 MB).
  */
 export function dailyMaintenance(
   db: Db,
@@ -196,21 +206,6 @@ export function dailyMaintenance(
     "SELECT value FROM meta WHERE key = 'maintenance_day'",
   )?.value
   if (done === today) return null
-
-  let backup: string | null = null
-  if (file !== ':memory:') {
-    const dir = join(dirname(file), 'backups')
-    mkdirSync(dir, { recursive: true })
-    backup = join(dir, `history-${today}.db`)
-    rmSync(backup, { force: true })
-    db.exec(`VACUUM INTO '${backup.replace(/'/g, "''")}'`)
-    const old = readdirSync(dir)
-      .filter((f) => /^history-\d{4}-\d{2}-\d{2}\.db$/.test(f))
-      .sort()
-      .reverse()
-      .slice(BACKUPS_KEPT)
-    for (const f of old) rmSync(join(dir, f), { force: true })
-  }
 
   const cutoff = daysBefore(today, RETAIN_DAYS)
   const stale = 'SELECT id FROM items WHERE last_seen < ?'
@@ -224,6 +219,19 @@ export function dailyMaintenance(
     for (const table of ['observations', 'item_keys', 'item_terms'])
       db.run(`DELETE FROM ${table} WHERE item_id IN (${stale})`, cutoff)
     db.run('DELETE FROM items WHERE last_seen < ?', cutoff)
+    // Terms no remaining item carries.
+    db.run(
+      'DELETE FROM terms WHERE term NOT IN (SELECT DISTINCT term FROM item_terms)',
+    )
+    // The track record covers the retention window.
+    db.run('DELETE FROM predictions WHERE day < ?', cutoff)
+    // A rejected term may be asked again after a year; retired themes go.
+    db.run(
+      "DELETE FROM themes WHERE (status = 'rejected' AND checked_day < ?) OR (status = 'retired' AND retired_day < ?)",
+      cutoff,
+      cutoff,
+    )
+    db.run('DELETE FROM usage WHERE day < ?', cutoff)
     db.run(
       'DELETE FROM source_runs WHERE ts < ?',
       `${daysBefore(today, 90)}T00:00:00Z`,
@@ -233,12 +241,33 @@ export function dailyMaintenance(
       today,
     )
   })
+
+  let backup: string | null = null
+  if (file !== ':memory:') {
+    const dir = backupDir(file)
+    mkdirSync(dir, { recursive: true })
+    backup = join(dir, `history-${today}.db`)
+    rmSync(backup, { force: true })
+    db.exec(`VACUUM INTO '${backup.replace(/'/g, "''")}'`)
+    const old = readdirSync(dir)
+      .filter((f) => /^history-\d{4}-\d{2}-\d{2}\.db$/.test(f))
+      .sort()
+      .reverse()
+      .slice(BACKUPS_KEPT)
+    for (const f of old) rmSync(join(dir, f), { force: true })
+  }
   return { backup, deletedItems }
 }
 
 /** Size of the database file and its newest backup, for /api/health. */
-export function storageInfo(file: string) {
-  if (file === ':memory:') return { bytes: 0, lastBackup: null }
+export function storageInfo(file: string): {
+  bytes: number
+  lastBackup: string | null
+  /** UTC day of the newest backup. */
+  lastBackupDay: string | null
+} {
+  if (file === ':memory:')
+    return { bytes: 0, lastBackup: null, lastBackupDay: null }
   const size = (f: string) => {
     try {
       return statSync(f).size
@@ -249,12 +278,16 @@ export function storageInfo(file: string) {
   let lastBackup: string | null = null
   try {
     lastBackup =
-      readdirSync(join(dirname(file), 'backups'))
-        .filter((f) => f.startsWith('history-'))
+      readdirSync(backupDir(file))
+        .filter((f) => /^history-\d{4}-\d{2}-\d{2}\.db$/.test(f))
         .sort()
         .pop() ?? null
   } catch {
     // No backup yet.
   }
-  return { bytes: size(file) + size(`${file}-wal`), lastBackup }
+  return {
+    bytes: size(file) + size(`${file}-wal`),
+    lastBackup,
+    lastBackupDay: lastBackup?.slice('history-'.length, -'.db'.length) ?? null,
+  }
 }

@@ -32,6 +32,8 @@ const daysAfter = (day: string, n: number) => daysBefore(day, -n)
  */
 
 export const HORIZON_DAYS = 14
+/** Failed metric reads, on different days, before giving a prediction up. */
+export const MAX_READ_ATTEMPTS = 3
 /** Metric re-reads per evaluation pass (keyless APIs; spread over days). */
 export const EVAL_FETCHES_PER_PASS = 60
 
@@ -69,10 +71,13 @@ export function recordPredictions(
     )
   // Items already sampled as controls keep their first day; each day's
   // cohort draws fresh ones so it has its own comparison group.
+  // Only this fetch's items matter, looked up by primary key.
   const sampled = new Set(
     db
       .all<{ subject: string }>(
-        "SELECT subject FROM predictions WHERE reason = 'control'",
+        `SELECT subject FROM predictions
+          WHERE reason = 'control' AND subject IN (SELECT value FROM json_each(?))`,
+        JSON.stringify(items.map((i) => i.id)),
       )
       .map((r) => r.subject),
   )
@@ -91,7 +96,11 @@ export function recordPredictions(
   })
 }
 
-/** Record a newly added discovered theme as a prediction. */
+/**
+ * Record a newly added (or returning) discovered theme as a prediction. The
+ * subject carries the day, `auto:<term>@<day>`, so a theme that retires and
+ * bursts again is judged again.
+ */
 export function recordThemePrediction(
   db: Db,
   term: string,
@@ -101,7 +110,7 @@ export function recordThemePrediction(
   db.run(
     `INSERT OR IGNORE INTO predictions (subject, reason, day, source, baseline)
      VALUES (?, 'discovered', ?, NULL, ?)`,
-    `auto:${term}`,
+    `auto:${term}@${day}`,
     day,
     recentArrivals,
   )
@@ -113,6 +122,7 @@ interface Due {
   day: string
   source: DataSource | null
   baseline: number | null
+  attempts: number
 }
 
 /** Current attention metric for an item, or null if the source has none. */
@@ -144,10 +154,14 @@ export async function evaluateDue(
   readMetric: ReadMetric,
 ): Promise<{ evaluated: number; pending: number }> {
   const dueBy = daysBefore(today, HORIZON_DAYS)
+  // A read that failed today is not retried until tomorrow.
   const due = db.all<Due>(
-    `SELECT subject, reason, day, source, baseline FROM predictions
-      WHERE outcome IS NULL AND day <= ? ORDER BY day`,
+    `SELECT subject, reason, day, source, baseline, attempts FROM predictions
+      WHERE outcome IS NULL AND day <= ?
+        AND (evaluated_day IS NULL OR evaluated_day < ?)
+      ORDER BY day`,
     dueBy,
+    today,
   )
   if (due.length === 0) return { evaluated: 0, pending: 0 }
 
@@ -183,7 +197,9 @@ export async function evaluateDue(
       // New works carrying the term within the horizon after it was added —
       // the same unit (distinct works) and length as promised, however late
       // this pass runs.
-      const term = p.subject.slice('auto:'.length)
+      // auto:<term>@<day>; subjects recorded before the day was added have
+      // no @ part.
+      const term = p.subject.slice('auto:'.length).split('@')[0]
       const end = daysAfter(p.day, HORIZON_DAYS)
       const ids = db
         .all<{ id: string }>(
@@ -201,7 +217,11 @@ export async function evaluateDue(
       evaluated++
       continue
     }
-    if (!p.source) continue
+    if (!p.source) {
+      save(p, 'unavailable', null)
+      evaluated++
+      continue
+    }
 
     if (METRIC_SOURCES.has(p.source)) {
       if (!metric.has(p.subject)) {
@@ -213,9 +233,22 @@ export async function evaluateDue(
         )
       }
       const now = metric.get(p.subject)
-      if (now === null || now === undefined || p.baseline === null)
-        save(p, 'unavailable', null)
-      else save(p, 'measured', Math.log1p(now) - Math.log1p(p.baseline))
+      if (p.baseline === null) save(p, 'unavailable', null)
+      else if (now === null || now === undefined) {
+        // A failed read (rate limit, outage) is retried on a later day; only
+        // repeated failures give the prediction up.
+        if (p.attempts + 1 >= MAX_READ_ATTEMPTS) save(p, 'unavailable', null)
+        else {
+          db.run(
+            `UPDATE predictions SET attempts = attempts + 1, evaluated_day = ?
+              WHERE subject = ? AND reason = ?`,
+            today,
+            p.subject,
+            p.reason,
+          )
+          continue
+        }
+      } else save(p, 'measured', Math.log1p(now) - Math.log1p(p.baseline))
     } else {
       const sourcesNow = Math.max(
         1,
@@ -249,6 +282,10 @@ export interface TrackRecord {
   pending: number
   /** First day an outcome can exist, when nothing is evaluated yet. */
   firstResultsOn: string | null
+  /** Highlights whose metric could not be read (after retries). */
+  unavailable: number
+  /** Measured highlights left out: their cohort has no measured control. */
+  unmatched: number
 }
 
 const median = (xs: number[]) => {
@@ -257,7 +294,10 @@ const median = (xs: number[]) => {
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2
 }
 
-/** Hit rates per reason, each highlight judged against its source's controls. */
+/**
+ * Hit rates per reason, each highlight judged against its cohort's controls.
+ * What could not be judged is counted, never silently dropped.
+ */
 export function trackRecord(db: Db, today: string): TrackRecord {
   const measured = db.all<{
     reason: string
@@ -284,6 +324,7 @@ export function trackRecord(db: Db, today: string): TrackRecord {
   const bar = new Map([...controls].map(([k, xs]) => [k, median(xs)]))
 
   const byReason = new Map<string, { evaluated: number; hits: number }>()
+  let unmatched = 0
   for (const m of measured) {
     if (m.reason === 'control') continue
     const entry = byReason.get(m.reason) ?? { evaluated: 0, hits: 0 }
@@ -292,7 +333,10 @@ export function trackRecord(db: Db, today: string): TrackRecord {
       if (m.outcome === 'hit') entry.hits++
     } else {
       const b = bar.get(cohort(m.source, m.day))
-      if (b === undefined || m.outcome_value === null) continue
+      if (b === undefined || m.outcome_value === null) {
+        unmatched++
+        continue
+      }
       entry.evaluated++
       if (m.outcome_value > b) entry.hits++
     }
@@ -326,5 +370,11 @@ export function trackRecord(db: Db, today: string): TrackRecord {
     })),
     pending,
     firstResultsOn,
+    unavailable:
+      db.get<{ n: number }>(
+        `SELECT count(*) AS n FROM predictions
+          WHERE outcome = 'unavailable' AND reason != 'control'`,
+      )?.n ?? 0,
+    unmatched,
   }
 }
