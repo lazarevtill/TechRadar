@@ -62,6 +62,8 @@ export interface Translations {
   usageToday: string
   lastBackup: string
   weekTitle: string
+  topicHistoryLabel: string
+  topicOrigin: string
   trackRecordNotJudged: string
   velocityMeasured: string
   velocityEstimated: string
@@ -347,6 +349,8 @@ export const translations: Record<Language, Translations> = {
       'Jev today: {sent} requests sent, {cached} answered from cache · {failed} failed calls',
     lastBackup: 'last backup',
     weekTitle: 'This week',
+    topicHistoryLabel: '{total} new works in 30 days, {week} in the last 7',
+    topicOrigin: 'first seen on {source}, {date}',
     trackRecordNotJudged:
       '{n} could not be judged (metric unreadable or no comparison group)',
     velocityMeasured: '+{n}/day measured',
@@ -638,6 +642,8 @@ export const translations: Record<Language, Translations> = {
       'Jev сегодня: отправлено {sent}, из кэша {cached} · ошибок {failed}',
     lastBackup: 'последняя копия',
     weekTitle: 'Эта неделя',
+    topicHistoryLabel: '{total} новых работ за 30 дней, {week} за последние 7',
+    topicOrigin: 'впервые: {source}, {date}',
     trackRecordNotJudged:
       '{n} не удалось оценить (метрика недоступна или нет группы сравнения)',
     velocityMeasured: '+{n}/день по замеру',

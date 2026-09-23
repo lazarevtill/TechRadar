@@ -206,6 +206,7 @@ const translations = {
       'Terms that suddenly appeared across several sources and that Jev confirmed name a technology. Added automatically (at most 3 a day, 20 in total) and retired after two quiet weeks.',
     discoveredSince: 'since {date}',
     healthOk: 'Server: all sources report',
+    topicOrigin: 'first seen on {source}, {date}',
     a11yLanguage: 'Language',
     tickWeeks: '{n}w',
     tickMonths: '{n}mo',
@@ -402,6 +403,7 @@ const translations = {
       'Термины, внезапно появившиеся в нескольких источниках, которые Jev подтвердил как названия технологий. Добавляются автоматически (не более 3 в день и 20 всего) и снимаются после двух тихих недель.',
     discoveredSince: 'с {date}',
     healthOk: 'Сервер: все источники отвечают',
+    topicOrigin: 'впервые: {source}, {date}',
     a11yLanguage: 'Язык',
     tickWeeks: '{n} нед',
     tickMonths: '{n} мес',
@@ -552,6 +554,8 @@ let state = {
   trackRecord: null,
   /** Discovered themes (feed.themes). */
   themes: [],
+  /** Per topic: 30 days of new works and its origin (feed.topicSeries). */
+  topicSeries: {},
   /** Sources on one topic that make it converging (server setting). */
   convergenceMinSources: 4,
   /** /api/health status part, or null. */
@@ -757,6 +761,7 @@ function applyPayload(payload) {
   state.topicLabels = payload.topicLabels ?? {}
   state.trackRecord = trackRecordSummary(payload.feed.trackRecord)
   state.themes = Array.isArray(payload.feed.themes) ? payload.feed.themes : []
+  state.topicSeries = payload.feed.topicSeries ?? {}
   state.convergenceMinSources =
     payload.thresholds?.convergenceMinSources ?? state.convergenceMinSources
   if (state.activeTopic !== 'all' && !state.topicLabels[state.activeTopic])
@@ -1697,6 +1702,21 @@ function renderMatrix(items) {
   elements.htmlView.innerHTML = `<table class="matrix"><thead><tr><th></th>${head}</tr></thead><tbody>${body}</tbody></table>`
 }
 
+/** 30 days of new works and where the topic was first seen. */
+function topicHistoryHtml(series) {
+  if (!series?.counts) return ''
+  const origin = series.origin
+    ? escapeHtml(
+        fmt('topicOrigin', {
+          source:
+            SOURCE_CONFIG[series.origin.source]?.label || series.origin.source,
+          date: series.origin.day,
+        }),
+      )
+    : ''
+  return `<span class="tv-history">${sparklineSvg(series.counts, ACCENT)}<span>${origin}</span></span>`
+}
+
 function renderTopics(items) {
   const rows = topicRows(items, state.topicLabels)
   if (rows.length === 0) {
@@ -1720,6 +1740,7 @@ function renderTopics(items) {
         <span>${escapeHtml(r.label)}</span>
         <span class="tv-bar"><span style="width:${Math.round((r.items / maxItems) * 100)}%"></span></span>
         <span class="tv-meta">${r.sources} ${escapeHtml(plural(r.sources, 'sourcesN'))} · ${r.items} ${escapeHtml(plural(r.items, 'itemsN'))}${converging ? ` · ${escapeHtml(t('converging'))}` : ''}${r.discovered ? ` · ${escapeHtml(t('discovered'))}` : ''}</span>
+        ${topicHistoryHtml(state.topicSeries[r.topic])}
       </button>`
     })
     .join('')}</div>`
@@ -2289,6 +2310,7 @@ async function submitSettings(e) {
     state.trackRecord = null
     state.topicLabels = {}
     state.themes = []
+    state.topicSeries = {}
     state.health = null
     loadCjkFonts()
     await fetchAllData(true)

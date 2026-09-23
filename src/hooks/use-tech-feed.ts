@@ -16,6 +16,7 @@ import type {
 import type { DiscoveredTheme } from '@/lib/trend-topics'
 import { watchMatcher } from '@/lib/watch'
 import type { TrackRecord } from '@/server/store/predictions'
+import type { TopicSeries } from '@/server/store/series'
 
 export type { TechFeedStats }
 
@@ -60,6 +61,8 @@ export interface UseTechFeedResult {
   themes: DiscoveredTheme[]
   /** How past highlights turned out; null without the history store. */
   trackRecord: TrackRecord | null
+  /** Per topic: new works per day (last 30 days) and where it started. */
+  topicSeries: Record<string, TopicSeries>
 }
 
 /** Shared with the route loader, which prefetches it during SSR. */
@@ -102,6 +105,7 @@ export function useTechFeed(): UseTechFeedResult {
     fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
     themes: data?.themes ?? [],
     trackRecord: data?.trackRecord ?? null,
+    topicSeries: data?.topicSeries ?? {},
   }
 }
 

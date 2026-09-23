@@ -5,6 +5,8 @@ import { CATEGORY_CONFIG, type DataSource } from '@/lib/tech-categories'
 import { CONVERGENCE_MIN_SOURCES } from '@/lib/signal-model'
 import { useLanguage, getLocalizedSources } from '@/lib/i18n'
 import { CategoryDot } from './icons'
+import { Sparkline } from './Sparkline'
+import type { TopicSeries } from '@/server/store/series'
 import { toggleFeedFocus, useFeedFocus } from '@/hooks/use-feed-focus'
 
 interface TopicRow {
@@ -21,7 +23,7 @@ interface TopicRow {
  * changes in months; this only reports what was observed.
  */
 export function TopicConvergence() {
-  const { items, themes, isError, isLoading } = useTechFeed()
+  const { items, themes, isError, isLoading, topicSeries } = useTechFeed()
   const focus = useFeedFocus()
   const { t, language } = useLanguage()
   const localizedSources = getLocalizedSources(language)
@@ -108,7 +110,7 @@ export function TopicConvergence() {
                   aria-pressed={focus.topic === row.id}
                   onClick={() => toggleFeedFocus('topic', row.id)}
                 >
-                  <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-2">
                     <CategoryDot color={row.color} />
                     <span className="text-fg text-sm">{row.label}</span>
                     {row.id.startsWith('auto:') && (
@@ -120,10 +122,14 @@ export function TopicConvergence() {
                       {row.sources.length} {t.sources.toLowerCase()} ·{' '}
                       {row.count} {t.items}
                     </span>
-                  </div>
-                  <p className="mt-1 text-fg-3 pl-4">
+                  </span>
+                  <span className="block mt-1 text-fg-3 pl-4">
                     {row.sources.map((s) => localizedSources[s]).join(' · ')}
-                  </p>
+                  </span>
+                  <TopicHistory
+                    series={topicSeries[row.id]}
+                    sourceName={(s) => localizedSources[s]}
+                  />
                 </button>
               </li>
             )
@@ -131,5 +137,36 @@ export function TopicConvergence() {
         </ul>
       )}
     </div>
+  )
+}
+
+/** The topic's last 30 days and where it was first seen. */
+function TopicHistory({
+  series,
+  sourceName,
+}: {
+  series: TopicSeries | undefined
+  sourceName: (s: DataSource) => string
+}) {
+  const { t } = useLanguage()
+  if (!series) return null
+  const total = series.counts.reduce((a, b) => a + b, 0)
+  const lastWeek = series.counts.slice(-7).reduce((a, b) => a + b, 0)
+  return (
+    <span className="mt-1.5 pl-4 flex items-center gap-2 text-[11px] text-fg-3">
+      <Sparkline
+        counts={series.counts}
+        label={t.topicHistoryLabel
+          .replace('{total}', String(total))
+          .replace('{week}', String(lastWeek))}
+      />
+      {series.origin && (
+        <span className="truncate">
+          {t.topicOrigin
+            .replace('{source}', sourceName(series.origin.source))
+            .replace('{date}', series.origin.day)}
+        </span>
+      )}
+    </span>
   )
 }

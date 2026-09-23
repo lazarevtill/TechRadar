@@ -1169,3 +1169,12 @@ a {
   margin-top: 0.15rem;
   font-size: 10px;
 }
+
+.tv-history {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: var(--fg-3);
+}

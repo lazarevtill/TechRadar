@@ -26,6 +26,7 @@ import { isAuthorized } from '@/server/utils/admin'
 import { contentHash } from '@/server/utils/verdict-store'
 import { historyDb, utcDay, type Db } from '@/server/store/db'
 import { recordSourceRuns, recordUsage } from '@/server/store/ops'
+import { topicSeries, type TopicSeries } from '@/server/store/series'
 import { drainUsage } from '@/server/utils/usage'
 import { alertOnSourceChanges } from './health'
 import {
@@ -264,6 +265,7 @@ async function withHistory(
   themes: Theme[]
   save: (items: TechItem[]) => TrackRecord | null
   flushUsage: () => void
+  series: (topics: string[]) => Record<string, TopicSeries>
 }> {
   const day = utcDay()
   try {
@@ -299,6 +301,7 @@ async function withHistory(
       // Called at the very end of a rebuild, after ranking and translation,
       // so every paid call this rebuild made is on today's ledger.
       flushUsage: () => recordUsage(db, day, drainUsage()),
+      series: (topics) => topicSeries(db, day, topics),
       save: (items) => {
         recordSignals(db, items, day)
         recordPredictions(
@@ -325,6 +328,7 @@ async function withHistory(
       themes: [],
       save: () => null,
       flushUsage: () => {},
+      series: () => ({}),
     }
   }
 }
@@ -1620,11 +1624,19 @@ async function buildTechFeed() {
   // Rank the whole fetch together: percentiles are per source, convergence
   // needs every source at once.
   const raw = runs.flatMap((r) => r.items)
-  const { history, themes, save, flushUsage } = await withHistory(raw, runs)
+  const { history, themes, save, flushUsage, series } = await withHistory(
+    raw,
+    runs,
+  )
   let allItems = await assembleItems(raw, history, themesByItem(raw, themes))
   let record: TrackRecord | null = null
+  let topicHistory: Record<string, TopicSeries> = {}
   try {
     record = save(allItems)
+    // After today's observations are written, so today counts.
+    topicHistory = series([
+      ...new Set(allItems.flatMap((i) => i.signal.topics)),
+    ])
   } catch (error) {
     console.error('[history] could not record this fetch:', error)
   }
@@ -1679,6 +1691,8 @@ async function buildTechFeed() {
     })),
     /** How past highlights turned out (null without the history store). */
     trackRecord: record,
+    /** Per topic in this feed: new works per day (30 days) and its origin. */
+    topicSeries: topicHistory,
     fetchedAt: new Date().toISOString(),
   }
 }
