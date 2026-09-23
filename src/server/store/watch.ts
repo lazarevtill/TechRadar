@@ -5,9 +5,15 @@ import { workGroups, type Works } from './works'
 
 /**
  * Immediate watch alerts: works that newly mention a server-side watch term
- * (REPORT_WATCH). Each work is announced once per term. The first pass for
- * a term (a fresh install, or a term just added) only records what already
- * matches, so switching alerts on never floods the channel with old items.
+ * (REPORT_WATCH). Each work is announced once per term.
+ *
+ * A term is registered (meta `watch_since:<term>`) on the first pass that
+ * sees it; what already matches then is recorded silently, so switching
+ * alerts on never floods the channel. Afterwards a matching work is news if
+ * the radar first saw it after the term was registered, and it stays a
+ * candidate on every rebuild until an alert for it is delivered
+ * (markAnnounced) — a failed post, a batch cut at 20, or a post still in
+ * flight never loses it.
  */
 
 export interface WatchHit {
@@ -30,49 +36,50 @@ export function newWatchHits(
     summary: string
     sourceUrl: string
   }>,
+  /** When this pass runs; registers new terms at this time. */
+  now: string = new Date().toISOString(),
   works: Works = workGroups(db, `${today}T00:00:00Z`),
-  /**
-   * Announce only items the radar first saw at or after this time (the
-   * current rebuild). An item it knew before — say from a source that timed
-   * out on the pass that recorded a new term — is recorded, not announced.
-   */
-  newSince?: string,
 ): WatchHit[] {
   const hits: WatchHit[] = []
   const firstSeen = new Map(
-    newSince
-      ? db
-          .all<{ id: string; first_seen: string }>(
-            `SELECT id, first_seen FROM items
-              WHERE id IN (SELECT value FROM json_each(?))`,
-            JSON.stringify(items.map((i) => i.id)),
-          )
-          .map((r) => [r.id, r.first_seen])
-      : [],
+    db
+      .all<{ id: string; first_seen: string }>(
+        `SELECT id, first_seen FROM items
+          WHERE id IN (SELECT value FROM json_each(?))`,
+        JSON.stringify(items.map((i) => i.id)),
+      )
+      .map((r) => [r.id, r.first_seen]),
   )
-  const isNew = (id: string) =>
-    !newSince || (firstSeen.get(id) ?? newSince) >= newSince
+  const record = (term: string, work: string) =>
+    db.run(
+      'INSERT OR IGNORE INTO watch_hits (term, work, day) VALUES (?, ?, ?)',
+      term,
+      work,
+      today,
+    )
   db.transaction(() => {
     for (const raw of terms) {
       const term = raw.toLowerCase()
-      const known =
-        (db.get<{ n: number }>(
-          'SELECT count(*) AS n FROM watch_hits WHERE term = ?',
-          term,
-        )?.n ?? 0) > 0
+      const key = `watch_since:${term}`
+      const since = db.get<{ value: string }>(
+        'SELECT value FROM meta WHERE key = ?',
+        key,
+      )?.value
+      if (!since)
+        db.run('INSERT INTO meta (key, value) VALUES (?, ?)', key, now)
       const match = watchMatcher(raw)
       for (const item of items) {
         if (!match(`${item.title}\n${item.summary}`)) continue
         const work = works.workOf.get(item.id) ?? item.id
-        const before = db.get<{ n: number }>(
+        const announced = db.get<{ n: number }>(
           'SELECT count(*) AS n FROM watch_hits WHERE term = ? AND work = ?',
           term,
           work,
         )?.n
-        if (before || hits.some((h) => h.term === raw && h.work === work))
+        if (announced || hits.some((h) => h.term === raw && h.work === work))
           continue
-        if (known && isNew(item.id))
-          // Announced once the alert is delivered (markAnnounced).
+        const seen = firstSeen.get(item.id) ?? now
+        if (since && seen >= since)
           hits.push({
             term: raw,
             work,
@@ -81,23 +88,9 @@ export function newWatchHits(
             title: item.title,
             url: item.sourceUrl,
           })
-        else
-          db.run(
-            'INSERT OR IGNORE INTO watch_hits (term, work, day) VALUES (?, ?, ?)',
-            term,
-            work,
-            today,
-          )
+        // Known before the term was registered: not news, never announced.
+        else record(term, work)
       }
-      // A term with no match yet is still "known" from now on, so its
-      // first real match is announced.
-      if (!known)
-        db.run(
-          'INSERT OR IGNORE INTO watch_hits (term, work, day) VALUES (?, ?, ?)',
-          term,
-          '',
-          today,
-        )
     }
   })
   return hits

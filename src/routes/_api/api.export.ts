@@ -46,9 +46,13 @@ export const Route = createFileRoute('/_api/api/export')({
           }
         } catch (error) {
           console.error('[export] history store unavailable:', error)
+          // Never cached: the store may be back a moment later.
           return Response.json(
             { error: 'history store unavailable' },
-            { status: 503, headers: HEADERS },
+            {
+              status: 503,
+              headers: { ...HEADERS, 'Cache-Control': 'no-store' },
+            },
           )
         }
         if (params.get('format') === 'json')

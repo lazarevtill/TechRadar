@@ -26,7 +26,7 @@ export function sendWatchAlerts(
   const url = process.env.WATCH_WEBHOOK_URL || process.env.REPORT_WEBHOOK_URL
   const terms = parseWatchTerms(process.env.REPORT_WATCH)
   if (!url || terms.length === 0 || sending) return
-  const hits = newWatchHits(db, day, terms, items, undefined, rebuildAt)
+  const hits = newWatchHits(db, day, terms, items, rebuildAt)
   if (hits.length === 0) return
   sending = true
   fetch(url, {

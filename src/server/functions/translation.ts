@@ -1,6 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
 import { countUsage } from '@/server/utils/usage'
-import { contentHash } from '@/server/utils/verdict-store'
 import { z } from 'zod'
 import type { OriginalLanguage, TranslatedContent } from '@/lib/tech-categories'
 
@@ -63,10 +62,11 @@ function noteQuotaExhausted(detail: string): void {
   )
 }
 
-// Keyed by a hash of the whole text: two texts that share a beginning
-// (a common fallback summary) must not get each other's translation.
+// Keyed by the whole text (inputs are at most a few hundred characters and
+// the cache is bounded): neither a shared beginning nor a hash collision can
+// give one text another's translation.
 function getCacheKey(text: string, from: string, to: string): string {
-  return `${from}:${to}:${contentHash(text)}`
+  return `${from}:${to}:${text}`
 }
 
 async function translateText(

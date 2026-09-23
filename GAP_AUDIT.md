@@ -164,7 +164,7 @@ Capability gaps:
 | 4   | Built   | `12c8d88` | Immediate webhook alerts for server watch terms; delivered once, retried on failure, no flood on enable.             |
 | 5   | Decided | docs      | Kept separate on purpose: the digest series counts blog posts, the store counts live-source items; documented.       |
 | 6   | Blocked | —         | Needs credentials only the owner can create: USPTO Open Data Portal key (patents), a Reddit OAuth app, Bluesky auth. |
-| 7   | Built   | `9f8ca55` | `/api/export?kind=series                                                                                             | predictions | themes&format=csv | json`. |
+| 7   | Built   | `9f8ca55` | `/api/export` with `kind` = series, predictions or themes, `format` = csv or json.                                   |
 
 Found while fixing (not in the original audit): the extension's HTML
 escaping left quotes intact inside attributes (fixed in `9c6854d`); on-demand

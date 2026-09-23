@@ -86,9 +86,12 @@ export async function fetchHealth(fetchImpl, baseUrl) {
   const body = await res.json().catch(() => null)
   if (!body || typeof body.ok !== 'boolean')
     throw new Error(`${url} answered HTTP ${res.status}`)
+  // Only well-formed parts are kept: the server is a user setting.
   return {
     ok: body.ok,
-    problems: body.problems ?? [],
-    sources: body.sources ?? [],
+    problems: Array.isArray(body.problems)
+      ? body.problems.filter((p) => typeof p === 'string')
+      : [],
+    sources: Array.isArray(body.sources) ? body.sources : [],
   }
 }

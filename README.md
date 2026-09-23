@@ -189,8 +189,10 @@ the last feed and weekly report for offline use. See
   history, discovery, the track record, backups and alerts keep running with
   no visitors.
 - **Health.** `GET /api/health` lists every source (`ok`, `degraded`, `down`)
-  and why; `?strict=1` answers 503 when something is wrong (for uptime
-  monitors; the Docker healthcheck uses it). With `ADMIN_TOKEN` set, the
+  and why; `?strict=1` answers 503 when something is wrong — use it for
+  ongoing uptime monitoring. Deploy-time checks (the Docker healthcheck,
+  Railway) use the plain endpoint, which fails only when the server or its
+  history store is down, so an upstream source outage never fails a deploy. With `ADMIN_TOKEN` set, the
   usage ledger and storage details need `Authorization: Bearer <token>`, and
   so does forcing a rebuild from the dashboard. `ALERT_WEBHOOK_URL` hears
   about sources going down and recovering.

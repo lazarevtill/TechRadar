@@ -1103,8 +1103,10 @@ function sparklineSvg(counts, color) {
   if (bars.length === 0) return ''
   const w = 64
   const h = 14
-  const gap = 2
-  const bw = Math.max(1, (w - gap * (bars.length - 1)) / bars.length)
+  // The gap shrinks with the bar count so every bar stays inside the viewBox
+  // (weekly trends have ~8 bars, topic history 30).
+  const gap = Math.min(2, w / bars.length / 3)
+  const bw = (w - gap * (bars.length - 1)) / bars.length
   const rects = bars
     .map((v, i) => {
       const bh = Math.max(1, Math.round(v * h))

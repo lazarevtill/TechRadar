@@ -135,11 +135,15 @@ dig +short radar.example.com                                  # must be the serv
 # 2. Code
 ssh user@host 'git clone https://github.com/lazarevtill/TechRadar.git || (cd TechRadar && git pull)'
 
-# 3. Configuration — the token is generated on the server and never printed
+# 3. Configuration. .env is created owner-only from the start, and the token
+#    is generated on the server and piped in: it never appears in output,
+#    in command-line arguments (ps) or in your transcript.
 ssh user@host 'cd TechRadar && test -f .env || {
-  cp deploy/vps/.env.prod.example .env &&
-  sed -i "s|^DOMAIN=.*|DOMAIN=radar.example.com|; s|^EXTENSION_BACKEND_URL=.*|EXTENSION_BACKEND_URL=https://radar.example.com|; s|^PUBLIC_BASE_URL=.*|PUBLIC_BASE_URL=https://radar.example.com|; s|^ADMIN_TOKEN=.*|ADMIN_TOKEN=$(openssl rand -hex 32)|" .env &&
-  chmod 600 .env; }'
+  install -m 600 deploy/vps/.env.prod.example .env &&
+  sed -i "s|^DOMAIN=.*|DOMAIN=radar.example.com|; s|^EXTENSION_BACKEND_URL=.*|EXTENSION_BACKEND_URL=https://radar.example.com|; s|^PUBLIC_BASE_URL=.*|PUBLIC_BASE_URL=https://radar.example.com|" .env &&
+  tmp=$(mktemp .env.XXXXXX) &&
+  openssl rand -hex 32 | awk "NR == FNR { token = \$0; next } /^ADMIN_TOKEN=/ { \$0 = \"ADMIN_TOKEN=\" token } { print }" - .env > "$tmp" &&
+  mv "$tmp" .env; }'
 # Optional keys: ask the user to add them to ~/TechRadar/.env themselves.
 
 # 4. Start
@@ -154,21 +158,29 @@ on the server) — do not print it yourself.
 
 ### B. Railway (CLI)
 
+Everything is configured **before the first deploy**, so the service is
+never public without its volume or its token.
+
 ```bash
 railway login                       # interactive: ask the user to run it
-railway init                        # or: railway link (existing project)
-railway up --detach                 # builds the Dockerfile; railway.json sets the healthcheck
+railway init                        # new project (or: railway link, then check its variables)
+railway add --service techradar     # an empty service, nothing deployed yet
+railway service techradar           # link this directory to it
 railway volume add --mount-path /app/.cache
-railway variable set RAILWAY_RUN_UID=0      # the image's non-root user must write the volume
-openssl rand -hex 32 | railway variable set ADMIN_TOKEN --stdin
-railway domain                      # generates https://<name>.up.railway.app
-railway variable set EXTENSION_BACKEND_URL=https://<that-domain>
-railway variable set PUBLIC_BASE_URL=https://<that-domain>
+railway variable set RAILWAY_RUN_UID=0 --skip-deploys    # the image's non-root user must write the volume
+openssl rand -hex 32 | railway variable set ADMIN_TOKEN --stdin --skip-deploys
+railway domain                      # generates https://<name>.up.railway.app (or add your own)
+railway variable set EXTENSION_BACKEND_URL=https://<that-domain> PUBLIC_BASE_URL=https://<that-domain> --skip-deploys
 # Optional keys: the user sets them in the Railway dashboard (Variables) or with
-#   railway variable set TYPESAFE_API_KEY --stdin   (they type/paste the value)
-railway up --detach                 # rebuild so the extension gets the domain
+#   railway variable set TYPESAFE_API_KEY --stdin --skip-deploys   (they type the value)
+railway up --detach                 # first deploy; railway.json sets the healthcheck
 railway logs -n 100
 ```
+
+Linking an **existing** service instead: run `railway variable list --kv` first
+and set `ADMIN_TOKEN` and the volume before anything else if they are
+missing — an already public service without a token exposes its operator
+data until you do.
 
 Alternatively the user connects the GitHub repository in the dashboard
 (**Deploy from GitHub repo**); then add the volume and variables the same

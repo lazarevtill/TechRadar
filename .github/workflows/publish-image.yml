@@ -43,12 +43,20 @@ jobs:
       - id: commit
         run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
+      # Two quick pushes can finish Verify out of order: an older run must not
+      # move `latest` back. It still publishes its sha- tag.
+      - id: fresh
+        run: |
+          head=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$head" = "$(git rev-parse HEAD)" ]; then echo "latest=true" >> "$GITHUB_OUTPUT"
+          else echo "latest=false" >> "$GITHUB_OUTPUT"; echo "main moved on to $head; not tagging latest" >> "$GITHUB_STEP_SUMMARY"; fi
+
       - id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ steps.fresh.outputs.latest == 'true' }}
             type=raw,value=sha-${{ steps.commit.outputs.short }}
 
       # Build once, start it, and require a healthy answer before pushing.
