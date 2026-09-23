@@ -13,6 +13,8 @@ todos.json
 .eslintcache
 .superpowers/
 .env.*
+# Templates with placeholders only (no values) are tracked.
+!deploy/vps/.env.prod.example
 *.key
 public/data/*.local.json
 
