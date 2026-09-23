@@ -24,7 +24,12 @@ services:
       # Optional webhooks ({"text": ...}): weekly report and source alerts.
       REPORT_WEBHOOK_URL: ${REPORT_WEBHOOK_URL:-}
       REPORT_WATCH: ${REPORT_WATCH:-}
+      WATCH_WEBHOOK_URL: ${WATCH_WEBHOOK_URL:-}
       ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-}
+      # Protects operator actions and data; set it on an internet-facing host.
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      # Optional: keep backups off the data volume (see README, Backups).
+      # BACKUP_DIR: /backups
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
       # Point at a different fork's generated data if needed:
       # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
@@ -32,6 +37,8 @@ services:
       # Jev verdicts and the history store (with its daily backups): survive
       # rebuilds, so unchanged items are never re-sent and history accumulates.
       - techradar-cache:/app/.cache
+      # - ./backups:/backups   # with BACKUP_DIR=/backups
+    # One replica only: the history is a single SQLite file.
     restart: unless-stopped
 
 volumes:
