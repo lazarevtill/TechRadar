@@ -29,6 +29,7 @@ import { trajectoryMeta, sparklineBars } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
 import { icon, CATEGORY_ICON } from './lib/icons.js'
 import { trackRecordSummary } from './lib/track-record.js'
+import { escapeHtml, num } from './lib/html.js'
 import { parseWatchTerms, watchHits } from './lib/watch.js'
 import {
   REPORT_CACHE_KEY,
@@ -704,12 +705,6 @@ function displayText(item) {
   return translated ? { ...translated, translated: true } : original
 }
 
-function escapeHtml(text) {
-  const div = document.createElement('div')
-  div.textContent = text ?? ''
-  return div.innerHTML
-}
-
 function safeUrl(url) {
   if (typeof url !== 'string') return '#'
   const u = url.trim()
@@ -1063,7 +1058,7 @@ function trackRecordHtml() {
             r.reason === 'discovered'
               ? t('trackDiscovered')
               : (reasonLabel(r.reason)?.label ?? r.reason)
-          return `<span>${escapeHtml(label)} <span class="num">${r.pct}%</span> (${r.n})</span>`
+          return `<span>${escapeHtml(label)} <span class="num">${num(r.pct)}%</span> (${num(r.n)})</span>`
         })
         .join(' · ')
     : escapeHtml(
@@ -1249,7 +1244,7 @@ function renderWeek() {
       `<div class="week-block"><h3>${escapeHtml(t('weekWatch'))}</h3><ul>${r.watch
         .map(
           (w) =>
-            `<li><button class="link-btn" data-watch="${escapeHtml(w.term)}" aria-pressed="${state.activeWatch === w.term}">${escapeHtml(w.term)}</button> <span class="num">${w.thisWeek}</span> <span class="muted">(${escapeHtml(fmt('weekWas', { n: w.lastWeek }))})</span>${w.items.length ? `<ul class="week-items">${w.items.map((i) => `<li><span class="muted">${escapeHtml(sourceLabel(i.source))}</span> ${link(i)}</li>`).join('')}</ul>` : ''}</li>`,
+            `<li><button class="link-btn" data-watch="${escapeHtml(w.term)}" aria-pressed="${state.activeWatch === w.term}">${escapeHtml(w.term)}</button> <span class="num">${num(w.thisWeek)}</span> <span class="muted">(${escapeHtml(fmt('weekWas', { n: w.lastWeek }))})</span>${w.items.length ? `<ul class="week-items">${w.items.map((i) => `<li><span class="muted">${escapeHtml(sourceLabel(i.source))}</span> ${link(i)}</li>`).join('')}</ul>` : ''}</li>`,
         )
         .join('')}</ul></div>`,
     )
@@ -1257,8 +1252,8 @@ function renderWeek() {
     blocks.push(
       `<div class="week-block"><h3>${escapeHtml(t('weekTopics'))}</h3><ul>${r.topics
         .map((x) => {
-          const d = x.thisWeek - x.lastWeek
-          return `<li class="week-row"><span>${escapeHtml(x.label)}</span><span class="num">${x.thisWeek}</span><span class="num ${d > 0 ? 'rising' : 'muted'}">${d > 0 ? `+${d}` : d}</span></li>`
+          const d = num(x.thisWeek) - num(x.lastWeek)
+          return `<li class="week-row"><span>${escapeHtml(x.label)}</span><span class="num">${num(x.thisWeek)}</span><span class="num ${d > 0 ? 'rising' : 'muted'}">${d > 0 ? `+${d}` : d}</span></li>`
         })
         .join(
           '',
@@ -1269,7 +1264,7 @@ function renderWeek() {
       `<div class="week-block"><h3>${escapeHtml(t('weekRisers'))}</h3><ul>${r.risers
         .map(
           (x) =>
-            `<li class="week-row">${link(x)}<span class="num muted">${x.from} → ${x.to}</span></li>`,
+            `<li class="week-row">${link(x)}<span class="num muted">${num(x.from)} → ${num(x.to)}</span></li>`,
         )
         .join('')}</ul></div>`,
     )
@@ -1278,7 +1273,7 @@ function renderWeek() {
       `<div class="week-block"><h3>${escapeHtml(t('weekMakers'))}</h3><ul>${r.makers
         .map(
           (m) =>
-            `<li class="week-row"><span>${escapeHtml(m.name)} <span class="muted">${escapeHtml(m.sources.map(sourceLabel).join(' · '))}</span></span><span class="num">${m.thisWeek}</span></li>`,
+            `<li class="week-row"><span>${escapeHtml(m.name)} <span class="muted">${escapeHtml(m.sources.map(sourceLabel).join(' · '))}</span></span><span class="num">${num(m.thisWeek)}</span></li>`,
         )
         .join('')}</ul></div>`,
     )
@@ -1704,7 +1699,7 @@ function renderMatrix(items) {
           // Tint grows with count; category colour keeps rows distinguishable.
           const alpha = cell.count ? 0.08 + 0.42 * (cell.count / max) : 0
           const bg = cell.count ? `background:${hexToRgba(color, alpha)}` : ''
-          return `<td><button class="matrix-cell" data-category="${row.category}" data-stage="${cell.stage}" aria-pressed="${active}" ${cell.count ? '' : 'disabled'} style="${bg}"><span>${cell.count || '·'}</span>${cell.highlighted ? `<span class="hl">★ ${cell.highlighted}</span>` : ''}</button></td>`
+          return `<td><button class="matrix-cell" data-category="${escapeHtml(row.category)}" data-stage="${cell.stage}" aria-pressed="${active}" ${cell.count ? '' : 'disabled'} style="${bg}"><span>${cell.count || '·'}</span>${cell.highlighted ? `<span class="hl">★ ${cell.highlighted}</span>` : ''}</button></td>`
         })
         .join('')
       return `<tr><th scope="row">${dot(color)} ${escapeHtml(getLocalizedCategory(row.category))}</th>${cells}</tr>`
@@ -1740,7 +1735,7 @@ function renderTopics(items) {
     ? `<div class="tv-themes"><h3>${escapeHtml(t('discoveredTitle'))}</h3><p class="tv-hint">${escapeHtml(t('discoveredHint'))}</p><div class="tv-theme-list">${state.themes
         .map(
           (th) =>
-            `<button class="chip-muted tv-theme" data-topic="${escapeHtml(th.id)}" aria-pressed="${state.activeTopic === th.id}">${escapeHtml(th.label)} <span class="num">${th.items}</span> <span class="num">· ${escapeHtml(fmt('discoveredSince', { date: th.addedDay }))}</span></button>`,
+            `<button class="chip-muted tv-theme" data-topic="${escapeHtml(th.id)}" aria-pressed="${state.activeTopic === th.id}">${escapeHtml(th.label)} <span class="num">${num(th.items)}</span> <span class="num">· ${escapeHtml(fmt('discoveredSince', { date: th.addedDay }))}</span></button>`,
         )
         .join('')}</div></div>`
     : ''

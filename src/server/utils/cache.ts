@@ -99,32 +99,6 @@ export function invalidateAllCache(): number {
 }
 
 /**
- * Get cache statistics
- */
-export function getCacheStats(): {
-  size: number
-  keys: string[]
-  entries: Array<{ key: string; expiresIn: number; age: number }>
-} {
-  const now = Date.now()
-  const entries: Array<{ key: string; expiresIn: number; age: number }> = []
-
-  for (const [key, entry] of cacheStore.entries()) {
-    entries.push({
-      key,
-      expiresIn: Math.round((entry.expiresAt - now) / 1000),
-      age: Math.round((now - entry.createdAt) / 1000),
-    })
-  }
-
-  return {
-    size: cacheStore.size,
-    keys: Array.from(cacheStore.keys()),
-    entries,
-  }
-}
-
-/**
  * Helper to get or set cache with a factory function
  * Useful for wrapping async operations
  */

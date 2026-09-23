@@ -256,9 +256,27 @@ const translateItemSchema = z.object({
   toLang: z.enum(['en', 'ru']),
 })
 
+// On-demand translation is public (the "translate" button). MyMemory's quota
+// is shared by the whole server, so these calls are limited per minute for
+// everyone together; past the limit the answer is "not now" (null) and the
+// button stays, exactly as when the quota is exhausted.
+export const ON_DEMAND_PER_MINUTE = 30
+let windowStart = 0
+let windowCount = 0
+
+export function allowOnDemand(now = Date.now()): boolean {
+  if (now - windowStart >= 60_000) {
+    windowStart = now
+    windowCount = 0
+  }
+  windowCount++
+  return windowCount <= ON_DEMAND_PER_MINUTE
+}
+
 export const translateItemFn = createServerFn({ method: 'POST' })
   .inputValidator(translateItemSchema)
   .handler(async ({ data }) => {
+    if (!allowOnDemand()) return null
     const translated = await translateContent(
       {
         title: data.title,

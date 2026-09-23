@@ -1745,42 +1745,6 @@ export const fetchTechFeedFn = createServerFn({ method: 'GET' }).handler(
   getTechFeed,
 )
 
-const filterSchema = z
-  .object({
-    category: z.string().optional(),
-    source: z.string().optional(),
-    maturity: z.string().optional(),
-    highlightedOnly: z.boolean().optional(),
-    language: z.string().optional(),
-  })
-  .optional()
-
-export const fetchFilteredFeedFn = createServerFn({ method: 'GET' })
-  .inputValidator(filterSchema)
-  .handler(async ({ data }) => {
-    const result = await fetchTechFeedFn()
-
-    let items = result.items
-
-    if (data?.category && data.category !== 'all') {
-      items = items.filter((i) => i.category === data.category)
-    }
-    if (data?.source && data.source !== 'all') {
-      items = items.filter((i) => i.source === data.source)
-    }
-    if (data?.maturity && data.maturity !== 'all') {
-      items = items.filter((i) => i.maturityStage === data.maturity)
-    }
-    if (data?.highlightedOnly) {
-      items = items.filter((i) => i.signal.reasons.length > 0)
-    }
-    if (data?.language && data.language !== 'all') {
-      items = items.filter((i) => i.originalLanguage === data.language)
-    }
-
-    return { items, stats: result.stats, fetchedAt: result.fetchedAt }
-  })
-
 // ============================================================================
 // CACHE INVALIDATION
 // ============================================================================
