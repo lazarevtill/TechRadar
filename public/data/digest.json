@@ -1,233 +1,233 @@
 {
-  "generatedAt": "2026-09-22T11:37:07.585Z",
+  "generatedAt": "2026-09-23T11:35:11.769Z",
   "items": [
     {
-      "id": "d-145ywtu",
+      "id": "d-8q9qbp",
       "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
-      "publishedAt": "2026-09-22T06:30:56.000Z",
+      "sourceUrl": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
+      "publishedAt": "2026-09-23T06:41:41.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Xiaomi's $3M open-weights model now leads on capability benchmarks, signaling that frontier performance is no longer exclusive to closed APIs.",
+        "headline": "Why it matters: Claude Opus 5.5 delivers Fable-level coding at 40% lower cost, forcing the entire market to cut prices as efficiency gains finally outpace capability race inflation.",
         "tweets": [
-          "Xiaomi MiMo-V2.6-Pro: 1T parameters, tops open-weights leaderboards at $3M training cost. Natively multimodal with RL-driven scaling—RL compute is the new lever beyond pretraining.",
-          "Chinese labs releasing frontier-scale open models at 10-50x lower cost than APIs. Startups are already switching to custom models on open weights to dodge dependence on OpenAI/Anthropic.",
-          "Xiaomi open-sourcing 7K+ RL environments and training recipes. High-quality RL task generation may now matter as much as pretraining data did—transparency + reproducibility changing the game."
+          "Opus 5.5 matches Fable 5.1 performance but runs 40% cheaper and 30% faster. The catch: higher token usage on some tasks, so real savings depend heavily on workload.",
+          "OpenAI, Google, and Anthropic all dropped prices 40-50% this week. The AI arms race just shifted from raw capability to cost-per-task—efficiency is now the battleground.",
+          "Anthropic highlights writing quality as a differentiator: Opus 5.5 prioritizes key info and follows formatting rules better than Opus 5. Small win, massive UX impact for long sessions."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Открытая модель Xiaomi стоимостью $3M теперь лидирует на бенчмарках, показывая, что передовые возможности больше не монополия закрытых API.",
+        "headline": "Почему важно: Claude Opus 5.5 достигает производительности Fable при цене на 40% ниже, заставляя весь рынок снижать цены—гонка теперь о эффективности, а не мощности.",
         "tweets": [
-          "MiMo-V2.6-Pro: 1 трлн параметров, лучшая открытая модель, обучена за $3M. Нативная мультимодальность плюс RL-масштабирование—RL-вычисления стали новым рычагом роста.",
-          "Китайские лаборатории выпускают модели на уровне фронтира в 10-50 раз дешевле закрытых API. Стартапы переходят на кастомные модели с открытыми весами, чтобы не зависеть от OpenAI.",
-          "Xiaomi откроет 7K+ RL-окружений и рецепты обучения. Качественная генерация RL-задач теперь столь же важна, как данные предобучения—прозрачность меняет индустрию."
+          "Opus 5.5 сравнялся с Fable 5.1 по качеству, но дешевле на 40% и быстрее на 30%. Подвох: на некоторых задачах растёт расход токенов, реальная экономия зависит от типа работы.",
+          "OpenAI, Google и Anthropic на этой неделе сразу урезали цены на 40-50%. Гонка вооружений перешла от мощности к стоимости за задачу—теперь побеждает тот, кто эффективнее.",
+          "Anthropic выделила качество письма как ключевое отличие: Opus 5.5 лучше расставляет информацию и следует правилам форматирования. Мелочь, но для длинных сессий это огромно."
         ]
       }
     },
     {
-      "id": "d-1na4lip",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/transformers-llama-cpp-quants",
-      "publishedAt": "2026-09-22T00:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Transformers library now natively supports llama.cpp quantized models, letting you run large language models efficiently on consumer hardware without external dependencies.",
-        "tweets": [
-          "Transformers now loads llama.cpp quantized models directly. No more converting formats or juggling multiple libraries—just point it at a GGUF file and go.",
-          "You can run 70B models on modest GPUs or even CPUs with llama.cpp quantization. This collapses the barrier between research code and practical inference.",
-          "Native support means better integration with Hugging Face ecosystem. Quantized models, inference servers, and evaluation pipelines now play nicely together."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Transformers теперь нативно поддерживает квантованные модели llama.cpp, позволяя запускать большие языковые модели эффективно на потребительском оборудовании без внешних зависимостей.",
-        "tweets": [
-          "Transformers грузит квантованные модели llama.cpp напрямую. Забудьте о конвертации форматов—просто укажите GGUF файл и работает.",
-          "Можно запустить 70B модель на скромном GPU или даже CPU благодаря llama.cpp квантизации. Это стирает границу между исследовательским кодом и практическим inference.",
-          "Встроенная поддержка означает лучшую интеграцию с экосистемой Hugging Face. Квантованные модели, серверы и пайплайны работают друг с другом без трений."
-        ]
-      }
-    },
-    {
-      "id": "d-1b4ev8a",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/omlx",
-      "publishedAt": "2026-09-22T00:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: MLX, Apple's machine learning framework for Mac, gains dedicated support at Hugging Face to bridge the gap between efficient local AI and the broader ecosystem.",
-        "tweets": [
-          "Jun Kim, creator of oMLX (MLX optimization library), is now at Hugging Face full-time. Means faster iteration on Mac-native ML tooling and better integration with HF models.",
-          "MLX lets you run large models efficiently on Apple Silicon. Having dedicated maintainer resources at HF removes the bottleneck for Mac developers wanting to use state-of-the-art models.",
-          "This signals serious commitment to local AI on consumer hardware. As models get bigger, running them on your own Mac instead of cloud APIs becomes a practical option."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Jun Kim, создатель oMLX, присоединяется к Hugging Face, чтобы развивать экосистему машинного обучения для Mac и связать локальный AI с открытыми моделями.",
-        "tweets": [
-          "Jun Kim, автор библиотеки оптимизации oMLX, теперь работает в Hugging Face на полный день. Это ускорит разработку инструментов для Apple Silicon и интеграцию с моделями HF.",
-          "MLX позволяет эффективно запускать большие языковые модели на Mac. Выделенный разработчик в HF уберет узкие места для тех, кто хочет использовать современные модели на своих устройствах.",
-          "Сигнал серьёзного внимания к локальному AI на потребительском железе. Когда модели растут, запуск их на своем компьютере становится альтернативой облачным API."
-        ]
-      }
-    },
-    {
-      "id": "d-15zs2ef",
+      "id": "d-1b4pfm9",
       "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/21/jev/",
-      "publishedAt": "2026-09-21T23:09:20.000Z",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
+      "publishedAt": "2026-09-23T02:53:19.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Decision models like Jev return structured predictions instead of text, enabling cheap and fast classification tasks but with less explainability than traditional LLMs.",
+        "headline": "Why it matters: Early-stage agentic AI work needs spaces for builders to swap raw experiments before the market narrative takes over.",
         "tweets": [
-          "Jev is a new LLM variant that outputs confidence scores and categories instead of text. Pay only for input tokens, free output. Perfect for spam detection, ranking, and search reranking.",
-          "Decision models are black boxes with no justification layer. A yes/no question returns only a float—no signal of which features drove the decision. Bias testing becomes much harder.",
-          "Jev's $0.042 per million input tokens makes experimentation cheap. Community already built chat bots, games, and utility functions on top in under a week. Open recreations using Qwen are emerging."
+          "Oct 14 SF: Simon Willison + Jesse Vincent hosting a Birds of a Feather for people building with coding agents. Show unfinished work, compare notes, figure things out together.",
+          "The pitch: bring your weird experiments and odd projects that don't fit a clean market narrative yet. This is exploration mode, not product pitches.",
+          "Agentic engineering is still forming. These informal convenings let practitioners see what actually works vs hype, before VC narratives calcify."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Jev — это новый класс моделей, которые выдают вероятности и категории вместо текста, что дешевле и быстрее для классификации, но менее прозрачнее обычных LLM.",
+        "headline": "Почему важно: ранним разработчикам агентных систем нужны места, где можно обмениваться сырыми экспериментами до того, как маркетинг захватит нарратив.",
         "tweets": [
-          "Jev возвращает скоры уверенности и выбранные категории вместо текста. Платишь только за входные токены, выход бесплатный. Идеален для спама, ранжирования и переранжирования поиска.",
-          "Модели решений — это чёрные ящики без объяснений. На вопрос да/нет получаешь только число без информации о том, какие признаки его определили. Проверку на смещение провести сложнее.",
-          "Цена $0.042 за миллион входных токенов позволяет дёшево экспериментировать. За неделю сообщество уже построило чат-боты, игры и утилиты. Появляются открытые реализации на Qwen."
+          "14 октября в SF: Саймон Виллисон и Джесс Винсент собирают людей, работающих с кодирующими агентами. Делитесь незавершёнными проектами, обсуждайте подходы.",
+          "Приносите странные идеи и эксперименты, которые не вписываются в очевидный рынок. Это про исследования, а не про питчи продуктов.",
+          "Агентная инженерия ещё формируется. Такие встречи помогают понять, что реально работает, а не просто хайп, пока VC не привили свою логику."
         ]
       }
     },
     {
-      "id": "d-37uj3t",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/21/cloudflare-python-worker/",
-      "publishedAt": "2026-09-21T22:25:44.000Z",
-      "category": "web3",
+      "id": "d-13bfju0",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/grab-openai-ai-skills-southeast-asia",
+      "publishedAt": "2026-09-23T00:00:00.000Z",
+      "category": "ai",
       "en": {
-        "headline": "Why it matters: Python now runs natively on Cloudflare Workers, letting developers deploy server-side Python without managing infrastructure.",
+        "headline": "Why it matters: 30,000 Southeast Asian business partners gain hands-on AI training, shifting from theoretical knowledge to deployable skills for real commerce.",
         "tweets": [
-          "Cloudflare Python Workers just hit GA after 2 years in preview. Python is compiled to WebAssembly via Pyodide and runs in their V8 workerd runtime.",
-          "Threading and multiprocessing don't work in the WebAssembly VM, so CPU-bound or parallel workloads need careful planning.",
-          "Local dev tool pywrangler simulates the full stack locally, running Pyodide in WebAssembly in V8 inside a 123MB workerd binary."
+          "OpenAI + Grab launch GO Forward with AI: 30K partners across Southeast Asia get practical training on AI tools—not theory, actual deployment for their businesses.",
+          "Regional focus matters. Southeast Asia's logistics, food delivery, and retail platforms now have direct access to AI upskilling programs tailored to their ecosystems.",
+          "Closing the AI skills gap in emerging markets. Training programs designed for merchants and drivers, not just tech teams—democratizing AI adoption where it drives real commerce."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Python теперь работает нативно на Cloudflare Workers, позволяя разработчикам развёртывать серверный код без управления инфраструктурой.",
+        "headline": "Почему важно: 30 тысяч бизнес-партнёров Юго-Восточной Азии получают практические навыки в AI, переходя от теории к реальному применению в своих операциях.",
         "tweets": [
-          "Cloudflare Python Workers вышел из preview в GA после двух лет разработки. Python компилируется в WebAssembly через Pyodide и запускается в V8 runtime.",
-          "Многопоточность и многопроцессность не поддерживаются в WebAssembly VM, поэтому CPU-bound задачи требуют альтернативных подходов.",
-          "Локальный инструмент pywrangler полностью симулирует стек на машине разработчика, запуская Pyodide в WebAssembly внутри бинарника workerd."
+          "OpenAI и Grab запустили GO Forward with AI: 30К партнёров в ЮВА учатся работать с инструментами AI на практике—не теория, а реальное внедрение в бизнес.",
+          "Региональный подход критичен. Логистика, доставка еды и ритейл Юго-Восточной Азии получают доступ к программам подготовки, заточенным под их экосистемы.",
+          "Сокращение дефицита AI-компетенций в развивающихся рынках. Обучение для торговцев и водителей, а не только технарей—демократизация AI где она создаёт реальный доход."
         ]
       }
     },
     {
-      "id": "d-628xf2",
+      "id": "d-gb77po",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/22/opus-and-sol-and-luna/",
+      "publishedAt": "2026-09-22T23:46:41.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: A new wave of model releases has triggered aggressive pricing cuts that make frontier AI significantly cheaper to build with, while exposing limitations in extended reasoning.",
+        "tweets": [
+          "GPT-6 Luna costs $0.10/$0.50 per million tokens—half of GPT-5.6 Luna and now the cheapest frontier model ever. Price war between OpenAI and Anthropic is real.",
+          "Claude Opus 5.5 cuts prices 20% and reduces cache costs 60%, making long-context reasoning cheaper. But max-thinking mode can overthink trivial tasks into hitting token limits.",
+          "In one day: Grok 4.7, MiMo v2.6, Opus 5.5, GPT-6 Sol and Luna all released. Evaluating frontier models now requires running actual tests—pelican SVG comparisons reveal real performance differences."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Волна новых моделей вызвала агрессивное снижение цен на фронтальные ИИ, но максимальный режим рассуждений может стать контрпродуктивным.",
+        "tweets": [
+          "GPT-6 Luna стоит $0.10/$0.50 за миллион токенов — вдвое дешевле GPT-5.6 Luna и самая дешевая фронтальная модель из когда-либо выпущенных.",
+          "Opus 5.5 снизил цены на 20% и стоимость кеша на 60%, но режим максимального мышления может зависнуть на простых задачах из-за ограничения на выходные токены.",
+          "За один день вышли Grok 4.7, MiMo v2.6, Opus 5.5, GPT-6 Sol и Luna. Теперь сравнивать модели нужно практическими тестами, а не спецификациями."
+        ]
+      }
+    },
+    {
+      "id": "d-mr7yd2",
       "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/jev",
-      "publishedAt": "2026-09-21T22:13:49.000Z",
+      "sourceUrl": "https://www.latent.space/p/john-platt",
+      "publishedAt": "2026-09-22T21:07:39.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Jev shifts AI from chat assistants to reliable embedded decision-making in production software, using a new training method (RLCD) that optimizes for calibrated confidence instead of human preferences.",
+        "headline": "Why it matters: ERA automates scientific discovery by treating any solvable problem as code optimization, already solving climate and fusion challenges that stumped researchers for years.",
         "tweets": [
-          "Jev trains System One models for software, not chat. RLHF chases human approval; RLCD optimizes for honest confidence intervals on narrow tasks. This makes AI reliable enough to embed in your code.",
-          "RLCD beats RLHF at the core problem: hallucinations and sycophancy come from optimizing for what humans like. Jev instead learns when it's uncertain—no hallucinating to please users, no fake confidence.",
-          "Stop benchmarking Jev clones. The real insight: pick the right task + data before compute scales. TypeSafe sees itself as a data lab, not a model lab. Tasks and data beat billion-dollar scaling."
+          "ERA uses an LLM to evolve a tree of experimental notebooks, picking promising branches via Monte Carlo logic. Gemini 2.5 made it actually work—it's like having a tireless grad student that knows where to look.",
+          "Contrails cause 1% of human warming. ERA cracked the counterfactual problem by finding confounders physicists missed for 2 years. Planes dropping one flight level stops trails cold.",
+          "ERA is a power tool that can slice your fingers off. Start with linear regression or SVM first. Goodhart's law kills leaderboards: when the metric becomes the target, the metric dies."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Jev переводит ИИ из помощников-чатботов в надежные встроенные системы принятия решений, используя новый метод обучения (RLCD), который оптимизирует уверенность модели вместо предпочтений пользователей.",
+        "headline": "Почему важно: ERA автоматизирует научные открытия, сводя любую задачу к оптимизации кода и уже решая проблемы климата и синтеза, над которыми учёные работали годами.",
         "tweets": [
-          "Jev обучает System One модели для production софта, не для чата. RLHF гонится за одобрением людей; RLCD оптимизирует честные доверительные интервалы на узких задачах. Это делает ИИ надежным для встраивания в код.",
-          "RLCD побеждает RLHF в главном: галлюцинации и подхалимство идут от оптимизации на нравящееся людям. Jev вместо этого учится признавать неуверенность — никаких галлюцинаций ради симпатии, никакого фальшивого confidence.",
-          "Хватит бенчмаркить клоны Jev. Реальный инсайт: выбери правильную задачу и данные до масштабирования compute. TypeSafe видит себя как лабораторию данных, не модельную лабораторию. Задачи и данные важнее миллиардов на масштабирование."
+          "ERA развивает дерево экспериментальных ноутбуков через LLM, выбирая перспективные ветки методом Монте-Карло. Gemini 2.5 сделала это реально рабочим—как усталый студент, который знает куда копать.",
+          "Конденсационные следы вызывают 1% потепления. ERA решила контрфактическую задачу, найдя смешивающие переменные, которые физики упускали два года. Самолёты падают на один уровень—следы исчезают.",
+          "ERA это мощный инструмент, который режет пальцы. Начните с линейной регрессии или SVM. Закон Гудхарта убивает таблицы лидеров: когда метрика становится целью, метрика умирает."
         ]
       }
     },
     {
-      "id": "d-1oac10j",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/MultiverseComputingCAI/pruning-llms-like-a-physicist-block-removal-as-an",
-      "publishedAt": "2026-09-21T13:44:34.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Physicists' optimization techniques can remove 40% of LLM blocks while keeping 90% of performance, cutting inference cost dramatically.",
-        "tweets": [
-          "Researchers mapped LLM pruning to Ising models from physics. Instead of removing individual weights, they remove entire transformer blocks as a combinatorial problem.",
-          "The approach achieves 40% block removal with only 10% performance loss. That's fewer parameters to load, faster inference, and lower GPU memory without retraining everything.",
-          "Using quantum-inspired optimization (QAOA), they beat greedy pruning methods by finding better block combinations. Shows physics frameworks unlock efficiency gains ML alone misses."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Методы физиков-оптимизаторов позволяют удалить 40% блоков LLM при сохранении 90% производительности, снижая стоимость инференса.",
-        "tweets": [
-          "Исследователи переформулировали обрезку LLM как задачу модели Изинга из физики. Вместо удаления отдельных весов удаляются целые блоки трансформера как комбинаторная проблема.",
-          "Метод достигает удаления 40% блоков при потере всего 10% производительности. Меньше параметров, быстрее инфернс, меньше памяти GPU без переобучения модели.",
-          "Квантово-вдохновленная оптимизация (QAOA) превосходит жадные методы, находя лучшие комбинации блоков. Физические рамки раскрывают выигрыши в эффективности, которые ML упускает."
-        ]
-      }
-    },
-    {
-      "id": "d-10ek50u",
+      "id": "d-mbpmnp",
       "source": "openai",
-      "sourceUrl": "https://openai.com/index/advisory-group-on-mathematics-and-ai",
-      "publishedAt": "2026-09-21T12:00:00.000Z",
+      "sourceUrl": "https://openai.com/index/better-prompt-caching-for-gpt-6",
+      "publishedAt": "2026-09-22T21:00:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: OpenAI is creating an independent advisory group to review and communicate AI research findings, adding external oversight to how it presents emerging results.",
+        "headline": "Why it matters: GPT-6's improved prompt caching cuts latency and costs for repetitive API calls by increasing cache efficiency and offering better visibility into what's being cached.",
         "tweets": [
-          "OpenAI forming independent advisory group focused on mathematics and AI to guide how it reviews and communicates research findings to the public.",
-          "External oversight on AI research communication helps catch potential overselling or gaps in how breakthrough results are presented to stakeholders.",
-          "Independent advisors reviewing math-heavy AI work before public release could improve credibility and catch technical claims that don't hold up."
+          "GPT-6 raises prompt cache hit rates, meaning fewer tokens reprocessed on repeated requests. Real savings for apps handling the same context repeatedly.",
+          "New diagnostics and explicit breakpoints let you see exactly what's cached and control which parts stay in memory. Visibility you didn't have before.",
+          "Higher cache efficiency = lower latency and smaller bills. Simple math, but the new controls give you granular power to optimize per use case."
         ]
       },
       "ru": {
-        "headline": "Почему важно: OpenAI создает независимую консультативную группу для проверки и коммуникации результатов исследований ИИ, добавляя внешний контроль над тем, как компания представляет свои находки.",
+        "headline": "Почему важно: GPT-6 улучшает кеширование промптов — выше коэффициент попаданий в кеш, ниже задержки и расходы для приложений с повторяющимся контекстом.",
         "tweets": [
-          "OpenAI формирует независимую группу советников по математике и ИИ для контроля над тем, как компания рецензирует и презентует исследования общественности.",
-          "Внешний надзор над коммуникацией ИИ-исследований помогает избежать переоценки результатов и технических пробелов в представлении прорывов.",
-          "Независимые эксперты проверяют сложные математические работы перед публикацией, что повышает доверие и ловит несостоятельные технические заявления."
+          "GPT-6 повышает частоту попаданий в кеш. Меньше переобработки токенов при повторных запросах. Реальная экономия для приложений с одинаковым контекстом.",
+          "Новая диагностика и явные контрольные точки показывают, что именно кешируется. Теперь видите, что происходит под капотом.",
+          "Эффективнее кеш — быстрее ответы, меньше счета. Новые инструменты управления дают точный контроль над оптимизацией под вашу задачу."
         ]
       }
     },
     {
-      "id": "d-159ib7w",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/higgsfield-from-prompt-to-production-with-astra",
-      "publishedAt": "2026-09-21T12:00:00.000Z",
+      "id": "d-1f77x7q",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/22/llm/",
+      "publishedAt": "2026-09-22T18:48:37.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Faster API access to multimodal AI lets small businesses build video ad tools that previously required weeks of engineering.",
+        "headline": "Why it matters: llm 0.36 adds GPT-6 model support and enforces conversation constraints, preventing crashes when single-turn models receive multi-turn inputs.",
         "tweets": [
-          "Higgsfield shipped video features in one day using GPT-6 Astra instead of months of custom pipeline work. Speed matters when competing on product velocity.",
-          "Multimodal AI (text+video+images in one model) cuts integration complexity. One API call replaces five separate services and the glue code between them.",
-          "Lower barrier to entry means more startups can now compete on AI-powered creative tools. The constraint moved from 'can we build this' to 'can we market it.'"
+          "llm 0.36 now supports OpenAI's GPT-6 Sol and Luna models. Single-turn-only models can declare supports_conversation=False to reject multi-turn requests upfront.",
+          "New ConversationNotSupported error prevents silent failures when plugins accidentally feed chat history to models that don't handle it. The llm chat command enforces this automatically.",
+          "Reasoning traces in markdown logs now collapse by default in details/summary tags, keeping output clean while preserving full trace visibility on demand."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Быстрый доступ к мультимодальному ИИ позволяет небольшим компаниям создавать инструменты для видео-реклам, на которые раньше требовались недели разработки.",
+        "headline": "Почему важно: llm 0.36 добавляет поддержку GPT-6 и контролирует режимы диалога, предотвращая крахи при передаче истории в однооборотные модели.",
         "tweets": [
-          "Higgsfield запустила видеофункции за день с GPT-6 Astra вместо месяцев работы над собственным пайплайном. Скорость выхода на рынок — конкурентное преимущество.",
-          "Один мультимодальный API заменяет пять отдельных сервисов и весь интеграционный код. Это резко снижает техническую сложность продукта.",
-          "Ниже входной барьер — больше стартапов могут конкурировать на инструментах творчества. Узкое место переместилось с разработки на маркетинг."
+          "llm 0.36 поддерживает GPT-6 Sol и Luna от OpenAI. Однооборотные модели могут указать supports_conversation=False, чтобы отклонять многооборотные запросы на уровне проверки.",
+          "Новая ошибка ConversationNotSupported предотвращает молчаливые отказы, когда плагины передают историю чата в модели без её поддержки. Команда llm chat проверяет это автоматически.",
+          "Трассировки рассуждений в markdown теперь скрыты в тегах details/summary, сохраняя читаемость вывода при полном доступе к следам по требованию."
         ]
       }
     },
     {
-      "id": "d-1u0ewsz",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/building-standards-next-phase-ai",
-      "publishedAt": "2026-09-21T10:00:00.000Z",
+      "id": "d-gyk78f",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/22/therealcornpop/",
+      "publishedAt": "2026-09-22T18:03:21.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Industry-wide AI standards prevent a race to the bottom on safety while enabling faster, trustworthy deployment at scale.",
+        "headline": "Why it matters: AI-generated content has recognizable linguistic fingerprints that betray the lack of authentic voice and genuine opinion behind it.",
         "tweets": [
-          "OpenAI pushes for coordinated global AI evaluation standards—not fragmented national rules that slow innovation and create compliance chaos.",
-          "Shared reporting requirements let companies benchmark safety honestly instead of hiding risks. Transparency beats regulatory whack-a-mole.",
-          "Standardized safety testing early saves billions in incident cleanup and builds user trust faster than reactive regulation can catch up."
+          "AI scripts for TikTok/YouTube are detectably hollow: staccato pacing, rule-of-three structures, 'it's not X, it's Y' patterns that sound deep but reveal no actual stance.",
+          "The giveaway isn't clever wordplay—it's what's missing. No definitive voice. No real opinions. Just the filtered output of a model trained on aggregated content.",
+          "Audiences can sense when creators don't actually believe what they're saying. AI exposure isn't about catching the tech; it's spotting the absence of conviction."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Единые стандарты ИИ предотвратят гонку вооружений на безопасность и позволят компаниям развивать технологию доверенным способом.",
+        "headline": "Почему важно: ИИ-контент для TikTok и YouTube имеет узнаваемые лингвистические признаки, выдающие отсутствие подлинного голоса и собственного мнения автора.",
         "tweets": [
-          "OpenAI выступает за единую оценку ИИ во всём мире вместо мозаики национальных правил, которые замораживают инновации и путают разработчиков.",
-          "Общие требования к отчётности заставляют честно делиться рисками вместо их скрывания. Прозрачность эффективнее, чем запоздалое регулирование.",
-          "Стандартные проверки безопасности на ранних этапах экономят миллиарды на исправлении ошибок и быстрее строят доверие пользователей."
+          "Скрипты от ИИ выдают себя: отрывистый ритм, правило трёх, конструкции 'это не X, это Y', которые звучат глубоко, но скрывают полное отсутствие позиции.",
+          "Главный признак—не в словах, а в пропусках. Нет узнаваемого стиля. Нет реальных убеждений. Только отфильтрованный вывод модели, обученной на усреднённом контенте.",
+          "Зрители чувствуют, когда автор сам в своё не верит. ИИ разоблачается не техническими следами, а отсутствием живого убеждения в словах."
+        ]
+      }
+    },
+    {
+      "id": "d-h91za6",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/introducing-gpt-6-sol-and-luna",
+      "publishedAt": "2026-09-22T18:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI released GPT-6 Sol and Luna to give teams options between raw capability and cost efficiency in production environments.",
+        "tweets": [
+          "GPT-6 Sol and Luna split the difference: choose based on whether you need peak performance or lean budgets. No more one-size-fits-all tradeoffs.",
+          "Two models mean teams can route different tasks intelligently. Complex reasoning goes to Sol, routine work runs on Luna's lower overhead.",
+          "This mirrors how serious AI deployment works in practice: you need intelligence options that fit your actual constraints, not marketing specs."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI предложила две версии GPT-6 для разных задач, давая командам выбор между мощностью и экономией.",
+        "tweets": [
+          "Sol для сложного анализа, Luna для рутины. Наконец разумное решение вместо выбора между дороговизной и ограничениями.",
+          "Умная маршрутизация задач экономит деньги: простые запросы на Luna, сложные логические выводы на Sol.",
+          "Это то, что нужно в реальных системах: несколько моделей под разные нагрузки, а не один инструмент под всё сразу."
+        ]
+      }
+    },
+    {
+      "id": "d-scilvl",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/22/llm-anthropic/",
+      "publishedAt": "2026-09-22T17:14:55.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Claude Opus 5.5 is now accessible via the llm command-line tool, letting you invoke Anthropic's latest model directly from your terminal.",
+        "tweets": [
+          "llm-anthropic 0.29 drops support for Claude Opus 5.5. Run: llm -m claude-opus-5.5 \"your prompt\" to test the latest model from your shell.",
+          "Opus 5.5 arrives as Anthropic's newest frontier model. Early adopters can now benchmark it against previous versions using the same llm interface.",
+          "CLI tool stays in sync with model releases. One update, one command flag, instant access to cutting-edge Claude capabilities."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Claude Opus 5.5 теперь доступен через команду llm, позволяя вызывать последнюю модель Anthropic прямо из терминала.",
+        "tweets": [
+          "llm-anthropic 0.29 добавляет поддержку Claude Opus 5.5. Введите: llm -m claude-opus-5.5 \"ваш промпт\" для тестирования новейшей модели из командной строки.",
+          "Opus 5.5 — это новейшая фронтирная модель от Anthropic. Разработчики могут сравнивать её с предыдущими версиями через единый интерфейс llm.",
+          "CLI-инструмент синхронизируется с выпусками моделей. Один апдейт, один флаг команды, мгновенный доступ к возможностям Claude."
         ]
       }
     }

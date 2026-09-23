@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-22T11:37:07.686Z",
+  "generatedAt": "2026-09-23T11:35:11.883Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "rising",
-      "momentum": 2,
+      "momentum": 2.5,
       "weeklyCounts": [
         1,
         7,
@@ -21,7 +21,7 @@
         0,
         0,
         2,
-        6
+        7
       ],
       "signals": [
         {
@@ -38,7 +38,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "rising",
-      "momentum": 0.35,
+      "momentum": 0.65,
       "weeklyCounts": [
         14,
         11,
@@ -51,9 +51,15 @@
         14,
         14,
         17,
-        23
+        28
       ],
       "signals": [
+        {
+          "title": "🔬 An Oscar, Two Asteroids, and the Algorithm in Your sklearn: John Platt on AI for Science",
+          "url": "https://www.latent.space/p/john-platt",
+          "source": "latent-space",
+          "publishedAt": "2026-09-22T21:07:39.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
@@ -81,35 +87,12 @@
       ]
     },
     {
-      "id": "post-quantum",
-      "label": "Post-Quantum Crypto",
-      "category": "cybersecurity",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "signals": []
-    },
-    {
       "id": "rag",
       "label": "Retrieval-Augmented Generation",
       "category": "ai",
       "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.04,
+      "trajectory": "rising",
+      "momentum": 0.12,
       "weeklyCounts": [
         81,
         60,
@@ -122,7 +105,7 @@
         100,
         85,
         92,
-        88
+        103
       ],
       "signals": [
         {
@@ -162,8 +145,8 @@
       "label": "Open Models",
       "category": "ai",
       "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.13,
+      "trajectory": "rising",
+      "momentum": 0.02,
       "weeklyCounts": [
         375,
         358,
@@ -176,9 +159,15 @@
         388,
         365,
         364,
-        315
+        370
       ],
       "signals": [
+        {
+          "title": "[AINews] Claude Opus 5.5, the new default model for AINews — and everybody cuts prices 40-50%",
+          "url": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
+          "source": "latent-space",
+          "publishedAt": "2026-09-23T06:41:41.000Z"
+        },
         {
           "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
           "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
@@ -202,12 +191,6 @@
           "url": "https://www.latent.space/p/jev",
           "source": "latent-space",
           "publishedAt": "2026-09-21T22:13:49.000Z"
-        },
-        {
-          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
-          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
-          "source": "latent-space",
-          "publishedAt": "2026-09-19T05:48:28.000Z"
         }
       ]
     },
@@ -216,8 +199,8 @@
       "label": "Protein Design",
       "category": "biotech",
       "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.14,
+      "trajectory": "stable",
+      "momentum": 0,
       "weeklyCounts": [
         21,
         21,
@@ -230,7 +213,7 @@
         21,
         21,
         21,
-        18
+        21
       ],
       "signals": [
         {
@@ -254,12 +237,35 @@
       ]
     },
     {
+      "id": "post-quantum",
+      "label": "Post-Quantum Crypto",
+      "category": "cybersecurity",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
       "id": "llm-agents",
       "label": "LLM Agents",
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.15,
+      "momentum": -0.01,
       "weeklyCounts": [
         411,
         420,
@@ -272,9 +278,27 @@
         437,
         452,
         469,
-        399
+        463
       ],
       "signals": [
+        {
+          "title": "[AINews] Claude Opus 5.5, the new default model for AINews — and everybody cuts prices 40-50%",
+          "url": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
+          "source": "latent-space",
+          "publishedAt": "2026-09-23T06:41:41.000Z"
+        },
+        {
+          "title": "SF October 14th: A Birds of a Feather Session on Agentic Engineering",
+          "url": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
+          "source": "simonw",
+          "publishedAt": "2026-09-23T02:53:19.000Z"
+        },
+        {
+          "title": "Claude Opus 5.5, GPT-6 Sol, GPT-6 Luna, and a new price war",
+          "url": "https://simonwillison.net/2026/Sep/22/opus-and-sol-and-luna/",
+          "source": "simonw",
+          "publishedAt": "2026-09-22T23:46:41.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
@@ -286,24 +310,6 @@
           "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
           "source": "latent-space",
           "publishedAt": "2026-09-17T07:28:25.000Z"
-        },
-        {
-          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
-          "url": "https://www.latent.space/p/aiuc",
-          "source": "latent-space",
-          "publishedAt": "2026-09-16T18:07:45.000Z"
-        },
-        {
-          "title": "[AINews] Jev: a “System One Model” that only decides/classifies/routes/scores — >100x faster, >200x cheaper than small frontier LLMs",
-          "url": "https://www.latent.space/p/ainews-jev-a-system-one-model-that",
-          "source": "latent-space",
-          "publishedAt": "2026-09-16T11:09:53.000Z"
-        },
-        {
-          "title": "Can Skills Learned in Games Transfer to Real-World Work?",
-          "url": "https://www.latent.space/p/good-start-labs",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T20:11:54.000Z"
         }
       ]
     }
