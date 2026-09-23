@@ -23,8 +23,8 @@ import { recordThemePrediction } from './predictions'
  *    RETIRE_AFTER_QUIET_DAYS is retired, freeing its slot.
  *
  * Membership is a code term match against each item's title and the names
- * in its summary (terms.ts itemTerms), so an auto
- * theme costs nothing per item.
+ * in its summary (terms.ts itemTerms), so an auto theme costs nothing per
+ * item.
  */
 
 export const DISCOVERY = {
