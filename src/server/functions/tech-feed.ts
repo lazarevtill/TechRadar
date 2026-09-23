@@ -24,6 +24,13 @@ import { fetchWithRetry } from '@/server/utils/fetch-utils'
 import { cleanText } from '@/server/utils/clean-text'
 import { historyDb, utcDay } from '@/server/store/db'
 import {
+  activeThemes,
+  runDiscovery,
+  type Theme,
+} from '@/server/store/discovery'
+import { extractTerms } from '@/server/store/terms'
+import { themeAsker } from '@/server/utils/jev-theme'
+import {
   historyContext,
   recordItems,
   recordSignals,
@@ -35,6 +42,7 @@ import {
   type CategorizeInput,
 } from '@/server/utils/jev-categorize'
 import { judgeSignals } from '@/server/utils/jev-signal'
+import type { DiscoveredTheme } from '@/lib/trend-topics'
 
 // ============================================================================
 // TYPES
@@ -172,6 +180,7 @@ async function applyCategories(raw: RawItem[]): Promise<RawItem[]> {
 async function assembleItems(
   raw: RawItem[],
   history?: Map<string, HistoryContext>,
+  themes: Map<string, string[]> = new Map(),
 ): Promise<TechItem[]> {
   const judgments = await judgeSignals(raw.map((item) => item.jev))
   const signals = computeSignals(
@@ -187,6 +196,7 @@ async function assembleItems(
         growth: past?.growth ?? null,
         linkedSources: past?.linkedSources ?? 1,
         groupId: past?.groupId,
+        themes: themes.get(item.id),
       }
     }),
   )
@@ -235,6 +245,7 @@ function toSnapshot(item: RawItem): SnapshotItem {
  */
 async function withHistory(raw: RawItem[]): Promise<{
   history: Map<string, HistoryContext> | undefined
+  themes: Theme[]
   save: (items: TechItem[]) => void
 }> {
   const day = utcDay()
@@ -242,8 +253,14 @@ async function withHistory(raw: RawItem[]): Promise<{
     const db = await historyDb()
     const snapshot = raw.map(toSnapshot)
     recordItems(db, snapshot, day, new Date().toISOString())
+    const found = await runDiscovery(db, day, themeAsker())
+    if (found.added.length || found.retired.length || found.checked)
+      console.log(
+        `[discovery] ${found.candidates} candidates, ${found.checked} checked by Jev; added: ${found.added.join(', ') || 'none'}; rejected: ${found.rejected.join(', ') || 'none'}; retired: ${found.retired.join(', ') || 'none'}`,
+      )
     return {
       history: historyContext(db, snapshot, day),
+      themes: activeThemes(db),
       save: (items) => recordSignals(db, items, day),
     }
   } catch (error) {
@@ -251,8 +268,20 @@ async function withHistory(raw: RawItem[]): Promise<{
       '[history] store unavailable; ranking without history:',
       error,
     )
-    return { history: undefined, save: () => {} }
+    return { history: undefined, themes: [], save: () => {} }
   }
+}
+
+/** Discovered theme ids each item carries, by a code match on title terms. */
+function themesByItem(raw: RawItem[], themes: Theme[]): Map<string, string[]> {
+  const out = new Map<string, string[]>()
+  if (!themes.length) return out
+  for (const item of raw) {
+    const keys = new Set(extractTerms(item.title).map((t) => t.key))
+    const ids = themes.filter((t) => keys.has(t.term)).map((t) => t.id)
+    if (ids.length) out.set(item.id, ids)
+  }
+  return out
 }
 
 function calculateMaturityStage(item: {
@@ -1352,8 +1381,8 @@ async function buildTechFeed() {
   // Rank the whole fetch together: percentiles are per source, convergence
   // needs every source at once.
   const raw = perSource.flat()
-  const { history, save } = await withHistory(raw)
-  let allItems = await assembleItems(raw, history)
+  const { history, themes, save } = await withHistory(raw)
+  let allItems = await assembleItems(raw, history, themesByItem(raw, themes))
   save(allItems)
 
   // Translate non-English items
@@ -1390,6 +1419,13 @@ async function buildTechFeed() {
       publishedAt: item.publishedAt.toISOString(),
     })),
     stats: deriveStats(allItems),
+    /** Themes the radar discovered itself (ids `auto:…` in signal.topics). */
+    themes: themes.map((t): DiscoveredTheme => ({
+      id: t.id,
+      label: t.label,
+      addedDay: t.addedDay,
+      items: allItems.filter((i) => i.signal.topics.includes(t.id)).length,
+    })),
     fetchedAt: new Date().toISOString(),
   }
 }

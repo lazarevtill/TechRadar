@@ -192,6 +192,11 @@ const translations = {
     reasonConverging: 'Converging',
     reasonConvergingDesc:
       'The strongest item of a tracked topic that appears on four or more sources in this fetch',
+    reasonCrossSource: 'Cross-source',
+    reasonCrossSourceDesc:
+      'The same work (by arXiv id, DOI, repository or link) appears on several sources, e.g. a paper, its code and a discussion',
+    alsoOn: 'also on',
+    discovered: 'discovered',
     reasonNovel: 'New capability',
     reasonNovelDesc:
       'Jev judges it likely to describe a capability not available before',
@@ -343,6 +348,11 @@ const translations = {
     reasonConverging: 'Совпадение тем',
     reasonConvergingDesc:
       'Самая сильная запись по отслеживаемой теме, которая встречается в четырёх и более источниках',
+    reasonCrossSource: 'В нескольких источниках',
+    reasonCrossSourceDesc:
+      'Одна и та же работа (по arXiv id, DOI, репозиторию или ссылке) есть в нескольких источниках: например, статья, её код и обсуждение',
+    alsoOn: 'также в',
+    discovered: 'найдено',
     reasonNovel: 'Новая возможность',
     reasonNovelDesc:
       'По оценке Jev, вероятно описывает возможность, которой раньше не было',
@@ -849,6 +859,7 @@ function renderCategoryFilters() {
 const REASON_KEYS = {
   'fast-rising': ['fastRising', 'fastRisingDesc'],
   converging: ['reasonConverging', 'reasonConvergingDesc'],
+  'cross-source': ['reasonCrossSource', 'reasonCrossSourceDesc'],
   novel: ['reasonNovel', 'reasonNovelDesc'],
   'under-the-radar': ['reasonUnderRadar', 'reasonUnderRadarDesc'],
 }
@@ -856,6 +867,21 @@ const REASON_KEYS = {
 function reasonLabel(reason) {
   const keys = REASON_KEYS[reason]
   return keys ? { label: t(keys[0]), desc: t(keys[1]) } : null
+}
+
+/** One link per other source carrying the same work (item.linked). */
+function alsoOn(item) {
+  const seen = new Set([item.source])
+  const links = (item.linked || []).filter(
+    (l) => !seen.has(l.source) && seen.add(l.source),
+  )
+  if (links.length === 0) return ''
+  return `<span>${escapeHtml(t('alsoOn'))} ${links
+    .map(
+      (l) =>
+        `<a href="${escapeHtml(safeUrl(l.url))}"${linkTarget()} title="${escapeHtml(l.title)}">${escapeHtml(SOURCE_CONFIG[l.source]?.label || l.source)}</a>`,
+    )
+    .join(', ')}</span>`
 }
 
 function reasonChips(item) {
@@ -1098,6 +1124,7 @@ function renderFeed() {
             ${engagement ? `<span class="num">${escapeHtml(engagement)}</span>` : ''}
             <span class="num">${escapeHtml(t('signal'))} ${item.signal?.score === null || item.signal?.score === undefined ? '–' : item.signal.score.toFixed(2)}</span>
             ${reasonChips(item)}
+            ${alsoOn(item)}
             ${item.originalLanguage && item.originalLanguage !== 'en' ? `<span class="chip-muted">${escapeHtml(item.originalLanguage)}</span>` : ''}
             ${controls.join('')}
           </div>
@@ -1379,7 +1406,7 @@ function renderTopics(items) {
       return `<button class="tv-row${converging ? ' converging' : ''}" data-topic="${escapeHtml(r.topic)}" aria-pressed="${state.activeTopic === r.topic}">
         <span>${escapeHtml(r.label)}</span>
         <span class="tv-bar"><span style="width:${Math.round((r.items / maxItems) * 100)}%"></span></span>
-        <span class="tv-meta">${r.sources} ${escapeHtml(plural(r.sources, 'sourcesN'))} · ${r.items} ${escapeHtml(plural(r.items, 'itemsN'))}${converging ? ` · ${escapeHtml(t('converging'))}` : ''}</span>
+        <span class="tv-meta">${r.sources} ${escapeHtml(plural(r.sources, 'sourcesN'))} · ${r.items} ${escapeHtml(plural(r.items, 'itemsN'))}${converging ? ` · ${escapeHtml(t('converging'))}` : ''}${r.discovered ? ` · ${escapeHtml(t('discovered'))}` : ''}</span>
       </button>`
     })
     .join('')}</div>`

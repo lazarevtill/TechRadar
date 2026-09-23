@@ -24,7 +24,9 @@ const STOP = new Set(
     'show hn ask tell launch just now here there very also only even still own via vs ' +
     'study studies paper papers approach approaches method methods analysis results ' +
     'towards case cases effect effects system systems model models data learning ' +
-    'large small high low good better best non per de la le les des du et en un une'
+    'large small high low good better best non per de la le les des du et en un une ' +
+    'too bad wrong right real cheap free fast slow big true false really way ways ' +
+    'make makes making get gets got thing things people year years day days time'
   ).split(/\s+/),
 )
 

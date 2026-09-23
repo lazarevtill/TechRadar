@@ -205,3 +205,29 @@ export function topicQuestion(
 ): string {
   return `Is ${subject} substantially about ${topic.label} — ${topic.definition}? A passing mention does not count.`
 }
+
+/**
+ * A theme the radar added by itself (server/store/discovery.ts): a term that
+ * burst across sources and that Jev confirmed names a technology. Its id,
+ * `auto:<term>`, appears in `item.signal.topics` like a tracked topic's.
+ */
+export interface DiscoveredTheme {
+  id: string
+  label: string
+  /** UTC day it was added. */
+  addedDay: string
+  /** Items in the current feed carrying it. */
+  items: number
+}
+
+/** Display name for a topic id: tracked topics first, then discovered ones. */
+export function topicLabel(
+  id: string,
+  discovered: DiscoveredTheme[] = [],
+): string {
+  return (
+    TOPIC_LABELS[id]?.label ??
+    discovered.find((t) => t.id === id)?.label ??
+    id.replace(/^auto:/, '')
+  )
+}

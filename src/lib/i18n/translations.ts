@@ -45,6 +45,11 @@ export interface Translations {
   topicsTitle: string
   topicsHint: string
   topicsEmpty: string
+  discoveredTitle: string
+  alsoOn: string
+  discoveredHint: string
+  discoveredTag: string
+  discoveredSince: string
   items: string
 
   // Radar
@@ -286,6 +291,12 @@ export const translations: Record<Language, Translations> = {
     topicsTitle: 'Topics across sources',
     topicsHint: 'Tracked topics and where they show up now',
     topicsEmpty: 'No tracked topic appears on more than one source',
+    discoveredTitle: 'Discovered by the radar',
+    alsoOn: 'also on',
+    discoveredHint:
+      'Terms that suddenly appeared across several sources and that Jev confirmed name a technology. Added automatically (at most 3 a day, 20 in total) and retired after two quiet weeks.',
+    discoveredTag: 'discovered',
+    discoveredSince: 'since {date}',
     items: 'items',
 
     liveRadar: 'Radar',
@@ -528,6 +539,12 @@ export const translations: Record<Language, Translations> = {
     topicsTitle: 'Темы в разных источниках',
     topicsHint: 'Отслеживаемые темы и где они встречаются сейчас',
     topicsEmpty: 'Ни одна тема не встречается более чем в одном источнике',
+    discoveredTitle: 'Найдено радаром',
+    alsoOn: 'также в',
+    discoveredHint:
+      'Термины, внезапно появившиеся в нескольких источниках, которые Jev подтвердил как названия технологий. Добавляются автоматически (не более 3 в день и 20 всего) и снимаются после двух тихих недель.',
+    discoveredTag: 'найдено',
+    discoveredSince: 'с {date}',
     items: 'записей',
 
     liveRadar: 'Радар',

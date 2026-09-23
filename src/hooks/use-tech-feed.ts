@@ -16,6 +16,8 @@ import type {
   OriginalLanguage,
 } from '@/lib/tech-categories'
 
+import type { DiscoveredTheme } from '@/lib/trend-topics'
+
 export type { TechFeedStats }
 
 // Transform serialized items back to proper TechItem format
@@ -55,6 +57,8 @@ export interface UseTechFeedResult {
   /** Force refresh - invalidates server cache and refetches fresh data */
   forceRefresh: () => Promise<void>
   fetchedAt: Date | null
+  /** Themes the radar discovered itself. */
+  themes: DiscoveredTheme[]
 }
 
 /** Shared with the route loader, which prefetches it during SSR. */
@@ -91,6 +95,7 @@ export function useTechFeed(): UseTechFeedResult {
     refetch,
     forceRefresh,
     fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
+    themes: data?.themes ?? [],
   }
 }
 

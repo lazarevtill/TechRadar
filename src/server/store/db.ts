@@ -90,6 +90,19 @@ CREATE TABLE IF NOT EXISTS predictions (
   PRIMARY KEY (subject, reason)
 );
 
+-- Themes the radar proposed for itself (discovery.ts): every term Jev
+-- checked, accepted ('active', later 'retired') or 'rejected'.
+CREATE TABLE IF NOT EXISTS themes (
+  term TEXT PRIMARY KEY,
+  display TEXT NOT NULL,
+  status TEXT NOT NULL,
+  p REAL NOT NULL,
+  z REAL NOT NULL,
+  checked_day TEXT NOT NULL,
+  added_day TEXT,
+  retired_day TEXT
+);
+
 -- One row per source per feed rebuild.
 CREATE TABLE IF NOT EXISTS source_runs (
   ts TEXT NOT NULL,

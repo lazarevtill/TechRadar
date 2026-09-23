@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTechFeed } from '@/hooks/use-tech-feed'
-import { TOPIC_LABELS } from '@/lib/trend-topics'
+import { TOPIC_LABELS, topicLabel } from '@/lib/trend-topics'
 import { CATEGORY_CONFIG, type DataSource } from '@/lib/tech-categories'
 import { CONVERGENCE_MIN_SOURCES } from '@/lib/signal-model'
 import { useLanguage, getLocalizedSources } from '@/lib/i18n'
@@ -20,7 +20,7 @@ interface TopicRow {
  * changes in months; this only reports what was observed.
  */
 export function TopicConvergence() {
-  const { items } = useTechFeed()
+  const { items, themes } = useTechFeed()
   const { t, language } = useLanguage()
   const localizedSources = getLocalizedSources(language)
 
@@ -43,7 +43,7 @@ export function TopicConvergence() {
         const def = TOPIC_LABELS[id]
         return {
           id,
-          label: def?.label ?? id,
+          label: topicLabel(id, themes),
           color:
             CATEGORY_CONFIG[def?.category as keyof typeof CATEGORY_CONFIG]
               ?.color ?? CATEGORY_CONFIG.uncategorized.color,
@@ -52,7 +52,7 @@ export function TopicConvergence() {
         }
       })
       .sort((a, b) => b.sources.length - a.sources.length || b.count - a.count)
-  }, [items])
+  }, [items, themes])
 
   return (
     <div className="panel">
@@ -60,6 +60,26 @@ export function TopicConvergence() {
         <h2 className="panel-title">{t.topicsTitle}</h2>
         <span className="panel-hint">{t.topicsHint}</span>
       </div>
+      {themes.length > 0 && (
+        <div className="px-4 py-3 border-b border-rule">
+          <p className="text-[11px] uppercase tracking-wide text-fg-3 mb-2">
+            <abbr title={t.discoveredHint} className="no-underline cursor-help">
+              {t.discoveredTitle}
+            </abbr>
+          </p>
+          <ul className="flex flex-wrap gap-1.5">
+            {themes.map((theme) => (
+              <li
+                key={theme.id}
+                className="chip-muted"
+                title={t.discoveredSince.replace('{date}', theme.addedDay)}
+              >
+                {theme.label} <span className="num">{theme.items}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {rows.length === 0 ? (
         <p className="px-4 py-6 text-xs text-fg-3">{t.topicsEmpty}</p>
       ) : (
@@ -71,6 +91,9 @@ export function TopicConvergence() {
                 <div className="flex items-center gap-2">
                   <CategoryDot color={row.color} />
                   <span className="text-fg text-sm">{row.label}</span>
+                  {row.id.startsWith('auto:') && (
+                    <span className="chip-muted">{t.discoveredTag}</span>
+                  )}
                   <span
                     className={`ml-auto num ${converging ? 'text-accent' : 'text-fg-3'}`}
                   >

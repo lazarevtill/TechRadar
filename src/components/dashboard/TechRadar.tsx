@@ -1,6 +1,10 @@
 import { useState, useMemo, useCallback } from 'react'
 import { ExternalLink } from 'lucide-react'
-import { useRadarData, type RadarPoint } from '@/hooks/use-tech-feed'
+import {
+  useRadarData,
+  useTechFeed,
+  type RadarPoint,
+} from '@/hooks/use-tech-feed'
 import { RadarScatter } from './RadarScatter'
 import {
   CATEGORY_CONFIG,
@@ -14,7 +18,7 @@ import {
   getLocalizedMaturity,
   getLocalizedSources,
 } from '@/lib/i18n'
-import { TOPIC_LABELS } from '@/lib/trend-topics'
+import { topicLabel } from '@/lib/trend-topics'
 import {
   engagementLine,
   formatPercent,
@@ -181,6 +185,7 @@ function SignalDetail({
   const localizedCategories = getLocalizedCategories(language)
   const localizedMaturity = getLocalizedMaturity(language)
   const localizedSources = getLocalizedSources(language)
+  const { themes } = useTechFeed()
   if (!item) return null
 
   const targetLang = language === 'ru' ? 'ru' : 'en'
@@ -262,11 +267,35 @@ function SignalDetail({
 
       {s.topics.length > 0 && (
         <p className="text-xs text-fg-3 mb-4">
-          {t.topics}:{' '}
-          {s.topics.map((id) => TOPIC_LABELS[id]?.label ?? id).join(', ')}
+          {t.topics}: {s.topics.map((id) => topicLabel(id, themes)).join(', ')}
           {s.convergentSources > 1 &&
             ` · ${t.onSources.replace('{n}', String(s.convergentSources))}`}
         </p>
+      )}
+
+      {item.linked && item.linked.length > 0 && (
+        <div className="text-xs mb-4">
+          <p className="text-fg-3 mb-1">
+            {t.sameWorkOn.replace('{n}', String(s.linkedSources))}
+          </p>
+          <ul className="space-y-1">
+            {item.linked.map((link) => (
+              <li key={link.id} className="flex gap-2 min-w-0">
+                <span className="text-fg-3 shrink-0">
+                  {localizedSources[link.source]}
+                </span>
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-fg-2 hover:text-fg truncate"
+                >
+                  {link.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {item.whyItMatters && (

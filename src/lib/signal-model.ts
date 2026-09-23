@@ -83,6 +83,17 @@ export interface SignalInput {
   linkedSources?: number
   /** Id shared by every item of the same work (see server/store/identity.ts). */
   groupId?: string
+  /**
+   * Discovered themes the item carries (ids `auto:<term>`, matched in code
+   * against its title, see server/store/discovery.ts). They count toward
+   * convergence exactly like the tracked topics Jev tags.
+   */
+  themes?: string[]
+}
+
+function topicsOf(input: SignalInput): string[] {
+  const tagged = input.judgment?.topics ?? []
+  return input.themes?.length ? [...tagged, ...input.themes] : tagged
 }
 
 export interface SignalJudgment {
@@ -252,7 +263,7 @@ export function computeSignals(
   // Distinct sources per tracked topic, across the whole fetch.
   const sourcesByTopic = new Map<string, Set<DataSource>>()
   for (const input of inputs) {
-    for (const topic of input.judgment?.topics ?? []) {
+    for (const topic of topicsOf(input)) {
       const set = sourcesByTopic.get(topic) ?? new Set<DataSource>()
       set.add(input.source)
       sourcesByTopic.set(topic, set)
@@ -277,7 +288,7 @@ export function computeSignals(
       const reach = m >= 0 ? reachRanks[m] : null
       const velocityRank = m >= 0 ? velocityRanks[m] : null
       const recency = recencyScore(input.source, input.publishedAt, now)
-      const topics = input.judgment?.topics ?? []
+      const topics = topicsOf(input)
       const convergentSources = topics.reduce(
         (max, t) => Math.max(max, sourcesByTopic.get(t)?.size ?? 1),
         topics.length ? 1 : 0,
@@ -350,7 +361,7 @@ export function computeSignals(
   const bestByTopic = new Map<string, string>()
   for (const input of inputs) {
     const score = out.get(input.id)!.score ?? -1
-    for (const topic of input.judgment?.topics ?? []) {
+    for (const topic of topicsOf(input)) {
       if ((sourcesByTopic.get(topic)?.size ?? 0) < CONVERGENCE_MIN_SOURCES)
         continue
       const current = bestByTopic.get(topic)
