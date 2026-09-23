@@ -161,10 +161,23 @@ async function main() {
     console.warn(`::warning::[digest] skip ${f.url}: ${f.reason}`)
   }
   // In the original newest-first order: reused summaries plus new ones.
+  // A reused item keeps its (paid) summary, but its metadata always comes
+  // from today's feed entry, so a corrected date or source is never stale.
   const items: DigestItem[] = freshestPosts.flatMap((post) => {
     const id = stableId(post.url)
-    const item = fresh.get(id) ?? previous.get(id)
-    return item ? [item] : []
+    const made = fresh.get(id)
+    if (made) return [made]
+    const reused = previous.get(id)
+    return reused
+      ? [
+          {
+            ...reused,
+            source: post.source,
+            sourceUrl: post.url,
+            publishedAt: post.publishedAt,
+          },
+        ]
+      : []
   })
 
   console.log(
