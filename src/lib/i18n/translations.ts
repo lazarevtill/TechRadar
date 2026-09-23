@@ -58,6 +58,7 @@ export interface Translations {
   watchPlaceholder: string
   watchSave: string
   weekUnavailable: string
+  weekRequestFailed: string
   watchTitle: string
   weekWas: string
   weekTopics: string
@@ -275,7 +276,7 @@ export interface Translations {
 export const translations: Record<Language, Translations> = {
   en: {
     appTitle: 'Tech Evolution Radar',
-    appSubtitle: 'Research and engineering signals from twelve sources',
+    appSubtitle: 'Research and engineering signals from thirteen sources',
     signals: 'signals',
     updated: 'Updated',
     updating: 'Updating',
@@ -332,6 +333,7 @@ export const translations: Record<Language, Translations> = {
     watchSave: 'Save',
     weekUnavailable:
       'The weekly report needs the history store, which is unavailable on this server.',
+    weekRequestFailed: 'Could not load the weekly report. It retries shortly.',
     watchTitle: 'Your watch terms (items this week)',
     weekWas: 'last week {n}',
     weekTopics: 'Topics, items this week',
@@ -471,7 +473,7 @@ export const translations: Record<Language, Translations> = {
     infoSubtitle: 'What is measured, what is judged, and what is highlighted',
     infoSourcesTitle: 'Sources',
     infoSourcesDesc:
-      'GitHub repositories created this week, new arXiv submissions across ten fields, the Hacker News and Lobsters front pages, Hugging Face Daily Papers and trending models, bioRxiv and medRxiv preprints, the most-cited recent journal and conference work on OpenAlex, PubMed, HAL (France), CiNii (Japan) and Chinese-language journals on OpenAlex. All fetched by the server (GitHub optionally with a token), cached for five minutes, and served stale-while-revalidate.',
+      'GitHub repositories created this week, new arXiv submissions across ten fields, the Hacker News and Lobsters front pages, the most-reacted DEV (dev.to) articles of the day, Hugging Face Daily Papers and trending models, bioRxiv and medRxiv preprints, the most-cited recent journal and conference work on OpenAlex, PubMed, HAL (France), CiNii (Japan) and Chinese-language journals on OpenAlex. All fetched by the server (GitHub optionally with a token), cached for five minutes, and served stale-while-revalidate.',
     infoCategoriesTitle: 'Categories',
     infoCategoriesDesc:
       'Each item is assigned to one of eight areas by TypeSafe’s Jev model, one request per item. Items outside every area are dropped. Without a key, items show as unclassified; nothing is guessed from keywords.',
@@ -545,14 +547,14 @@ export const translations: Record<Language, Translations> = {
 
     footerVersion: 'Tech Evolution Radar',
     footerSubtitle:
-      'Live data from GitHub, arXiv, Hacker News, Lobsters, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL and CiNii',
+      'Live data from GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL and CiNii',
 
     loading: 'Loading',
     error: 'Error',
   },
   ru: {
     appTitle: 'Радар эволюции технологий',
-    appSubtitle: 'Сигналы из исследований и инженерии, двенадцать источников',
+    appSubtitle: 'Сигналы из исследований и инженерии, тринадцать источников',
     signals: 'сигналов',
     updated: 'Обновлено',
     updating: 'Обновление',
@@ -609,6 +611,8 @@ export const translations: Record<Language, Translations> = {
     watchSave: 'Сохранить',
     weekUnavailable:
       'Недельному отчёту нужно хранилище истории, а на этом сервере оно недоступно.',
+    weekRequestFailed:
+      'Не удалось загрузить недельный отчёт. Скоро попробуем снова.',
     watchTitle: 'Ваши термины (записи за неделю)',
     weekWas: 'неделей раньше {n}',
     weekTopics: 'Темы, записей за неделю',
@@ -749,7 +753,7 @@ export const translations: Record<Language, Translations> = {
     infoSubtitle: 'Что измеряется, что оценивается и что выделяется',
     infoSourcesTitle: 'Источники',
     infoSourcesDesc:
-      'Репозитории GitHub, созданные на этой неделе, новые статьи arXiv по десяти направлениям, главные страницы Hacker News и Lobsters, Hugging Face Daily Papers и популярные модели, препринты bioRxiv и medRxiv, самые цитируемые свежие журнальные и конференционные работы в OpenAlex, PubMed, HAL (Франция), CiNii (Япония) и китайскоязычные журналы в OpenAlex. Всё собирает сервер (GitHub — при желании с токеном), кэш на пять минут, отдаётся по схеме stale-while-revalidate.',
+      'Репозитории GitHub, созданные на этой неделе, новые статьи arXiv по десяти направлениям, главные страницы Hacker News и Lobsters, самые популярные за день статьи DEV (dev.to), Hugging Face Daily Papers и популярные модели, препринты bioRxiv и medRxiv, самые цитируемые свежие журнальные и конференционные работы в OpenAlex, PubMed, HAL (Франция), CiNii (Япония) и китайскоязычные журналы в OpenAlex. Всё собирает сервер (GitHub — при желании с токеном), кэш на пять минут, отдаётся по схеме stale-while-revalidate.',
     infoCategoriesTitle: 'Категории',
     infoCategoriesDesc:
       'Каждую запись относит к одной из восьми областей модель Jev от TypeSafe, по одному запросу на запись. Записи вне всех областей отбрасываются. Без ключа записи показываются как «без категории»; по ключевым словам ничего не угадывается.',
@@ -822,7 +826,7 @@ export const translations: Record<Language, Translations> = {
 
     footerVersion: 'Радар эволюции технологий',
     footerSubtitle:
-      'Живые данные из GitHub, arXiv, Hacker News, Lobsters, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL и CiNii',
+      'Живые данные из GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL и CiNii',
 
     loading: 'Загрузка',
     error: 'Ошибка',

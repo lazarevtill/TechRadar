@@ -15,6 +15,7 @@ import {
   dailyMaintenance,
   recordSourceRuns,
   recordUsage,
+  retainDays,
   sourceHealth,
   usageSince,
 } from '../ops'
@@ -118,5 +119,13 @@ describe('dailyMaintenance', () => {
     // Second call the same day does nothing.
     expect(dailyMaintenance(db, TODAY, file)).toBeNull()
     db.close()
+  })
+})
+
+describe('retainDays', () => {
+  it('accepts only positive whole days', () => {
+    expect(retainDays('30')).toBe(30)
+    for (const bad of ['-30', '0', '1.5', 'abc', undefined])
+      expect(retainDays(bad)).toBe(365)
   })
 })

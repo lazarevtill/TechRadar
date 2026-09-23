@@ -33,10 +33,16 @@ export function WeeklyReport() {
     setDraft(saved.join(', '))
   }, [])
 
-  const { data: report, isLoading } = useQuery({
+  const {
+    data: report,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['weekly-report', watch],
     queryFn: () => fetchWeeklyReportFn({ data: { watch } }),
     staleTime: 5 * 60 * 1000,
+    // Same cadence as the feed, whose rebuilds write the history.
+    refetchInterval: 10 * 60 * 1000,
   })
 
   const saveWatch = () => {
@@ -86,7 +92,7 @@ export function WeeklyReport() {
 
       {!report ? (
         <p className="px-4 py-6 text-xs text-fg-3">
-          {isLoading ? '…' : t.weekUnavailable}
+          {isLoading ? '…' : isError ? t.weekRequestFailed : t.weekUnavailable}
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 px-4 py-3 text-xs">

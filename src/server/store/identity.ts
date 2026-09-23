@@ -13,6 +13,15 @@
 
 const ARXIV_ID = /(\d{4}\.\d{4,5})(?:v\d+)?/
 
+// Query parameters that track a click rather than name a resource.
+const TRACKING_PARAM =
+  /^(utm(_.*)?|ref|ref_src|ref_url|source|src|via|fbclid|gclid|dclid|msclkid|mc_cid|mc_eid|igshid|si|s|share|smid|cmpid|campaign|_hsenc|_hsmi|mkt_tok|spm)$/i
+
+/**
+ * host/path?query, lower-cased host and path. The query is kept (sorted)
+ * because it often *is* the identity — youtube.com/watch?v=… — minus the
+ * tracking parameters, so one link shared with different utm tags stays one.
+ */
 export function canonicalUrlKey(raw: string): string | null {
   let url: URL
   try {
@@ -22,15 +31,39 @@ export function canonicalUrlKey(raw: string): string | null {
   }
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
   const host = url.hostname.toLowerCase().replace(/^(www|m)\./, '')
-  const path = url.pathname.replace(/\/+$/, '').replace(/\/index\.html?$/, '')
-  return `${host}${path}`.toLowerCase()
+  const path = url.pathname
+    .replace(/\/+$/, '')
+    .replace(/\/index\.html?$/, '')
+    .toLowerCase()
+  const params = [...url.searchParams]
+    .filter(([name]) => !TRACKING_PARAM.test(name))
+    .sort(([a, av], [b, bv]) =>
+      a === b ? av.localeCompare(bv) : a.localeCompare(b),
+    )
+  const query = params.length ? `?${new URLSearchParams(params)}` : ''
+  return `${host}${path}${query}`
 }
+
+const KNOWN_HOSTS = new Set([
+  'news.ycombinator.com',
+  'lobste.rs',
+  'arxiv.org',
+  'export.arxiv.org',
+  'alphaxiv.org',
+  'huggingface.co',
+  'hf.co',
+  'github.com',
+  'doi.org',
+  'dx.doi.org',
+  'biorxiv.org',
+  'medrxiv.org',
+])
 
 /** The identity keys one URL carries (usually exactly one). */
 export function keysFromUrl(raw: string): string[] {
   const key = canonicalUrlKey(raw)
   if (!key) return []
-  const [host, ...rest] = key.split('/')
+  const [host, ...rest] = key.split('?')[0].split('/')
   const parts = rest.filter(Boolean)
 
   if (
@@ -86,7 +119,12 @@ export function keysFromUrl(raw: string): string[] {
     const doi = /10\.1101\/[\d.]+\d/.exec(parts.join('/'))
     if (doi) return [`doi:${doi[0]}`]
   }
-  if (host === 'news.ycombinator.com' || host === 'lobste.rs') return []
+  // A link on these hosts identifies a work only through the patterns
+  // above; anything else there (a profile, a listing, the home page, a
+  // discussion thread) would merge unrelated items into one "work".
+  if (KNOWN_HOSTS.has(host)) return []
+  // A bare site ("https://example.com") is not a work either.
+  if (parts.length === 0 && !key.includes('?')) return []
   return [`url:${key}`]
 }
 

@@ -108,23 +108,42 @@ describe('weeklyReport', () => {
       '2026-09-22T10:00:00Z',
     )
 
+    // A mention only in the summary counts too.
+    recordItems(
+      db,
+      [
+        {
+          ...snap(
+            'hn-7',
+            'hackernews',
+            'State space models, revisited',
+            'https://b.dev/ssm',
+          ),
+          summary: 'Benchmarks Mamba3 against transformers',
+        },
+      ],
+      '2026-09-21',
+      '2026-09-21T10:00:00Z',
+    )
+
     const r = weeklyReport(db, '2026-09-22', ['mamba3', 'nothing'])
     expect(r.from).toBe('2026-09-16')
-    expect(r.newItems).toBe(3)
+    expect(r.newItems).toBe(4)
     expect(r.topics[0]).toMatchObject({ id: 'rag', thisWeek: 2, lastWeek: 1 })
     expect(r.crossSource).toHaveLength(1)
     expect(r.crossSource[0].sources.sort()).toEqual(['arxiv', 'hf-papers'])
     expect(r.risers[0]).toMatchObject({ id: 'gh-9', from: 100, to: 400 })
     expect(r.watch[0]).toMatchObject({
       term: 'mamba3',
-      thisWeek: 2,
+      thisWeek: 3,
       lastWeek: 0,
     })
     expect(r.watch[1]).toMatchObject({ thisWeek: 0, items: [] })
 
     const text = reportText(r)
-    // The paper and its Hugging Face page are one work: two mentions.
-    expect(text).toContain('Watch "mamba3": 2 (was 0)')
+    // The paper and its Hugging Face page are one work; with the repo and the
+    // summary-only mention that makes three.
+    expect(text).toContain('Watch "mamba3": 3 (was 0)')
     expect(text).toContain('lab/mamba3 (github): 100 → 400')
   })
 })

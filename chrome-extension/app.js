@@ -91,7 +91,7 @@ const translations = {
     loading: 'Loading…',
     appTitle: 'Tech Evolution Radar',
     appSubtitle:
-      'Twelve research and engineering sources, via your TechRadar server',
+      'Thirteen research and engineering sources, via your TechRadar server',
     howItWorks: 'How it works',
     totalSignals: 'Signals',
     highlighted: 'Highlighted',
@@ -189,6 +189,8 @@ const translations = {
     weekNewThemes: 'New themes',
     weekNothing:
       'Nothing to compare yet; the history grows with every day the server runs.',
+    weekWatchWithheld:
+      'Watch terms are sent only over HTTPS or to a local server, so this report leaves them out.',
     watched: 'watch',
     panelDigest: 'AI blog digest',
     settingsData: 'Saved data',
@@ -247,7 +249,7 @@ const translations = {
     trendsEmpty: 'Topic momentum will appear once the daily digest has data',
     infoSources: 'Sources',
     infoSourcesText:
-      'GitHub, arXiv, Hacker News, Lobsters, Hugging Face papers and models, bioRxiv and medRxiv, OpenAlex, PubMed, HAL, CiNii and Chinese-language OpenAlex research, fetched by your TechRadar server. This page only talks to that server and keeps the last copy for five minutes, so a new tab paints instantly.',
+      'GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face papers and models, bioRxiv and medRxiv, OpenAlex, PubMed, HAL, CiNii and Chinese-language OpenAlex research, fetched by your TechRadar server. This page only talks to that server and keeps the last copy for five minutes, so a new tab paints instantly.',
     infoScoring: 'Signal score',
     infoScoringText:
       'Every item is placed among its own source’s peers: reach (percentile of its attention metric), velocity (engagement per day of age) and recency, combined with Jev’s novelty and substance judgments. Items with nothing measurable are shown but not scored.',
@@ -267,7 +269,7 @@ const translations = {
     loading: 'Загрузка…',
     appTitle: 'Радар эволюции технологий',
     appSubtitle:
-      'Двенадцать источников исследований и разработок через ваш сервер TechRadar',
+      'Тринадцать источников исследований и разработок через ваш сервер TechRadar',
     howItWorks: 'Как это работает',
     totalSignals: 'Сигналы',
     highlighted: 'Выделено',
@@ -366,6 +368,8 @@ const translations = {
     weekNewThemes: 'Новые темы',
     weekNothing:
       'Сравнивать пока не с чем: история растёт с каждым днём работы сервера.',
+    weekWatchWithheld:
+      'Отслеживаемые термины отправляются только по HTTPS или на локальный сервер, поэтому в этом отчёте их нет.',
     watched: 'слежу',
     panelDigest: 'Дайджест AI-блогов',
     settingsData: 'Сохранённые данные',
@@ -425,7 +429,7 @@ const translations = {
     trendsEmpty: 'Импульс тем появится, когда в дайджесте накопятся данные',
     infoSources: 'Источники',
     infoSourcesText:
-      'GitHub, arXiv, Hacker News, Lobsters, статьи и модели Hugging Face, bioRxiv и medRxiv, OpenAlex, PubMed, HAL, CiNii и китаеязычные исследования OpenAlex — их собирает ваш сервер TechRadar. Страница обращается только к нему и хранит последнюю копию пять минут, поэтому новая вкладка открывается мгновенно.',
+      'GitHub, arXiv, Hacker News, Lobsters, DEV, статьи и модели Hugging Face, bioRxiv и medRxiv, OpenAlex, PubMed, HAL, CiNii и китаеязычные исследования OpenAlex — их собирает ваш сервер TechRadar. Страница обращается только к нему и хранит последнюю копию пять минут, поэтому новая вкладка открывается мгновенно.',
     infoScoring: 'Оценка сигнала',
     infoScoringText:
       'Каждая запись сравнивается с соседями по своему источнику: охват (перцентиль метрики внимания), скорость (вовлечённость в день возраста) и свежесть, вместе с оценками новизны и содержательности от Jev. Записи, для которых нечего измерить, показываются без оценки.',
@@ -1141,9 +1145,14 @@ function renderWeek() {
         )
         .join('')}</ul></div>`,
     )
-  box.innerHTML = blocks.length
-    ? `<div class="week-grid">${blocks.join('')}</div>`
-    : `<p class="empty">${escapeHtml(t('weekNothing'))}</p>`
+  const withheld = r.watchWithheld
+    ? `<p class="empty">${escapeHtml(t('weekWatchWithheld'))}</p>`
+    : ''
+  box.innerHTML =
+    withheld +
+    (blocks.length
+      ? `<div class="week-grid">${blocks.join('')}</div>`
+      : `<p class="empty">${escapeHtml(t('weekNothing'))}</p>`)
 }
 
 function renderNews() {

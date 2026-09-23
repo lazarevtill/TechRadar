@@ -148,7 +148,14 @@ export function usageSince(db: Db, day: string): UsageDay[] {
 }
 
 /** Days of history kept (items unseen for longer are deleted). */
-export const RETAIN_DAYS = Number(process.env.HISTORY_RETAIN_DAYS) || 365
+export const RETAIN_DAYS = retainDays(process.env.HISTORY_RETAIN_DAYS)
+
+/** A positive whole number of days, else the default (a negative value would
+ * put the cutoff in the future and delete everything). */
+export function retainDays(raw: string | undefined): number {
+  const n = Number(raw)
+  return Number.isInteger(n) && n > 0 ? n : 365
+}
 export const BACKUPS_KEPT = 7
 
 export interface MaintenanceResult {

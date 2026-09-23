@@ -39,6 +39,9 @@ export function watchMatcher(term: string): (text: string) => boolean {
   const body = escape(term)
   const re = CJK.test(term)
     ? new RegExp(body, 'iu')
-    : new RegExp(`(?<![\\p{L}\\p{N}])${body}(?![\\p{L}\\p{N}])`, 'iu')
+    : new RegExp(
+        `(?<![\\p{L}\\p{M}\\p{N}_])${body}(?![\\p{L}\\p{M}\\p{N}_])`,
+        'iu',
+      )
   return (text) => re.test(text)
 }

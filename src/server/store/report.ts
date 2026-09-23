@@ -161,14 +161,17 @@ export function weeklyReport(
     const match = watchMatcher(term)
     const like = `%${term.replace(/[%_\\]/g, '\\$&')}%`
     const rows = db
-      .all<ReportItem & { first_seen: string }>(
-        `SELECT id, source, title, url, first_seen FROM items
-          WHERE substr(first_seen, 1, 10) >= ? AND title LIKE ? ESCAPE '\\'
+      .all<ReportItem & { first_seen: string; summary: string }>(
+        `SELECT id, source, title, summary, url, first_seen FROM items
+          WHERE substr(first_seen, 1, 10) >= ?
+            AND (title LIKE ? ESCAPE '\\' OR summary LIKE ? ESCAPE '\\')
           ORDER BY first_seen DESC`,
         prevFrom,
         like,
+        like,
       )
-      .filter((r) => match(r.title))
+      // Title or summary, like the feed's watch chips.
+      .filter((r) => match(`${r.title}\n${r.summary}`))
     // One entry per work: a story on two sources is one mention.
     const seen = new Set<string>()
     const mentions = rows.filter((r) => {

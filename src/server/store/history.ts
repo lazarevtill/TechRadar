@@ -55,14 +55,15 @@ export function recordItems(
   db.transaction(() => {
     for (const item of items) {
       db.run(
-        `INSERT INTO items (id, source, title, url, category, maturity, published_at, first_seen, last_seen)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-         ON CONFLICT(id) DO UPDATE SET title = excluded.title, url = excluded.url,
+        `INSERT INTO items (id, source, title, summary, url, category, maturity, published_at, first_seen, last_seen)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET title = excluded.title, summary = excluded.summary, url = excluded.url,
            category = excluded.category, maturity = excluded.maturity,
            published_at = excluded.published_at, last_seen = excluded.last_seen`,
         item.id,
         item.source,
         item.title,
+        item.summary,
         item.sourceUrl,
         item.category,
         item.maturityStage,

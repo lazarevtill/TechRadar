@@ -172,3 +172,24 @@ describe('runDiscovery', () => {
     expect(asked).toBe(0)
   })
 })
+
+describe('discovery limits under failure', () => {
+  it('counts failed Jev checks against the daily cap across passes', async () => {
+    const db = await seeded(Array.from({ length: 15 }, (_, i) => `Fail${i}x`))
+    let calls = 0
+    const failing = async () => {
+      calls++
+      throw new Error('bad answer')
+    }
+    await runDiscovery(db, TODAY, failing)
+    await runDiscovery(db, TODAY, failing)
+    expect(calls).toBe(DISCOVERY.MAX_CHECKS_PER_DAY)
+  })
+
+  it('treats tracked-topic coverage as whole words', async () => {
+    const { coveredByTrackedTopic } = await import('../discovery')
+    expect(coveredByTrackedTopic('humanoid robots')).toBe(true)
+    // "mode" only occurs inside "model(s)": not covered, so it can be judged.
+    expect(coveredByTrackedTopic('mode')).toBe(false)
+  })
+})

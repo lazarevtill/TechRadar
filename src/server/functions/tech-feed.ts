@@ -277,17 +277,31 @@ async function withHistory(
       runs.map((r) => ({ ...r, items: r.items.length })),
       now,
     )
-    const maintained = dailyMaintenance(db, day, historyDbFile())
-    if (maintained)
-      console.log(
-        `[history] daily maintenance: backup ${maintained.backup ?? 'skipped'}, ${maintained.deletedItems} expired items removed`,
-      )
-    alertOnSourceChanges(db, day)
-    const found = await runDiscovery(db, day, themeAsker())
-    if (found.added.length || found.retired.length || found.checked)
-      console.log(
-        `[discovery] ${found.candidates} candidates, ${found.checked} checked by Jev; added: ${found.added.join(', ') || 'none'}; rejected: ${found.rejected.join(', ') || 'none'}; retired: ${found.retired.join(', ') || 'none'}`,
-      )
+    // Optional steps: a failure is logged and never costs this rebuild its
+    // history-based ranking.
+    try {
+      const maintained = dailyMaintenance(db, day, historyDbFile())
+      if (maintained)
+        console.log(
+          `[history] daily maintenance: backup ${maintained.backup ?? 'skipped'}, ${maintained.deletedItems} expired items removed`,
+        )
+    } catch (error) {
+      console.error('[history] daily maintenance failed:', error)
+    }
+    try {
+      alertOnSourceChanges(db, day)
+    } catch (error) {
+      console.error('[health] source alert check failed:', error)
+    }
+    try {
+      const found = await runDiscovery(db, day, themeAsker())
+      if (found.added.length || found.retired.length || found.checked)
+        console.log(
+          `[discovery] ${found.candidates} candidates, ${found.checked} checked by Jev; added: ${found.added.join(', ') || 'none'}; rejected: ${found.rejected.join(', ') || 'none'}; retired: ${found.retired.join(', ') || 'none'}`,
+        )
+    } catch (error) {
+      console.error('[discovery] pass failed:', error)
+    }
     const engagement = new Map(snapshot.map((s) => [s.id, s.engagement]))
     return {
       history: historyContext(db, snapshot, day),

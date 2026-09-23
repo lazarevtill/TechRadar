@@ -131,7 +131,7 @@ export const SIGNAL_WEIGHTS = {
 } as const
 
 /**
- * Distinct sources on one topic needed to call it converging. With twelve
+ * Distinct sources on one topic needed to call it converging. With thirteen
  * sources, popular topics reach three almost every fetch, so four is the bar.
  */
 export const CONVERGENCE_MIN_SOURCES = 4

@@ -145,8 +145,11 @@ export function overlaps(a: string, b: string): boolean {
 /** Already covered by a hand-written tracked topic? */
 export function coveredByTrackedTopic(term: string): boolean {
   return Object.values(TOPIC_LABELS).some((t) => {
-    const text = `${t.label} ${t.definition}`.toLowerCase()
-    return term.split(' ').every((w) => text.includes(w))
+    const words = new Set(
+      `${t.label} ${t.definition}`.toLowerCase().split(/[^\p{L}\p{N}]+/u),
+    )
+    // Whole words: "rust" is not covered by a definition mentioning "trust".
+    return term.split(' ').every((w) => words.has(w))
   })
 }
 
@@ -314,22 +317,27 @@ export async function runDiscovery(
     }
 
     if (!ask || budget <= 0) continue
-    let p: number
-    try {
-      p = await ask(c)
-    } catch (error) {
-      // Not recorded: the term is asked again on a later pass.
-      console.error(`[discovery] Jev check failed for "${c.display}":`, error)
-      budget--
-      continue
-    }
+    // Count the attempt before sending it: the daily cap limits requests,
+    // including failed ones, whatever the rebuild frequency.
     budget--
-    result.checked++
     db.run(
       `INSERT INTO usage (day, kind, requests) VALUES (?, 'jev-discovery', 1)
        ON CONFLICT(day, kind) DO UPDATE SET requests = requests + 1`,
       today,
     )
+    let p: number
+    try {
+      p = await ask(c)
+    } catch (error) {
+      // No verdict stored: the term may be asked again, within the cap.
+      console.error(`[discovery] Jev check failed for "${c.display}":`, error)
+      db.run(
+        `UPDATE usage SET failed = failed + 1 WHERE day = ? AND kind = 'jev-discovery'`,
+        today,
+      )
+      continue
+    }
+    result.checked++
     const accepted = p >= DISCOVERY.ACCEPT_P
     db.run(
       `INSERT INTO themes (term, display, status, p, z, checked_day, added_day)

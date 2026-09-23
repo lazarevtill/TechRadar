@@ -42,6 +42,7 @@ export function ParserControlPanel() {
     },
     enabled: showSourceDetails,
     staleTime: 60_000,
+    refetchInterval: showSourceDetails ? 60_000 : false,
   })
   const healthBySource = new Map(health?.sources.map((s) => [s.source, s]))
   const today = new Date().toISOString().slice(0, 10)

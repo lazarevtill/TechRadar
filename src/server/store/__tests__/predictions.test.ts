@@ -144,6 +144,50 @@ describe('predictions', () => {
   })
 })
 
+describe('cohorts', () => {
+  it('judges each highlight against controls of its own day', async () => {
+    const db = await openDb(':memory:')
+    // Day 1: quiet cohort. Day 2: busy cohort (everything grows a lot).
+    recordPredictions(
+      db,
+      [
+        p('gh-q', 100, ['novel']),
+        p('gh-q1', 100),
+        p('gh-q2', 100),
+        p('gh-q3', 100),
+      ],
+      '2026-09-01',
+    )
+    recordPredictions(
+      db,
+      [
+        p('gh-b', 100, ['novel']),
+        // Yesterday's controls are not re-used; fresh ones are drawn.
+        p('gh-q1', 100),
+        p('gh-b1', 100),
+        p('gh-b2', 100),
+        p('gh-b3', 100),
+      ],
+      '2026-09-02',
+    )
+    const now: Record<string, number> = {
+      'gh-q': 150, // beats its quiet cohort (~110)
+      'gh-q1': 110,
+      'gh-q2': 110,
+      'gh-q3': 110,
+      'gh-b': 150, // loses to its busy cohort (~1000)
+      'gh-b1': 1000,
+      'gh-b2': 1000,
+      'gh-b3': 1000,
+    }
+    await evaluateDue(db, '2026-09-20', async (id) => now[id] ?? null)
+    const novel = trackRecord(db, '2026-09-20').reasons.find(
+      (r) => r.reason === 'novel',
+    )
+    expect(novel).toMatchObject({ evaluated: 2, hits: 1 })
+  })
+})
+
 describe('prediction baselines', () => {
   it('uses engagement for re-readable sources and sources reached otherwise', async () => {
     const db = await openDb(':memory:')
@@ -163,5 +207,46 @@ describe('prediction baselines', () => {
         .map((r) => [r.subject, r.baseline]),
     )
     expect(base).toEqual({ 'arxiv-2609.1': 1, 'devto-1': 40 })
+  })
+})
+
+describe('discovered theme outcomes', () => {
+  it('counts distinct works within the horizon only', async () => {
+    const { recordThemePrediction } = await import('../predictions')
+    const db = await openDb(':memory:')
+    recordThemePrediction(db, 'orbit7', '2026-09-01', 2)
+    const snap = (id: string, source: DataSource, url: string) => ({
+      id,
+      source,
+      title: 'Orbit7 lands',
+      sourceUrl: url,
+      summary: '',
+      category: 'ai',
+      maturityStage: 'research',
+      publishedAt: new Date('2026-09-02T00:00:00Z'),
+      engagement: 1,
+    })
+    // One story on two sources inside the horizon: one work.
+    recordItems(
+      db,
+      [
+        snap('hn-1', 'hackernews', 'https://orbit.dev/post'),
+        snap('lob-1', 'lobsters', 'https://orbit.dev/post'),
+      ],
+      '2026-09-02',
+      '2026-09-02T00:00:00Z',
+    )
+    // A later one, after the horizon ends (2026-09-15).
+    recordItems(
+      db,
+      [snap('hn-2', 'hackernews', 'https://orbit.dev/other')],
+      '2026-09-20',
+      '2026-09-20T00:00:00Z',
+    )
+    await evaluateDue(db, '2026-09-25', async () => null)
+    expect(db.get('SELECT outcome, outcome_value FROM predictions')).toEqual({
+      outcome: 'miss',
+      outcome_value: 1,
+    })
   })
 })

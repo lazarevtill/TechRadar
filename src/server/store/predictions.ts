@@ -2,6 +2,8 @@ import type { DataSource } from '@/lib/tech-categories'
 import type { SignalMetrics } from '@/lib/signal-model'
 import { contentHash } from '@/server/utils/verdict-store'
 import { daysBefore, type Db } from './db'
+
+const daysAfter = (day: string, n: number) => daysBefore(day, -n)
 import { workGroups, workSources, type Works } from './works'
 
 /**
@@ -19,8 +21,9 @@ import { workGroups, workSources, type Works } from './works'
  *  - sources without one (arXiv, PubMed, HAL, CiNii, bioRxiv): growth = the
  *    number of other sources the work reached since, from the history store.
  *
- * A highlight is a hit when its growth beats the median control growth of its
- * source. A random pick would hit about half the time — that is the bar.
+ * A highlight is a hit when its growth beats the median growth of its cohort's
+ * controls (same source, same day). A random pick would hit about half the
+ * time — that is the bar.
  *
  * Discovered themes are predictions too (`discovered`, subject `auto:<term>`):
  * a hit when, in the HORIZON_DAYS after it was added, new items carrying the
@@ -64,6 +67,15 @@ export function recordPredictions(
         ? item.engagement
         : item.signal.linkedSources,
     )
+  // Items already sampled as controls keep their first day; each day's
+  // cohort draws fresh ones so it has its own comparison group.
+  const sampled = new Set(
+    db
+      .all<{ subject: string }>(
+        "SELECT subject FROM predictions WHERE reason = 'control'",
+      )
+      .map((r) => r.subject),
+  )
   db.transaction(() => {
     for (const peers of bySource.values()) {
       const highlighted = peers.filter((p) => p.signal.reasons.length > 0)
@@ -71,7 +83,7 @@ export function recordPredictions(
       for (const item of highlighted)
         for (const reason of item.signal.reasons) insert(item, reason)
       const controls = peers
-        .filter((p) => p.signal.reasons.length === 0)
+        .filter((p) => p.signal.reasons.length === 0 && !sampled.has(p.id))
         .sort((a, b) => (contentHash(a.id) < contentHash(b.id) ? -1 : 1))
         .slice(0, Math.max(3, highlighted.length))
       for (const item of controls) insert(item, 'control')
@@ -158,16 +170,23 @@ export async function evaluateDue(
 
   for (const p of due) {
     if (p.reason === 'discovered') {
+      // New works carrying the term within the horizon after it was added —
+      // the same unit (distinct works) and length as promised, however late
+      // this pass runs.
       const term = p.subject.slice('auto:'.length)
-      const after =
-        db.get<{ n: number }>(
-          `SELECT count(DISTINCT i.id) AS n FROM item_terms t JOIN items i ON i.id = t.item_id
+      const end = daysAfter(p.day, HORIZON_DAYS)
+      const ids = db
+        .all<{ id: string }>(
+          `SELECT i.id FROM item_terms t JOIN items i ON i.id = t.item_id
             WHERE t.term = ? AND substr(i.first_seen, 1, 10) > ?
               AND substr(i.first_seen, 1, 10) <= ?`,
           term,
           p.day,
-          today,
-        )?.n ?? 0
+          end,
+        )
+        .map((r) => r.id)
+      works ??= workGroups(db, `${daysBefore(today, 60)}T00:00:00Z`)
+      const after = new Set(ids.map((id) => works!.workOf.get(id) ?? id)).size
       save(p, after >= (p.baseline ?? 0) ? 'hit' : 'miss', after)
       evaluated++
       continue
@@ -238,14 +257,19 @@ export function trackRecord(db: Db, today: string): TrackRecord {
     `SELECT reason, source, day, outcome, outcome_value FROM predictions
       WHERE outcome IS NOT NULL AND outcome != 'unavailable'`,
   )
+  // A highlight is compared only with its own cohort: the controls sampled
+  // from the same source on the same day, so a quiet week is never judged
+  // against a busy one.
+  const cohort = (source: string | null, day: string) => `${source}|${day}`
   const controls = new Map<string, number[]>()
   for (const m of measured)
     if (m.reason === 'control' && m.outcome_value !== null) {
-      const list = controls.get(m.source!) ?? []
+      const key = cohort(m.source, m.day)
+      const list = controls.get(key) ?? []
       list.push(m.outcome_value)
-      controls.set(m.source!, list)
+      controls.set(key, list)
     }
-  const bar = new Map([...controls].map(([s, xs]) => [s, median(xs)]))
+  const bar = new Map([...controls].map(([k, xs]) => [k, median(xs)]))
 
   const byReason = new Map<string, { evaluated: number; hits: number }>()
   for (const m of measured) {
@@ -255,7 +279,7 @@ export function trackRecord(db: Db, today: string): TrackRecord {
       entry.evaluated++
       if (m.outcome === 'hit') entry.hits++
     } else {
-      const b = bar.get(m.source!)
+      const b = bar.get(cohort(m.source, m.day))
       if (b === undefined || m.outcome_value === null) continue
       entry.evaluated++
       if (m.outcome_value > b) entry.hits++

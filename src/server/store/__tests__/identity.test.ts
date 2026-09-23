@@ -37,9 +37,27 @@ describe('keysFromUrl', () => {
       'url:example.com/post',
     ])
     expect(keysFromUrl('https://news.ycombinator.com/item?id=1')).toEqual([])
-    expect(keysFromUrl('https://github.com/topics/llm')).toEqual([
-      'url:github.com/topics/llm',
+    // Pages that do not name one work give no key.
+    for (const url of [
+      'https://github.com',
+      'https://github.com/someuser',
+      'https://huggingface.co/someorg',
+      'https://arxiv.org/list/cs.AI/new',
+      'https://example.com/',
     ])
+      expect(keysFromUrl(url)).toEqual([])
+    // The query is identity when it names the resource; tracking is dropped.
+    expect(keysFromUrl('https://youtube.com/watch?v=A&utm_source=x')).toEqual([
+      'url:youtube.com/watch?v=A',
+    ])
+    expect(keysFromUrl('https://youtube.com/watch?v=B')).toEqual([
+      'url:youtube.com/watch?v=B',
+    ])
+    expect(keysFromUrl('https://a.dev/p?b=2&a=1&fbclid=z')).toEqual([
+      'url:a.dev/p?a=1&b=2',
+    ])
+    // A topic listing is not one work.
+    expect(keysFromUrl('https://github.com/topics/llm')).toEqual([])
     expect(keysFromUrl('not a url')).toEqual([])
   })
 })

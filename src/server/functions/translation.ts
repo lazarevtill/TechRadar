@@ -82,18 +82,21 @@ async function translateText(
     if (process.env.MYMEMORY_EMAIL) params.set('de', process.env.MYMEMORY_EMAIL)
     const url = `${MYMEMORY_API}?${params}`
 
+    // Every attempt is counted once; each failure path below adds `failed`.
+    countUsage('translate', { requests: 1, units: truncatedText.length })
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'TechEvolutionRadar/1.0',
       },
     })
-    countUsage('translate', { requests: 1, units: truncatedText.length })
 
     if (response.status === 429) {
+      countUsage('translate', { failed: 1 })
       noteQuotaExhausted('HTTP 429')
       return null
     }
     if (!response.ok) {
+      countUsage('translate', { failed: 1 })
       console.warn(`Translation API error: ${response.status}`)
       return null
     }
@@ -102,6 +105,7 @@ async function translateText(
     // The daily-quota notice can also arrive as a 200 with this body status;
     // its "translatedText" is a warning, never cache or show it.
     if (data.responseStatus === 429 || data.quotaFinished === true) {
+      countUsage('translate', { failed: 1 })
       noteQuotaExhausted('quota notice')
       return null
     }
@@ -115,8 +119,10 @@ async function translateText(
       return translated
     }
 
+    countUsage('translate', { failed: 1 })
     return null
   } catch (error) {
+    countUsage('translate', { failed: 1 })
     console.error('Translation error:', error)
     return null
   }

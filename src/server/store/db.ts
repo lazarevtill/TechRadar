@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS items (
   id TEXT PRIMARY KEY,
   source TEXT NOT NULL,
   title TEXT NOT NULL,
+  summary TEXT NOT NULL DEFAULT '',
   url TEXT NOT NULL,
   category TEXT NOT NULL,
   maturity TEXT NOT NULL,
@@ -216,7 +217,12 @@ export function historyDbFile(): string {
 
 /** The process-wide history database. */
 export function historyDb(): Promise<Db> {
-  shared ??= openDb(historyDbFile())
+  // A failed open (volume not mounted yet, disk full) is retried on the next
+  // call instead of disabling history until restart.
+  shared ??= openDb(historyDbFile()).catch((error: unknown) => {
+    shared = null
+    throw error
+  })
   return shared
 }
 

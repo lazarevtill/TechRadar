@@ -1,4 +1,4 @@
-import { queryOptions, useQuery } from '@tanstack/react-query'
+import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   fetchTechFeedFn,
   fetchGitHubFeedFn,
@@ -78,14 +78,20 @@ export function useTechFeed(): UseTechFeedResult {
     retry: 2,
   })
 
-  // Force refresh - invalidates server cache first, then refetches
+  const queryClient = useQueryClient()
+
+  // Force refresh - invalidates server cache first, then refetches. The
+  // rebuild also writes history, so views derived from it (source health,
+  // the weekly report) are refreshed after it.
   const forceRefresh = async () => {
     try {
       await invalidateTechFeedCacheFn()
     } catch (err) {
       console.error('[TechFeed] Failed to invalidate cache:', err)
     }
-    void refetch()
+    await refetch()
+    void queryClient.invalidateQueries({ queryKey: ['health'] })
+    void queryClient.invalidateQueries({ queryKey: ['weekly-report'] })
   }
 
   return {
