@@ -9,6 +9,7 @@ import {
   DigestFeed,
   ExtensionBanner,
   ParserControlPanel,
+  WeeklyReport,
 } from '@/components/dashboard'
 import { useLanguage } from '@/lib/i18n'
 import { techFeedQuery } from '@/hooks/use-tech-feed'
@@ -47,6 +48,10 @@ function TechEvolutionRadar() {
               <TopicConvergence />
             </section>
           </div>
+
+          <section>
+            <WeeklyReport />
+          </section>
 
           <section>
             <TechFeed />

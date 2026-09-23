@@ -85,7 +85,11 @@ describe('history store', () => {
       [
         {
           id: 'gh-1',
-          signal: { score: 0.7, reasons: ['fast-rising'] } as never,
+          signal: {
+            score: 0.7,
+            reasons: ['fast-rising'],
+            topics: ['rag'],
+          } as never,
         },
       ],
       '2026-09-22',

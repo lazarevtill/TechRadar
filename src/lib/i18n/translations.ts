@@ -46,6 +46,20 @@ export interface Translations {
   topicsHint: string
   topicsEmpty: string
   discoveredTitle: string
+  weekTitle: string
+  weekNewItems: string
+  watchLabel: string
+  watchPlaceholder: string
+  watchSave: string
+  weekUnavailable: string
+  watchTitle: string
+  weekWas: string
+  weekTopics: string
+  weekThemesAdded: string
+  weekThemesRetired: string
+  weekRisers: string
+  weekNoRisers: string
+  weekCrossSource: string
   trackRecord: string
   trackRecordHint: string
   trackRecordPending: string
@@ -296,6 +310,22 @@ export const translations: Record<Language, Translations> = {
     topicsHint: 'Tracked topics and where they show up now',
     topicsEmpty: 'No tracked topic appears on more than one source',
     discoveredTitle: 'Discovered by the radar',
+    weekTitle: 'This week',
+    weekNewItems: '{n} new items',
+    watchLabel: 'Watch',
+    watchPlaceholder:
+      'terms to follow, comma-separated (e.g. Mamba, GRPO, perovskite)',
+    watchSave: 'Save',
+    weekUnavailable:
+      'The weekly report needs the history store, which is unavailable on this server.',
+    watchTitle: 'Your watch terms (items this week)',
+    weekWas: 'last week {n}',
+    weekTopics: 'Topics, items this week',
+    weekThemesAdded: 'New themes',
+    weekThemesRetired: 'Gone quiet',
+    weekRisers: 'Fastest growing',
+    weekNoRisers: 'Growth appears after an item is seen on two different days.',
+    weekCrossSource: 'Same work on several sources',
     trackRecord: 'Track record',
     trackRecordHint:
       'How past highlights turned out after {days} days: the share that grew more than the median of a random sample from the same source. A random pick scores about 50%. For discovered themes: the share that kept appearing.',
@@ -549,6 +579,22 @@ export const translations: Record<Language, Translations> = {
     topicsHint: 'Отслеживаемые темы и где они встречаются сейчас',
     topicsEmpty: 'Ни одна тема не встречается более чем в одном источнике',
     discoveredTitle: 'Найдено радаром',
+    weekTitle: 'Эта неделя',
+    weekNewItems: '{n} новых записей',
+    watchLabel: 'Следить',
+    watchPlaceholder:
+      'термины через запятую (например, Mamba, GRPO, перовскит)',
+    watchSave: 'Сохранить',
+    weekUnavailable:
+      'Недельному отчёту нужно хранилище истории, а на этом сервере оно недоступно.',
+    watchTitle: 'Ваши термины (записи за неделю)',
+    weekWas: 'неделей раньше {n}',
+    weekTopics: 'Темы, записей за неделю',
+    weekThemesAdded: 'Новые темы',
+    weekThemesRetired: 'Затихли',
+    weekRisers: 'Быстрее всего растут',
+    weekNoRisers: 'Рост виден, когда запись встречена в два разных дня.',
+    weekCrossSource: 'Одна работа в нескольких источниках',
     trackRecord: 'Точность',
     trackRecordHint:
       'Как сработали прошлые выделения через {days} дней: доля тех, что выросли сильнее медианы случайной выборки из того же источника. Случайный выбор даёт около 50%. Для найденных тем — доля тех, что продолжили появляться.',

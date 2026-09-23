@@ -1,5 +1,6 @@
 import { BACKEND_URL } from './config.js'
 import { VIEWS } from './views.js'
+import { parseWatchTerms } from './watch.js'
 
 /**
  * User settings for the new-tab page. Stored in chrome.storage.sync so they
@@ -13,7 +14,14 @@ export const SETTINGS_KEY = 'techRadarSettings'
 /** Minutes between automatic refreshes; 0 turns it off. */
 export const REFRESH_CHOICES = [0, 5, 10, 30, 60]
 export const FEED_SIZE_CHOICES = [20, 40, 80]
-export const PANELS = ['radar', 'highlights', 'trends', 'feed', 'digest']
+export const PANELS = [
+  'radar',
+  'highlights',
+  'trends',
+  'week',
+  'feed',
+  'digest',
+]
 
 export const DEFAULT_SETTINGS = Object.freeze({
   backendUrl: BACKEND_URL,
@@ -23,6 +31,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
   defaultSource: 'all',
   defaultCategory: 'all',
   defaultView: 'radar',
+  /** Terms to follow: marked in the feed and reported weekly. */
+  watchTerms: Object.freeze([]),
   panels: Object.freeze(Object.fromEntries(PANELS.map((p) => [p, true]))),
 })
 
@@ -89,6 +99,9 @@ export function sanitizeSettings(raw) {
         ? s.defaultCategory
         : 'all',
     defaultView: pick(s.defaultView, VIEWS, DEFAULT_SETTINGS.defaultView),
+    watchTerms: parseWatchTerms(
+      Array.isArray(s.watchTerms) ? s.watchTerms : [],
+    ),
     panels,
   }
 }

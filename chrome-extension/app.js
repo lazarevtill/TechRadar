@@ -19,11 +19,12 @@ import {
   sanitizeSettings,
   saveSettings,
 } from './lib/settings.js'
-import { fetchBackendFeed, panelData } from './lib/backend.js'
+import { fetchBackendFeed, fetchReport, panelData } from './lib/backend.js'
 import { trajectoryMeta, sparklineBars } from './lib/trends-view.js'
 import { pickDigestText, SOURCE_META } from './lib/digest.js'
 import { icon, CATEGORY_ICON } from './lib/icons.js'
 import { trackRecordSummary } from './lib/track-record.js'
+import { parseWatchTerms, watchHits } from './lib/watch.js'
 
 /**
  * Tech Evolution Radar - Chrome extension new-tab page.
@@ -172,6 +173,22 @@ const translations = {
     panelHighlights: 'Highlights',
     panelTrends: 'Topic momentum',
     panelFeed: 'Feed',
+    panelWeek: 'This week',
+    settingsWatch: 'Watch terms',
+    settingsWatchHint:
+      'Comma-separated; marked in the feed and followed in This week',
+    weekTitle: 'This week',
+    weekLoading: 'Loading the weekly report…',
+    weekUnavailable: 'The weekly report is unavailable on this server.',
+    weekWatch: 'Watch terms, items this week',
+    weekWas: 'last week {n}',
+    weekTopics: 'Topics, items this week',
+    weekRisers: 'Fastest growing',
+    weekCrossSource: 'Same work on several sources',
+    weekNewThemes: 'New themes',
+    weekNothing:
+      'Nothing to compare yet; the history grows with every day the server runs.',
+    watched: 'watch',
     panelDigest: 'AI blog digest',
     settingsData: 'Saved data',
     savedInfo: 'Saved copy from {time}: {items} signals.',
@@ -332,6 +349,22 @@ const translations = {
     panelHighlights: 'Главное',
     panelTrends: 'Импульс тем',
     panelFeed: 'Лента',
+    panelWeek: 'Эта неделя',
+    settingsWatch: 'Отслеживаемые термины',
+    settingsWatchHint:
+      'Через запятую; отмечаются в ленте и отслеживаются в разделе «Эта неделя»',
+    weekTitle: 'Эта неделя',
+    weekLoading: 'Загружаем недельный отчёт…',
+    weekUnavailable: 'Недельный отчёт на этом сервере недоступен.',
+    weekWatch: 'Ваши термины, записей за неделю',
+    weekWas: 'неделей раньше {n}',
+    weekTopics: 'Темы, записей за неделю',
+    weekRisers: 'Быстрее всего растут',
+    weekCrossSource: 'Одна работа в нескольких источниках',
+    weekNewThemes: 'Новые темы',
+    weekNothing:
+      'Сравнивать пока не с чем: история растёт с каждым днём работы сервера.',
+    watched: 'слежу',
     panelDigest: 'Дайджест AI-блогов',
     settingsData: 'Сохранённые данные',
     savedInfo: 'Копия от {time}: {items} сигналов.',
@@ -466,6 +499,10 @@ let state = {
   activeTopic: 'all',
   topicLabels: {},
   trackRecord: null,
+  /** Watch term the feed is filtered by, or null. */
+  activeWatch: null,
+  /** Weekly report: null (not loaded), { error } or the report. */
+  report: null,
   feedLimit: 40,
   expandedChain: null,
   showOriginal: new Set(), // item ids showing original instead of translation
@@ -703,6 +740,7 @@ async function fetchAllData(force = false) {
     state.isLoading = false
     updateStatusBadge(false)
     render()
+    loadReport()
   }
 }
 
@@ -770,6 +808,7 @@ function render() {
   renderHighlights()
   renderTrends()
   renderNews()
+  renderWeek()
   renderFeed()
   renderRadar()
   renderInfo()
@@ -1029,6 +1068,81 @@ function renderTrends() {
   })
 }
 
+/** Fetch the weekly report for the reader's watch terms (panel only). */
+async function loadReport() {
+  if (!state.settings.panels.week) return
+  try {
+    state.report = await fetchReport(
+      fetch,
+      state.settings.backendUrl,
+      state.settings.watchTerms,
+    )
+  } catch (error) {
+    state.report = { error: error.message }
+  }
+  renderWeek()
+}
+
+function renderWeek() {
+  const box = $('week-report')
+  if (!box) return
+  const r = state.report
+  $('week-range').textContent = r && !r.error ? `${r.from} – ${r.to}` : ''
+  if (!r) {
+    box.innerHTML = `<p class="empty">${escapeHtml(t('weekLoading'))}</p>`
+    return
+  }
+  if (r.error) {
+    box.innerHTML = `<p class="empty">${escapeHtml(t('weekUnavailable'))}</p>`
+    return
+  }
+  const link = (i) =>
+    `<a href="${escapeHtml(safeUrl(i.url))}"${linkTarget()}>${escapeHtml(i.title)}</a>`
+  const sourceLabel = (s) => SOURCE_CONFIG[s]?.label || s
+  const blocks = []
+  if (r.watch.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekWatch'))}</h3><ul>${r.watch
+        .map(
+          (w) =>
+            `<li><button class="link-btn" data-watch="${escapeHtml(w.term)}">${escapeHtml(w.term)}</button> <span class="num">${w.thisWeek}</span> <span class="muted">(${escapeHtml(fmt('weekWas', { n: w.lastWeek }))})</span>${w.items.length ? `<ul class="week-items">${w.items.map((i) => `<li><span class="muted">${escapeHtml(sourceLabel(i.source))}</span> ${link(i)}</li>`).join('')}</ul>` : ''}</li>`,
+        )
+        .join('')}</ul></div>`,
+    )
+  if (r.topics.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekTopics'))}</h3><ul>${r.topics
+        .map((x) => {
+          const d = x.thisWeek - x.lastWeek
+          return `<li class="week-row"><span>${escapeHtml(x.label)}</span><span class="num">${x.thisWeek}</span><span class="num ${d > 0 ? 'rising' : 'muted'}">${d > 0 ? `+${d}` : d}</span></li>`
+        })
+        .join(
+          '',
+        )}</ul>${r.themes.added.length ? `<p class="muted">${escapeHtml(t('weekNewThemes'))}: ${escapeHtml(r.themes.added.map((x) => x.label).join(', '))}</p>` : ''}</div>`,
+    )
+  if (r.risers.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekRisers'))}</h3><ul>${r.risers
+        .map(
+          (x) =>
+            `<li class="week-row">${link(x)}<span class="num muted">${x.from} → ${x.to}</span></li>`,
+        )
+        .join('')}</ul></div>`,
+    )
+  if (r.crossSource.length)
+    blocks.push(
+      `<div class="week-block"><h3>${escapeHtml(t('weekCrossSource'))}</h3><ul>${r.crossSource
+        .map(
+          (w) =>
+            `<li class="week-row">${link(w.items[0])}<span class="muted">${escapeHtml(w.sources.map(sourceLabel).join(' · '))}</span></li>`,
+        )
+        .join('')}</ul></div>`,
+    )
+  box.innerHTML = blocks.length
+    ? `<div class="week-grid">${blocks.join('')}</div>`
+    : `<p class="empty">${escapeHtml(t('weekNothing'))}</p>`
+}
+
 function renderNews() {
   if (!elements.newsList) return
   if (!state.digest || state.digest.length === 0) {
@@ -1071,6 +1185,7 @@ function filterItems({ ignoreSource = false } = {}) {
         i.maturityStage === state.activeMaturity) &&
       (state.activeTopic === 'all' ||
         (i.signal?.topics ?? []).includes(state.activeTopic)) &&
+      (!state.activeWatch || watchHits(i, [state.activeWatch]).length > 0) &&
       (ignoreSource ||
         state.activeSource === 'all' ||
         i.source === state.activeSource),
@@ -1093,6 +1208,7 @@ function renderActiveFilters() {
     chip('maturity', getLocalizedMaturity(state.activeMaturity))
   if (state.activeTopic !== 'all')
     chip('topic', state.topicLabels[state.activeTopic] ?? state.activeTopic)
+  if (state.activeWatch) chip('watch', state.activeWatch)
   if (state.activeSource !== 'all')
     chip(
       'source',
@@ -1157,6 +1273,12 @@ function renderFeed() {
             ${engagement ? `<span class="num">${escapeHtml(engagement)}</span>` : ''}
             <span class="num">${escapeHtml(t('signal'))} ${item.signal?.score === null || item.signal?.score === undefined ? '–' : item.signal.score.toFixed(2)}</span>
             ${reasonChips(item)}
+            ${watchHits(item, state.settings.watchTerms)
+              .map(
+                (term) =>
+                  `<button class="chip-muted chip-watch" data-watch="${escapeHtml(term)}">${escapeHtml(t('watched'))}: ${escapeHtml(term)}</button>`,
+              )
+              .join('')}
             ${alsoOn(item)}
             ${item.originalLanguage && item.originalLanguage !== 'en' ? `<span class="chip-muted">${escapeHtml(item.originalLanguage)}</span>` : ''}
             ${controls.join('')}
@@ -1647,6 +1769,17 @@ function setupEventListeners() {
     renderFeed()
     renderRadar()
   }
+  // A watch term (feed chip or This week) filters the feed to its items.
+  document.addEventListener('click', (e) => {
+    const term = e.target.closest('[data-watch]')?.dataset.watch
+    if (!term) return
+    state.activeWatch = state.activeWatch === term ? null : term
+    refilter()
+    document
+      .querySelector('[data-panel="feed"]')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+
   elements.categoryFilters.addEventListener('click', (e) => {
     const btn = e.target.closest('.chip')
     if (!btn) return
@@ -1696,6 +1829,7 @@ function setupEventListeners() {
     if (key === 'category' || key === 'all') state.activeCategory = 'all'
     if (key === 'maturity' || key === 'all') state.activeMaturity = 'all'
     if (key === 'topic' || key === 'all') state.activeTopic = 'all'
+    if (key === 'watch' || key === 'all') state.activeWatch = null
     if (key === 'source' || key === 'all') {
       state.activeSource = 'all'
       elements.sourceFilter.value = 'all'
@@ -1794,6 +1928,7 @@ const PANEL_LABELS = {
   highlights: 'panelHighlights',
   trends: 'panelTrends',
   feed: 'panelFeed',
+  week: 'panelWeek',
   digest: 'panelDigest',
 }
 
@@ -1863,6 +1998,7 @@ function fillSettingsForm(settings) {
   )
   $('set-default-category').value = settings.defaultCategory
   $('set-new-tab').checked = settings.openLinksInNewTab
+  $('set-watch').value = settings.watchTerms.join(', ')
   $('set-panels').replaceChildren(
     ...PANELS.map((name) => {
       const label = document.createElement('label')
@@ -1898,6 +2034,7 @@ function readSettingsForm() {
     defaultSource: $('set-default-source').value,
     defaultCategory: $('set-default-category').value,
     defaultView: $('set-default-view').value,
+    watchTerms: parseWatchTerms($('set-watch').value),
     panels: Object.fromEntries(
       [...$('set-panels').querySelectorAll('input')].map((b) => [
         b.name,
@@ -1986,6 +2123,7 @@ async function submitSettings(e) {
     await fetchAllData(true)
   } else {
     render()
+    loadReport()
   }
 }
 

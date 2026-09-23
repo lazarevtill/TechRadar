@@ -37,3 +37,19 @@ export async function fetchBackendFeed(
 export function panelData(panel, key) {
   return panel && !panel.error && Array.isArray(panel[key]) ? panel[key] : []
 }
+
+export const REPORT_PATH = '/api/report'
+
+/** The weekly report for these watch terms (GET /api/report). */
+export async function fetchReport(fetchImpl, baseUrl, watchTerms = []) {
+  const query = watchTerms.length
+    ? `?watch=${encodeURIComponent(watchTerms.join(','))}`
+    : ''
+  const url = `${baseUrl.replace(/\/$/, '')}${REPORT_PATH}${query}`
+  const res = await fetchImpl(url)
+  if (!res.ok) throw new Error(`${url} answered HTTP ${res.status}`)
+  const report = await res.json()
+  if (!Array.isArray(report?.topics) || !Array.isArray(report?.watch))
+    throw new Error(`${url} returned an unexpected report`)
+  return report
+}

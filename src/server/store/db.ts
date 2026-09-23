@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS observations (
   engagement REAL,
   score REAL,
   reasons TEXT NOT NULL DEFAULT '[]',
+  topics TEXT NOT NULL DEFAULT '[]',  -- tracked topic and theme ids
   PRIMARY KEY (item_id, day)
 );
 CREATE INDEX IF NOT EXISTS observations_day ON observations(day);

@@ -2,7 +2,7 @@ import type { DataSource } from '@/lib/tech-categories'
 import type { SignalMetrics } from '@/lib/signal-model'
 import { contentHash } from '@/server/utils/verdict-store'
 import { daysBefore, type Db } from './db'
-import { groupByKeys } from './identity'
+import { workGroups, workSources, type Works } from './works'
 
 /**
  * The radar's track record: every highlight is a prediction ("this will
@@ -151,7 +151,7 @@ export async function evaluateDue(
   const metric = new Map<string, number | null>()
   let fetches = 0
   let evaluated = 0
-  let reach: Map<string, number> | null = null
+  let works: Works | null = null
 
   for (const p of due) {
     if (p.reason === 'discovered') {
@@ -185,8 +185,8 @@ export async function evaluateDue(
         save(p, 'unavailable', null)
       else save(p, 'measured', Math.log1p(now) - Math.log1p(p.baseline))
     } else {
-      reach ??= reachBySubject(db, today)
-      const sourcesNow = reach.get(p.subject) ?? 1
+      works ??= workGroups(db, daysBefore(today, 60))
+      const sourcesNow = Math.max(1, workSources(works, p.subject).size)
       save(p, 'measured', Math.max(0, sourcesNow - (p.baseline ?? 1)))
     }
     evaluated++
@@ -197,34 +197,6 @@ export async function evaluateDue(
       dueBy,
     )?.n ?? 0
   return { evaluated, pending }
-}
-
-/** Distinct sources each item's work reached, over the last 60 days. */
-function reachBySubject(db: Db, today: string): Map<string, number> {
-  const rows = db.all<{ id: string; source: DataSource; key: string | null }>(
-    `SELECT i.id, i.source, k.key FROM items i
-       LEFT JOIN item_keys k ON k.item_id = i.id
-      WHERE i.last_seen >= ?`,
-    daysBefore(today, 60),
-  )
-  const keys = new Map<string, string[]>()
-  const source = new Map<string, DataSource>()
-  for (const r of rows) {
-    source.set(r.id, r.source)
-    const list = keys.get(r.id) ?? []
-    if (r.key) list.push(r.key)
-    keys.set(r.id, list)
-  }
-  const groups = groupByKeys(keys)
-  const sourcesByGroup = new Map<string, Set<DataSource>>()
-  for (const [id, group] of groups) {
-    const set = sourcesByGroup.get(group) ?? new Set()
-    set.add(source.get(id)!)
-    sourcesByGroup.set(group, set)
-  }
-  const out = new Map<string, number>()
-  for (const [id, group] of groups) out.set(id, sourcesByGroup.get(group)!.size)
-  return out
 }
 
 export interface ReasonRecord {

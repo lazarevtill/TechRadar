@@ -30,6 +30,7 @@ import {
   type TrackRecord,
 } from '@/server/store/predictions'
 import { readMetric } from '@/server/utils/metric-refetch'
+import { sendWeeklyReportIfDue } from './report'
 import {
   activeThemes,
   runDiscovery,
@@ -292,6 +293,22 @@ async function withHistory(raw: RawItem[]): Promise<{
     )
     return { history: undefined, themes: [], save: () => null }
   }
+}
+
+let lastReportAttempt = 0
+
+/** Weekly webhook report (REPORT_WEBHOOK_URL); a failure retries hourly. */
+function sendReportInBackground() {
+  if (!process.env.REPORT_WEBHOOK_URL) return
+  if (Date.now() - lastReportAttempt < CACHE_TTL.HOUR) return
+  lastReportAttempt = Date.now()
+  sendWeeklyReportIfDue()
+    .then(() => {
+      lastReportAttempt = 0
+    })
+    .catch((error: unknown) =>
+      console.error('[report] weekly webhook failed:', error),
+    )
 }
 
 let evaluating = false
@@ -1432,6 +1449,7 @@ async function buildTechFeed() {
   } catch (error) {
     console.error('[history] could not record this fetch:', error)
   }
+  sendReportInBackground()
 
   // Translate non-English items
   const nonEnglishItems = allItems.filter(

@@ -1,7 +1,8 @@
 import type { DataSource } from '@/lib/tech-categories'
 import type { SignalMetrics } from '@/lib/signal-model'
 import { daysBefore, type Db } from './db'
-import { groupByKeys, identityKeys } from './identity'
+import { identityKeys } from './identity'
+import { workGroups } from './works'
 import { extractTerms } from './terms'
 
 /**
@@ -99,7 +100,7 @@ export function recordItems(
   })
 }
 
-/** Store the final score and highlight reasons on today's observation. */
+/** Store the final score, highlight reasons and topics on today's observation. */
 export function recordSignals(
   db: Db,
   items: Array<{ id: string; signal: SignalMetrics }>,
@@ -108,9 +109,10 @@ export function recordSignals(
   db.transaction(() => {
     for (const item of items)
       db.run(
-        'UPDATE observations SET score = ?, reasons = ? WHERE item_id = ? AND day = ?',
+        'UPDATE observations SET score = ?, reasons = ?, topics = ? WHERE item_id = ? AND day = ?',
         item.signal.score,
         JSON.stringify(item.signal.reasons),
+        JSON.stringify(item.signal.topics),
         item.id,
         day,
       )
@@ -136,36 +138,7 @@ export function historyContext(
   items: SnapshotItem[],
   today: string,
 ): Map<string, HistoryContext> {
-  const since = daysBefore(today, LINK_WINDOW_DAYS)
-  const known = db.all<{
-    id: string
-    source: DataSource
-    title: string
-    url: string
-    first_seen: string
-    key: string | null
-  }>(
-    `SELECT i.id, i.source, i.title, i.url, i.first_seen, k.key
-       FROM items i LEFT JOIN item_keys k ON k.item_id = i.id
-      WHERE i.last_seen >= ?`,
-    since,
-  )
-  const keysById = new Map<string, string[]>()
-  const meta = new Map<string, (typeof known)[number]>()
-  for (const row of known) {
-    meta.set(row.id, row)
-    const list = keysById.get(row.id) ?? []
-    if (row.key) list.push(row.key)
-    keysById.set(row.id, list)
-  }
-  const groups = groupByKeys(keysById)
-  const members = new Map<string, string[]>()
-  for (const [id, group] of groups) {
-    const list = members.get(group) ?? []
-    list.push(id)
-    members.set(group, list)
-  }
-
+  const works = workGroups(db, daysBefore(today, LINK_WINDOW_DAYS))
   const out = new Map<string, HistoryContext>()
   for (const item of items) {
     const prior = db.get<{ day: string; engagement: number }>(
@@ -175,11 +148,10 @@ export function historyContext(
       item.id,
       today,
     )
-    const groupId = groups.get(item.id) ?? item.id
-    const others = (members.get(groupId) ?? [])
-      .filter((id) => id !== item.id)
-      .map((id) => meta.get(id)!)
-      .filter(Boolean)
+    const groupId = works.workOf.get(item.id) ?? item.id
+    const others = (works.members.get(groupId) ?? []).filter(
+      (m) => m.id !== item.id,
+    )
     const sources = new Set<DataSource>([
       item.source,
       ...others.map((o) => o.source),
@@ -200,7 +172,8 @@ export function historyContext(
           title: o.title,
           url: o.url,
         })),
-      firstSeen: meta.get(item.id)?.first_seen ?? new Date().toISOString(),
+      firstSeen:
+        works.item.get(item.id)?.first_seen ?? new Date().toISOString(),
     })
   }
   return out
