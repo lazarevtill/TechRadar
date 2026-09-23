@@ -146,3 +146,25 @@ describe('retainDays', () => {
       expect(retainDays(bad)).toBe(365)
   })
 })
+
+describe('dailyMaintenance failure', () => {
+  it('retries the backup on the next run when it failed', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'radar-ops-'))
+    const db = await openDb(join(dir, 'history.db'))
+    // A backup directory that cannot be created: a file is in the way.
+    writeFileSync(join(dir, 'blocked'), '')
+    process.env.BACKUP_DIR = join(dir, 'blocked', 'sub')
+    try {
+      expect(() =>
+        dailyMaintenance(db, TODAY, join(dir, 'history.db')),
+      ).toThrow()
+    } finally {
+      delete process.env.BACKUP_DIR
+    }
+    // Not marked done: the next run (backups now possible) does it.
+    expect(dailyMaintenance(db, TODAY, join(dir, 'history.db'))?.backup).toBe(
+      join(dir, 'backups', `history-${TODAY}.db`),
+    )
+    db.close()
+  })
+})

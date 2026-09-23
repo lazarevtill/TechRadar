@@ -47,7 +47,7 @@ Non-secret server settings: `HISTORY_DB` (default `.cache/history.db`), `HISTORY
 
 Build and the extension need no secrets. Neither key may reach client code, `public/data`, or the extension — the extension only ever talks to the server.
 
-Docker: `docker compose up --build` locally; `.github/workflows/publish-image.yml` pushes `ghcr.io/lazarevtill/techradar` on every push to `main`. `DIGEST_DATA_BASE_URL` points the server at another fork's data.
+Deployment (VPS over SSH with Caddy, Railway, other platforms) is in `docs/deploy.md`; `AGENTS.md` is the same as a procedure for coding agents — follow it when asked to deploy. Docker: `docker compose up --build` locally; `.github/workflows/publish-image.yml` pushes `ghcr.io/lazarevtill/techradar` on every push to `main`. `DIGEST_DATA_BASE_URL` points the server at another fork's data.
 
 ## Architecture
 

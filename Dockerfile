@@ -30,10 +30,12 @@ RUN bun install --frozen-lockfile --production
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/server.ts ./server.ts
 
-# Paid Jev verdicts persist here (src/server/utils/verdict-store.ts) so a
-# restart or redeploy doesn't re-send the whole feed. Mount a volume on it.
+# State lives in /app/.cache: Jev verdicts (so a redeploy re-sends nothing)
+# and the history store with its daily backups. Mount a persistent volume
+# there — compose does; with `docker run` pass -v. There is deliberately no
+# VOLUME instruction: platforms with their own volumes (Railway) reject it,
+# and an anonymous volume would silently lose the history on recreate.
 RUN mkdir -p /app/.cache && chown bun:bun /app/.cache
-VOLUME /app/.cache
 
 # Runs as the image's non-root `bun` user.
 USER bun

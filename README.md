@@ -109,7 +109,10 @@ docker compose up --build                                  # http://localhost:30
 docker run -p 3000:3000 -v techradar-cache:/app/.cache ghcr.io/lazarevtill/techradar:latest
 ```
 
-Images are published to GHCR after CI passes on `main`.
+Images are published to GHCR after CI passes on `main`. For a real
+deployment — a VPS over SSH with HTTPS, Railway, or another platform — follow
+[`docs/deploy.md`](docs/deploy.md); coding agents (Claude Code, Codex, Cursor)
+can run it from [`AGENTS.md`](AGENTS.md).
 
 ## How signals are scored
 
@@ -193,29 +196,9 @@ the last feed and weekly report for offline use. See
   about sources going down and recovering.
 - **Backups.** Once a day the database is copied with `VACUUM INTO` to
   `BACKUP_DIR` (default `backups/` on the same volume; the newest 7 are kept).
-  To survive the loss of the volume, point `BACKUP_DIR` at a host directory:
-
-  ```yaml
-  # docker-compose.yml
-  environment:
-    BACKUP_DIR: /backups
-  volumes:
-    - techradar-cache:/app/.cache
-    - ./backups:/backups
-  ```
-
-  **Restore:** stop the server, copy a backup over the database file (and
-  delete any `history.db-wal` / `history.db-shm` next to it), start again:
-
-  ```bash
-  docker compose stop techradar
-  docker compose run --rm --entrypoint sh techradar -c \
-    'cp /backups/history-2026-09-23.db /app/.cache/history.db && rm -f /app/.cache/history.db-wal /app/.cache/history.db-shm'
-  docker compose start techradar
-  ```
-
-  A database written by a newer build is refused rather than downgraded.
-
+  The VPS setup in [`docs/deploy.md`](docs/deploy.md) puts them on the host,
+  outside the volume, and shows the tested restore procedure. A database
+  written by a newer build is refused rather than downgraded.
 - **Exports.** `GET /api/export?kind=series|predictions|themes&format=csv|json`
   returns the history as tables.
 

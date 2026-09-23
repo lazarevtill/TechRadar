@@ -236,10 +236,6 @@ export function dailyMaintenance(
       'DELETE FROM source_runs WHERE ts < ?',
       `${daysBefore(today, 90)}T00:00:00Z`,
     )
-    db.run(
-      "INSERT OR REPLACE INTO meta (key, value) VALUES ('maintenance_day', ?)",
-      today,
-    )
   })
 
   let backup: string | null = null
@@ -256,6 +252,12 @@ export function dailyMaintenance(
       .slice(BACKUPS_KEPT)
     for (const f of old) rmSync(join(dir, f), { force: true })
   }
+  // Done for today only once the backup exists: a failed backup (a full or
+  // read-only disk) is retried on the next scheduled run.
+  db.run(
+    "INSERT OR REPLACE INTO meta (key, value) VALUES ('maintenance_day', ?)",
+    today,
+  )
   return { backup, deletedItems }
 }
 

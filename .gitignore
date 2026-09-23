@@ -24,3 +24,6 @@ package-lock.json
 
 # Paid Jev verdicts (src/server/utils/verdict-store.ts)
 .cache/
+
+# VPS deployment: host-side backups (deploy/vps)
+/backups
