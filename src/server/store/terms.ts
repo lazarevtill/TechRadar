@@ -88,3 +88,24 @@ export function extractTerms(title: string): Term[] {
   }
   return [...out.values()]
 }
+
+/** Name-like tokens only: from summaries, where word pairs are mostly noise. */
+export function extractNames(text: string): Term[] {
+  const out = new Map<string, Term>()
+  for (const t of tokens(text))
+    if (isNameLike(t))
+      out.set(t.toLowerCase(), { key: t.toLowerCase(), display: t })
+  return [...out.values()]
+}
+
+/**
+ * The terms an item carries: everything from its title, plus the names its
+ * summary mentions (new method and model names often appear only there).
+ */
+export function itemTerms(title: string, summary = ''): Term[] {
+  const out = new Map<string, Term>()
+  for (const t of extractNames(summary)) out.set(t.key, t)
+  // The title's form wins for display.
+  for (const t of extractTerms(title)) out.set(t.key, t)
+  return [...out.values()]
+}

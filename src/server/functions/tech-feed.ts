@@ -42,7 +42,7 @@ import {
   runDiscovery,
   type Theme,
 } from '@/server/store/discovery'
-import { extractTerms } from '@/server/store/terms'
+import { itemTerms } from '@/server/store/terms'
 import { themeAsker } from '@/server/utils/jev-theme'
 import {
   historyContext,
@@ -444,7 +444,7 @@ function themesByItem(raw: RawItem[], themes: Theme[]): Map<string, string[]> {
   const out = new Map<string, string[]>()
   if (!themes.length) return out
   for (const item of raw) {
-    const keys = new Set(extractTerms(item.title).map((t) => t.key))
+    const keys = new Set(itemTerms(item.title, item.summary).map((t) => t.key))
     const ids = themes.filter((t) => keys.has(t.term)).map((t) => t.id)
     if (ids.length) out.set(item.id, ids)
   }

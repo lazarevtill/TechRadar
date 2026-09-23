@@ -3,7 +3,7 @@ import type { SignalMetrics } from '@/lib/signal-model'
 import { daysBefore, type Db } from './db'
 import { identityKeys } from './identity'
 import { workGroups } from './works'
-import { extractTerms } from './terms'
+import { itemTerms } from './terms'
 
 /**
  * Writes each feed rebuild into the history database and answers the two
@@ -84,7 +84,7 @@ export function recordItems(
           item.id,
           key,
         )
-      for (const term of extractTerms(item.title)) {
+      for (const term of itemTerms(item.title, item.summary)) {
         db.run(
           'INSERT OR IGNORE INTO item_terms (item_id, term) VALUES (?, ?)',
           item.id,
