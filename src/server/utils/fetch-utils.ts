@@ -310,8 +310,10 @@ export async function readJson<T>(res: Response, what: string): Promise<T> {
   try {
     return JSON.parse(text) as T
   } catch {
+    // One line, whatever the body looks like.
+    const excerpt = text.slice(0, 80).replace(/\s+/g, ' ')
     throw new Error(
-      `${what} answered HTTP ${res.status} with invalid JSON: ${text.slice(0, 80)}`,
+      `${what} answered HTTP ${res.status} with invalid JSON: ${excerpt}`,
     )
   }
 }

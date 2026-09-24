@@ -523,18 +523,27 @@ async function fetchGitHubTrending(): Promise<RawItem[]> {
 
     let failedSearches = 0
     for (const query of searches) {
-      const response = await fetchWithRetry(
-        `https://api.github.com/search/repositories?q=${query}+created:>${dateStr}&sort=stars&order=desc&per_page=${perPage}`,
-        {
-          headers: {
-            Accept: 'application/vnd.github.v3+json',
-            'User-Agent': 'TechEvolutionRadar/1.0',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      // One search failing (rate limit, timeout, network) is a partial
+      // result, not an outage.
+      let response: Response
+      try {
+        response = await fetchWithRetry(
+          `https://api.github.com/search/repositories?q=${query}+created:>${dateStr}&sort=stars&order=desc&per_page=${perPage}`,
+          {
+            headers: {
+              Accept: 'application/vnd.github.v3+json',
+              'User-Agent': 'TechEvolutionRadar/1.0',
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            retries: 3,
+            baseDelay: 1000,
           },
-          retries: 3,
-          baseDelay: 1000,
-        },
-      )
+        )
+      } catch (error) {
+        console.error(`[github] search "${query}" failed:`, String(error))
+        failedSearches++
+        continue
+      }
 
       if (response.ok) {
         const data = await readJson<{ items?: GitHubRepo[] }>(
@@ -1426,7 +1435,10 @@ async function fetchPreprints(): Promise<RawItem[]> {
         } catch (error) {
           const reason = error instanceof Error ? error.message : String(error)
           console.error(`[preprints] ${server} unavailable: ${reason}`)
-          failures.push(reason)
+          // Every reason names its server, whichever way it failed.
+          failures.push(
+            reason.startsWith(server) ? reason : `${server}: ${reason}`,
+          )
           return null
         }
       }),

@@ -12,6 +12,11 @@ describe('readJson', () => {
     await expect(readJson(new Response('<html>'), 'HAL')).rejects.toThrow(
       'HAL answered HTTP 200 with invalid JSON: <html>',
     )
+    await expect(
+      readJson(new Response('<html>\n<body>\r\nerr'), 'HAL'),
+    ).rejects.toThrow(
+      'HAL answered HTTP 200 with invalid JSON: <html> <body> err',
+    )
     expect(await readJson(new Response('{"a":1}'), 'x')).toEqual({ a: 1 })
   })
 })
