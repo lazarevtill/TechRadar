@@ -296,3 +296,22 @@ export async function batchFetchWithRetry<T>(
 
   return results
 }
+
+/**
+ * Parse a JSON response body, failing loudly and specifically. Upstream APIs
+ * sometimes answer 200 with an empty body or a literal `null` (bioRxiv did
+ * for every query during an outage on 2026-09-24); callers then saw
+ * "null is not an object" deep in their mapping code instead of a reason.
+ */
+export async function readJson<T>(res: Response, what: string): Promise<T> {
+  const text = await res.text()
+  if (!text.trim() || text.trim() === 'null')
+    throw new Error(`${what} answered HTTP ${res.status} with an empty body`)
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    throw new Error(
+      `${what} answered HTTP ${res.status} with invalid JSON: ${text.slice(0, 80)}`,
+    )
+  }
+}
