@@ -1,44 +1,38 @@
 {
-  "generatedAt": "2026-09-23T11:35:11.883Z",
+  "generatedAt": "2026-09-24T11:45:09.978Z",
   "window": "rolling-120d",
   "topics": [
     {
-      "id": "humanoids",
-      "label": "Humanoid Robots",
-      "category": "robotics",
-      "stage": "prototype",
-      "trajectory": "rising",
-      "momentum": 2.5,
+      "id": "post-quantum",
+      "label": "Post-Quantum Crypto",
+      "category": "cybersecurity",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
       "weeklyCounts": [
-        1,
-        7,
-        7,
-        6,
-        6,
-        7,
-        7,
-        1,
         0,
         0,
-        2,
-        7
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
       ],
-      "signals": [
-        {
-          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
-          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T04:50:36.000Z"
-        }
-      ]
+      "signals": []
     },
     {
       "id": "fusion",
       "label": "Fusion Energy",
       "category": "energy",
       "stage": "research",
-      "trajectory": "rising",
-      "momentum": 0.65,
+      "trajectory": "cooling",
+      "momentum": -0.82,
       "weeklyCounts": [
         14,
         11,
@@ -51,7 +45,8 @@
         14,
         14,
         17,
-        28
+        28,
+        5
       ],
       "signals": [
         {
@@ -87,66 +82,12 @@
       ]
     },
     {
-      "id": "rag",
-      "label": "Retrieval-Augmented Generation",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 0.12,
-      "weeklyCounts": [
-        81,
-        60,
-        57,
-        76,
-        72,
-        77,
-        95,
-        107,
-        100,
-        85,
-        92,
-        103
-      ],
-      "signals": [
-        {
-          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
-          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
-          "source": "latent-space",
-          "publishedAt": "2026-09-19T05:48:28.000Z"
-        },
-        {
-          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
-          "url": "https://www.latent.space/p/aiuc",
-          "source": "latent-space",
-          "publishedAt": "2026-09-16T18:07:45.000Z"
-        },
-        {
-          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
-          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T04:50:36.000Z"
-        },
-        {
-          "title": "Humanity’s Last Invention — Richard Socher of Recursive",
-          "url": "https://www.latent.space/p/recursive",
-          "source": "latent-space",
-          "publishedAt": "2026-09-14T16:04:16.000Z"
-        },
-        {
-          "title": "[AINews] Collusion.wiki: A second undisclosed OpenAI agent swarm incident...",
-          "url": "https://www.latent.space/p/ainews-collusionwiki-a-second-undisclosed",
-          "source": "latent-space",
-          "publishedAt": "2026-09-05T04:32:00.000Z"
-        }
-      ]
-    },
-    {
       "id": "open-models",
       "label": "Open Models",
       "category": "ai",
       "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 0.02,
+      "trajectory": "cooling",
+      "momentum": -0.86,
       "weeklyCounts": [
         375,
         358,
@@ -159,9 +100,16 @@
         388,
         365,
         364,
-        370
+        370,
+        53
       ],
       "signals": [
+        {
+          "title": "[AINews] Meta Connect 2026: Muse glasses, voice, video, and Charm",
+          "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
+          "source": "latent-space",
+          "publishedAt": "2026-09-24T08:12:59.000Z"
+        },
         {
           "title": "[AINews] Claude Opus 5.5, the new default model for AINews — and everybody cuts prices 40-50%",
           "url": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
@@ -185,12 +133,6 @@
           "url": "https://simonwillison.net/2026/Sep/21/jev/",
           "source": "simonw",
           "publishedAt": "2026-09-21T23:09:20.000Z"
-        },
-        {
-          "title": "Jev: System One models for Prod, not God — with Diogo Almeida, CEO, TypeSafe AI",
-          "url": "https://www.latent.space/p/jev",
-          "source": "latent-space",
-          "publishedAt": "2026-09-21T22:13:49.000Z"
         }
       ]
     },
@@ -199,8 +141,8 @@
       "label": "Protein Design",
       "category": "biotech",
       "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
+      "trajectory": "cooling",
+      "momentum": -0.86,
       "weeklyCounts": [
         21,
         21,
@@ -213,7 +155,8 @@
         21,
         21,
         21,
-        21
+        21,
+        3
       ],
       "signals": [
         {
@@ -237,27 +180,35 @@
       ]
     },
     {
-      "id": "post-quantum",
-      "label": "Post-Quantum Crypto",
-      "category": "cybersecurity",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
+      "id": "humanoids",
+      "label": "Humanoid Robots",
+      "category": "robotics",
+      "stage": "prototype",
+      "trajectory": "cooling",
+      "momentum": -0.86,
       "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
+        1,
+        7,
+        7,
         6,
+        6,
+        7,
+        7,
+        1,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0
+        2,
+        7,
+        1
       ],
-      "signals": []
+      "signals": [
+        {
+          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
+          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
+          "source": "latent-space",
+          "publishedAt": "2026-09-15T04:50:36.000Z"
+        }
+      ]
     },
     {
       "id": "llm-agents",
@@ -265,7 +216,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.01,
+      "momentum": -0.87,
       "weeklyCounts": [
         411,
         420,
@@ -278,7 +229,8 @@
         437,
         452,
         469,
-        463
+        463,
+        61
       ],
       "signals": [
         {
@@ -310,6 +262,61 @@
           "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
           "source": "latent-space",
           "publishedAt": "2026-09-17T07:28:25.000Z"
+        }
+      ]
+    },
+    {
+      "id": "rag",
+      "label": "Retrieval-Augmented Generation",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.87,
+      "weeklyCounts": [
+        81,
+        60,
+        57,
+        76,
+        72,
+        77,
+        95,
+        107,
+        100,
+        85,
+        92,
+        103,
+        13
+      ],
+      "signals": [
+        {
+          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
+          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
+          "source": "latent-space",
+          "publishedAt": "2026-09-19T05:48:28.000Z"
+        },
+        {
+          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
+          "url": "https://www.latent.space/p/aiuc",
+          "source": "latent-space",
+          "publishedAt": "2026-09-16T18:07:45.000Z"
+        },
+        {
+          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
+          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
+          "source": "latent-space",
+          "publishedAt": "2026-09-15T04:50:36.000Z"
+        },
+        {
+          "title": "Humanity’s Last Invention — Richard Socher of Recursive",
+          "url": "https://www.latent.space/p/recursive",
+          "source": "latent-space",
+          "publishedAt": "2026-09-14T16:04:16.000Z"
+        },
+        {
+          "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
+          "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
+          "source": "hf",
+          "publishedAt": "2026-08-12T16:14:36.000Z"
         }
       ]
     }
