@@ -891,5 +891,19 @@
       "humanoids": 1,
       "protein-design": 3
     }
+  },
+  {
+    "date": "2026-09-24",
+    "topics": {
+      "llm-agents": 13,
+      "multimodal": 3,
+      "ai-safety": 8,
+      "generative-media": 2,
+      "ai-coding": 6,
+      "open-models": 2,
+      "small-models": 2,
+      "rag": 1,
+      "supply-chain-security": 1
+    }
   }
 ]

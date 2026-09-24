@@ -1,179 +1,220 @@
 {
-  "generatedAt": "2026-09-23T11:35:11.883Z",
+  "generatedAt": "2026-09-24T11:46:29.556Z",
   "window": "rolling-120d",
   "topics": [
     {
-      "id": "humanoids",
-      "label": "Humanoid Robots",
-      "category": "robotics",
-      "stage": "prototype",
-      "trajectory": "rising",
-      "momentum": 2.5,
-      "weeklyCounts": [
-        1,
-        7,
-        7,
-        6,
-        6,
-        7,
-        7,
-        1,
-        0,
-        0,
-        2,
-        7
-      ],
-      "signals": [
-        {
-          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
-          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T04:50:36.000Z"
-        }
-      ]
-    },
-    {
-      "id": "fusion",
-      "label": "Fusion Energy",
-      "category": "energy",
-      "stage": "research",
-      "trajectory": "rising",
-      "momentum": 0.65,
-      "weeklyCounts": [
-        14,
-        11,
-        14,
-        14,
-        4,
-        7,
-        7,
-        9,
-        14,
-        14,
-        17,
-        28
-      ],
-      "signals": [
-        {
-          "title": "🔬 An Oscar, Two Asteroids, and the Algorithm in Your sklearn: John Platt on AI for Science",
-          "url": "https://www.latent.space/p/john-platt",
-          "source": "latent-space",
-          "publishedAt": "2026-09-22T21:07:39.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
-          "source": "latent-space",
-          "publishedAt": "2026-09-18T06:28:43.000Z"
-        },
-        {
-          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
-          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
-          "source": "latent-space",
-          "publishedAt": "2026-09-17T07:28:25.000Z"
-        },
-        {
-          "title": "Humanity’s Last Invention — Richard Socher of Recursive",
-          "url": "https://www.latent.space/p/recursive",
-          "source": "latent-space",
-          "publishedAt": "2026-09-14T16:04:16.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-d3b",
-          "source": "latent-space",
-          "publishedAt": "2026-09-10T03:33:12.000Z"
-        }
-      ]
-    },
-    {
-      "id": "rag",
-      "label": "Retrieval-Augmented Generation",
+      "id": "multimodal",
+      "label": "Multimodal Models",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 0.12,
+      "momentum": 1,
       "weeklyCounts": [
-        81,
-        60,
-        57,
-        76,
-        72,
-        77,
-        95,
-        107,
-        100,
-        85,
-        92,
-        103
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3
       ],
       "signals": [
         {
-          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
-          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
+          "title": "[AINews] Meta Connect 2026: Muse glasses, voice, video, and Charm",
+          "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
           "source": "latent-space",
-          "publishedAt": "2026-09-19T05:48:28.000Z"
+          "publishedAt": "2026-09-24T08:12:59.000Z"
         },
         {
-          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
-          "url": "https://www.latent.space/p/aiuc",
-          "source": "latent-space",
-          "publishedAt": "2026-09-16T18:07:45.000Z"
-        },
-        {
-          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
-          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T04:50:36.000Z"
-        },
-        {
-          "title": "Humanity’s Last Invention — Richard Socher of Recursive",
-          "url": "https://www.latent.space/p/recursive",
-          "source": "latent-space",
-          "publishedAt": "2026-09-14T16:04:16.000Z"
-        },
-        {
-          "title": "[AINews] Collusion.wiki: A second undisclosed OpenAI agent swarm incident...",
-          "url": "https://www.latent.space/p/ainews-collusionwiki-a-second-undisclosed",
-          "source": "latent-space",
-          "publishedAt": "2026-09-05T04:32:00.000Z"
-        }
-      ]
-    },
-    {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 0.02,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370
-      ],
-      "signals": [
-        {
-          "title": "[AINews] Claude Opus 5.5, the new default model for AINews — and everybody cuts prices 40-50%",
-          "url": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
-          "source": "latent-space",
-          "publishedAt": "2026-09-23T06:41:41.000Z"
+          "title": "Gemini 3.8 TTS Playground",
+          "url": "https://simonwillison.net/2026/Sep/23/gemini-tts-playground/",
+          "source": "simonw",
+          "publishedAt": "2026-09-23T17:12:27.000Z"
         },
         {
           "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
           "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
           "source": "latent-space",
           "publishedAt": "2026-09-22T06:30:56.000Z"
+        }
+      ]
+    },
+    {
+      "id": "ai-safety",
+      "label": "AI Safety & Interpretability",
+      "category": "ai",
+      "stage": "research",
+      "trajectory": "rising",
+      "momentum": 1,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8
+      ],
+      "signals": [
+        {
+          "title": "Sam Altman’s remarks at the United Nations Security Council",
+          "url": "https://openai.com/index/sam-altman-un-security-council-remarks",
+          "source": "openai",
+          "publishedAt": "2026-09-23T12:00:00.000Z"
         },
+        {
+          "title": "Introducing MentalHealthBench",
+          "url": "https://openai.com/index/introducing-mentalhealthbench",
+          "source": "openai",
+          "publishedAt": "2026-09-23T10:00:00.000Z"
+        },
+        {
+          "title": "Priorities and principles for effective third party assessments",
+          "url": "https://openai.com/index/priorities-principles-third-party-assessments",
+          "source": "openai",
+          "publishedAt": "2026-09-22T00:00:00.000Z"
+        },
+        {
+          "title": "How UK AISI and EvalEval Are Making Benchmark Results Reproducible",
+          "url": "https://huggingface.co/blog/evaleval-aisi",
+          "source": "hf",
+          "publishedAt": "2026-09-22T00:00:00.000Z"
+        },
+        {
+          "title": "Building standards for the next phase of AI",
+          "url": "https://openai.com/index/building-standards-next-phase-ai",
+          "source": "openai",
+          "publishedAt": "2026-09-21T10:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "generative-media",
+      "label": "Generative Media",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 1,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2
+      ],
+      "signals": [
+        {
+          "title": "How invideo improves color grading 3x with GPT‑6 Astra",
+          "url": "https://openai.com/index/invideo-builds-with-gpt-6-astra",
+          "source": "openai",
+          "publishedAt": "2026-09-23T12:00:00.000Z"
+        },
+        {
+          "title": "Higgsfield AI ships new video features in a day with GPT-6 Astra",
+          "url": "https://openai.com/index/higgsfield-from-prompt-to-production-with-astra",
+          "source": "openai",
+          "publishedAt": "2026-09-21T12:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "ai-coding",
+      "label": "AI for Coding",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 1,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        6
+      ],
+      "signals": [
+        {
+          "title": "SF October 14th: A Birds of a Feather Session on Agentic Engineering",
+          "url": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
+          "source": "simonw",
+          "publishedAt": "2026-09-23T02:53:19.000Z"
+        },
+        {
+          "title": "Airbnb widens access to GPT-6 Astra and OpenAI frontier models",
+          "url": "https://openai.com/index/airbnb-gpt-6-astra",
+          "source": "openai",
+          "publishedAt": "2026-09-23T01:00:00.000Z"
+        },
+        {
+          "title": "Quoting voxium",
+          "url": "https://simonwillison.net/2026/Sep/20/voxium/",
+          "source": "simonw",
+          "publishedAt": "2026-09-20T21:06:43.000Z"
+        },
+        {
+          "title": "MCP was always a bad idea?",
+          "url": "https://simonwillison.net/2026/Sep/20/hn-49779718/",
+          "source": "simonw",
+          "publishedAt": "2026-09-20T20:24:41.000Z"
+        },
+        {
+          "title": "llm-keys-ui 0.1",
+          "url": "https://simonwillison.net/2026/Sep/20/llm-keys-ui/",
+          "source": "simonw",
+          "publishedAt": "2026-09-20T19:22:19.000Z"
+        }
+      ]
+    },
+    {
+      "id": "small-models",
+      "label": "Small & Efficient Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 1,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2
+      ],
+      "signals": [
         {
           "title": "Transformers now runs llama.cpp quants",
           "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
@@ -181,58 +222,41 @@
           "publishedAt": "2026-09-22T00:00:00.000Z"
         },
         {
-          "title": "Jev introduces a new shape of LLM - System One, aka Decision Models",
-          "url": "https://simonwillison.net/2026/Sep/21/jev/",
-          "source": "simonw",
-          "publishedAt": "2026-09-21T23:09:20.000Z"
-        },
-        {
-          "title": "Jev: System One models for Prod, not God — with Diogo Almeida, CEO, TypeSafe AI",
-          "url": "https://www.latent.space/p/jev",
-          "source": "latent-space",
-          "publishedAt": "2026-09-21T22:13:49.000Z"
+          "title": "Pruning LLMs Like a Physicist: Block Removal as an Ising Optimization Problem",
+          "url": "https://huggingface.co/blog/MultiverseComputingCAI/pruning-llms-like-a-physicist-block-removal-as-an",
+          "source": "hf",
+          "publishedAt": "2026-09-21T13:44:34.000Z"
         }
       ]
     },
     {
-      "id": "protein-design",
-      "label": "Protein Design",
-      "category": "biotech",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
+      "id": "supply-chain-security",
+      "label": "Software Supply-Chain Security",
+      "category": "cybersecurity",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 1,
       "weeklyCounts": [
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
       ],
       "signals": [
         {
-          "title": "Engineering more resilient crops for a warming climate",
-          "url": "https://deepmind.google/blog/engineering-more-resilient-crops-for-a-warming-climate/",
-          "source": "deepmind",
-          "publishedAt": "2025-12-04T16:23:24.000Z"
-        },
-        {
-          "title": "AlphaFold: Five years of impact",
-          "url": "https://deepmind.google/blog/alphafold-five-years-of-impact/",
-          "source": "deepmind",
-          "publishedAt": "2025-11-25T16:00:12.000Z"
-        },
-        {
-          "title": "Revealing a key protein behind heart disease",
-          "url": "https://deepmind.google/blog/revealing-a-key-protein-behind-heart-disease/",
-          "source": "deepmind",
-          "publishedAt": "2025-11-25T15:52:51.000Z"
+          "title": "Be alert: targeted attacks on prominent Rustaceans",
+          "url": "https://simonwillison.net/2026/Sep/17/targeted-attacks-on-rustaceans/",
+          "source": "simonw",
+          "publishedAt": "2026-09-17T23:59:19.000Z"
         }
       ]
     },
@@ -255,6 +279,7 @@
         0,
         0,
         0,
+        0,
         0
       ],
       "signals": []
@@ -265,7 +290,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.01,
+      "momentum": -0.97,
       "weeklyCounts": [
         411,
         420,
@@ -278,14 +303,21 @@
         437,
         452,
         469,
-        463
+        463,
+        13
       ],
       "signals": [
         {
-          "title": "[AINews] Claude Opus 5.5, the new default model for AINews — and everybody cuts prices 40-50%",
-          "url": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
+          "title": "[AINews] Meta Connect 2026: Muse glasses, voice, video, and Charm",
+          "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
           "source": "latent-space",
-          "publishedAt": "2026-09-23T06:41:41.000Z"
+          "publishedAt": "2026-09-24T08:12:59.000Z"
+        },
+        {
+          "title": "Ringg’s AI agents resolve up to 65% of customer calls with OpenAI",
+          "url": "https://openai.com/index/ringg",
+          "source": "openai",
+          "publishedAt": "2026-09-23T12:00:00.000Z"
         },
         {
           "title": "SF October 14th: A Birds of a Feather Session on Agentic Engineering",
@@ -294,24 +326,158 @@
           "publishedAt": "2026-09-23T02:53:19.000Z"
         },
         {
-          "title": "Claude Opus 5.5, GPT-6 Sol, GPT-6 Luna, and a new price war",
-          "url": "https://simonwillison.net/2026/Sep/22/opus-and-sol-and-luna/",
-          "source": "simonw",
-          "publishedAt": "2026-09-22T23:46:41.000Z"
+          "title": "🔬 An Oscar, Two Asteroids, and the Algorithm in Your sklearn: John Platt on AI for Science",
+          "url": "https://www.latent.space/p/john-platt",
+          "source": "latent-space",
+          "publishedAt": "2026-09-22T21:07:39.000Z"
         },
         {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
-          "source": "latent-space",
-          "publishedAt": "2026-09-18T06:28:43.000Z"
-        },
-        {
-          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
-          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
-          "source": "latent-space",
-          "publishedAt": "2026-09-17T07:28:25.000Z"
+          "title": "Parallel cut research time and cost in half with GPT‑6 Astra",
+          "url": "https://openai.com/index/parallel-cuts-time-and-cost-with-astra",
+          "source": "openai",
+          "publishedAt": "2026-09-22T12:00:00.000Z"
         }
       ]
+    },
+    {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.99,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        2
+      ],
+      "signals": [
+        {
+          "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
+          "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
+          "source": "latent-space",
+          "publishedAt": "2026-09-22T06:30:56.000Z"
+        },
+        {
+          "title": "Transformers now runs llama.cpp quants",
+          "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
+          "source": "hf",
+          "publishedAt": "2026-09-22T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "rag",
+      "label": "Retrieval-Augmented Generation",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.99,
+      "weeklyCounts": [
+        81,
+        60,
+        57,
+        76,
+        72,
+        77,
+        95,
+        107,
+        100,
+        85,
+        92,
+        103,
+        1
+      ],
+      "signals": [
+        {
+          "title": "How V7 gives AI agents institutional memory",
+          "url": "https://openai.com/index/v7",
+          "source": "openai",
+          "publishedAt": "2026-09-21T00:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "fusion",
+      "label": "Fusion Energy",
+      "category": "energy",
+      "stage": "research",
+      "trajectory": "cooling",
+      "momentum": -1,
+      "weeklyCounts": [
+        14,
+        11,
+        14,
+        14,
+        4,
+        7,
+        7,
+        9,
+        14,
+        14,
+        17,
+        28,
+        0
+      ],
+      "signals": []
+    },
+    {
+      "id": "protein-design",
+      "label": "Protein Design",
+      "category": "biotech",
+      "stage": "research",
+      "trajectory": "cooling",
+      "momentum": -1,
+      "weeklyCounts": [
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        0
+      ],
+      "signals": []
+    },
+    {
+      "id": "humanoids",
+      "label": "Humanoid Robots",
+      "category": "robotics",
+      "stage": "prototype",
+      "trajectory": "cooling",
+      "momentum": -1,
+      "weeklyCounts": [
+        1,
+        7,
+        7,
+        6,
+        6,
+        7,
+        7,
+        1,
+        0,
+        0,
+        2,
+        7,
+        0
+      ],
+      "signals": []
     }
   ]
 }

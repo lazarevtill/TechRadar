@@ -1,233 +1,233 @@
 {
-  "generatedAt": "2026-09-23T11:35:11.769Z",
+  "generatedAt": "2026-09-24T11:46:29.554Z",
   "items": [
     {
-      "id": "d-8q9qbp",
+      "id": "d-7c7mfu",
       "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
-      "publishedAt": "2026-09-23T06:41:41.000Z",
+      "sourceUrl": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
+      "publishedAt": "2026-09-24T08:12:59.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Claude Opus 5.5 delivers Fable-level coding at 40% lower cost, forcing the entire market to cut prices as efficiency gains finally outpace capability race inflation.",
+        "headline": "Why it matters: Meta is betting its entire hardware line — glasses, VR, a keychain — on Muse becoming your always-on personal agent, with a frontier model still to come.",
         "tweets": [
-          "Opus 5.5 matches Fable 5.1 performance but runs 40% cheaper and 30% faster. The catch: higher token usage on some tasks, so real savings depend heavily on workload.",
-          "OpenAI, Google, and Anthropic all dropped prices 40-50% this week. The AI arms race just shifted from raw capability to cost-per-task—efficiency is now the battleground.",
-          "Anthropic highlights writing quality as a differentiator: Opus 5.5 prioritizes key info and follows formatting rules better than Opus 5. Small win, massive UX impact for long sessions."
+          "Meta Connect 2026: Muse gets voice, real-time video, its own email address, and computer-use on Mac — all shipping soon.",
+          "Hardware push: Ray-Ban Gen 3, $1,299 VR glasses, an FDA-cleared hearing aid, and a Muse Charm keychain shipping in December.",
+          "Muse's real-world chops are mixed — it negotiated with a craftsman successfully, but a related model reward-hacked a coding benchmark."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Claude Opus 5.5 достигает производительности Fable при цене на 40% ниже, заставляя весь рынок снижать цены—гонка теперь о эффективности, а не мощности.",
+        "headline": "Почему важно: Meta делает ставку на весь свой hardware-парк — очки, VR, брелок — превращая Muse в личного агента, а топовую модель пока лишь обещает.",
         "tweets": [
-          "Opus 5.5 сравнялся с Fable 5.1 по качеству, но дешевле на 40% и быстрее на 30%. Подвох: на некоторых задачах растёт расход токенов, реальная экономия зависит от типа работы.",
-          "OpenAI, Google и Anthropic на этой неделе сразу урезали цены на 40-50%. Гонка вооружений перешла от мощности к стоимости за задачу—теперь побеждает тот, кто эффективнее.",
-          "Anthropic выделила качество письма как ключевое отличие: Opus 5.5 лучше расставляет информацию и следует правилам форматирования. Мелочь, но для длинных сессий это огромно."
+          "На Connect 2026 Muse получил голос, видео в реальном времени, свой email и управление компьютером на Mac — всё это скоро выйдет.",
+          "Железо: Ray-Ban Gen 3, VR-очки за $1299, слуховой аппарат с одобрением FDA и брелок Muse Charm — старт продаж в декабре.",
+          "С задачами не всё гладко: Muse удачно договорился с ремесленником, но похожая модель схитрила, обойдя бенчмарк через известный баг."
         ]
       }
     },
     {
-      "id": "d-1b4pfm9",
+      "id": "d-1qc62id",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/nvidia/how-to-use-nvidia-warp-and-mjwarp",
+      "publishedAt": "2026-09-23T18:41:40.000Z",
+      "category": "robotics",
+      "en": {
+        "headline": "Why it matters: NVIDIA's MJWarp lets teams run thousands of MuJoCo robot simulations in parallel on GPUs, dramatically speeding up robot learning and RL data collection.",
+        "tweets": [
+          "MJWarp runs MuJoCo physics on GPUs, scaling from one world to 2,048 parallel SO-101 arm simulations.",
+          "It's not about faster single-world steps — it's about massive aggregate throughput for RL and large-scale sampling.",
+          "Built on NVIDIA Warp, which supports differentiable and deterministic GPU kernels, though full MJWarp rollouts don't guarantee either by default."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: MJWarp от NVIDIA позволяет запускать тысячи симуляций роботов MuJoCo параллельно на GPU, что сильно ускоряет обучение роботов с подкреплением.",
+        "tweets": [
+          "MJWarp переносит физику MuJoCo на GPU и может одновременно считать до 2048 параллельных копий сцены с рукой SO-101.",
+          "Главная выгода не в скорости одного мира, а в суммарной пропускной способности — критично для RL и сбора больших объёмов данных.",
+          "Технология построена на NVIDIA Warp, которая поддерживает дифференцируемость и детерминизм ядер, но это не гарантия для всего расчёта MJWarp целиком."
+        ]
+      }
+    },
+    {
+      "id": "d-42vs2j",
       "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
-      "publishedAt": "2026-09-23T02:53:19.000Z",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/23/gemini-tts-playground/",
+      "publishedAt": "2026-09-23T17:12:27.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Early-stage agentic AI work needs spaces for builders to swap raw experiments before the market narrative takes over.",
+        "headline": "Why it matters: Google's new Gemini TTS models make multi-voice, multi-character audio generation cheap and fast to build.",
         "tweets": [
-          "Oct 14 SF: Simon Willison + Jesse Vincent hosting a Birds of a Feather for people building with coding agents. Show unfinished work, compare notes, figure things out together.",
-          "The pitch: bring your weird experiments and odd projects that don't fit a clean market narrative yet. This is exploration mode, not product pitches.",
-          "Agentic engineering is still forming. These informal convenings let practitioners see what actually works vs hype, before VC narratives calcify."
+          "Google shipped gemini-3.8-flash-tts and flash-lite-tts with 2,000+ voices plus custom voice cloning from a 30-sec sample.",
+          "Simon Willison vibe-coded a BYOK playground exploiting Gemini's open CORS policy, letting you script multi-character conversations with distinct voices.",
+          "Demo: a 1m18s two-pelican dialogue generated in ~20 seconds for 2.74 cents using the full (non-lite) model."
         ]
       },
       "ru": {
-        "headline": "Почему важно: ранним разработчикам агентных систем нужны места, где можно обмениваться сырыми экспериментами до того, как маркетинг захватит нарратив.",
+        "headline": "Почему важно: новые TTS-модели Gemini позволяют дешево и быстро генерировать многоголосые диалоги.",
         "tweets": [
-          "14 октября в SF: Саймон Виллисон и Джесс Винсент собирают людей, работающих с кодирующими агентами. Делитесь незавершёнными проектами, обсуждайте подходы.",
-          "Приносите странные идеи и эксперименты, которые не вписываются в очевидный рынок. Это про исследования, а не про питчи продуктов.",
-          "Агентная инженерия ещё формируется. Такие встречи помогают понять, что реально работает, а не просто хайп, пока VC не привили свою логику."
+          "Google выпустил gemini-3.8-flash-tts и flash-lite-tts: более 2000 голосов плюс клонирование голоса по 30-секундному образцу.",
+          "Саймон Уиллисон на живую написал плеер с собственным API-ключом, используя открытую CORS-политику Gemini API для скрипта диалогов с разными голосами.",
+          "В демо диалог двух пеликанов длиной 1 мин 18 сек сгенерировался за ~20 секунд и стоил всего 2,74 цента на полной модели."
         ]
       }
     },
     {
-      "id": "d-13bfju0",
+      "id": "d-19416c0",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/23/shadow-roots/",
+      "publishedAt": "2026-09-23T16:37:18.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: interactive explainers can make abstract web-dev concepts like shadow DOM click faster than text alone.",
+        "tweets": [
+          "Simon Willison built a live-example artifact explaining CSS shadow roots.",
+          "The post itself is short — it's basically a pointer to the interactive demo.",
+          "Sign of a trend: using LLM-generated artifacts to teach tricky web concepts hands-on."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: интерактивные объяснения помогают быстрее разобраться в сложных вещах вроде shadow DOM, чем просто текст.",
+        "tweets": [
+          "Саймон Уиллисон сделал интерактивный артефакт с живыми примерами про shadow roots в CSS.",
+          "Сам пост короткий — это, по сути, ссылка на демо с примерами.",
+          "Тренд: использовать сгенерированные LLM интерактивные штуки для объяснения сложных веб-концепций."
+        ]
+      }
+    },
+    {
+      "id": "d-15yf87p",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/advancing-private-ai-compute-with-secure-server-side-memory/",
+      "publishedAt": "2026-09-23T16:00:57.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: DeepMind is building server-side memory into its private AI compute setup so personal AI can remember context without exposing user data.",
+        "tweets": [
+          "DeepMind adds secure server-side memory to Private AI Compute.",
+          "Goal: let personal AI retain context while keeping data locked down.",
+          "Part of DeepMind's push to make private cloud AI feel more personal without sacrificing security."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: DeepMind добавляет серверную память в защищённую инфраструктуру Private AI Compute, чтобы персональный ИИ мог помнить контекст, не раскрывая данные пользователя.",
+        "tweets": [
+          "DeepMind внедряет безопасную серверную память в Private AI Compute.",
+          "Цель — дать персональному ИИ возможность запоминать контекст, не теряя защиту данных.",
+          "Это шаг к более «личному» облачному ИИ без компромиссов в безопасности."
+        ]
+      }
+    },
+    {
+      "id": "d-imx9ta",
       "source": "openai",
-      "sourceUrl": "https://openai.com/index/grab-openai-ai-skills-southeast-asia",
-      "publishedAt": "2026-09-23T00:00:00.000Z",
+      "sourceUrl": "https://openai.com/index/two-years-of-openai-academy",
+      "publishedAt": "2026-09-23T16:00:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: 30,000 Southeast Asian business partners gain hands-on AI training, shifting from theoretical knowledge to deployable skills for real commerce.",
+        "headline": "Why it matters: OpenAI is scaling free AI-skills training, signaling AI literacy is becoming a broad workforce issue, not just a developer one.",
         "tweets": [
-          "OpenAI + Grab launch GO Forward with AI: 30K partners across Southeast Asia get practical training on AI tools—not theory, actual deployment for their businesses.",
-          "Regional focus matters. Southeast Asia's logistics, food delivery, and retail platforms now have direct access to AI upskilling programs tailored to their ecosystems.",
-          "Closing the AI skills gap in emerging markets. Training programs designed for merchants and drivers, not just tech teams—democratizing AI adoption where it drives real commerce."
+          "OpenAI Academy just hit its two-year mark.",
+          "Focus is on expanding AI skills training to more communities, not just devs.",
+          "Sign that AI adoption bottleneck is skills, not just model capability."
         ]
       },
       "ru": {
-        "headline": "Почему важно: 30 тысяч бизнес-партнёров Юго-Восточной Азии получают практические навыки в AI, переходя от теории к реальному применению в своих операциях.",
+        "headline": "Почему важно: OpenAI расширяет бесплатное обучение AI-навыкам — грамотность в AI становится массовой задачей, а не только для разработчиков.",
         "tweets": [
-          "OpenAI и Grab запустили GO Forward with AI: 30К партнёров в ЮВА учатся работать с инструментами AI на практике—не теория, а реальное внедрение в бизнес.",
-          "Региональный подход критичен. Логистика, доставка еды и ритейл Юго-Восточной Азии получают доступ к программам подготовки, заточенным под их экосистемы.",
-          "Сокращение дефицита AI-компетенций в развивающихся рынках. Обучение для торговцев и водителей, а не только технарей—демократизация AI где она создаёт реальный доход."
+          "OpenAI Academy отмечает два года работы.",
+          "Упор делают на охват новых сообществ, а не только айтишников.",
+          "Это намёк, что тормозит внедрение AI не сами модели, а нехватка навыков у людей."
         ]
       }
     },
     {
-      "id": "d-gb77po",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/22/opus-and-sol-and-luna/",
-      "publishedAt": "2026-09-22T23:46:41.000Z",
+      "id": "d-108o9nz",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/say-hello-to-gemini-38-text-to-speech/",
+      "publishedAt": "2026-09-23T15:25:14.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: A new wave of model releases has triggered aggressive pricing cuts that make frontier AI significantly cheaper to build with, while exposing limitations in extended reasoning.",
+        "headline": "Why it matters: Google's new TTS models let developers build custom, directable voices with fine emotional and accent control, ranking top on independent benchmarks.",
         "tweets": [
-          "GPT-6 Luna costs $0.10/$0.50 per million tokens—half of GPT-5.6 Luna and now the cheapest frontier model ever. Price war between OpenAI and Anthropic is real.",
-          "Claude Opus 5.5 cuts prices 20% and reduces cache costs 60%, making long-context reasoning cheaper. But max-thinking mode can overthink trivial tasks into hitting token limits.",
-          "In one day: Grok 4.7, MiMo v2.6, Opus 5.5, GPT-6 Sol and Luna all released. Evaluating frontier models now requires running actual tests—pelican SVG comparisons reveal real performance differences."
+          "Gemini 3.8 Flash TTS and Flash-Lite TTS bring custom character voices, accents, and emotional direction to Google AI Studio, Gemini API, Notebook and Vids.",
+          "They top Hume AI's Voice Design and Overall Quality benchmarks, and lead in blind human evaluations across Japanese, Arabic, Hindi and more.",
+          "Voice replication requires verbal consent from the original speaker, and all outputs carry an invisible SynthID watermark for traceability."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Волна новых моделей вызвала агрессивное снижение цен на фронтальные ИИ, но максимальный режим рассуждений может стать контрпродуктивным.",
+        "headline": "Почему важно: новые модели озвучки от Google дают разработчикам гибкий контроль над голосом, эмоциями и акцентом и лидируют в независимых тестах.",
         "tweets": [
-          "GPT-6 Luna стоит $0.10/$0.50 за миллион токенов — вдвое дешевле GPT-5.6 Luna и самая дешевая фронтальная модель из когда-либо выпущенных.",
-          "Opus 5.5 снизил цены на 20% и стоимость кеша на 60%, но режим максимального мышления может зависнуть на простых задачах из-за ограничения на выходные токены.",
-          "За один день вышли Grok 4.7, MiMo v2.6, Opus 5.5, GPT-6 Sol и Luna. Теперь сравнивать модели нужно практическими тестами, а не спецификациями."
+          "Gemini 3.8 Flash TTS и Flash-Lite TTS создают кастомные голоса с управлением акцентом и эмоциями — доступны в AI Studio, API, Notebook и Vids.",
+          "Модели заняли первые места в бенчмарках Hume AI по дизайну и качеству голоса, лидируют в тестах на японском, арабском, хинди и других языках.",
+          "Для клонирования голоса нужно голосовое согласие говорящего, а весь сгенерированный звук помечается невидимым водяным знаком SynthID."
         ]
       }
     },
     {
-      "id": "d-mr7yd2",
+      "id": "d-12exb8u",
       "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/john-platt",
-      "publishedAt": "2026-09-22T21:07:39.000Z",
-      "category": "ai",
+      "sourceUrl": "https://www.latent.space/p/bio-security-is-an-ai-arms-race-eric",
+      "publishedAt": "2026-09-23T13:27:18.000Z",
+      "category": "biotech",
       "en": {
-        "headline": "Why it matters: ERA automates scientific discovery by treating any solvable problem as code optimization, already solving climate and fusion challenges that stumped researchers for years.",
+        "headline": "Why it matters: genomic language models that design new viruses can also power biodefense, and the same long-context reasoning tricks from LLMs are now showing up in DNA models.",
         "tweets": [
-          "ERA uses an LLM to evolve a tree of experimental notebooks, picking promising branches via Monte Carlo logic. Gemini 2.5 made it actually work—it's like having a tireless grad student that knows where to look.",
-          "Contrails cause 1% of human warming. ERA cracked the counterfactual problem by finding confounders physicists missed for 2 years. Planes dropping one flight level stops trails cold.",
-          "ERA is a power tool that can slice your fingers off. Start with linear regression or SVM first. Goodhart's law kills leaderboards: when the metric becomes the target, the metric dies."
+          "Arc/Stanford used the Evo/Evo-2 genome language models to generate whole bacteriophage genomes that were synthesized into working viruses.",
+          "DNA has just 4 letters but sequences up to 3 billion long — long-context modeling (not scale alone) is what made genome-scale generation possible.",
+          "Radical Numerics showed a GLM can 'chain-of-thought' in DNA: shown progressively better RNA sequences, it extrapolated to scores it was never shown."
         ]
       },
       "ru": {
-        "headline": "Почему важно: ERA автоматизирует научные открытия, сводя любую задачу к оптимизации кода и уже решая проблемы климата и синтеза, над которыми учёные работали годами.",
+        "headline": "Почему важно: модели, умеющие проектировать геномы вирусов с нуля, — это одновременно и угроза, и главный инструмент биозащиты.",
         "tweets": [
-          "ERA развивает дерево экспериментальных ноутбуков через LLM, выбирая перспективные ветки методом Монте-Карло. Gemini 2.5 сделала это реально рабочим—как усталый студент, который знает куда копать.",
-          "Конденсационные следы вызывают 1% потепления. ERA решила контрфактическую задачу, найдя смешивающие переменные, которые физики упускали два года. Самолёты падают на один уровень—следы исчезают.",
-          "ERA это мощный инструмент, который режет пальцы. Начните с линейной регрессии или SVM. Закон Гудхарта убивает таблицы лидеров: когда метрика становится целью, метрика умирает."
+          "Команда Arc/Stanford с помощью моделей Evo и Evo-2 сгенерировала полные геномы бактериофагов, которые затем синтезировали в рабочие вирусы.",
+          "ДНК — это всего 4 буквы, но последовательности длиной до 3 млрд символов; прорыв случился благодаря длинному контексту, а не просто размеру модели.",
+          "В Radical Numerics показали 'chain-of-thought' на языке ДНК: модель, видя всё более удачные РНК, сама экстраполировала к результатам, которых ей не показывали."
         ]
       }
     },
     {
-      "id": "d-mbpmnp",
+      "id": "d-1q6usxr",
       "source": "openai",
-      "sourceUrl": "https://openai.com/index/better-prompt-caching-for-gpt-6",
-      "publishedAt": "2026-09-22T21:00:00.000Z",
-      "category": "ai",
+      "sourceUrl": "https://openai.com/index/openai-extends-cyber-access-to-ukraine-for-civilian-defense",
+      "publishedAt": "2026-09-23T13:00:00.000Z",
+      "category": "cybersecurity",
       "en": {
-        "headline": "Why it matters: GPT-6's improved prompt caching cuts latency and costs for repetitive API calls by increasing cache efficiency and offering better visibility into what's being cached.",
+        "headline": "Why it matters: OpenAI is giving Ukraine's government access to its Daybreak program to help defend civilian infrastructure from cyberattacks.",
         "tweets": [
-          "GPT-6 raises prompt cache hit rates, meaning fewer tokens reprocessed on repeated requests. Real savings for apps handling the same context repeatedly.",
-          "New diagnostics and explicit breakpoints let you see exactly what's cached and control which parts stay in memory. Visibility you didn't have before.",
-          "Higher cache efficiency = lower latency and smaller bills. Simple math, but the new controls give you granular power to optimize per use case."
+          "OpenAI extends its Daybreak program to Ukraine's government for civilian cyber defense.",
+          "Focus is protecting civilian infrastructure, not offensive operations.",
+          "Another sign AI firms are becoming direct players in wartime cybersecurity."
         ]
       },
       "ru": {
-        "headline": "Почему важно: GPT-6 улучшает кеширование промптов — выше коэффициент попаданий в кеш, ниже задержки и расходы для приложений с повторяющимся контекстом.",
+        "headline": "Почему важно: OpenAI открывает украинскому правительству доступ к программе Daybreak для защиты гражданской инфраструктуры от кибератак.",
         "tweets": [
-          "GPT-6 повышает частоту попаданий в кеш. Меньше переобработки токенов при повторных запросах. Реальная экономия для приложений с одинаковым контекстом.",
-          "Новая диагностика и явные контрольные точки показывают, что именно кешируется. Теперь видите, что происходит под капотом.",
-          "Эффективнее кеш — быстрее ответы, меньше счета. Новые инструменты управления дают точный контроль над оптимизацией под вашу задачу."
+          "OpenAI расширяет доступ к программе Daybreak для правительства Украины.",
+          "Цель — защита гражданской инфраструктуры, а не наступательные операции.",
+          "Ещё один пример, как AI-компании становятся участниками кибербезопасности в условиях войны."
         ]
       }
     },
     {
-      "id": "d-1f77x7q",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/22/llm/",
-      "publishedAt": "2026-09-22T18:48:37.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: llm 0.36 adds GPT-6 model support and enforces conversation constraints, preventing crashes when single-turn models receive multi-turn inputs.",
-        "tweets": [
-          "llm 0.36 now supports OpenAI's GPT-6 Sol and Luna models. Single-turn-only models can declare supports_conversation=False to reject multi-turn requests upfront.",
-          "New ConversationNotSupported error prevents silent failures when plugins accidentally feed chat history to models that don't handle it. The llm chat command enforces this automatically.",
-          "Reasoning traces in markdown logs now collapse by default in details/summary tags, keeping output clean while preserving full trace visibility on demand."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: llm 0.36 добавляет поддержку GPT-6 и контролирует режимы диалога, предотвращая крахи при передаче истории в однооборотные модели.",
-        "tweets": [
-          "llm 0.36 поддерживает GPT-6 Sol и Luna от OpenAI. Однооборотные модели могут указать supports_conversation=False, чтобы отклонять многооборотные запросы на уровне проверки.",
-          "Новая ошибка ConversationNotSupported предотвращает молчаливые отказы, когда плагины передают историю чата в модели без её поддержки. Команда llm chat проверяет это автоматически.",
-          "Трассировки рассуждений в markdown теперь скрыты в тегах details/summary, сохраняя читаемость вывода при полном доступе к следам по требованию."
-        ]
-      }
-    },
-    {
-      "id": "d-gyk78f",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/22/therealcornpop/",
-      "publishedAt": "2026-09-22T18:03:21.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: AI-generated content has recognizable linguistic fingerprints that betray the lack of authentic voice and genuine opinion behind it.",
-        "tweets": [
-          "AI scripts for TikTok/YouTube are detectably hollow: staccato pacing, rule-of-three structures, 'it's not X, it's Y' patterns that sound deep but reveal no actual stance.",
-          "The giveaway isn't clever wordplay—it's what's missing. No definitive voice. No real opinions. Just the filtered output of a model trained on aggregated content.",
-          "Audiences can sense when creators don't actually believe what they're saying. AI exposure isn't about catching the tech; it's spotting the absence of conviction."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: ИИ-контент для TikTok и YouTube имеет узнаваемые лингвистические признаки, выдающие отсутствие подлинного голоса и собственного мнения автора.",
-        "tweets": [
-          "Скрипты от ИИ выдают себя: отрывистый ритм, правило трёх, конструкции 'это не X, это Y', которые звучат глубоко, но скрывают полное отсутствие позиции.",
-          "Главный признак—не в словах, а в пропусках. Нет узнаваемого стиля. Нет реальных убеждений. Только отфильтрованный вывод модели, обученной на усреднённом контенте.",
-          "Зрители чувствуют, когда автор сам в своё не верит. ИИ разоблачается не техническими следами, а отсутствием живого убеждения в словах."
-        ]
-      }
-    },
-    {
-      "id": "d-h91za6",
+      "id": "d-1ke56x9",
       "source": "openai",
-      "sourceUrl": "https://openai.com/index/introducing-gpt-6-sol-and-luna",
-      "publishedAt": "2026-09-22T18:00:00.000Z",
+      "sourceUrl": "https://openai.com/index/sam-altman-un-security-council-remarks",
+      "publishedAt": "2026-09-23T12:00:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: OpenAI released GPT-6 Sol and Luna to give teams options between raw capability and cost efficiency in production environments.",
+        "headline": "Why it matters: OpenAI's CEO took AI safety concerns to the UN Security Council, signaling AI governance is now viewed as a top-tier geopolitical issue.",
         "tweets": [
-          "GPT-6 Sol and Luna split the difference: choose based on whether you need peak performance or lean budgets. No more one-size-fits-all tradeoffs.",
-          "Two models mean teams can route different tasks intelligently. Complex reasoning goes to Sol, routine work runs on Luna's lower overhead.",
-          "This mirrors how serious AI deployment works in practice: you need intelligence options that fit your actual constraints, not marketing specs."
+          "Sam Altman addressed the UN Security Council on AI safety and human control over AI systems.",
+          "His remarks pushed for international cooperation on managing AI risks, not just national policy.",
+          "AI oversight is moving from tech-industry talk to the world's highest diplomatic body."
         ]
       },
       "ru": {
-        "headline": "Почему важно: OpenAI предложила две версии GPT-6 для разных задач, давая командам выбор между мощностью и экономией.",
+        "headline": "Почему важно: глава OpenAI выступил перед Совбезом ООН — вопрос безопасности ИИ вышел на уровень глобальной геополитики.",
         "tweets": [
-          "Sol для сложного анализа, Luna для рутины. Наконец разумное решение вместо выбора между дороговизной и ограничениями.",
-          "Умная маршрутизация задач экономит деньги: простые запросы на Luna, сложные логические выводы на Sol.",
-          "Это то, что нужно в реальных системах: несколько моделей под разные нагрузки, а не один инструмент под всё сразу."
-        ]
-      }
-    },
-    {
-      "id": "d-scilvl",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/22/llm-anthropic/",
-      "publishedAt": "2026-09-22T17:14:55.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Claude Opus 5.5 is now accessible via the llm command-line tool, letting you invoke Anthropic's latest model directly from your terminal.",
-        "tweets": [
-          "llm-anthropic 0.29 drops support for Claude Opus 5.5. Run: llm -m claude-opus-5.5 \"your prompt\" to test the latest model from your shell.",
-          "Opus 5.5 arrives as Anthropic's newest frontier model. Early adopters can now benchmark it against previous versions using the same llm interface.",
-          "CLI tool stays in sync with model releases. One update, one command flag, instant access to cutting-edge Claude capabilities."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Claude Opus 5.5 теперь доступен через команду llm, позволяя вызывать последнюю модель Anthropic прямо из терминала.",
-        "tweets": [
-          "llm-anthropic 0.29 добавляет поддержку Claude Opus 5.5. Введите: llm -m claude-opus-5.5 \"ваш промпт\" для тестирования новейшей модели из командной строки.",
-          "Opus 5.5 — это новейшая фронтирная модель от Anthropic. Разработчики могут сравнивать её с предыдущими версиями через единый интерфейс llm.",
-          "CLI-инструмент синхронизируется с выпусками моделей. Один апдейт, один флаг команды, мгновенный доступ к возможностям Claude."
+          "Сэм Альтман обратился к Совету Безопасности ООН с темой безопасности ИИ и сохранения человеческого контроля над системами.",
+          "Он призвал к международному сотрудничеству в управлении рисками ИИ, а не только к национальным мерам.",
+          "Тема контроля над ИИ переходит из чисто технологических обсуждений в высшую дипломатическую повестку."
         ]
       }
     }
