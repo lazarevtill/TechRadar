@@ -20,7 +20,7 @@ import {
   CACHE_KEYS,
   CACHE_TTL,
 } from '@/server/utils/cache'
-import { fetchWithRetry } from '@/server/utils/fetch-utils'
+import { fetchWithRetry, readJson } from '@/server/utils/fetch-utils'
 import { cleanText } from '@/server/utils/clean-text'
 import { isAuthorized } from '@/server/utils/admin'
 import { contentHash } from '@/server/utils/verdict-store'
@@ -521,25 +521,41 @@ async function fetchGitHubTrending(): Promise<RawItem[]> {
 
     const allRepos: GitHubRepo[] = []
 
+    let failedSearches = 0
     for (const query of searches) {
-      const response = await fetchWithRetry(
-        `https://api.github.com/search/repositories?q=${query}+created:>${dateStr}&sort=stars&order=desc&per_page=${perPage}`,
-        {
-          headers: {
-            Accept: 'application/vnd.github.v3+json',
-            'User-Agent': 'TechEvolutionRadar/1.0',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      // One search failing (rate limit, timeout, network) is a partial
+      // result, not an outage.
+      let response: Response
+      try {
+        response = await fetchWithRetry(
+          `https://api.github.com/search/repositories?q=${query}+created:>${dateStr}&sort=stars&order=desc&per_page=${perPage}`,
+          {
+            headers: {
+              Accept: 'application/vnd.github.v3+json',
+              'User-Agent': 'TechEvolutionRadar/1.0',
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            retries: 3,
+            baseDelay: 1000,
           },
-          retries: 3,
-          baseDelay: 1000,
-        },
-      )
+        )
+      } catch (error) {
+        console.error(`[github] search "${query}" failed:`, String(error))
+        failedSearches++
+        continue
+      }
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await readJson<{ items?: GitHubRepo[] }>(
+          response,
+          'GitHub search',
+        )
         allRepos.push(...(data.items || []))
-      }
+      } else failedSearches++
     }
+    // Some searches may be rate-limited; all of them failing is an outage.
+    if (failedSearches === searches.length)
+      throw new Error(`every GitHub search failed (${failedSearches})`)
 
     const seen = new Set<number>()
     const repos = allRepos.filter((repo) => {
@@ -587,7 +603,7 @@ async function fetchGitHubTrending(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.GITHUB, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('GitHub API error:', error)
+    console.error('GitHub API error:', String(error))
     throw error
   }
 }
@@ -718,7 +734,7 @@ async function fetchArxivPapers(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.ARXIV, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('arXiv API error:', error)
+    console.error('arXiv API error:', String(error))
     throw error
   }
 }
@@ -738,7 +754,10 @@ async function fetchHackerNews(): Promise<RawItem[]> {
     )
     if (!topStoriesRes.ok) throw new Error('Failed to fetch HN top stories')
 
-    const topStoryIds: number[] = await topStoriesRes.json()
+    const topStoryIds = await readJson<number[]>(
+      topStoriesRes,
+      'Hacker News top stories',
+    )
 
     const storyPromises = topStoryIds.slice(0, 100).map(async (id) => {
       const res = await fetchWithRetry(
@@ -788,7 +807,7 @@ async function fetchHackerNews(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.HACKERNEWS, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('Hacker News API error:', error)
+    console.error('Hacker News API error:', String(error))
     throw error
   }
 }
@@ -843,7 +862,10 @@ async function queryOpenAlex(
     { retries: 3, baseDelay: 1000 },
   )
   if (!response.ok) throw new Error(`OpenAlex HTTP ${response.status}`)
-  const data = (await response.json()) as { results?: OpenAlexWork[] }
+  const data = await readJson<{ results?: OpenAlexWork[] }>(
+    response,
+    'OpenAlex',
+  )
   return data.results ?? []
 }
 
@@ -911,7 +933,7 @@ async function fetchOpenAlex(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.OPENALEX, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('OpenAlex API error:', error)
+    console.error('OpenAlex API error:', String(error))
     throw error
   }
 }
@@ -939,7 +961,7 @@ async function fetchOpenAlexChinese(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.OPENALEX_ZH, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('OpenAlex (zh) API error:', error)
+    console.error('OpenAlex (zh) API error:', String(error))
     throw error
   }
 }
@@ -958,6 +980,17 @@ export function pubmedAddedDate(article: {
   const parsed = added ? new Date(added.replace(/\//g, '-')) : null
   if (parsed && !Number.isNaN(parsed.getTime())) return parsed
   return new Date(article.epubdate || article.sortpubdate || Date.now())
+}
+
+/** The fields of a PubMed esummary entry the feed reads. */
+interface PubMedSummary {
+  title?: string
+  authors?: Array<{ name: string }>
+  fulljournalname?: string
+  source?: string
+  history?: Array<{ pubstatus: string; date: string }>
+  epubdate?: string
+  sortpubdate?: string
 }
 
 async function fetchPubMed(): Promise<RawItem[]> {
@@ -980,7 +1013,9 @@ async function fetchPubMed(): Promise<RawItem[]> {
     })
     if (!searchRes.ok) throw new Error('PubMed search failed')
 
-    const searchData = await searchRes.json()
+    const searchData = await readJson<{
+      esearchresult?: { idlist?: string[] }
+    }>(searchRes, 'PubMed search')
     const ids = searchData.esearchresult?.idlist || []
 
     if (ids.length === 0) return []
@@ -993,7 +1028,9 @@ async function fetchPubMed(): Promise<RawItem[]> {
     })
     if (!summaryRes.ok) throw new Error('PubMed summary failed')
 
-    const summaryData = await summaryRes.json()
+    const summaryData = await readJson<{
+      result?: Record<string, PubMedSummary>
+    }>(summaryRes, 'PubMed summary')
     const articles = summaryData.result || {}
 
     const articleIds: string[] = ids
@@ -1033,7 +1070,7 @@ async function fetchPubMed(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.PUBMED, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('PubMed API error:', error)
+    console.error('PubMed API error:', String(error))
     throw error
   }
 }
@@ -1056,7 +1093,10 @@ async function fetchHAL(): Promise<RawItem[]> {
 
     if (!response.ok) throw new Error('HAL API error')
 
-    const data = await response.json()
+    const data = await readJson<{ response?: { docs?: HALDocument[] } }>(
+      response,
+      'HAL',
+    )
     const docs: HALDocument[] = data.response?.docs || []
 
     const candidates = docs.map((doc): RawItem => {
@@ -1095,7 +1135,7 @@ async function fetchHAL(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.HAL, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('HAL API error:', error)
+    console.error('HAL API error:', String(error))
     throw error
   }
 }
@@ -1130,10 +1170,11 @@ async function fetchCiNii(): Promise<RawItem[]> {
 
     if (!response.ok) throw new Error(`CiNii HTTP ${response.status}`)
 
-    const data = await response.json()
-    const items = data['@graph'] || data.items || []
-
-    const articles: CiNiiArticle[] = items
+    const data = await readJson<{
+      '@graph'?: CiNiiArticle[]
+      items?: CiNiiArticle[]
+    }>(response, 'CiNii')
+    const articles: CiNiiArticle[] = data['@graph'] || data.items || []
     const candidates = articles.map((item): RawItem => {
       const title = item.title || 'Japanese Research Article'
       const description = cleanText(item.description)
@@ -1184,7 +1225,7 @@ async function fetchCiNii(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.CINII, result, CACHE_TTL.DEFAULT)
     return result
   } catch (error) {
-    console.error('CiNii API error:', error)
+    console.error('CiNii API error:', String(error))
     throw error
   }
 }
@@ -1224,7 +1265,9 @@ async function fetchHuggingFacePapers(): Promise<RawItem[]> {
             `https://huggingface.co/api/daily_papers?date=${date}`,
             { retries: 2, baseDelay: 500, timeout: 15_000 },
           )
-          return res.ok ? ((await res.json()) as HFDailyPaper[]) : null
+          return res.ok
+            ? await readJson<HFDailyPaper[]>(res, `HF daily papers ${date}`)
+            : null
         } catch (error) {
           console.error(`[hf-papers] ${date} unavailable:`, String(error))
           return null
@@ -1277,7 +1320,7 @@ async function fetchHuggingFacePapers(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.HF_PAPERS, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('Hugging Face papers API error:', error)
+    console.error('Hugging Face papers API error:', String(error))
     throw error
   }
 }
@@ -1303,7 +1346,7 @@ async function fetchHuggingFaceModels(): Promise<RawItem[]> {
       { retries: 2, baseDelay: 500, timeout: 15_000 },
     )
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const models = (await res.json()) as HFModel[]
+    const models = await readJson<HFModel[]>(res, 'HF models')
 
     const candidates = models.map((model): RawItem => {
       const id = `hfm-${model.id}`
@@ -1343,7 +1386,7 @@ async function fetchHuggingFaceModels(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.HF_MODELS, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('Hugging Face models API error:', error)
+    console.error('Hugging Face models API error:', String(error))
     throw error
   }
 }
@@ -1375,6 +1418,7 @@ async function fetchPreprints(): Promise<RawItem[]> {
     // discard medRxiv's results as well. medRxiv answers in ~20 s, so the
     // per-request timeout sits above that. This fetch runs in the background
     // stale-while-revalidate rebuild, so only a cold boot ever waits on it.
+    const failures: string[] = []
     const perServer = await Promise.all(
       windows.map(async ([server, days]) => {
         try {
@@ -1383,17 +1427,26 @@ async function fetchPreprints(): Promise<RawItem[]> {
             { retries: 1, baseDelay: 1000, timeout: 35_000 },
           )
           if (!res.ok) throw new Error(`HTTP ${res.status}`)
-          const data = (await res.json()) as { collection?: PreprintRecord[] }
+          const data = await readJson<{ collection?: PreprintRecord[] }>(
+            res,
+            server,
+          )
           return (data.collection ?? []).map((r) => ({ ...r, server }))
         } catch (error) {
-          console.error(`[preprints] ${server} unavailable:`, String(error))
+          const reason = error instanceof Error ? error.message : String(error)
+          console.error(`[preprints] ${server} unavailable: ${reason}`)
+          // Every reason names its server, whichever way it failed.
+          failures.push(
+            reason.startsWith(server) ? reason : `${server}: ${reason}`,
+          )
           return null
         }
       }),
     )
     // One server down still yields the other; both down is an outage.
     if (perServer.every((r) => r === null))
-      throw new Error('bioRxiv and medRxiv both unavailable')
+      // The reasons go into source_runs, so /api/health says what happened.
+      throw new Error(`bioRxiv and medRxiv unavailable: ${failures.join('; ')}`)
     const seen = new Set<string>()
     const records = perServer
       .flatMap((r) => r ?? [])
@@ -1431,7 +1484,7 @@ async function fetchPreprints(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.PREPRINTS, items, CACHE_TTL.HOUR)
     return items
   } catch (error) {
-    console.error('bioRxiv/medRxiv API error:', error)
+    console.error('bioRxiv/medRxiv API error:', String(error))
     throw error
   }
 }
@@ -1463,7 +1516,7 @@ async function fetchLobsters(): Promise<RawItem[]> {
             { retries: 2, baseDelay: 500, timeout: 15_000 },
           )
           if (!res.ok) throw new Error(`HTTP ${res.status}`)
-          return (await res.json()) as LobstersStory[]
+          return await readJson<LobstersStory[]>(res, `Lobsters page ${page}`)
         } catch (error) {
           console.error(`[lobsters] page ${page} unavailable:`, String(error))
           return null
@@ -1507,7 +1560,7 @@ async function fetchLobsters(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.LOBSTERS, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('Lobsters API error:', error)
+    console.error('Lobsters API error:', String(error))
     throw error
   }
 }
@@ -1535,7 +1588,7 @@ async function fetchDevTo(): Promise<RawItem[]> {
       { retries: 2, baseDelay: 500, timeout: 15_000 },
     )
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const articles = (await res.json()) as DevToArticle[]
+    const articles = await readJson<DevToArticle[]>(res, 'dev.to')
 
     const candidates = articles.map((a): RawItem => {
       const id = `devto-${a.id}`
@@ -1570,7 +1623,7 @@ async function fetchDevTo(): Promise<RawItem[]> {
     setCache(CACHE_KEYS.DEVTO, items, CACHE_TTL.DEFAULT)
     return items
   } catch (error) {
-    console.error('dev.to API error:', error)
+    console.error('dev.to API error:', String(error))
     throw error
   }
 }
