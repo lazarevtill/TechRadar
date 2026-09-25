@@ -1,6 +1,167 @@
 {
-  "generatedAt": "2026-09-24T11:46:29.554Z",
+  "generatedAt": "2026-09-25T11:52:25.805Z",
   "items": [
+    {
+      "id": "d-10oenva",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-the-future-of-latent-space",
+      "publishedAt": "2026-09-25T05:37:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: model quality gains are now paired with cheap, fast 'decision' models that let teams cut LLM costs without losing much accuracy.",
+        "tweets": [
+          "New frontier models (Claude Opus 5.5, GPT-6 family, Gemini 3.8 Flash, Xiaomi MiMo-V2.6) push benchmarks up as open models close the gap fast.",
+          "Cheap 'judge' models like TypeSafe's Jev return typed probability answers instead of long text—277x cheaper than GPT-6, nearly as accurate.",
+          "Cascading cheap models to escalate only uncertain cases to top LLMs keeps 99% accuracy at ~57% of the cost—a practical production pattern."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: рост качества топовых моделей теперь сопровождается дешёвыми и быстрыми 'решающими' моделями, экономящими на LLM без потери точности.",
+        "tweets": [
+          "Новые флагманы (Claude Opus 5.5, GPT-6, Gemini 3.8 Flash, Xiaomi MiMo-V2.6) поднимают бенчмарки, а открытые модели быстро сокращают разрыв.",
+          "Компактные модели-судьи типа Jev выдают не текст, а вероятностный ответ — дешевле GPT-6 в 277 раз при почти той же точности.",
+          "Каскад, где сложные случаи передаются топовым LLM, а простые — дешёвой модели, даёт 99% точности при 57% стоимости — рабочий паттерн для продакшена."
+        ]
+      }
+    },
+    {
+      "id": "d-1qgi4zp",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/runway",
+      "publishedAt": "2026-09-25T01:30:57.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Runway's WorldPrompt shows real-time AI world models are moving from video generation to game-like interactive environments, but core engineering problems like error accumulation and memory limits remain unsolved.",
+        "tweets": [
+          "Runway's GWM Worlds 2 turns video/audio generation into a real-time interactive sim you can prompt frame-by-frame, not just watch.",
+          "WorldPrompt lets you fix a first frame then trigger timestamped events — like a lightweight scripting layer for AI-generated worlds.",
+          "Big unsolved problems: autoregressive error accumulation compounds over time, and infinite generation strains GPU memory management."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: WorldPrompt от Runway показывает, как AI-модели мира переходят от генерации видео к интерактивным средам вроде игр, но фундаментальные технические проблемы — накопление ошибок и нагрузка на память — пока не решены.",
+        "tweets": [
+          "GWM Worlds 2 от Runway превращает генерацию видео и звука в интерактивную симуляцию в реальном времени, которую можно направлять по ходу дела.",
+          "WorldPrompt позволяет закрепить первый кадр и запускать события по таймлайну — что-то вроде легкого скриптинга для сгенерированных миров.",
+          "Главные нерешённые проблемы: ошибки накапливаются при авторегрессивной генерации, а бесконечная генерация требует сложной оптимизации памяти GPU."
+        ]
+      }
+    },
+    {
+      "id": "d-1nopa3v",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/24/commit-rewriter/",
+      "publishedAt": "2026-09-24T20:06:53.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: A small update to commit-rewriter now lets you rewrite commit history on any branch, not just the default one, making it more useful for real-world git workflows.",
+        "tweets": [
+          "commit-rewriter 0.2 adds branch support: uvx commit-rewriter --branch other targets non-default branches.",
+          "Previously limited to the default branch, this fixes a real workflow gap for multi-branch repos.",
+          "Small tool, small update, but a practical fix from Simon Willison's ongoing commit-rewriter project."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: небольшое обновление commit-rewriter теперь позволяет переписывать историю коммитов не только в основной ветке, что делает утилиту полезнее в реальных проектах.",
+        "tweets": [
+          "commit-rewriter 0.2 добавил поддержку веток: uvx commit-rewriter --branch other работает с любой веткой, не только main.",
+          "Раньше утилита работала только с основной веткой — теперь это ограничение снято.",
+          "Небольшое, но практичное обновление в проекте Саймона Уиллисона."
+        ]
+      }
+    },
+    {
+      "id": "d-12diupg",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/24/datasette/",
+      "publishedAt": "2026-09-24T19:15:23.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Datasette 1.0a41 adds OpenTelemetry support for tracing, plus a shared modal-dialog Web Component that plugin authors can now reuse.",
+        "tweets": [
+          "Datasette 1.0a41 ships OpenTelemetry support, contributed by Alec Garcia.",
+          "All of Datasette's modal dialogs got refactored into a single Web Component.",
+          "That modal component is now documented, so other plugins can reuse it instead of reinventing dialogs."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: в Datasette 1.0a41 добавили поддержку OpenTelemetry и вынесли модальные окна в единый Web Component, доступный плагинам.",
+        "tweets": [
+          "В Datasette 1.0a41 появилась поддержка OpenTelemetry — её добавил Alec Garcia.",
+          "Все модальные окна Datasette переписали на единый Web Component.",
+          "Этот компонент теперь задокументирован, так что другие плагины могут использовать его вместо своих окон."
+        ]
+      }
+    },
+    {
+      "id": "d-51wo8z",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/",
+      "publishedAt": "2026-09-24T16:20:39.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Gemini's live conversational AI now has a real-time animated face, letting enterprises deploy talking AI agents that see, listen, and respond with synced expressions.",
+        "tweets": [
+          "Gemini 3.8 Live with Live Avatar adds real-time video generation to Gemini's voice AI—lip-synced, expressive, multimodal.",
+          "It can run background tool calls (e.g. hotel check-in) mid-conversation without breaking dialogue flow.",
+          "Supports 97 languages with seamless mid-conversation switching, plus custom brand avatars and SynthID watermarking."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: у голосового AI Gemini теперь есть анимированное лицо в реальном времени — бизнес может внедрять говорящих AI-агентов, которые видят, слушают и отвечают с синхронной мимикой.",
+        "tweets": [
+          "Gemini 3.8 Live с Live Avatar добавляет генерацию видео в реальном времени к голосовому AI — с синхронизацией губ и живой мимикой.",
+          "Может выполнять фоновые вызовы инструментов (например, регистрация гостя в отеле), не прерывая диалог.",
+          "Поддерживает 97 языков с бесшовным переключением на лету, кастомные аватары под бренд и водяные знаки SynthID."
+        ]
+      }
+    },
+    {
+      "id": "d-9336sl",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/foundries-vs-navigators-lowering",
+      "publishedAt": "2026-09-24T15:03:16.000Z",
+      "category": "biotech",
+      "en": {
+        "headline": "Why it matters: AI has sped up the thinking around biotech but not the physical experiments, so companies are splitting into 'foundries' that industrialize measurement and 'navigators' that use AI to work smarter with existing tools.",
+        "tweets": [
+          "AI made coding and analysis cheap, but wet-lab experiments still take days or weeks—thinking got fast, doing didn't.",
+          "Two strategies emerged: 'foundries' build costly new tech to generate data faster; 'navigators' just use AI to make better decisions with what they have.",
+          "Navigation is invisible but universal—faster analysis, cheaper internal tools, and scientists finally accessing their own data without waiting on a coder."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: ИИ ускорил мышление в биотехе, но не сами эксперименты, и компании реагируют либо строя дорогие 'фаундри' для быстрых измерений, либо становясь 'навигаторами', умнее используя то, что уже есть.",
+        "tweets": [
+          "ИИ удешевил код и анализ данных, но физический эксперимент по-прежнему занимает недели — думать стало легко, делать — нет.",
+          "Одни компании ('фаундри') вкладываются в новые технологии измерений, чтобы получать данные на порядок быстрее.",
+          "Другие ('навигаторы') просто перестраивают рабочие процессы с помощью ИИ — и учёные наконец сами анализируют свои данные, без очереди к программисту."
+        ]
+      }
+    },
+    {
+      "id": "d-1sy6kiz",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/LiquidAI/lfm2-5-vl-dspark",
+      "publishedAt": "2026-09-24T14:08:57.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a new vision-language model variant claims faster inference without sacrificing accuracy, useful for teams deploying VLMs at scale.",
+        "tweets": [
+          "LFM2.5-VL-DSpark is pitched as a speed-optimized vision-language model release.",
+          "Focus is on accelerating inference for multimodal (image+text) tasks.",
+          "No detailed benchmarks given here — treat speed/accuracy claims as vendor-stated until verified."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая версия vision-language модели обещает ускорение инференса, что важно для тех, кто разворачивает такие модели в продакшене.",
+        "tweets": [
+          "LFM2.5-VL-DSpark — версия vision-language модели, заточенная на скорость работы.",
+          "Акцент на ускорении обработки задач с изображениями и текстом одновременно.",
+          "Конкретных бенчмарков в тексте нет — заявления об ускорении пока стоит считать словами разработчиков."
+        ]
+      }
+    },
     {
       "id": "d-7c7mfu",
       "source": "latent-space",
@@ -67,167 +228,6 @@
           "Google выпустил gemini-3.8-flash-tts и flash-lite-tts: более 2000 голосов плюс клонирование голоса по 30-секундному образцу.",
           "Саймон Уиллисон на живую написал плеер с собственным API-ключом, используя открытую CORS-политику Gemini API для скрипта диалогов с разными голосами.",
           "В демо диалог двух пеликанов длиной 1 мин 18 сек сгенерировался за ~20 секунд и стоил всего 2,74 цента на полной модели."
-        ]
-      }
-    },
-    {
-      "id": "d-19416c0",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/23/shadow-roots/",
-      "publishedAt": "2026-09-23T16:37:18.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: interactive explainers can make abstract web-dev concepts like shadow DOM click faster than text alone.",
-        "tweets": [
-          "Simon Willison built a live-example artifact explaining CSS shadow roots.",
-          "The post itself is short — it's basically a pointer to the interactive demo.",
-          "Sign of a trend: using LLM-generated artifacts to teach tricky web concepts hands-on."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: интерактивные объяснения помогают быстрее разобраться в сложных вещах вроде shadow DOM, чем просто текст.",
-        "tweets": [
-          "Саймон Уиллисон сделал интерактивный артефакт с живыми примерами про shadow roots в CSS.",
-          "Сам пост короткий — это, по сути, ссылка на демо с примерами.",
-          "Тренд: использовать сгенерированные LLM интерактивные штуки для объяснения сложных веб-концепций."
-        ]
-      }
-    },
-    {
-      "id": "d-15yf87p",
-      "source": "deepmind",
-      "sourceUrl": "https://deepmind.google/blog/advancing-private-ai-compute-with-secure-server-side-memory/",
-      "publishedAt": "2026-09-23T16:00:57.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: DeepMind is building server-side memory into its private AI compute setup so personal AI can remember context without exposing user data.",
-        "tweets": [
-          "DeepMind adds secure server-side memory to Private AI Compute.",
-          "Goal: let personal AI retain context while keeping data locked down.",
-          "Part of DeepMind's push to make private cloud AI feel more personal without sacrificing security."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: DeepMind добавляет серверную память в защищённую инфраструктуру Private AI Compute, чтобы персональный ИИ мог помнить контекст, не раскрывая данные пользователя.",
-        "tweets": [
-          "DeepMind внедряет безопасную серверную память в Private AI Compute.",
-          "Цель — дать персональному ИИ возможность запоминать контекст, не теряя защиту данных.",
-          "Это шаг к более «личному» облачному ИИ без компромиссов в безопасности."
-        ]
-      }
-    },
-    {
-      "id": "d-imx9ta",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/two-years-of-openai-academy",
-      "publishedAt": "2026-09-23T16:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI is scaling free AI-skills training, signaling AI literacy is becoming a broad workforce issue, not just a developer one.",
-        "tweets": [
-          "OpenAI Academy just hit its two-year mark.",
-          "Focus is on expanding AI skills training to more communities, not just devs.",
-          "Sign that AI adoption bottleneck is skills, not just model capability."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI расширяет бесплатное обучение AI-навыкам — грамотность в AI становится массовой задачей, а не только для разработчиков.",
-        "tweets": [
-          "OpenAI Academy отмечает два года работы.",
-          "Упор делают на охват новых сообществ, а не только айтишников.",
-          "Это намёк, что тормозит внедрение AI не сами модели, а нехватка навыков у людей."
-        ]
-      }
-    },
-    {
-      "id": "d-108o9nz",
-      "source": "deepmind",
-      "sourceUrl": "https://deepmind.google/blog/say-hello-to-gemini-38-text-to-speech/",
-      "publishedAt": "2026-09-23T15:25:14.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Google's new TTS models let developers build custom, directable voices with fine emotional and accent control, ranking top on independent benchmarks.",
-        "tweets": [
-          "Gemini 3.8 Flash TTS and Flash-Lite TTS bring custom character voices, accents, and emotional direction to Google AI Studio, Gemini API, Notebook and Vids.",
-          "They top Hume AI's Voice Design and Overall Quality benchmarks, and lead in blind human evaluations across Japanese, Arabic, Hindi and more.",
-          "Voice replication requires verbal consent from the original speaker, and all outputs carry an invisible SynthID watermark for traceability."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новые модели озвучки от Google дают разработчикам гибкий контроль над голосом, эмоциями и акцентом и лидируют в независимых тестах.",
-        "tweets": [
-          "Gemini 3.8 Flash TTS и Flash-Lite TTS создают кастомные голоса с управлением акцентом и эмоциями — доступны в AI Studio, API, Notebook и Vids.",
-          "Модели заняли первые места в бенчмарках Hume AI по дизайну и качеству голоса, лидируют в тестах на японском, арабском, хинди и других языках.",
-          "Для клонирования голоса нужно голосовое согласие говорящего, а весь сгенерированный звук помечается невидимым водяным знаком SynthID."
-        ]
-      }
-    },
-    {
-      "id": "d-12exb8u",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/bio-security-is-an-ai-arms-race-eric",
-      "publishedAt": "2026-09-23T13:27:18.000Z",
-      "category": "biotech",
-      "en": {
-        "headline": "Why it matters: genomic language models that design new viruses can also power biodefense, and the same long-context reasoning tricks from LLMs are now showing up in DNA models.",
-        "tweets": [
-          "Arc/Stanford used the Evo/Evo-2 genome language models to generate whole bacteriophage genomes that were synthesized into working viruses.",
-          "DNA has just 4 letters but sequences up to 3 billion long — long-context modeling (not scale alone) is what made genome-scale generation possible.",
-          "Radical Numerics showed a GLM can 'chain-of-thought' in DNA: shown progressively better RNA sequences, it extrapolated to scores it was never shown."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: модели, умеющие проектировать геномы вирусов с нуля, — это одновременно и угроза, и главный инструмент биозащиты.",
-        "tweets": [
-          "Команда Arc/Stanford с помощью моделей Evo и Evo-2 сгенерировала полные геномы бактериофагов, которые затем синтезировали в рабочие вирусы.",
-          "ДНК — это всего 4 буквы, но последовательности длиной до 3 млрд символов; прорыв случился благодаря длинному контексту, а не просто размеру модели.",
-          "В Radical Numerics показали 'chain-of-thought' на языке ДНК: модель, видя всё более удачные РНК, сама экстраполировала к результатам, которых ей не показывали."
-        ]
-      }
-    },
-    {
-      "id": "d-1q6usxr",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/openai-extends-cyber-access-to-ukraine-for-civilian-defense",
-      "publishedAt": "2026-09-23T13:00:00.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: OpenAI is giving Ukraine's government access to its Daybreak program to help defend civilian infrastructure from cyberattacks.",
-        "tweets": [
-          "OpenAI extends its Daybreak program to Ukraine's government for civilian cyber defense.",
-          "Focus is protecting civilian infrastructure, not offensive operations.",
-          "Another sign AI firms are becoming direct players in wartime cybersecurity."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI открывает украинскому правительству доступ к программе Daybreak для защиты гражданской инфраструктуры от кибератак.",
-        "tweets": [
-          "OpenAI расширяет доступ к программе Daybreak для правительства Украины.",
-          "Цель — защита гражданской инфраструктуры, а не наступательные операции.",
-          "Ещё один пример, как AI-компании становятся участниками кибербезопасности в условиях войны."
-        ]
-      }
-    },
-    {
-      "id": "d-1ke56x9",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/sam-altman-un-security-council-remarks",
-      "publishedAt": "2026-09-23T12:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI's CEO took AI safety concerns to the UN Security Council, signaling AI governance is now viewed as a top-tier geopolitical issue.",
-        "tweets": [
-          "Sam Altman addressed the UN Security Council on AI safety and human control over AI systems.",
-          "His remarks pushed for international cooperation on managing AI risks, not just national policy.",
-          "AI oversight is moving from tech-industry talk to the world's highest diplomatic body."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: глава OpenAI выступил перед Совбезом ООН — вопрос безопасности ИИ вышел на уровень глобальной геополитики.",
-        "tweets": [
-          "Сэм Альтман обратился к Совету Безопасности ООН с темой безопасности ИИ и сохранения человеческого контроля над системами.",
-          "Он призвал к международному сотрудничеству в управлении рисками ИИ, а не только к национальным мерам.",
-          "Тема контроля над ИИ переходит из чисто технологических обсуждений в высшую дипломатическую повестку."
         ]
       }
     }

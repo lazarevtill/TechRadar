@@ -905,5 +905,18 @@
       "rag": 1,
       "supply-chain-security": 1
     }
+  },
+  {
+    "date": "2026-09-25",
+    "topics": {
+      "multimodal": 6,
+      "generative-media": 4,
+      "llm-agents": 11,
+      "ai-safety": 7,
+      "ai-coding": 6,
+      "open-models": 2,
+      "small-models": 2,
+      "rag": 1
+    }
   }
 ]

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-24T11:46:29.556Z",
+  "generatedAt": "2026-09-25T11:52:25.807Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -22,9 +22,27 @@
         0,
         0,
         0,
-        3
+        9
       ],
       "signals": [
+        {
+          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
+          "url": "https://www.latent.space/p/runway",
+          "source": "latent-space",
+          "publishedAt": "2026-09-25T01:30:57.000Z"
+        },
+        {
+          "title": "Introducing Gemini 3.8 Live with Live Avatar",
+          "url": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/",
+          "source": "deepmind",
+          "publishedAt": "2026-09-24T16:20:39.000Z"
+        },
+        {
+          "title": "Accelerating vision-language models with LFM2.5-VL-DSpark",
+          "url": "https://huggingface.co/blog/LiquidAI/lfm2-5-vl-dspark",
+          "source": "hf",
+          "publishedAt": "2026-09-24T14:08:57.000Z"
+        },
         {
           "title": "[AINews] Meta Connect 2026: Muse glasses, voice, video, and Charm",
           "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
@@ -36,12 +54,6 @@
           "url": "https://simonwillison.net/2026/Sep/23/gemini-tts-playground/",
           "source": "simonw",
           "publishedAt": "2026-09-23T17:12:27.000Z"
-        },
-        {
-          "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
-          "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
-          "source": "latent-space",
-          "publishedAt": "2026-09-22T06:30:56.000Z"
         }
       ]
     },
@@ -65,7 +77,7 @@
         0,
         0,
         0,
-        8
+        15
       ],
       "signals": [
         {
@@ -120,9 +132,21 @@
         0,
         0,
         0,
-        2
+        6
       ],
       "signals": [
+        {
+          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
+          "url": "https://www.latent.space/p/runway",
+          "source": "latent-space",
+          "publishedAt": "2026-09-25T01:30:57.000Z"
+        },
+        {
+          "title": "Introducing Gemini 3.8 Live with Live Avatar",
+          "url": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/",
+          "source": "deepmind",
+          "publishedAt": "2026-09-24T16:20:39.000Z"
+        },
         {
           "title": "How invideo improves color grading 3x with GPT‑6 Astra",
           "url": "https://openai.com/index/invideo-builds-with-gpt-6-astra",
@@ -157,7 +181,7 @@
         0,
         0,
         0,
-        6
+        12
       ],
       "signals": [
         {
@@ -212,7 +236,7 @@
         0,
         0,
         0,
-        2
+        4
       ],
       "signals": [
         {
@@ -251,14 +275,7 @@
         0,
         1
       ],
-      "signals": [
-        {
-          "title": "Be alert: targeted attacks on prominent Rustaceans",
-          "url": "https://simonwillison.net/2026/Sep/17/targeted-attacks-on-rustaceans/",
-          "source": "simonw",
-          "publishedAt": "2026-09-17T23:59:19.000Z"
-        }
-      ]
+      "signals": []
     },
     {
       "id": "post-quantum",
@@ -290,7 +307,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.97,
+      "momentum": -0.95,
       "weeklyCounts": [
         411,
         420,
@@ -304,7 +321,7 @@
         452,
         469,
         463,
-        13
+        24
       ],
       "signals": [
         {
@@ -340,6 +357,37 @@
       ]
     },
     {
+      "id": "rag",
+      "label": "Retrieval-Augmented Generation",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.98,
+      "weeklyCounts": [
+        81,
+        60,
+        57,
+        76,
+        72,
+        77,
+        95,
+        107,
+        100,
+        85,
+        92,
+        103,
+        2
+      ],
+      "signals": [
+        {
+          "title": "V7 cuts costs 78% while boosting accuracy with GPT-5.6 Luna",
+          "url": "https://openai.com/index/v7",
+          "source": "openai",
+          "publishedAt": "2026-09-21T00:00:00.000Z"
+        }
+      ]
+    },
+    {
       "id": "open-models",
       "label": "Open Models",
       "category": "ai",
@@ -359,7 +407,7 @@
         365,
         364,
         370,
-        2
+        4
       ],
       "signals": [
         {
@@ -373,37 +421,6 @@
           "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
           "source": "hf",
           "publishedAt": "2026-09-22T00:00:00.000Z"
-        }
-      ]
-    },
-    {
-      "id": "rag",
-      "label": "Retrieval-Augmented Generation",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.99,
-      "weeklyCounts": [
-        81,
-        60,
-        57,
-        76,
-        72,
-        77,
-        95,
-        107,
-        100,
-        85,
-        92,
-        103,
-        1
-      ],
-      "signals": [
-        {
-          "title": "How V7 gives AI agents institutional memory",
-          "url": "https://openai.com/index/v7",
-          "source": "openai",
-          "publishedAt": "2026-09-21T00:00:00.000Z"
         }
       ]
     },
