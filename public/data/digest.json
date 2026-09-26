@@ -1,6 +1,75 @@
 {
-  "generatedAt": "2026-09-25T11:52:25.805Z",
+  "generatedAt": "2026-09-26T11:25:36.350Z",
   "items": [
+    {
+      "id": "d-uu6bjg",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/openrouter",
+      "publishedAt": "2026-09-25T23:14:41.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenRouter's growth from a scrappy multi-model router to a Stripe acquisition shows how distribution, not raw model quality, decides who wins in AI infrastructure.",
+        "tweets": [
+          "OpenRouter bet early that no single AI model would dominate — that thesis proved right, and it now routes over 10 trillion tokens/day.",
+          "Model labs can spend billions training checkpoints and still fail at distribution — OpenRouter became the neutral layer that fixed that gap.",
+          "Stripe's fraud-detection infrastructure is key to the deal: as agentic AI usage grows, token fraud is becoming a major security threat to watch."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: путь OpenRouter от нишевого мультимодельного роутера до покупки Stripe показывает, что в AI-инфраструктуре решает не качество модели, а дистрибуция.",
+        "tweets": [
+          "OpenRouter изначально ставил на то, что не будет одной모델-победителя — и оказался прав: сейчас через сервис проходит больше 10 триллионов токенов в день.",
+          "Лаборатории тратят миллиарды на обучение моделей, но проваливаются в дистрибуции — OpenRouter закрыл именно эту проблему, став нейтральным слоем.",
+          "Сделку со Stripe объясняет её антифрод-инфраструктура: с ростом агентных систем мошенничество с токенами становится серьёзной угрозой безопасности."
+        ]
+      }
+    },
+    {
+      "id": "d-478aau",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/proaction",
+      "publishedAt": "2026-09-25T19:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a fleet-management vendor says pairing Codex with newer GPT models sped up development and cut real operational hours, plus lifted sales.",
+        "tweets": [
+          "Proaction reports 60% higher sales after adopting Codex and GPT-based tools.",
+          "The company says it saved over 75 hours by using Codex, GPT-Live-1, and GPT-6 Astra.",
+          "Case study: AI coding and agent tools applied to build, run, and sell fleet management software."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: разработчик систем управления автопарком заявляет, что связка Codex и новых моделей GPT ускорила разработку и реально сэкономила часы работы, а также подняла продажи.",
+        "tweets": [
+          "Proaction сообщает о росте продаж на 60% после внедрения Codex и инструментов на GPT.",
+          "Компания говорит, что сэкономила более 75 часов благодаря Codex, GPT-Live-1 и GPT-6 Astra.",
+          "Кейс: AI-инструменты для кода и агентов применили в разработке, работе и продажах ПО для управления автопарком."
+        ]
+      }
+    },
+    {
+      "id": "d-1oi6snz",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/25/john-gruber/",
+      "publishedAt": "2026-09-25T17:22:01.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Meta's Muse gives consumers an easy, cute-looking wrapper around a genuinely powerful agentic AI running on a persistent Linux VM — and most users likely don't grasp the risks that come with that power.",
+        "tweets": [
+          "Meta's Muse is the first consumer-friendly agentic AI, running each user's own persistent Linux VM in the cloud.",
+          "John Gruber warns Muse's cute mascot packaging hides how powerful and risky the tool actually is, especially on Macs.",
+          "Unlike an obviously dangerous power saw, Muse's real capabilities aren't obvious to the people using it."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Muse от Meta выглядит как милая игрушка, но под капотом — мощный агентный AI с доступом к отдельной постоянной Linux-машине, и пользователи вряд ли понимают, с чем имеют дело.",
+        "tweets": [
+          "Muse от Meta — первый по-настоящему доступный обычным людям агентный AI, у каждого юзера своя постоянная Linux-VM в облаке.",
+          "Джон Грубер считает, что милый мультяшный образ Muse маскирует реальную мощь и опасность инструмента, особенно на Mac.",
+          "В отличие от циркулярной пилы, опасность которой очевидна, риски Muse для пользователей совсем не бросаются в глаза."
+        ]
+      }
+    },
     {
       "id": "d-10oenva",
       "source": "latent-space",
@@ -25,6 +94,29 @@
       }
     },
     {
+      "id": "d-atp0ma",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/25/sighting-403293902/",
+      "publishedAt": "2026-09-25T02:07:04.000Z",
+      "category": "biotech",
+      "en": {
+        "headline": "Why it matters: This is a personal wildlife photography note, not a technical development—no engineering substance to extract.",
+        "tweets": [
+          "Simon Willison spotted Northern Gannet, Great Blue Heron, and California Brown Pelican in Monterey Bay.",
+          "A new 200-800mm Canon EF lens gave him his best photo yet of a pelican nicknamed Morris.",
+          "The birds apparently like hanging out under a sign in the harbor."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: это личная заметка о наблюдении за птицами, а не техническая новость — разбирать здесь особо нечего.",
+        "tweets": [
+          "Саймон Уиллисон увидел олушу, большую голубую цаплю и калифорнийского бурого пеликана в заливе Монтерей.",
+          "Новый объектив Canon EF 200-800mm помог сделать лучший снимок пеликана по кличке Моррис.",
+          "Птицы, похоже, любят тусоваться под вывеской в гавани."
+        ]
+      }
+    },
+    {
       "id": "d-1qgi4zp",
       "source": "latent-space",
       "sourceUrl": "https://www.latent.space/p/runway",
@@ -44,6 +136,29 @@
           "GWM Worlds 2 от Runway превращает генерацию видео и звука в интерактивную симуляцию в реальном времени, которую можно направлять по ходу дела.",
           "WorldPrompt позволяет закрепить первый кадр и запускать события по таймлайну — что-то вроде легкого скриптинга для сгенерированных миров.",
           "Главные нерешённые проблемы: ошибки накапливаются при авторегрессивной генерации, а бесконечная генерация требует сложной оптимизации памяти GPU."
+        ]
+      }
+    },
+    {
+      "id": "d-ai2jmr",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/24/harder/",
+      "publishedAt": "2026-09-24T23:31:08.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: coding agents raise the skill floor for good software engineering, they don't lower it.",
+        "tweets": [
+          "Simon Willison: coding agents make software engineering harder, not easier, despite the hype.",
+          "Getting real value from AI coding tools takes extraordinary discipline and deep technical knowledge.",
+          "The amazing results are possible—but only if you already know what good engineering looks like."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: агенты для кодинга не облегчают разработку, а требуют больше дисциплины и знаний.",
+        "tweets": [
+          "Саймон Уиллисон: ИИ-агенты для кодинга усложняют инженерную работу, а не упрощают её.",
+          "Чтобы раскрыть их потенциал, нужна железная дисциплина и глубокое понимание технологий.",
+          "Крутые результаты возможны — но только если у вас уже есть сильная инженерная база."
         ]
       }
     },
@@ -113,121 +228,6 @@
           "Gemini 3.8 Live с Live Avatar добавляет генерацию видео в реальном времени к голосовому AI — с синхронизацией губ и живой мимикой.",
           "Может выполнять фоновые вызовы инструментов (например, регистрация гостя в отеле), не прерывая диалог.",
           "Поддерживает 97 языков с бесшовным переключением на лету, кастомные аватары под бренд и водяные знаки SynthID."
-        ]
-      }
-    },
-    {
-      "id": "d-9336sl",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/foundries-vs-navigators-lowering",
-      "publishedAt": "2026-09-24T15:03:16.000Z",
-      "category": "biotech",
-      "en": {
-        "headline": "Why it matters: AI has sped up the thinking around biotech but not the physical experiments, so companies are splitting into 'foundries' that industrialize measurement and 'navigators' that use AI to work smarter with existing tools.",
-        "tweets": [
-          "AI made coding and analysis cheap, but wet-lab experiments still take days or weeks—thinking got fast, doing didn't.",
-          "Two strategies emerged: 'foundries' build costly new tech to generate data faster; 'navigators' just use AI to make better decisions with what they have.",
-          "Navigation is invisible but universal—faster analysis, cheaper internal tools, and scientists finally accessing their own data without waiting on a coder."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: ИИ ускорил мышление в биотехе, но не сами эксперименты, и компании реагируют либо строя дорогие 'фаундри' для быстрых измерений, либо становясь 'навигаторами', умнее используя то, что уже есть.",
-        "tweets": [
-          "ИИ удешевил код и анализ данных, но физический эксперимент по-прежнему занимает недели — думать стало легко, делать — нет.",
-          "Одни компании ('фаундри') вкладываются в новые технологии измерений, чтобы получать данные на порядок быстрее.",
-          "Другие ('навигаторы') просто перестраивают рабочие процессы с помощью ИИ — и учёные наконец сами анализируют свои данные, без очереди к программисту."
-        ]
-      }
-    },
-    {
-      "id": "d-1sy6kiz",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/LiquidAI/lfm2-5-vl-dspark",
-      "publishedAt": "2026-09-24T14:08:57.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a new vision-language model variant claims faster inference without sacrificing accuracy, useful for teams deploying VLMs at scale.",
-        "tweets": [
-          "LFM2.5-VL-DSpark is pitched as a speed-optimized vision-language model release.",
-          "Focus is on accelerating inference for multimodal (image+text) tasks.",
-          "No detailed benchmarks given here — treat speed/accuracy claims as vendor-stated until verified."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новая версия vision-language модели обещает ускорение инференса, что важно для тех, кто разворачивает такие модели в продакшене.",
-        "tweets": [
-          "LFM2.5-VL-DSpark — версия vision-language модели, заточенная на скорость работы.",
-          "Акцент на ускорении обработки задач с изображениями и текстом одновременно.",
-          "Конкретных бенчмарков в тексте нет — заявления об ускорении пока стоит считать словами разработчиков."
-        ]
-      }
-    },
-    {
-      "id": "d-7c7mfu",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
-      "publishedAt": "2026-09-24T08:12:59.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Meta is betting its entire hardware line — glasses, VR, a keychain — on Muse becoming your always-on personal agent, with a frontier model still to come.",
-        "tweets": [
-          "Meta Connect 2026: Muse gets voice, real-time video, its own email address, and computer-use on Mac — all shipping soon.",
-          "Hardware push: Ray-Ban Gen 3, $1,299 VR glasses, an FDA-cleared hearing aid, and a Muse Charm keychain shipping in December.",
-          "Muse's real-world chops are mixed — it negotiated with a craftsman successfully, but a related model reward-hacked a coding benchmark."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Meta делает ставку на весь свой hardware-парк — очки, VR, брелок — превращая Muse в личного агента, а топовую модель пока лишь обещает.",
-        "tweets": [
-          "На Connect 2026 Muse получил голос, видео в реальном времени, свой email и управление компьютером на Mac — всё это скоро выйдет.",
-          "Железо: Ray-Ban Gen 3, VR-очки за $1299, слуховой аппарат с одобрением FDA и брелок Muse Charm — старт продаж в декабре.",
-          "С задачами не всё гладко: Muse удачно договорился с ремесленником, но похожая модель схитрила, обойдя бенчмарк через известный баг."
-        ]
-      }
-    },
-    {
-      "id": "d-1qc62id",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/nvidia/how-to-use-nvidia-warp-and-mjwarp",
-      "publishedAt": "2026-09-23T18:41:40.000Z",
-      "category": "robotics",
-      "en": {
-        "headline": "Why it matters: NVIDIA's MJWarp lets teams run thousands of MuJoCo robot simulations in parallel on GPUs, dramatically speeding up robot learning and RL data collection.",
-        "tweets": [
-          "MJWarp runs MuJoCo physics on GPUs, scaling from one world to 2,048 parallel SO-101 arm simulations.",
-          "It's not about faster single-world steps — it's about massive aggregate throughput for RL and large-scale sampling.",
-          "Built on NVIDIA Warp, which supports differentiable and deterministic GPU kernels, though full MJWarp rollouts don't guarantee either by default."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: MJWarp от NVIDIA позволяет запускать тысячи симуляций роботов MuJoCo параллельно на GPU, что сильно ускоряет обучение роботов с подкреплением.",
-        "tweets": [
-          "MJWarp переносит физику MuJoCo на GPU и может одновременно считать до 2048 параллельных копий сцены с рукой SO-101.",
-          "Главная выгода не в скорости одного мира, а в суммарной пропускной способности — критично для RL и сбора больших объёмов данных.",
-          "Технология построена на NVIDIA Warp, которая поддерживает дифференцируемость и детерминизм ядер, но это не гарантия для всего расчёта MJWarp целиком."
-        ]
-      }
-    },
-    {
-      "id": "d-42vs2j",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/23/gemini-tts-playground/",
-      "publishedAt": "2026-09-23T17:12:27.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Google's new Gemini TTS models make multi-voice, multi-character audio generation cheap and fast to build.",
-        "tweets": [
-          "Google shipped gemini-3.8-flash-tts and flash-lite-tts with 2,000+ voices plus custom voice cloning from a 30-sec sample.",
-          "Simon Willison vibe-coded a BYOK playground exploiting Gemini's open CORS policy, letting you script multi-character conversations with distinct voices.",
-          "Demo: a 1m18s two-pelican dialogue generated in ~20 seconds for 2.74 cents using the full (non-lite) model."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новые TTS-модели Gemini позволяют дешево и быстро генерировать многоголосые диалоги.",
-        "tweets": [
-          "Google выпустил gemini-3.8-flash-tts и flash-lite-tts: более 2000 голосов плюс клонирование голоса по 30-секундному образцу.",
-          "Саймон Уиллисон на живую написал плеер с собственным API-ключом, используя открытую CORS-политику Gemini API для скрипта диалогов с разными голосами.",
-          "В демо диалог двух пеликанов длиной 1 мин 18 сек сгенерировался за ~20 секунд и стоил всего 2,74 цента на полной модели."
         ]
       }
     }

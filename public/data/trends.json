@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-25T11:52:25.807Z",
+  "generatedAt": "2026-09-26T11:25:36.352Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -22,7 +22,7 @@
         0,
         0,
         0,
-        9
+        15
       ],
       "signals": [
         {
@@ -77,7 +77,7 @@
         0,
         0,
         0,
-        15
+        20
       ],
       "signals": [
         {
@@ -132,7 +132,7 @@
         0,
         0,
         0,
-        6
+        10
       ],
       "signals": [
         {
@@ -181,9 +181,21 @@
         0,
         0,
         0,
-        12
+        19
       ],
       "signals": [
+        {
+          "title": "Proaction boosts sales 60% and saves 75+ hours with Codex",
+          "url": "https://openai.com/index/proaction",
+          "source": "openai",
+          "publishedAt": "2026-09-25T19:00:00.000Z"
+        },
+        {
+          "title": "Note on 24th September 2026",
+          "url": "https://simonwillison.net/2026/Sep/24/harder/",
+          "source": "simonw",
+          "publishedAt": "2026-09-24T23:31:08.000Z"
+        },
         {
           "title": "SF October 14th: A Birds of a Feather Session on Agentic Engineering",
           "url": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
@@ -201,18 +213,6 @@
           "url": "https://simonwillison.net/2026/Sep/20/voxium/",
           "source": "simonw",
           "publishedAt": "2026-09-20T21:06:43.000Z"
-        },
-        {
-          "title": "MCP was always a bad idea?",
-          "url": "https://simonwillison.net/2026/Sep/20/hn-49779718/",
-          "source": "simonw",
-          "publishedAt": "2026-09-20T20:24:41.000Z"
-        },
-        {
-          "title": "llm-keys-ui 0.1",
-          "url": "https://simonwillison.net/2026/Sep/20/llm-keys-ui/",
-          "source": "simonw",
-          "publishedAt": "2026-09-20T19:22:19.000Z"
         }
       ]
     },
@@ -236,7 +236,7 @@
         0,
         0,
         0,
-        4
+        6
       ],
       "signals": [
         {
@@ -307,7 +307,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.95,
+      "momentum": -0.92,
       "weeklyCounts": [
         411,
         420,
@@ -321,9 +321,27 @@
         452,
         469,
         463,
-        24
+        36
       ],
       "signals": [
+        {
+          "title": "Proaction boosts sales 60% and saves 75+ hours with Codex",
+          "url": "https://openai.com/index/proaction",
+          "source": "openai",
+          "publishedAt": "2026-09-25T19:00:00.000Z"
+        },
+        {
+          "title": "Quoting John Gruber",
+          "url": "https://simonwillison.net/2026/Sep/25/john-gruber/",
+          "source": "simonw",
+          "publishedAt": "2026-09-25T17:22:01.000Z"
+        },
+        {
+          "title": "Note on 24th September 2026",
+          "url": "https://simonwillison.net/2026/Sep/24/harder/",
+          "source": "simonw",
+          "publishedAt": "2026-09-24T23:31:08.000Z"
+        },
         {
           "title": "[AINews] Meta Connect 2026: Muse glasses, voice, video, and Charm",
           "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
@@ -335,24 +353,6 @@
           "url": "https://openai.com/index/ringg",
           "source": "openai",
           "publishedAt": "2026-09-23T12:00:00.000Z"
-        },
-        {
-          "title": "SF October 14th: A Birds of a Feather Session on Agentic Engineering",
-          "url": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
-          "source": "simonw",
-          "publishedAt": "2026-09-23T02:53:19.000Z"
-        },
-        {
-          "title": "🔬 An Oscar, Two Asteroids, and the Algorithm in Your sklearn: John Platt on AI for Science",
-          "url": "https://www.latent.space/p/john-platt",
-          "source": "latent-space",
-          "publishedAt": "2026-09-22T21:07:39.000Z"
-        },
-        {
-          "title": "Parallel cut research time and cost in half with GPT‑6 Astra",
-          "url": "https://openai.com/index/parallel-cuts-time-and-cost-with-astra",
-          "source": "openai",
-          "publishedAt": "2026-09-22T12:00:00.000Z"
         }
       ]
     },
@@ -362,7 +362,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.98,
+      "momentum": -0.97,
       "weeklyCounts": [
         81,
         60,
@@ -376,7 +376,7 @@
         85,
         92,
         103,
-        2
+        3
       ],
       "signals": [
         {
@@ -393,7 +393,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.99,
+      "momentum": -0.98,
       "weeklyCounts": [
         375,
         358,
@@ -407,9 +407,15 @@
         365,
         364,
         370,
-        4
+        7
       ],
       "signals": [
+        {
+          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
+          "url": "https://www.latent.space/p/openrouter",
+          "source": "latent-space",
+          "publishedAt": "2026-09-25T23:14:41.000Z"
+        },
         {
           "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
           "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
