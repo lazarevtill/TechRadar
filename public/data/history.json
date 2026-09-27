@@ -931,5 +931,18 @@
       "small-models": 2,
       "rag": 1
     }
+  },
+  {
+    "date": "2026-09-27",
+    "topics": {
+      "llm-agents": 13,
+      "generative-media": 5,
+      "ai-coding": 8,
+      "open-models": 3,
+      "multimodal": 6,
+      "ai-safety": 5,
+      "small-models": 2,
+      "rag": 1
+    }
   }
 ]

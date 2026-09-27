@@ -1,6 +1,29 @@
 {
-  "generatedAt": "2026-09-26T11:25:36.350Z",
+  "generatedAt": "2026-09-27T13:32:46.232Z",
   "items": [
+    {
+      "id": "d-bci3xb",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
+      "publishedAt": "2026-09-26T23:39:06.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Claude can now go from a rough prompt to working pixel-art animation to an automated screen-recording pipeline with almost no manual glue code.",
+        "tweets": [
+          "Simon Willison fed Claude Opus 5.5 a few kakapo photos and got working pixel-art HTML5 canvas animation back.",
+          "Claude Code then used Playwright to script clicks and record a 15s video of that animation — no manual video editing needed.",
+          "The full recording script was short: define click timings/positions, launch headless Chromium, record video, done."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Claude теперь способен пройти путь от простого промпта до анимации и автоматической записи видео практически без ручной работы.",
+        "tweets": [
+          "Саймон Уиллисон дал Claude Opus 5.5 несколько фото какапо — и получил рабочую pixel-art анимацию на HTML5 canvas.",
+          "Затем Claude Code сам написал скрипт на Playwright, который кликал по странице и записывал 15-секундное видео.",
+          "Итоговый скрипт получился совсем коротким: тайминги кликов, запуск headless-браузера, запись — и готово."
+        ]
+      }
+    },
     {
       "id": "d-uu6bjg",
       "source": "latent-space",
@@ -205,29 +228,6 @@
           "В Datasette 1.0a41 появилась поддержка OpenTelemetry — её добавил Alec Garcia.",
           "Все модальные окна Datasette переписали на единый Web Component.",
           "Этот компонент теперь задокументирован, так что другие плагины могут использовать его вместо своих окон."
-        ]
-      }
-    },
-    {
-      "id": "d-51wo8z",
-      "source": "deepmind",
-      "sourceUrl": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/",
-      "publishedAt": "2026-09-24T16:20:39.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Gemini's live conversational AI now has a real-time animated face, letting enterprises deploy talking AI agents that see, listen, and respond with synced expressions.",
-        "tweets": [
-          "Gemini 3.8 Live with Live Avatar adds real-time video generation to Gemini's voice AI—lip-synced, expressive, multimodal.",
-          "It can run background tool calls (e.g. hotel check-in) mid-conversation without breaking dialogue flow.",
-          "Supports 97 languages with seamless mid-conversation switching, plus custom brand avatars and SynthID watermarking."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: у голосового AI Gemini теперь есть анимированное лицо в реальном времени — бизнес может внедрять говорящих AI-агентов, которые видят, слушают и отвечают с синхронной мимикой.",
-        "tweets": [
-          "Gemini 3.8 Live с Live Avatar добавляет генерацию видео в реальном времени к голосовому AI — с синхронизацией губ и живой мимикой.",
-          "Может выполнять фоновые вызовы инструментов (например, регистрация гостя в отеле), не прерывая диалог.",
-          "Поддерживает 97 языков с бесшовным переключением на лету, кастомные аватары под бренд и водяные знаки SynthID."
         ]
       }
     }
