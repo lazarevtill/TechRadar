@@ -1,7 +1,44 @@
 {
-  "generatedAt": "2026-09-26T11:24:28.020Z",
+  "generatedAt": "2026-09-27T12:01:41.036Z",
   "window": "rolling-120d",
   "topics": [
+    {
+      "id": "humanoids",
+      "label": "Humanoid Robots",
+      "category": "robotics",
+      "stage": "prototype",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        1,
+        7,
+        7,
+        6,
+        6,
+        7,
+        7,
+        1,
+        0,
+        0,
+        2,
+        7,
+        7
+      ],
+      "signals": [
+        {
+          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
+          "url": "https://www.latent.space/p/runway",
+          "source": "latent-space",
+          "publishedAt": "2026-09-25T01:30:57.000Z"
+        },
+        {
+          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
+          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
+          "source": "latent-space",
+          "publishedAt": "2026-09-15T04:50:36.000Z"
+        }
+      ]
+    },
     {
       "id": "post-quantum",
       "label": "Post-Quantum Crypto",
@@ -27,49 +64,12 @@
       "signals": []
     },
     {
-      "id": "humanoids",
-      "label": "Humanoid Robots",
-      "category": "robotics",
-      "stage": "prototype",
-      "trajectory": "cooling",
-      "momentum": -0.29,
-      "weeklyCounts": [
-        1,
-        7,
-        7,
-        6,
-        6,
-        7,
-        7,
-        1,
-        0,
-        0,
-        2,
-        7,
-        5
-      ],
-      "signals": [
-        {
-          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
-          "url": "https://www.latent.space/p/runway",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T01:30:57.000Z"
-        },
-        {
-          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
-          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T04:50:36.000Z"
-        }
-      ]
-    },
-    {
       "id": "protein-design",
       "label": "Protein Design",
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.38,
+      "momentum": -0.14,
       "weeklyCounts": [
         21,
         21,
@@ -83,7 +83,7 @@
         21,
         21,
         21,
-        13
+        18
       ],
       "signals": [
         {
@@ -124,7 +124,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.46,
+      "momentum": -0.29,
       "weeklyCounts": [
         14,
         11,
@@ -138,7 +138,7 @@
         14,
         17,
         28,
-        15
+        20
       ],
       "signals": [
         {
@@ -179,7 +179,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.56,
+      "momentum": -0.41,
       "weeklyCounts": [
         375,
         358,
@@ -193,7 +193,7 @@
         365,
         364,
         370,
-        162
+        217
       ],
       "signals": [
         {
@@ -234,7 +234,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.6,
+      "momentum": -0.47,
       "weeklyCounts": [
         411,
         420,
@@ -248,7 +248,7 @@
         452,
         469,
         463,
-        184
+        246
       ],
       "signals": [
         {
@@ -289,7 +289,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.61,
+      "momentum": -0.48,
       "weeklyCounts": [
         81,
         60,
@@ -303,7 +303,7 @@
         85,
         92,
         103,
-        40
+        54
       ],
       "signals": [
         {
