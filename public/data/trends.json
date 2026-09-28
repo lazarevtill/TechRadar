@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T13:32:46.234Z",
+  "generatedAt": "2026-09-28T15:24:21.426Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -22,7 +22,7 @@
         0,
         0,
         0,
-        21
+        27
       ],
       "signals": [
         {
@@ -77,7 +77,7 @@
         0,
         0,
         0,
-        25
+        29
       ],
       "signals": [
         {
@@ -103,12 +103,6 @@
           "url": "https://huggingface.co/blog/evaleval-aisi",
           "source": "hf",
           "publishedAt": "2026-09-22T00:00:00.000Z"
-        },
-        {
-          "title": "Building standards for the next phase of AI",
-          "url": "https://openai.com/index/building-standards-next-phase-ai",
-          "source": "openai",
-          "publishedAt": "2026-09-21T10:00:00.000Z"
         }
       ]
     },
@@ -132,7 +126,7 @@
         0,
         0,
         0,
-        15
+        19
       ],
       "signals": [
         {
@@ -158,12 +152,6 @@
           "url": "https://openai.com/index/invideo-builds-with-gpt-6-astra",
           "source": "openai",
           "publishedAt": "2026-09-23T12:00:00.000Z"
-        },
-        {
-          "title": "Higgsfield AI ships new video features in a day with GPT-6 Astra",
-          "url": "https://openai.com/index/higgsfield-from-prompt-to-production-with-astra",
-          "source": "openai",
-          "publishedAt": "2026-09-21T12:00:00.000Z"
         }
       ]
     },
@@ -187,9 +175,15 @@
         0,
         0,
         0,
-        27
+        33
       ],
       "signals": [
+        {
+          "title": "2026 in LLMs (so far)",
+          "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
+          "source": "simonw",
+          "publishedAt": "2026-09-27T23:54:15.000Z"
+        },
         {
           "title": "Kākāpō Party",
           "url": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
@@ -213,12 +207,6 @@
           "url": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
           "source": "simonw",
           "publishedAt": "2026-09-23T02:53:19.000Z"
-        },
-        {
-          "title": "Airbnb widens access to GPT-6 Astra and OpenAI frontier models",
-          "url": "https://openai.com/index/airbnb-gpt-6-astra",
-          "source": "openai",
-          "publishedAt": "2026-09-23T01:00:00.000Z"
         }
       ]
     },
@@ -242,7 +230,7 @@
         0,
         0,
         0,
-        8
+        9
       ],
       "signals": [
         {
@@ -250,12 +238,6 @@
           "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
           "source": "hf",
           "publishedAt": "2026-09-22T00:00:00.000Z"
-        },
-        {
-          "title": "Pruning LLMs Like a Physicist: Block Removal as an Ising Optimization Problem",
-          "url": "https://huggingface.co/blog/MultiverseComputingCAI/pruning-llms-like-a-physicist-block-removal-as-an",
-          "source": "hf",
-          "publishedAt": "2026-09-21T13:44:34.000Z"
         }
       ]
     },
@@ -313,7 +295,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.89,
+      "momentum": -0.87,
       "weeklyCounts": [
         411,
         420,
@@ -327,9 +309,27 @@
         452,
         469,
         463,
-        49
+        62
       ],
       "signals": [
+        {
+          "title": "Holo4: powering generalist computer-use agents",
+          "url": "https://huggingface.co/blog/Hcompany/holo4",
+          "source": "hf",
+          "publishedAt": "2026-09-28T09:44:05.000Z"
+        },
+        {
+          "title": "Quoting Muse AI Agent",
+          "url": "https://simonwillison.net/2026/Sep/28/muse-ai-agent/",
+          "source": "simonw",
+          "publishedAt": "2026-09-28T04:01:30.000Z"
+        },
+        {
+          "title": "2026 in LLMs (so far)",
+          "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
+          "source": "simonw",
+          "publishedAt": "2026-09-27T23:54:15.000Z"
+        },
         {
           "title": "Kākāpō Party",
           "url": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
@@ -341,24 +341,49 @@
           "url": "https://openai.com/index/proaction",
           "source": "openai",
           "publishedAt": "2026-09-25T19:00:00.000Z"
-        },
+        }
+      ]
+    },
+    {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.96,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        13
+      ],
+      "signals": [
         {
-          "title": "Quoting John Gruber",
-          "url": "https://simonwillison.net/2026/Sep/25/john-gruber/",
-          "source": "simonw",
-          "publishedAt": "2026-09-25T17:22:01.000Z"
-        },
-        {
-          "title": "Note on 24th September 2026",
-          "url": "https://simonwillison.net/2026/Sep/24/harder/",
-          "source": "simonw",
-          "publishedAt": "2026-09-24T23:31:08.000Z"
-        },
-        {
-          "title": "[AINews] Meta Connect 2026: Muse glasses, voice, video, and Charm",
-          "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
+          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
+          "url": "https://www.latent.space/p/openrouter",
           "source": "latent-space",
-          "publishedAt": "2026-09-24T08:12:59.000Z"
+          "publishedAt": "2026-09-25T23:14:41.000Z"
+        },
+        {
+          "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
+          "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
+          "source": "latent-space",
+          "publishedAt": "2026-09-22T06:30:56.000Z"
+        },
+        {
+          "title": "Transformers now runs llama.cpp quants",
+          "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
+          "source": "hf",
+          "publishedAt": "2026-09-22T00:00:00.000Z"
         }
       ]
     },
@@ -384,57 +409,7 @@
         103,
         4
       ],
-      "signals": [
-        {
-          "title": "V7 cuts costs 78% while boosting accuracy with GPT-5.6 Luna",
-          "url": "https://openai.com/index/v7",
-          "source": "openai",
-          "publishedAt": "2026-09-21T00:00:00.000Z"
-        }
-      ]
-    },
-    {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.97,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370,
-        10
-      ],
-      "signals": [
-        {
-          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
-          "url": "https://www.latent.space/p/openrouter",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T23:14:41.000Z"
-        },
-        {
-          "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
-          "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
-          "source": "latent-space",
-          "publishedAt": "2026-09-22T06:30:56.000Z"
-        },
-        {
-          "title": "Transformers now runs llama.cpp quants",
-          "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
-          "source": "hf",
-          "publishedAt": "2026-09-22T00:00:00.000Z"
-        }
-      ]
+      "signals": []
     },
     {
       "id": "fusion",

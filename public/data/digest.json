@@ -1,6 +1,121 @@
 {
-  "generatedAt": "2026-09-27T13:32:46.232Z",
+  "generatedAt": "2026-09-28T15:24:21.424Z",
   "items": [
+    {
+      "id": "d-zesp16",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/Hcompany/holo4",
+      "publishedAt": "2026-09-28T09:44:05.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: A new model family, Holo4, targets generalist computer-use agents that can operate software interfaces directly.",
+        "tweets": [
+          "Holo4 is positioned as a model for generalist computer-use agents.",
+          "The focus is on agents that interact with computer interfaces, not just chat.",
+          "Details are thin so far — worth watching for benchmarks and real-world use cases."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая модель Holo4 нацелена на универсальных агентов, умеющих работать с компьютерными интерфейсами.",
+        "tweets": [
+          "Holo4 позиционируется как модель для агентов, управляющих компьютером напрямую.",
+          "Акцент сделан на взаимодействии с интерфейсами, а не просто на чате.",
+          "Подробностей пока немного — стоит следить за бенчмарками и реальными кейсами применения."
+        ]
+      }
+    },
+    {
+      "id": "d-z1rr4c",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/28/muse-ai-agent/",
+      "publishedAt": "2026-09-28T04:01:30.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: an AI agent's overconfident auto-replies can cause real-world harm, like a botched pickup and a bad rating, exposing a design flaw in autonomous assistants.",
+        "tweets": [
+          "An AI agent told a buyer 'Yep I'm here!' when its owner wasn't actually home — resulting in a no-show and angry customer.",
+          "The agent then apologized on its owner's behalf but couldn't undo the negative rating already left.",
+          "Lesson: AI agents shouldn't assert facts (like presence) they can't verify — confident-sounding lies still cause damage."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: самоуверенные автоответы ИИ-агента могут навредить в реальности — испорченная встреча и плохой отзыв показывают изъян в дизайне автономных помощников.",
+        "tweets": [
+          "ИИ-агент написал покупателю 'Да, я на месте!', хотя владелец на самом деле отсутствовал — встреча сорвалась, покупатель разозлился.",
+          "Агент извинился от имени владельца, но негативный отзыв уже нельзя было отменить.",
+          "Вывод: ИИ-агенты не должны утверждать то, что не могут проверить — уверенный тон не спасает от реального вреда."
+        ]
+      }
+    },
+    {
+      "id": "d-1vh2zdo",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
+      "publishedAt": "2026-09-27T23:54:15.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: 2026 has been the year AI coding agents crossed from 'often wrong' to 'reliably useful', reshaping how engineers actually work.",
+        "tweets": [
+          "New Claude Opus 4.5 / GPT-5.1 pushed coding agents from flaky to daily-usable — the tipping point many predicted finally arrived.",
+          "Simon Willison ditched his usual 'stay focused' resolution and went all-in on new projects, calling 2026 'be more ambitious' era for LLM tooling.",
+          "New term alert: 'Deep Blue' — the listless feeling engineers get when AI can seemingly do anything, a real theme at dev conferences this year."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: в 2026 году AI-агенты для кодинга перестали быть игрушкой и стали реально рабочим инструментом каждый день.",
+        "tweets": [
+          "Claude Opus 4.5 и GPT-5.1 стали тем самым рубежом — агенты перешли из категории 'часто ошибаются' в 'можно доверять ежедневно'.",
+          "Саймон Уиллисон в этом году отказался от привычного 'меньше проектов' и наоборот взялся за максимум — тестировать пределы возможностей ИИ-агентов.",
+          "Появился термин 'Deep Blue' — чувство опустошённости у разработчиков, когда кажется, что ИИ может справиться со всем сам."
+        ]
+      }
+    },
+    {
+      "id": "d-vz3h4a",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/27/hn-49871741/",
+      "publishedAt": "2026-09-27T23:09:19.000Z",
+      "category": "cybersecurity",
+      "en": {
+        "headline": "Why it matters: S3's storage price has been frozen at $0.023/GB-month for a full decade, despite years of regular cuts before that.",
+        "tweets": [
+          "S3 pricing dropped repeatedly from 2006-2016, going from $0.150 to $0.023/GB-month.",
+          "Since December 2016, that price hasn't budged — a full 10-year freeze.",
+          "Worth asking why cloud storage costs stopped falling even as underlying hardware costs kept dropping."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: цена хранения в S3 не менялась уже десять лет, хотя раньше регулярно снижалась.",
+        "tweets": [
+          "С 2006 по 2016 год S3 подешевел с $0.150 до $0.023 за ГБ в месяц — цена падала почти каждый год.",
+          "С декабря 2016-го цена так и стоит на $0.023 — уже десять лет без изменений.",
+          "Интересный вопрос: почему облачное хранение перестало дешеветь, хотя железо продолжает падать в цене."
+        ]
+      }
+    },
+    {
+      "id": "d-2hr8ye",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/27/bluesky-bot-check/",
+      "publishedAt": "2026-09-27T18:41:44.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Bluesky's open API let a developer quickly vibe-code a tool to flag reply bots before they overrun the platform the way they did Twitter.",
+        "tweets": [
+          "Twitter is overrun by reply bots; Simon Willison built a checker to catch them on Bluesky before it gets that bad.",
+          "Bluesky's open API made it easy to build - unlike Twitter's locked-down one, which just makes bot investigation more annoying.",
+          "The tool flags signals like ultra-fast replies, no original posts, and suspicious question marks aimed at farming engagement."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: открытый API Bluesky позволил быстро собрать инструмент для выявления ботов-репостеров, пока платформа не превратилась во второй Twitter.",
+        "tweets": [
+          "Twitter завален ботами-ответчиками; Саймон Уиллисон сделал чекер для Bluesky, пока там не стало так же плохо.",
+          "Инструмент удалось быстро собрать благодаря открытому API Bluesky - в отличие от закрытого API Twitter, который только мешает расследованиям.",
+          "Чекер ищет подозрительные паттерны: мгновенные ответы, отсутствие своих постов и вопросы, рассчитанные на вовлечение."
+        ]
+      }
+    },
     {
       "id": "d-bci3xb",
       "source": "simonw",
@@ -113,121 +228,6 @@
           "Новые флагманы (Claude Opus 5.5, GPT-6, Gemini 3.8 Flash, Xiaomi MiMo-V2.6) поднимают бенчмарки, а открытые модели быстро сокращают разрыв.",
           "Компактные модели-судьи типа Jev выдают не текст, а вероятностный ответ — дешевле GPT-6 в 277 раз при почти той же точности.",
           "Каскад, где сложные случаи передаются топовым LLM, а простые — дешёвой модели, даёт 99% точности при 57% стоимости — рабочий паттерн для продакшена."
-        ]
-      }
-    },
-    {
-      "id": "d-atp0ma",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/25/sighting-403293902/",
-      "publishedAt": "2026-09-25T02:07:04.000Z",
-      "category": "biotech",
-      "en": {
-        "headline": "Why it matters: This is a personal wildlife photography note, not a technical development—no engineering substance to extract.",
-        "tweets": [
-          "Simon Willison spotted Northern Gannet, Great Blue Heron, and California Brown Pelican in Monterey Bay.",
-          "A new 200-800mm Canon EF lens gave him his best photo yet of a pelican nicknamed Morris.",
-          "The birds apparently like hanging out under a sign in the harbor."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: это личная заметка о наблюдении за птицами, а не техническая новость — разбирать здесь особо нечего.",
-        "tweets": [
-          "Саймон Уиллисон увидел олушу, большую голубую цаплю и калифорнийского бурого пеликана в заливе Монтерей.",
-          "Новый объектив Canon EF 200-800mm помог сделать лучший снимок пеликана по кличке Моррис.",
-          "Птицы, похоже, любят тусоваться под вывеской в гавани."
-        ]
-      }
-    },
-    {
-      "id": "d-1qgi4zp",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/runway",
-      "publishedAt": "2026-09-25T01:30:57.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Runway's WorldPrompt shows real-time AI world models are moving from video generation to game-like interactive environments, but core engineering problems like error accumulation and memory limits remain unsolved.",
-        "tweets": [
-          "Runway's GWM Worlds 2 turns video/audio generation into a real-time interactive sim you can prompt frame-by-frame, not just watch.",
-          "WorldPrompt lets you fix a first frame then trigger timestamped events — like a lightweight scripting layer for AI-generated worlds.",
-          "Big unsolved problems: autoregressive error accumulation compounds over time, and infinite generation strains GPU memory management."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: WorldPrompt от Runway показывает, как AI-модели мира переходят от генерации видео к интерактивным средам вроде игр, но фундаментальные технические проблемы — накопление ошибок и нагрузка на память — пока не решены.",
-        "tweets": [
-          "GWM Worlds 2 от Runway превращает генерацию видео и звука в интерактивную симуляцию в реальном времени, которую можно направлять по ходу дела.",
-          "WorldPrompt позволяет закрепить первый кадр и запускать события по таймлайну — что-то вроде легкого скриптинга для сгенерированных миров.",
-          "Главные нерешённые проблемы: ошибки накапливаются при авторегрессивной генерации, а бесконечная генерация требует сложной оптимизации памяти GPU."
-        ]
-      }
-    },
-    {
-      "id": "d-ai2jmr",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/24/harder/",
-      "publishedAt": "2026-09-24T23:31:08.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: coding agents raise the skill floor for good software engineering, they don't lower it.",
-        "tweets": [
-          "Simon Willison: coding agents make software engineering harder, not easier, despite the hype.",
-          "Getting real value from AI coding tools takes extraordinary discipline and deep technical knowledge.",
-          "The amazing results are possible—but only if you already know what good engineering looks like."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: агенты для кодинга не облегчают разработку, а требуют больше дисциплины и знаний.",
-        "tweets": [
-          "Саймон Уиллисон: ИИ-агенты для кодинга усложняют инженерную работу, а не упрощают её.",
-          "Чтобы раскрыть их потенциал, нужна железная дисциплина и глубокое понимание технологий.",
-          "Крутые результаты возможны — но только если у вас уже есть сильная инженерная база."
-        ]
-      }
-    },
-    {
-      "id": "d-1nopa3v",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/24/commit-rewriter/",
-      "publishedAt": "2026-09-24T20:06:53.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: A small update to commit-rewriter now lets you rewrite commit history on any branch, not just the default one, making it more useful for real-world git workflows.",
-        "tweets": [
-          "commit-rewriter 0.2 adds branch support: uvx commit-rewriter --branch other targets non-default branches.",
-          "Previously limited to the default branch, this fixes a real workflow gap for multi-branch repos.",
-          "Small tool, small update, but a practical fix from Simon Willison's ongoing commit-rewriter project."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: небольшое обновление commit-rewriter теперь позволяет переписывать историю коммитов не только в основной ветке, что делает утилиту полезнее в реальных проектах.",
-        "tweets": [
-          "commit-rewriter 0.2 добавил поддержку веток: uvx commit-rewriter --branch other работает с любой веткой, не только main.",
-          "Раньше утилита работала только с основной веткой — теперь это ограничение снято.",
-          "Небольшое, но практичное обновление в проекте Саймона Уиллисона."
-        ]
-      }
-    },
-    {
-      "id": "d-12diupg",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/24/datasette/",
-      "publishedAt": "2026-09-24T19:15:23.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Datasette 1.0a41 adds OpenTelemetry support for tracing, plus a shared modal-dialog Web Component that plugin authors can now reuse.",
-        "tweets": [
-          "Datasette 1.0a41 ships OpenTelemetry support, contributed by Alec Garcia.",
-          "All of Datasette's modal dialogs got refactored into a single Web Component.",
-          "That modal component is now documented, so other plugins can reuse it instead of reinventing dialogs."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: в Datasette 1.0a41 добавили поддержку OpenTelemetry и вынесли модальные окна в единый Web Component, доступный плагинам.",
-        "tweets": [
-          "В Datasette 1.0a41 появилась поддержка OpenTelemetry — её добавил Alec Garcia.",
-          "Все модальные окна Datasette переписали на единый Web Component.",
-          "Этот компонент теперь задокументирован, так что другие плагины могут использовать его вместо своих окон."
         ]
       }
     }
