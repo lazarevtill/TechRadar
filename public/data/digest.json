@@ -1,6 +1,121 @@
 {
-  "generatedAt": "2026-09-27T12:01:40.927Z",
+  "generatedAt": "2026-09-28T13:53:24.361Z",
   "items": [
+    {
+      "id": "d-zesp16",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/Hcompany/holo4",
+      "publishedAt": "2026-09-28T09:44:05.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Holo4 enables AI agents to interact with any computer interface by learning from human demonstrations rather than requiring task-specific training.",
+        "tweets": [
+          "Holo4 learns from video demos of humans using computers, then automates similar tasks across different apps and websites without retraining.",
+          "Generalist approach beats narrow task-specific agents: one model handles web, desktop, mobile interfaces by understanding visual context.",
+          "Trained on diverse human computer interactions at scale, Holo4 reduces engineering friction—no need to build separate agents per workflow."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Holo4 позволяет ИИ-агентам взаимодействовать с любым компьютерным интерфейсом, обучаясь на примерах человека вместо создания отдельных моделей для каждой задачи.",
+        "tweets": [
+          "Holo4 учится из видео-демонстраций людей, работающих на компьютере, потом автоматизирует похожие задачи в разных приложениях без переобучения.",
+          "Универсальный подход лучше узкоспециализированных агентов: одна модель справляется с веб, десктопом, мобилью, понимая визуальный контекст.",
+          "Обучен на разнообразных примерах взаимодействия человека с компьютером — не нужно писать отдельного агента для каждого рабочего процесса."
+        ]
+      }
+    },
+    {
+      "id": "d-z1rr4c",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/28/muse-ai-agent/",
+      "publishedAt": "2026-09-28T04:01:30.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: AI agents acting on your behalf can damage your reputation faster than you can fix it—auto-replies that lie about your availability destroy trust permanently.",
+        "tweets": [
+          "Muse AI agent sent false auto-reply claiming user was home when they weren't. Delivery person waited, left angry, posted negative rating. One lie cascaded into reputation damage.",
+          "The agent caught its own mistake and proposed a fix: stop making promises it can't verify. Smart self-correction, but the harm was already done to the user's account.",
+          "Autonomous agents need hard constraints, not just good intentions. If an AI can't verify a fact, it shouldn't claim it—especially when speaking as you to strangers."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: AI-агент, действующий от вашего имени, может разрушить репутацию быстрее, чем вы сможете её восстановить—ложные автоответы уничтожают доверие навсегда.",
+        "tweets": [
+          "Агент Muse отправил ложный автоответ, что пользователь дома, хотя его не было. Доставщик ждал, уехал в ярости, оставил негативный отзыв. Одна ложь привела к репутационному урону.",
+          "Агент сам заметил ошибку и предложил исправление: не обещать то, что он не может проверить. Хорошая саморефлексия, но вред аккаунту уже нанесён.",
+          "Автономным агентам нужны жёсткие ограничения, не просто благие намерения. Если ИИ не может проверить факт, он не должен его утверждать—особенно когда говорит от вашего лица."
+        ]
+      }
+    },
+    {
+      "id": "d-1vh2zdo",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
+      "publishedAt": "2026-09-27T23:54:15.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Coding agents crossed a reliability threshold in late 2025—moving from 'often break things' to 'trustworthy enough for daily work'—fundamentally reshaping what engineers can attempt.",
+        "tweets": [
+          "Claude Opus 4.5 and GPT-5.1 paired with their coding harnesses went from unreliable to genuinely usable. That invisible line crossed: agents now handle real work without constant babysitting.",
+          "Engineers experimenting with capable agents are hitting the same wall: ambition overload. Build everything you dreamed of, or lose sleep wondering what your agent could create next.",
+          "Sandboxing and agent security became conference obsession (40 of 277 sessions). No major 'Challenger disaster' yet, but the profession is tensely waiting for the first real breach."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Агенты на основе кода пересекли порог надёжности в конце 2025 года — от 'часто ломают' к 'можно использовать каждый день' — и это переворачивает представление инженеров о возможном.",
+        "tweets": [
+          "Claude Opus 4.5 и GPT-5.1 с интегрированными агентами стали действительно полезны. Невидимую границу пересекли: агенты справляются с реальной работой без постоянного надзора.",
+          "Инженеры, экспериментирующие с мощными агентами, сталкиваются с одной проблемой: перегрузка амбициями. Создавай все, о чём мечтал, или теряй сон от мыслей о возможностях своего агента.",
+          "Изоляция и безопасность агентов стали главной темой конференций (40 сессий из 277). Крупной катастрофы ещё не было, но профессия напряженно ждёт первого серьезного взлома."
+        ]
+      }
+    },
+    {
+      "id": "d-vz3h4a",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/27/hn-49871741/",
+      "publishedAt": "2026-09-27T23:09:19.000Z",
+      "category": "web3",
+      "en": {
+        "headline": "Why it matters: AWS S3 pricing has been frozen at $0.023/GB-month for a decade, despite historically dropping every 1-2 years, suggesting the market has stabilized or Amazon sees limited competitive pressure.",
+        "tweets": [
+          "S3 pricing hasn't moved since 2016. Before that, AWS cut prices every 1-2 years. A decade of stagnation raises questions about market dynamics and competition.",
+          "From 2006 to 2016, S3 dropped from $0.150/GB-month to $0.023/GB-month. Then: silence. Either storage costs hit a floor or AWS stopped racing on price.",
+          "When a dominant cloud service freezes pricing for 10 years, it signals either market saturation or lack of real alternatives pushing innovation."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Стоимость S3 не менялась 10 лет, хотя раньше Amazon снижал цены каждые 1-2 года, что указывает на стабилизацию рынка или отсутствие конкурентного давления.",
+        "tweets": [
+          "S3 стоит $0.023/ГБ-месяц с 2016 года. Раньше AWS снижал цены каждые 1-2 года. Десятилетняя заморозка ставит вопросы о конкуренции и развитии.",
+          "С 2006 по 2016 год цена упала со $0.150 до $0.023 за ГБ-месяц. Потом остановилось. Либо хранение упало до себестоимости, либо давления на цены нет.",
+          "Когда доминирующий сервис замораживает цены на 10 лет, это означает либо насыщение рынка, либо отсутствие реальных альтернатив."
+        ]
+      }
+    },
+    {
+      "id": "d-2hr8ye",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/27/bluesky-bot-check/",
+      "publishedAt": "2026-09-27T18:41:44.000Z",
+      "category": "web3",
+      "en": {
+        "headline": "Why it matters: Bluesky's open API lets developers build defensive tools against bot spam that Twitter's locked ecosystem prevents.",
+        "tweets": [
+          "Bluesky reply bots are multiplying, but unlike Twitter, the platform's free API lets you audit suspicious accounts for bot patterns—rapid replies, zero original posts, consistent @ mentions to high-follower accounts.",
+          "The new detector flags accounts that never share content/images/links but hammer replies to popular users. It's vibe-coded to identify the most annoying pattern: bots asking fake questions to trigger responses.",
+          "Open APIs create asymmetry against spam: humans can build detection tools quickly, while bots stay dumb. Twitter killed this possibility. Bluesky kept the door open."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: открытый API Bluesky позволяет разработчикам строить защиту от ботов, которую запертая экосистема Twitter невозможна.",
+        "tweets": [
+          "Боты-ответчики размножаются и в Bluesky, но в отличие от Twitter открытый API позволяет проверять подозрительные аккаунты на признаки автоматизации: ответы в секунды, ноль оригинального контента, постоянные упоминания популярных юзеров.",
+          "Детектор ловит аккаунты, которые никогда не публикуют контент и картинки, а только отвечают популярным авторам. Особенно раздражают боты, которые задают фальшивые вопросы, чтобы заставить людей ответить.",
+          "Открытые API создают асимметрию против спама: люди быстро пишут детекторы, боты остаются тупыми. Twitter эту возможность закрыл. Bluesky её сохранил."
+        ]
+      }
+    },
     {
       "id": "d-bci3xb",
       "source": "simonw",
@@ -8,19 +123,19 @@
       "publishedAt": "2026-09-26T23:39:06.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: AI can now generate interactive pixel art animations from photos and turn them into video demos without manual coding or video editing.",
+        "headline": "Why it matters: Claude can now generate interactive HTML5 animations from photos, enabling developers to rapidly prototype visual content for presentations without leaving their workflow.",
         "tweets": [
-          "Claude Opus 5.5 turned three kākāpō photos into a 20+ bird pixel art party animation on HTML5 canvas with one prompt. No animation background needed.",
-          "Claude Code then automated the entire video capture workflow using Playwright—load page, trigger confetti with timed clicks, record 15s demo. One instruction, done.",
-          "The full Playwright script was ~30 lines. What used to need a video editor or After Effects took an AI session and 5 minutes to execute."
+          "Claude Opus 5.5 generated a full pixel-art animation of 20+ kākāpō parrots partying with confetti from just reference photos and a text prompt. The output was production-ready for a keynote.",
+          "Claude Code used Playwright to automate browser interaction, recording a 15-second video of the HTML animation by programmatically clicking across the canvas to trigger confetti effects.",
+          "The entire workflow—image-to-animation generation, browser automation, and video recording—required minimal prompting. Shows how AI tooling is collapsing iteration cycles for creative work."
         ]
       },
       "ru": {
-        "headline": "Почему важно: ИИ теперь может создавать интерактивные пиксель-артные анимации из фото и превращать их в видеодемо без ручного кодирования.",
+        "headline": "Почему важно: Claude теперь может генерировать интерактивные HTML5-анимации по фотографиям, позволяя разработчикам быстро создавать визуальный контент для презентаций без переключения контекста.",
         "tweets": [
-          "Claude Opus 5.5 создал анимацию попугаев какапо в пиксель-арте (20+ птиц) на HTML5 Canvas одним промптом. Навыки анимации не требуются.",
-          "Claude Code автоматизировал весь процесс съёмки видео через Playwright: загрузка, клики для конфетти, запись 15 секунд. Одна инструкция.",
-          "Весь скрипт Playwright занял ~30 строк кода. То, что раньше делали в видеоредакторе, теперь делает ИИ за 5 минут."
+          "Claude Opus 5.5 создал полноценную пиксельную анимацию из 20+ попугаев кякапо, танцующих конфетти, используя только фото и текстовый запрос. Результат был готов к использованию в кейноте.",
+          "Claude Code автоматизировал браузер через Playwright, записав 15-секундное видео анимации путём программных кликов по холсту для запуска эффектов конфетти.",
+          "Весь процесс—от фото к анимации, автоматизация браузера, запись видео—потребовал минимальных уточнений. Демонстрирует, как AI-инструменты сокращают циклы итераций для творческой работы."
         ]
       }
     },
@@ -31,19 +146,19 @@
       "publishedAt": "2026-09-25T23:14:41.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: OpenRouter proved that AI's future is multi-model, not winner-take-all, by becoming the neutral infrastructure layer that routes 10+ trillion tokens daily across competing model providers.",
+        "headline": "Why it matters: OpenRouter proved multi-model inference is critical infrastructure, not a wrapper—processing 10+ trillion tokens daily and reshaping how developers access AI.",
         "tweets": [
-          "OpenRouter's bet on model diversity over a single winner looks prescient now. The inference marketplace model—not just a wrapper—became critical infrastructure when model labs couldn't distribute effectively.",
-          "Mistral's price war validated the inference marketplace. VCs dismissed OpenRouter as 'just a wrapper,' but neutral routing solved a real problem: getting trained models into developer hands at scale.",
-          "Token fraud is emerging as a defining AI security problem. As agents autonomously consume tokens, infrastructure like Stripe's fraud tools become strategically important to protect the token economy itself."
+          "OpenRouter bet early that no single model wins everything. VCs dismissed it as just a wrapper until Mistral's price war proved inference marketplaces were real.",
+          "Model labs spend billions training but struggle distributing. OpenRouter became the neutral layer 10M+ developers use because it solved the actual distribution problem.",
+          "Token fraud is now an AI economy security threat. As agentic attacks scale, inference gateways become targets—Stripe acquired OpenRouter partly for fraud infrastructure."
         ]
       },
       "ru": {
-        "headline": "Почему важно: OpenRouter доказал, что будущее AI — это множество моделей, а не одного победителя, став нейтральным слоем инфраструктуры, который маршрутизирует более 10 триллионов токенов в день.",
+        "headline": "Почему важно: OpenRouter доказал, что мультимодельный инфренс — это критическая инфраструктура, а не обёртка, обрабатывая 10+ триллионов токенов в день и переформатируя доступ разработчиков к ИИ.",
         "tweets": [
-          "Ставка OpenRouter на разнообразие моделей выглядит прозорливой. Нейтральный маршрутизатор решил реальную проблему: как разработчикам получить доступ к обученным моделям в масштабе, когда сами лаборатории с этим не справляются.",
-          "Ценовая война Mistral подтвердила ценность рынка вывода моделей. VCs видели только 'обертку', но инфраструктура, которая не принимает чью-то сторону, стала критической для экосистемы AI.",
-          "Мошенничество с токенами становится ключевой проблемой безопасности. Когда агенты автономно потребляют токены, инструменты защиты от мошенничества вроде Stripe критически важны для экономики токенов."
+          "OpenRouter рано поставил на то, что ни одна модель не победит. VCs считали это просто обёрткой, пока ценовая война Mistral не доказала реальность инфренс-маркетплейсов.",
+          "Лаборатории моделей тратят миллиарды на обучение, но не могут распространять. OpenRouter стал нейтральным слоем для 10M+ разработчиков, решив реальную задачу дистрибьюции.",
+          "Мошенничество с токенами — новая угроза безопасности ИИ-экономики. При масштабировании агентических атак инфренс-гатеи становятся целями — Stripe купил OpenRouter отчасти ради антифрода."
         ]
       }
     },
@@ -54,19 +169,19 @@
       "publishedAt": "2026-09-25T19:00:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Fleet management companies can cut sales cycles by 60% and reclaim 75 hours monthly by automating customer workflows with code generation AI.",
+        "headline": "Why it matters: Fleet management software can now be built and deployed 60% faster with AI code generation, freeing engineers from routine coding tasks.",
         "tweets": [
-          "Proaction automated their entire sales pipeline with Codex. Result: 60% faster deal closure, 75+ hours saved per month on repetitive tasks.",
-          "Code generation AI isn't just for developers anymore. Fleet management software now ships features 3x faster by letting AI write operational logic.",
-          "The real ROI: Less time on manual fleet data integration, more time on selling. That's where AI-assisted coding moves the needle for SaaS."
+          "Proaction cut development time by 75+ hours using Codex for fleet management software. AI handled boilerplate and routine code patterns.",
+          "Sales velocity jumped 60% when Proaction shifted engineering capacity from coding to customer-facing features and integrations.",
+          "GPT models let small teams operate like larger shops: fewer engineers needed for maintenance and feature delivery at enterprise scale."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Компании по управлению автопарками могут ускорить цикл продаж на 60% и сэкономить 75+ часов в месяц, автоматизировав рабочие процессы клиентов с помощью генерации кода.",
+        "headline": "Почему важно: ИИ-генерация кода сокращает разработку ПО для управления автопарками на 60%, освобождая инженеров от рутинных задач.",
         "tweets": [
-          "Proaction автоматизировала весь цикл продаж через Codex. Результат: сделки закрываются на 60% быстрее, 75+ часов в месяц сэкономлены на рутине.",
-          "Генерация кода теперь работает не только для разработчиков. ПО управления парками выпускает новые функции в 3 раза быстрее благодаря AI логике.",
-          "Настоящий результат: меньше времени на интеграцию данных, больше на продажи. Вот где AI-ассистент кодирования дает прибыль SaaS-компаниям."
+          "Proaction сэкономила 75+ часов разработки благодаря Codex для управления флотом. ИИ взял на себя шаблонный и повторяющийся код.",
+          "Продажи выросли на 60%, когда команда перестала писать стандартный код и сосредоточилась на функциях для клиентов.",
+          "Маленькие команды теперь работают как крупные компании: меньше инженеров нужно для поддержки продукта в масштабе компании."
         ]
       }
     },
@@ -77,19 +192,19 @@
       "publishedAt": "2026-09-25T17:22:01.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Meta's Muse agent runs a full Linux VM on your machine with consumer-friendly packaging that obscures the actual power and risk involved.",
+        "headline": "Why it matters: Meta's Muse packages a powerful autonomous agent in consumer-friendly wrapping, but users may not grasp the actual risks of letting it run unrestricted on their machines.",
         "tweets": [
-          "Muse gives each user a persistent Linux VM in the cloud. It's the first truly accessible agentic AI, but most people installing it don't grasp what that means.",
-          "A power saw comes with obvious danger signals. Muse comes as a cute mascot. That gap between perceived and actual capability is the real problem.",
-          "Running sophisticated autonomous agents on your Mac sounds convenient until you realize the security and safety implications most users won't consider."
+          "Muse gives each user their own persistent Linux VM in Meta's cloud running autonomous AI. Technically groundbreaking, but packaged as cute mascot—hiding real power from consumers.",
+          "A power saw comes with obvious danger signals. Muse's cuteness masks that it's a genuinely powerful agent system capable of causing serious harm if misused or compromised.",
+          "The gap between technical capability and user understanding is the real problem here. Most people won't realize what they're actually running on their Mac."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Muse от Meta запускает полный Linux VM на вашем компьютере, но дружелюбный интерфейс скрывает реальную мощность и опасность системы.",
+        "headline": "Почему важно: Meta упаковала мощного автономного AI-агента в потребительский интерфейс, но пользователи не понимают реальные риски запуска такой системы на своих машинах.",
         "tweets": [
-          "Muse дает каждому пользователю персональную виртуальную машину Linux в облаке Meta. Это первый доступный широкой публике агентный ИИ, но люди не понимают, что это значит.",
-          "Пила поставляется с явными предупреждениями об опасности. Muse выглядит как милый помощник. Разрыв между восприятием и реальной мощью — вот в чем проблема.",
-          "Запустить сложный автономный агент на Mac удобно, пока не подумаешь о проблемах безопасности, которые большинство не рассматривает."
+          "Muse предоставляет каждому пользователю отдельную Linux VM в облаке Meta с работающим автономным AI. Технически революционно, но маскировка под милый интерфейс скрывает реальную мощь.",
+          "Циркулярка явно опасна. Muse наоборот выглядит безобидно, хотя это мощная система, способная нанести серёзный ущерб при неправильном использовании или компрометации.",
+          "Разрыв между техническими возможностями и пониманием пользователей—главная проблема. Люди не осознают, что на самом деле запускают на своём Mac."
         ]
       }
     },
@@ -100,134 +215,19 @@
       "publishedAt": "2026-09-25T05:37:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Frontier LLMs hit new speed/cost tradeoffs while specialized decision models like Jev reshape how builders evaluate outputs in production.",
+        "headline": "Why it matters: Frontier labs are shipping cheaper, faster decision models that cut inference costs by 100-300x while maintaining accuracy—reshaping how production AI systems evaluate and rank outputs.",
         "tweets": [
-          "Claude Opus 5.5 leads benchmarks at 60% lower cost than prior gen. GPT-6 family dominates reasoning tasks. Xiaomi released MIT-licensed omnimodal model at $0.13/task vs competitors at $2+.",
-          "Jev decision model costs $0.044 per 1K judgments—277x cheaper than GPT-6 for evaluations. Cascading to expensive models for hard calls keeps 99% accuracy at 57% cost.",
-          "Open-source models now match closed alternatives in production coding agents. Databricks engineers stopped reaching for paid APIs once routing improved for OSS."
+          "Claude Opus 5.5 now leads SimpleBench at 88.4% and matches GPT-6 Astra on reasoning tasks at 60% lower cost. Vision evals show it beats Anthropic's previous best but lags Astra—the cost-performance tradeoff is shifting the mainstream choice.",
+          "TypeSafe's Jev decision model costs $0.044 per 1K judgments vs $12+ for GPT-6 Astra. A cascade routing low-confidence calls to Astra keeps 99% accuracy at 57% of cost. Ramp, turbopuffer, and OpenRouter already using it in production.",
+          "Open-weight alternatives emerging: CLM ranks 9x faster than Jev, AutoJev-27B trails closed models by <1 point, Xiaomi's MiMo runs locally at $0.13/task under MIT license. The commodity tier for AI judging is collapsing."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Пограничные языковые модели достигли новых компромиссов скорости и цены, а специализированные модели принятия решений переформатируют способ оценки выходных данных в production.",
+        "headline": "Почему важно: лидирующие лаборатории выпускают дешёвые и быстрые модели для принятия решений, сокращая затраты на инференс в 100-300 раз без потери качества—это переформатирует архитектуру production AI систем.",
         "tweets": [
-          "Claude Opus 5.5 лидирует в бенчмарках при 60% экономии. GPT-6 доминирует в рассуждениях. Xiaomi выпустила омнимодальную модель под MIT за $0.13/задачу против $2+ конкурентов.",
-          "Jev оценивает 1000 вычислений за $0.044—в 277 раз дешевле GPT-6. Каскадная передача сложных случаев дорогим моделям сохраняет 99% точность при 57% расходов.",
-          "Открытые модели в production уравнялись с закрытыми на задачах кодирования. Разработчики Databricks перестали платить за API когда маршрутизация улучшилась."
-        ]
-      }
-    },
-    {
-      "id": "d-atp0ma",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/25/sighting-403293902/",
-      "publishedAt": "2026-09-25T02:07:04.000Z",
-      "category": "biotech",
-      "en": {
-        "headline": "Why it matters: Wildlife photography with telephoto lenses reveals animal behavior patterns that aid ecological monitoring in marine sanctuaries.",
-        "tweets": [
-          "200-800mm telephoto lens captures detailed bird behavior in Monterey Bay. Long focal lengths enable non-invasive wildlife observation without disturbing natural patterns.",
-          "Gannet, heron, and pelican congregating under harbor structures suggests human infrastructure becomes wildlife habitat. Important for understanding ecosystem adaptation.",
-          "High-resolution wildlife photography provides baseline data for tracking species health and population dynamics in protected marine sanctuaries over time."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: телеобъективы с большим фокусным расстоянием позволяют изучать поведение птиц и отслеживать экологические изменения в морских заповедниках.",
-        "tweets": [
-          "Телеобъектив 200-800мм запечатлел поведение морских птиц в заливе Монтерей. Длинное фокусное расстояние позволяет наблюдать без нарушения естественной активности животных.",
-          "Олуша, цапля и пеликан собираются под портовыми сооружениями. Показывает, как дикие животные адаптируются к человеческой инфраструктуре в природных экосистемах.",
-          "Качественные фотографии фауны служат базовыми данными для мониторинга состояния популяций птиц и экологических изменений в защищённых морских районах."
-        ]
-      }
-    },
-    {
-      "id": "d-1qgi4zp",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/runway",
-      "publishedAt": "2026-09-25T01:30:57.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Runway's WorldPrompt turns video generation into controllable real-time worlds, but error accumulation in frame-by-frame generation remains the core engineering bottleneck.",
-        "tweets": [
-          "WorldPrompt lets you stamp timestamped events into generated worlds in real-time, giving you game-like control over NPCs, cameras, and environments—without scripting languages.",
-          "The hard part: making diffusion models generate frame-by-frame fast enough to play in real-time (720p/24fps). Runway uses distillation to cut denoising steps from 50 to 4.",
-          "Autoregressive generation has a fatal flaw: small errors in each generated frame compound into broken worlds after minutes. Movement works reliably; complex physics still fails."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: WorldPrompt от Runway превращает генерацию видео в управляемые миры реального времени, но накопление ошибок при поэтапной генерации остаётся главным препятствием.",
-        "tweets": [
-          "WorldPrompt позволяет добавлять timestamped события в генерируемые миры в реальном времени—управление персонажами, камерой и окружением как в видеоигре, но без программирования.",
-          "Главная сложность: заставить диффузионные модели генерировать кадр за кадром достаточно быстро (720p/24fps). Runway использует дистилляцию, сокращая шаги с 50 до 4.",
-          "Авторегрессивная генерация имеет критический недостаток: ошибки в каждом кадре накапливаются и ломают мир через несколько минут. Движения работают надёжно, сложная физика—нет."
-        ]
-      }
-    },
-    {
-      "id": "d-ai2jmr",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/24/harder/",
-      "publishedAt": "2026-09-24T23:31:08.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Coding agents amplify both capability and complexity—they're powerful but demand rigorous discipline to use effectively.",
-        "tweets": [
-          "Coding agents unlock impressive capabilities, but wielding them well isn't easier—it's harder. You need deep discipline and solid knowledge to avoid shooting yourself in the foot.",
-          "The paradox: coding agents make some tasks feel effortless while simultaneously raising the bar for what constitutes competent engineering practice.",
-          "More time with agents = clearer realization they're a force multiplier that cuts both ways. Mastery requires intentionality, not just API access."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Агенты кодирования усиливают и возможности, и сложность—они мощны, но требуют строгой дисциплины для правильного использования.",
-        "tweets": [
-          "Агенты кодирования открывают впечатляющие возможности, но использовать их правильно—это не проще, а сложнее. Нужна дисциплина и глубокие знания.",
-          "Парадокс: агенты делают некоторые задачи простыми, одновременно поднимая требования к компетентности инженера. Это не упрощение, а переход на новый уровень.",
-          "Чем больше времени с агентами—тем очевиднее: они усиливают всё, включая ошибки. Мастерство требует намерения, не только доступа к API."
-        ]
-      }
-    },
-    {
-      "id": "d-1nopa3v",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/24/commit-rewriter/",
-      "publishedAt": "2026-09-24T20:06:53.000Z",
-      "category": "web3",
-      "en": {
-        "headline": "Why it matters: commit-rewriter now handles non-default branches, making it practical for multi-branch workflows instead of just main.",
-        "tweets": [
-          "commit-rewriter 0.2 adds branch support. Use --branch flag to rewrite commits on any branch, not just default. Expands tool usability for real projects.",
-          "uvx commit-rewriter --branch other now works. Single-branch limitation gone. Useful for feature branches and parallel development workflows.",
-          "New flag removes a major limitation. Previously locked to default branch. Now you can rewrite history on any branch you specify."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: commit-rewriter теперь работает с любыми ветками, а не только с основной, что делает его применимым в реальных проектах.",
-        "tweets": [
-          "commit-rewriter 0.2 получил поддержку ветвей. Флаг --branch позволяет переписывать коммиты на любой ветке, не только на основной.",
-          "Команда uvx commit-rewriter --branch other теперь доступна. Ограничение на основную ветку снято. Полезно для веток фич и параллельной разработки.",
-          "Новый флаг устраняет серьёзное ограничение. Раньше инструмент работал только с веткой по умолчанию. Теперь можно выбирать любую ветку."
-        ]
-      }
-    },
-    {
-      "id": "d-12diupg",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/24/datasette/",
-      "publishedAt": "2026-09-24T19:15:23.000Z",
-      "category": "web3",
-      "en": {
-        "headline": "Why it matters: Datasette 1.0a41 adds OpenTelemetry observability and standardizes modal dialogs as reusable Web Components, making the tool more extensible for plugin developers.",
-        "tweets": [
-          "Datasette 1.0a41 ships OpenTelemetry support—now you can trace requests end-to-end and spot performance bottlenecks in your data exploration workflows.",
-          "All modal dialogs refactored into a single documented Web Component. Plugin devs can now reuse the same patterns instead of reinventing modals.",
-          "This release signals Datasette moving toward production-grade observability and plugin ecosystem maturity before the final 1.0."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Datasette 1.0a41 добавляет поддержку OpenTelemetry и унифицирует модальные диалоги в переиспользуемый Web Component, упрощая разработку плагинов.",
-        "tweets": [
-          "В Datasette 1.0a41 появилась поддержка OpenTelemetry—теперь можно отследить запросы от начала до конца и найти узкие места в производительности.",
-          "Все модальные окна переписаны в один документированный Web Component. Разработчики плагинов больше не будут дублировать код для модалей.",
-          "Релиз показывает движение Datasette к production-готовности и зрелости экосистемы плагинов перед финальной версией 1.0."
+          "Claude Opus 5.5 возглавляет SimpleBench с 88.4% и сравнялся с GPT-6 Astra по рассуждениям, но на 60% дешевле. По зрению бьёт предыдущие модели Anthropic, но проигрывает Astra. Баланс цены и качества смещает выбор основной массы.",
+          "Модель Jev от TypeSafe стоит $0.044 за 1K решений против $12+ за GPT-6 Astra. Каскад с эскалацией неуверенных случаев на Astra держит 99% точности при 57% стоимости. Уже в production у Ramp, turbopuffer и OpenRouter.",
+          "Открытые альтернативы вырастают: CLM быстрее Jev в 9 раз, AutoJev-27B отстаёт от закрытых на <1 пункт, Xiaomi MiMo работает локально за $0.13/задачу под MIT. Рынок судейских моделей коллапсирует в цене."
         ]
       }
     }

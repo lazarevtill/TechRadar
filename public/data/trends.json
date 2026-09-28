@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-27T12:01:41.036Z",
+  "generatedAt": "2026-09-28T13:53:24.472Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -7,8 +7,8 @@
       "label": "Humanoid Robots",
       "category": "robotics",
       "stage": "prototype",
-      "trajectory": "stable",
-      "momentum": 0,
+      "trajectory": "rising",
+      "momentum": 0.29,
       "weeklyCounts": [
         1,
         7,
@@ -22,7 +22,7 @@
         0,
         2,
         7,
-        7
+        9
       ],
       "signals": [
         {
@@ -40,36 +40,12 @@
       ]
     },
     {
-      "id": "post-quantum",
-      "label": "Post-Quantum Crypto",
-      "category": "cybersecurity",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "signals": []
-    },
-    {
       "id": "protein-design",
       "label": "Protein Design",
       "category": "biotech",
       "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.14,
+      "trajectory": "rising",
+      "momentum": 0.1,
       "weeklyCounts": [
         21,
         21,
@@ -83,7 +59,7 @@
         21,
         21,
         21,
-        18
+        23
       ],
       "signals": [
         {
@@ -119,12 +95,36 @@
       ]
     },
     {
+      "id": "post-quantum",
+      "label": "Post-Quantum Crypto",
+      "category": "cybersecurity",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
       "id": "fusion",
       "label": "Fusion Energy",
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.29,
+      "momentum": -0.11,
       "weeklyCounts": [
         14,
         11,
@@ -138,7 +138,7 @@
         14,
         17,
         28,
-        20
+        25
       ],
       "signals": [
         {
@@ -179,7 +179,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.41,
+      "momentum": -0.26,
       "weeklyCounts": [
         375,
         358,
@@ -193,9 +193,15 @@
         365,
         364,
         370,
-        217
+        272
       ],
       "signals": [
+        {
+          "title": "2026 in LLMs (so far)",
+          "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
+          "source": "simonw",
+          "publishedAt": "2026-09-27T23:54:15.000Z"
+        },
         {
           "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
           "url": "https://www.latent.space/p/openrouter",
@@ -219,12 +225,6 @@
           "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
           "source": "latent-space",
           "publishedAt": "2026-09-24T08:12:59.000Z"
-        },
-        {
-          "title": "[AINews] Claude Opus 5.5, the new default model for AINews — and everybody cuts prices 40-50%",
-          "url": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
-          "source": "latent-space",
-          "publishedAt": "2026-09-23T06:41:41.000Z"
         }
       ]
     },
@@ -234,7 +234,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.47,
+      "momentum": -0.33,
       "weeklyCounts": [
         411,
         420,
@@ -248,9 +248,21 @@
         452,
         469,
         463,
-        246
+        310
       ],
       "signals": [
+        {
+          "title": "Quoting Muse AI Agent",
+          "url": "https://simonwillison.net/2026/Sep/28/muse-ai-agent/",
+          "source": "simonw",
+          "publishedAt": "2026-09-28T04:01:30.000Z"
+        },
+        {
+          "title": "2026 in LLMs (so far)",
+          "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
+          "source": "simonw",
+          "publishedAt": "2026-09-27T23:54:15.000Z"
+        },
         {
           "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
           "url": "https://www.latent.space/p/openrouter",
@@ -268,18 +280,6 @@
           "url": "https://www.latent.space/p/ainews-the-future-of-latent-space",
           "source": "latent-space",
           "publishedAt": "2026-09-25T05:37:00.000Z"
-        },
-        {
-          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
-          "url": "https://www.latent.space/p/runway",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T01:30:57.000Z"
-        },
-        {
-          "title": "[AINews] Claude Opus 5.5, the new default model for AINews — and everybody cuts prices 40-50%",
-          "url": "https://www.latent.space/p/ainews-claude-opus-55-the-new-default",
-          "source": "latent-space",
-          "publishedAt": "2026-09-23T06:41:41.000Z"
         }
       ]
     },
@@ -289,7 +289,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.48,
+      "momentum": -0.34,
       "weeklyCounts": [
         81,
         60,
@@ -303,7 +303,7 @@
         85,
         92,
         103,
-        54
+        68
       ],
       "signals": [
         {
