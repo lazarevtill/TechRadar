@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T15:24:21.426Z",
+  "generatedAt": "2026-09-29T14:02:31.227Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -22,7 +22,7 @@
         0,
         0,
         0,
-        27
+        32
       ],
       "signals": [
         {
@@ -77,9 +77,15 @@
         0,
         0,
         0,
-        29
+        32
       ],
       "signals": [
+        {
+          "title": "Towards safety cases for frontier AI training",
+          "url": "https://openai.com/index/towards-safety-cases-for-frontier-ai-training",
+          "source": "openai",
+          "publishedAt": "2026-09-28T19:00:00.000Z"
+        },
         {
           "title": "Sam Altman’s remarks at the United Nations Security Council",
           "url": "https://openai.com/index/sam-altman-un-security-council-remarks",
@@ -91,18 +97,6 @@
           "url": "https://openai.com/index/introducing-mentalhealthbench",
           "source": "openai",
           "publishedAt": "2026-09-23T10:00:00.000Z"
-        },
-        {
-          "title": "Priorities and principles for effective third party assessments",
-          "url": "https://openai.com/index/priorities-principles-third-party-assessments",
-          "source": "openai",
-          "publishedAt": "2026-09-22T00:00:00.000Z"
-        },
-        {
-          "title": "How UK AISI and EvalEval Are Making Benchmark Results Reproducible",
-          "url": "https://huggingface.co/blog/evaleval-aisi",
-          "source": "hf",
-          "publishedAt": "2026-09-22T00:00:00.000Z"
         }
       ]
     },
@@ -126,9 +120,15 @@
         0,
         0,
         0,
-        19
+        24
       ],
       "signals": [
+        {
+          "title": "[AINews] AMD buys World Labs for $8.2B, as Atlas solves sparse reconstruction problem for robotics, design and more",
+          "url": "https://www.latent.space/p/ainews-amd-buys-world-labs-for-82b",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T02:55:27.000Z"
+        },
         {
           "title": "Kākāpō Party",
           "url": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
@@ -175,9 +175,21 @@
         0,
         0,
         0,
-        33
+        41
       ],
       "signals": [
+        {
+          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
+          "url": "https://www.latent.space/p/thariq",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T01:48:18.000Z"
+        },
+        {
+          "title": "Are you a Codex Original?",
+          "url": "https://openai.com/form/codex-originals",
+          "source": "openai",
+          "publishedAt": "2026-09-28T00:00:00.000Z"
+        },
         {
           "title": "2026 in LLMs (so far)",
           "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
@@ -195,18 +207,6 @@
           "url": "https://openai.com/index/proaction",
           "source": "openai",
           "publishedAt": "2026-09-25T19:00:00.000Z"
-        },
-        {
-          "title": "Note on 24th September 2026",
-          "url": "https://simonwillison.net/2026/Sep/24/harder/",
-          "source": "simonw",
-          "publishedAt": "2026-09-24T23:31:08.000Z"
-        },
-        {
-          "title": "SF October 14th: A Birds of a Feather Session on Agentic Engineering",
-          "url": "https://simonwillison.net/2026/Sep/23/bof-agentic-engineering/",
-          "source": "simonw",
-          "publishedAt": "2026-09-23T02:53:19.000Z"
         }
       ]
     },
@@ -232,14 +232,7 @@
         0,
         9
       ],
-      "signals": [
-        {
-          "title": "Transformers now runs llama.cpp quants",
-          "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
-          "source": "hf",
-          "publishedAt": "2026-09-22T00:00:00.000Z"
-        }
-      ]
+      "signals": []
     },
     {
       "id": "supply-chain-security",
@@ -295,7 +288,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.87,
+      "momentum": -0.84,
       "weeklyCounts": [
         411,
         420,
@@ -309,9 +302,21 @@
         452,
         469,
         463,
-        62
+        75
       ],
       "signals": [
+        {
+          "title": "[AINews] Opus 5.5 is good at explainer videos",
+          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T02:44:29.000Z"
+        },
+        {
+          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
+          "url": "https://www.latent.space/p/thariq",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T01:48:18.000Z"
+        },
         {
           "title": "Holo4: powering generalist computer-use agents",
           "url": "https://huggingface.co/blog/Hcompany/holo4",
@@ -329,18 +334,6 @@
           "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
           "source": "simonw",
           "publishedAt": "2026-09-27T23:54:15.000Z"
-        },
-        {
-          "title": "Kākāpō Party",
-          "url": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
-          "source": "simonw",
-          "publishedAt": "2026-09-26T23:39:06.000Z"
-        },
-        {
-          "title": "Proaction boosts sales 60% and saves 75+ hours with Codex",
-          "url": "https://openai.com/index/proaction",
-          "source": "openai",
-          "publishedAt": "2026-09-25T19:00:00.000Z"
         }
       ]
     },
@@ -364,7 +357,7 @@
         365,
         364,
         370,
-        13
+        14
       ],
       "signals": [
         {
@@ -372,18 +365,6 @@
           "url": "https://www.latent.space/p/openrouter",
           "source": "latent-space",
           "publishedAt": "2026-09-25T23:14:41.000Z"
-        },
-        {
-          "title": "[AINews] Xiaomi MiMo-V2.6-Pro 1T-A42B: the new top Open Weights model, trained for $3M",
-          "url": "https://www.latent.space/p/ainews-xiaomi-mimo-v26-pro-1t-a42b",
-          "source": "latent-space",
-          "publishedAt": "2026-09-22T06:30:56.000Z"
-        },
-        {
-          "title": "Transformers now runs llama.cpp quants",
-          "url": "https://huggingface.co/blog/transformers-llama-cpp-quants",
-          "source": "hf",
-          "publishedAt": "2026-09-22T00:00:00.000Z"
         }
       ]
     },

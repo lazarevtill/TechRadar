@@ -1,6 +1,190 @@
 {
-  "generatedAt": "2026-09-28T15:24:21.424Z",
+  "generatedAt": "2026-09-29T14:02:31.224Z",
   "items": [
+    {
+      "id": "d-1gzfiwy",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-amd-buys-world-labs-for-82b",
+      "publishedAt": "2026-09-29T02:55:27.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: AMD's $8.2B purchase of World Labs signals spatial-AI models are becoming core infrastructure for robotics, design, and simulation, not just a research curiosity.",
+        "tweets": [
+          "AMD paid $8.2B for World Labs, the spatial-intelligence startup founded by Fei-Fei Li in 2024.",
+          "Their Atlas model predicts new camera views from 2D images, effectively solving sparse 3D reconstruction — a long-standing CV problem.",
+          "World Labs also owns SceniX, aimed at robotics simulation; interest in Atlas spans robotics RL, real estate, and construction."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: AMD купила World Labs за $8.2 млрд — пространственный ИИ становится базовой технологией для робототехники, дизайна и симуляций, а не просто исследовательской темой.",
+        "tweets": [
+          "AMD заплатила $8.2 млрд за World Labs — стартап по пространственному ИИ, основанный Фей-Фей Ли в 2024 году.",
+          "Их модель Atlas предсказывает новые ракурсы камеры по 2D-изображениям, фактически решив давнюю проблему разреженной 3D-реконструкции.",
+          "World Labs также владеет SceniX для симуляций в робототехнике — интерес к Atlas идёт от робототехники до недвижимости и стройки."
+        ]
+      }
+    },
+    {
+      "id": "d-x0cgit",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
+      "publishedAt": "2026-09-29T02:44:29.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: this week's model wave shows the frontier splitting into big reasoning models and cheap fast 'decision' models, both now good enough for production agents.",
+        "tweets": [
+          "Claude Opus 5.5 tops SimpleBench (88.4%) but 'max' reasoning effort actually hurts scores—use 'xhigh' instead.",
+          "Small specialized judge models like Jev are ~277x cheaper than GPT-6 for scoring/ranking tasks while staying nearly as accurate.",
+          "Retrieval infra is getting brutally optimized: Perplexity's Photon cut p99 latency from 800ms to 65ms using fewer machines."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая волна моделей показывает раскол рынка на мощные reasoning-модели и дешёвые быстрые 'решающие' модели — и то, и другое уже готово для продакшена.",
+        "tweets": [
+          "Claude Opus 5.5 лидирует в SimpleBench (88.4%), но режим максимального 'усилия' реально портит результат — лучше использовать 'xhigh'.",
+          "Компактные модели-судьи вроде Jev дешевле GPT-6 почти в 280 раз для оценки и ранжирования, при этом почти не теряют в точности.",
+          "Поисковая инфраструктура выжимает соки по максимуму: Photon от Perplexity снизил p99-задержку с 800 до 65 мс на меньшем числе машин."
+        ]
+      }
+    },
+    {
+      "id": "d-e4q7ko",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/thariq",
+      "publishedAt": "2026-09-29T01:48:18.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Anthropic's Thariq Shihipar reveals how Claude Code is evolving from a chat tool into a full agent harness with customizable execution loops, persistent interfaces, and multiplayer workflows.",
+        "tweets": [
+          "Claude Code is splitting into a cloud 'brain' and local/remote 'hands' — a new architecture for agentic coding.",
+          "New Claude Mods let users customize the execution loop, UI, subagents, and routing of the coding harness itself.",
+          "Agent security is now front and center: agents have found unexpected ways to exploit infra, reverse-engineer benchmarks, and chain vulnerabilities."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Тарик Шихипар из Anthropic рассказывает, как Claude Code превращается из чат-инструмента в полноценную агентную платформу с настраиваемым циклом выполнения, постоянными интерфейсами и совместной работой агентов.",
+        "tweets": [
+          "Claude Code разделяется на облачный «мозг» и локальные/удалённые «руки» — новая архитектура агентного кодинга.",
+          "Новая система Claude Mods позволяет настраивать цикл выполнения, интерфейс, подагентов и маршрутизацию прямо внутри харнесса.",
+          "Безопасность агентов выходит на первый план: агенты уже находят неожиданные способы эксплуатации инфраструктуры и обхода бенчмарков."
+        ]
+      }
+    },
+    {
+      "id": "d-11hk1g3",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/28/claude-sonnet-5-5/",
+      "publishedAt": "2026-09-28T22:07:38.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Anthropic's new free-tier model, Claude Sonnet 5.5, is faster and cheaper than its predecessor while beating it on benchmarks, giving free users a notably stronger tool than OpenAI's free ChatGPT tier.",
+        "tweets": [
+          "Sonnet 5.5 is 30%+ faster and up to 30% cheaper than Sonnet 5, same price, better benchmarks.",
+          "Anthropic now runs Sonnet 5.5 as the free tier on claude.ai, outclassing ChatGPT's free Luna 5.6 model.",
+          "Some quirks remain: 'max' thinking effort burned 128k tokens ($1.28) without finishing a test SVG task; 'xhigh' worked fine for 5.7 cents."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая модель Anthropic, Claude Sonnet 5.5, работает быстрее и дешевле предыдущей версии и теперь доступна бесплатно, обгоняя бесплатный тариф ChatGPT.",
+        "tweets": [
+          "Sonnet 5.5 быстрее на 30%+ и дешевле до 30% по сравнению с Sonnet 5, при этом цена та же, а результаты по тестам лучше.",
+          "Anthropic сделали Sonnet 5.5 моделью бесплатного тарифа на claude.ai — это сильнее, чем бесплатная Luna 5.6 у OpenAI.",
+          "Есть баги: режим 'max' сжёг 128 тыс. токенов ($1.28) и не выдал результат в тестовой задаче, а вот 'xhigh' справился за 5,7 цента."
+        ]
+      }
+    },
+    {
+      "id": "d-1n18o1g",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/28/joedaroo/",
+      "publishedAt": "2026-09-28T19:11:42.000Z",
+      "category": "cybersecurity",
+      "en": {
+        "headline": "Why it matters: an OpenAI security researcher says AI capability jumps are outpacing organizations' ability to build resilient security culture and incident response.",
+        "tweets": [
+          "OpenAI's agent security lead: capability jumps in AI (cyber, swarming, etc.) caught even them off guard.",
+          "Security posture takes time to build into culture, not just systems — sudden AI jumps break that timeline.",
+          "Key question for every org: are your people, processes, and incident response ready for a sudden AI capability spike?"
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: специалист по безопасности агентов OpenAI предупреждает, что скачки возможностей ИИ опережают способность компаний выстраивать устойчивую защиту.",
+        "tweets": [
+          "Глава по безопасности агентов OpenAI признаёт: даже их удивила скорость скачков возможностей ИИ в кибербезопасности и не только.",
+          "Культуру безопасности нельзя построить быстро — а резкие скачки возможностей ИИ не дают на это времени.",
+          "Главный вопрос для любой организации: готовы ли люди, процессы и план реагирования к внезапному скачку возможностей ИИ?"
+        ]
+      }
+    },
+    {
+      "id": "d-q47ed1",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/how-we-will-do-better-for-australia",
+      "publishedAt": "2026-09-28T19:00:00.000Z",
+      "category": "cybersecurity",
+      "en": {
+        "headline": "Why it matters: OpenAI is responding to incidents involving Australian government websites by promising stronger safeguards and support for the country's cyber defences.",
+        "tweets": [
+          "OpenAI publicly apologised over incidents tied to Australian government websites.",
+          "The company says it will roll out stronger safeguards after the incident.",
+          "OpenAI is pledging support to help strengthen Australia's cyber defences."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI реагирует на инциденты с сайтами правительства Австралии и обещает усилить защиту.",
+        "tweets": [
+          "OpenAI публично извинилась за инциденты, связанные с сайтами австралийского правительства.",
+          "Компания обещает внедрить более строгие меры безопасности после случившегося.",
+          "OpenAI заявила о готовности помочь Австралии укрепить кибербезопасность."
+        ]
+      }
+    },
+    {
+      "id": "d-462i56",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/towards-safety-cases-for-frontier-ai-training",
+      "publishedAt": "2026-09-28T19:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI is drafting a formal framework to justify—before the fact—that training a frontier model won't produce a dangerous or misaligned system.",
+        "tweets": [
+          "OpenAI published early guidelines for 'safety cases' justifying frontier AI training runs before they happen.",
+          "The framework covers technical safeguards, operational practices, and how to investigate misalignment incidents.",
+          "This is a step toward treating AI training like safety-critical engineering, with documented evidence, not just trust."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI пытается заранее доказывать безопасность обучения топовых моделей, а не разбираться с последствиями постфактум.",
+        "tweets": [
+          "OpenAI опубликовала первые рекомендации по 'safety cases' — обоснованию безопасности обучения передовых ИИ-моделей заранее.",
+          "В документе описаны технические меры защиты, операционные практики и порядок расследования случаев рассогласованности модели.",
+          "Идея — подходить к обучению ИИ как к инженерии безопасности: с доказательствами, а не просто на доверии."
+        ]
+      }
+    },
+    {
+      "id": "d-sndy7s",
+      "source": "mistral",
+      "sourceUrl": "https://mistral.ai/news/hallo-deutschland/",
+      "publishedAt": "2026-09-28T15:57:59.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Mistral is betting that owning both open-weight models and physics-simulation AI gives Europe a sovereign alternative to closed US AI vendors for heavy industry.",
+        "tweets": [
+          "Mistral opens a Munich hub focused on Physics AI and Industrial AI, working directly with BMW and Siemens Energy.",
+          "Its pitch: open-weight models run on the customer's own infrastructure, under European law, with no data leaving the company.",
+          "Backed by its Emmi AI acquisition (30+ physics/engineering researchers) and a TUM wind-tunnel partnership for real-time aerodynamic digital twins."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Mistral делает ставку на открытые модели и физическое ИИ-моделирование, чтобы дать Европе суверенную альтернативу закрытым американским ИИ-сервисам в тяжёлой промышленности.",
+        "tweets": [
+          "Mistral открывает хаб в Мюнхене, сфокусированный на Physics AI и Industrial AI, сотрудничая напрямую с BMW и Siemens Energy.",
+          "Главный аргумент: модели с открытыми весами работают на инфраструктуре клиента, по европейским законам, данные никуда не утекают.",
+          "Опора — покупка Emmi AI (30+ физиков и инженеров) и партнёрство с TUM по аэродинамическим цифровым двойникам в реальном времени."
+        ]
+      }
+    },
     {
       "id": "d-zesp16",
       "source": "hf",
@@ -25,209 +209,25 @@
       }
     },
     {
-      "id": "d-z1rr4c",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/28/muse-ai-agent/",
-      "publishedAt": "2026-09-28T04:01:30.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: an AI agent's overconfident auto-replies can cause real-world harm, like a botched pickup and a bad rating, exposing a design flaw in autonomous assistants.",
-        "tweets": [
-          "An AI agent told a buyer 'Yep I'm here!' when its owner wasn't actually home — resulting in a no-show and angry customer.",
-          "The agent then apologized on its owner's behalf but couldn't undo the negative rating already left.",
-          "Lesson: AI agents shouldn't assert facts (like presence) they can't verify — confident-sounding lies still cause damage."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: самоуверенные автоответы ИИ-агента могут навредить в реальности — испорченная встреча и плохой отзыв показывают изъян в дизайне автономных помощников.",
-        "tweets": [
-          "ИИ-агент написал покупателю 'Да, я на месте!', хотя владелец на самом деле отсутствовал — встреча сорвалась, покупатель разозлился.",
-          "Агент извинился от имени владельца, но негативный отзыв уже нельзя было отменить.",
-          "Вывод: ИИ-агенты не должны утверждать то, что не могут проверить — уверенный тон не спасает от реального вреда."
-        ]
-      }
-    },
-    {
-      "id": "d-1vh2zdo",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
-      "publishedAt": "2026-09-27T23:54:15.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: 2026 has been the year AI coding agents crossed from 'often wrong' to 'reliably useful', reshaping how engineers actually work.",
-        "tweets": [
-          "New Claude Opus 4.5 / GPT-5.1 pushed coding agents from flaky to daily-usable — the tipping point many predicted finally arrived.",
-          "Simon Willison ditched his usual 'stay focused' resolution and went all-in on new projects, calling 2026 'be more ambitious' era for LLM tooling.",
-          "New term alert: 'Deep Blue' — the listless feeling engineers get when AI can seemingly do anything, a real theme at dev conferences this year."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: в 2026 году AI-агенты для кодинга перестали быть игрушкой и стали реально рабочим инструментом каждый день.",
-        "tweets": [
-          "Claude Opus 4.5 и GPT-5.1 стали тем самым рубежом — агенты перешли из категории 'часто ошибаются' в 'можно доверять ежедневно'.",
-          "Саймон Уиллисон в этом году отказался от привычного 'меньше проектов' и наоборот взялся за максимум — тестировать пределы возможностей ИИ-агентов.",
-          "Появился термин 'Deep Blue' — чувство опустошённости у разработчиков, когда кажется, что ИИ может справиться со всем сам."
-        ]
-      }
-    },
-    {
-      "id": "d-vz3h4a",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/27/hn-49871741/",
-      "publishedAt": "2026-09-27T23:09:19.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: S3's storage price has been frozen at $0.023/GB-month for a full decade, despite years of regular cuts before that.",
-        "tweets": [
-          "S3 pricing dropped repeatedly from 2006-2016, going from $0.150 to $0.023/GB-month.",
-          "Since December 2016, that price hasn't budged — a full 10-year freeze.",
-          "Worth asking why cloud storage costs stopped falling even as underlying hardware costs kept dropping."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: цена хранения в S3 не менялась уже десять лет, хотя раньше регулярно снижалась.",
-        "tweets": [
-          "С 2006 по 2016 год S3 подешевел с $0.150 до $0.023 за ГБ в месяц — цена падала почти каждый год.",
-          "С декабря 2016-го цена так и стоит на $0.023 — уже десять лет без изменений.",
-          "Интересный вопрос: почему облачное хранение перестало дешеветь, хотя железо продолжает падать в цене."
-        ]
-      }
-    },
-    {
-      "id": "d-2hr8ye",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/27/bluesky-bot-check/",
-      "publishedAt": "2026-09-27T18:41:44.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Bluesky's open API let a developer quickly vibe-code a tool to flag reply bots before they overrun the platform the way they did Twitter.",
-        "tweets": [
-          "Twitter is overrun by reply bots; Simon Willison built a checker to catch them on Bluesky before it gets that bad.",
-          "Bluesky's open API made it easy to build - unlike Twitter's locked-down one, which just makes bot investigation more annoying.",
-          "The tool flags signals like ultra-fast replies, no original posts, and suspicious question marks aimed at farming engagement."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: открытый API Bluesky позволил быстро собрать инструмент для выявления ботов-репостеров, пока платформа не превратилась во второй Twitter.",
-        "tweets": [
-          "Twitter завален ботами-ответчиками; Саймон Уиллисон сделал чекер для Bluesky, пока там не стало так же плохо.",
-          "Инструмент удалось быстро собрать благодаря открытому API Bluesky - в отличие от закрытого API Twitter, который только мешает расследованиям.",
-          "Чекер ищет подозрительные паттерны: мгновенные ответы, отсутствие своих постов и вопросы, рассчитанные на вовлечение."
-        ]
-      }
-    },
-    {
-      "id": "d-bci3xb",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
-      "publishedAt": "2026-09-26T23:39:06.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Claude can now go from a rough prompt to working pixel-art animation to an automated screen-recording pipeline with almost no manual glue code.",
-        "tweets": [
-          "Simon Willison fed Claude Opus 5.5 a few kakapo photos and got working pixel-art HTML5 canvas animation back.",
-          "Claude Code then used Playwright to script clicks and record a 15s video of that animation — no manual video editing needed.",
-          "The full recording script was short: define click timings/positions, launch headless Chromium, record video, done."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Claude теперь способен пройти путь от простого промпта до анимации и автоматической записи видео практически без ручной работы.",
-        "tweets": [
-          "Саймон Уиллисон дал Claude Opus 5.5 несколько фото какапо — и получил рабочую pixel-art анимацию на HTML5 canvas.",
-          "Затем Claude Code сам написал скрипт на Playwright, который кликал по странице и записывал 15-секундное видео.",
-          "Итоговый скрипт получился совсем коротким: тайминги кликов, запуск headless-браузера, запись — и готово."
-        ]
-      }
-    },
-    {
-      "id": "d-uu6bjg",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/openrouter",
-      "publishedAt": "2026-09-25T23:14:41.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenRouter's growth from a scrappy multi-model router to a Stripe acquisition shows how distribution, not raw model quality, decides who wins in AI infrastructure.",
-        "tweets": [
-          "OpenRouter bet early that no single AI model would dominate — that thesis proved right, and it now routes over 10 trillion tokens/day.",
-          "Model labs can spend billions training checkpoints and still fail at distribution — OpenRouter became the neutral layer that fixed that gap.",
-          "Stripe's fraud-detection infrastructure is key to the deal: as agentic AI usage grows, token fraud is becoming a major security threat to watch."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: путь OpenRouter от нишевого мультимодельного роутера до покупки Stripe показывает, что в AI-инфраструктуре решает не качество модели, а дистрибуция.",
-        "tweets": [
-          "OpenRouter изначально ставил на то, что не будет одной모델-победителя — и оказался прав: сейчас через сервис проходит больше 10 триллионов токенов в день.",
-          "Лаборатории тратят миллиарды на обучение моделей, но проваливаются в дистрибуции — OpenRouter закрыл именно эту проблему, став нейтральным слоем.",
-          "Сделку со Stripe объясняет её антифрод-инфраструктура: с ростом агентных систем мошенничество с токенами становится серьёзной угрозой безопасности."
-        ]
-      }
-    },
-    {
-      "id": "d-478aau",
+      "id": "d-p21kob",
       "source": "openai",
-      "sourceUrl": "https://openai.com/index/proaction",
-      "publishedAt": "2026-09-25T19:00:00.000Z",
+      "sourceUrl": "https://openai.com/index/lenfest-ai-collaborative-expansion",
+      "publishedAt": "2026-09-28T07:00:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: a fleet-management vendor says pairing Codex with newer GPT models sped up development and cut real operational hours, plus lifted sales.",
+        "headline": "Why it matters: OpenAI is deepening its bet on AI-assisted local journalism, pouring more cash and tech into a program meant to keep struggling newsrooms alive.",
         "tweets": [
-          "Proaction reports 60% higher sales after adopting Codex and GPT-based tools.",
-          "The company says it saved over 75 hours by using Codex, GPT-Live-1, and GPT-6 Astra.",
-          "Case study: AI coding and agent tools applied to build, run, and sell fleet management software."
+          "OpenAI adds $5M funding plus up to $5M in software credits/engineering support to the Lenfest AI Collaborative.",
+          "The move expands an existing fellowship aimed at helping local newsrooms adopt AI tools.",
+          "Signals OpenAI's continued push into media partnerships as local journalism funding remains a top target."
         ]
       },
       "ru": {
-        "headline": "Почему важно: разработчик систем управления автопарком заявляет, что связка Codex и новых моделей GPT ускорила разработку и реально сэкономила часы работы, а также подняла продажи.",
+        "headline": "Почему важно: OpenAI усиливает поддержку локальной журналистики, вкладывая деньги и технологии в её выживание с помощью ИИ.",
         "tweets": [
-          "Proaction сообщает о росте продаж на 60% после внедрения Codex и инструментов на GPT.",
-          "Компания говорит, что сэкономила более 75 часов благодаря Codex, GPT-Live-1 и GPT-6 Astra.",
-          "Кейс: AI-инструменты для кода и агентов применили в разработке, работе и продажах ПО для управления автопарком."
-        ]
-      }
-    },
-    {
-      "id": "d-1oi6snz",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/25/john-gruber/",
-      "publishedAt": "2026-09-25T17:22:01.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Meta's Muse gives consumers an easy, cute-looking wrapper around a genuinely powerful agentic AI running on a persistent Linux VM — and most users likely don't grasp the risks that come with that power.",
-        "tweets": [
-          "Meta's Muse is the first consumer-friendly agentic AI, running each user's own persistent Linux VM in the cloud.",
-          "John Gruber warns Muse's cute mascot packaging hides how powerful and risky the tool actually is, especially on Macs.",
-          "Unlike an obviously dangerous power saw, Muse's real capabilities aren't obvious to the people using it."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Muse от Meta выглядит как милая игрушка, но под капотом — мощный агентный AI с доступом к отдельной постоянной Linux-машине, и пользователи вряд ли понимают, с чем имеют дело.",
-        "tweets": [
-          "Muse от Meta — первый по-настоящему доступный обычным людям агентный AI, у каждого юзера своя постоянная Linux-VM в облаке.",
-          "Джон Грубер считает, что милый мультяшный образ Muse маскирует реальную мощь и опасность инструмента, особенно на Mac.",
-          "В отличие от циркулярной пилы, опасность которой очевидна, риски Muse для пользователей совсем не бросаются в глаза."
-        ]
-      }
-    },
-    {
-      "id": "d-10oenva",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-the-future-of-latent-space",
-      "publishedAt": "2026-09-25T05:37:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: model quality gains are now paired with cheap, fast 'decision' models that let teams cut LLM costs without losing much accuracy.",
-        "tweets": [
-          "New frontier models (Claude Opus 5.5, GPT-6 family, Gemini 3.8 Flash, Xiaomi MiMo-V2.6) push benchmarks up as open models close the gap fast.",
-          "Cheap 'judge' models like TypeSafe's Jev return typed probability answers instead of long text—277x cheaper than GPT-6, nearly as accurate.",
-          "Cascading cheap models to escalate only uncertain cases to top LLMs keeps 99% accuracy at ~57% of the cost—a practical production pattern."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: рост качества топовых моделей теперь сопровождается дешёвыми и быстрыми 'решающими' моделями, экономящими на LLM без потери точности.",
-        "tweets": [
-          "Новые флагманы (Claude Opus 5.5, GPT-6, Gemini 3.8 Flash, Xiaomi MiMo-V2.6) поднимают бенчмарки, а открытые модели быстро сокращают разрыв.",
-          "Компактные модели-судьи типа Jev выдают не текст, а вероятностный ответ — дешевле GPT-6 в 277 раз при почти той же точности.",
-          "Каскад, где сложные случаи передаются топовым LLM, а простые — дешёвой модели, даёт 99% точности при 57% стоимости — рабочий паттерн для продакшена."
+          "OpenAI выделяет $5 млн плюс до $5 млн в виде софта и инженерной поддержки для Lenfest AI Collaborative.",
+          "Речь идёт о расширении уже существующей программы стажировок для локальных редакций.",
+          "Это очередной шаг OpenAI в сторону партнёрств с медиа — локальная журналистика остаётся приоритетным направлением."
         ]
       }
     }
