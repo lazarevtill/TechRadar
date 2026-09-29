@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T13:53:24.472Z",
+  "generatedAt": "2026-09-29T12:51:40.091Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "rising",
-      "momentum": 0.29,
+      "momentum": 0.57,
       "weeklyCounts": [
         1,
         7,
@@ -22,7 +22,7 @@
         0,
         2,
         7,
-        9
+        11
       ],
       "signals": [
         {
@@ -45,7 +45,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "rising",
-      "momentum": 0.1,
+      "momentum": 0.38,
       "weeklyCounts": [
         21,
         21,
@@ -59,9 +59,15 @@
         21,
         21,
         21,
-        23
+        29
       ],
       "signals": [
+        {
+          "title": "[AINews] Opus 5.5 is good at explainer videos",
+          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T02:44:29.000Z"
+        },
         {
           "title": "[AINews] The Future of Latent Space",
           "url": "https://www.latent.space/p/ainews-the-future-of-latent-space",
@@ -85,12 +91,55 @@
           "url": "https://deepmind.google/blog/alphafold-five-years-of-impact/",
           "source": "deepmind",
           "publishedAt": "2025-11-25T16:00:12.000Z"
+        }
+      ]
+    },
+    {
+      "id": "fusion",
+      "label": "Fusion Energy",
+      "category": "energy",
+      "stage": "research",
+      "trajectory": "rising",
+      "momentum": 0.04,
+      "weeklyCounts": [
+        14,
+        11,
+        14,
+        14,
+        4,
+        7,
+        7,
+        9,
+        14,
+        14,
+        17,
+        28,
+        29
+      ],
+      "signals": [
+        {
+          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
+          "url": "https://www.latent.space/p/openrouter",
+          "source": "latent-space",
+          "publishedAt": "2026-09-25T23:14:41.000Z"
         },
         {
-          "title": "Revealing a key protein behind heart disease",
-          "url": "https://deepmind.google/blog/revealing-a-key-protein-behind-heart-disease/",
-          "source": "deepmind",
-          "publishedAt": "2025-11-25T15:52:51.000Z"
+          "title": "🔬 An Oscar, Two Asteroids, and the Algorithm in Your sklearn: John Platt on AI for Science",
+          "url": "https://www.latent.space/p/john-platt",
+          "source": "latent-space",
+          "publishedAt": "2026-09-22T21:07:39.000Z"
+        },
+        {
+          "title": "[AINews] not much happened today",
+          "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
+          "source": "latent-space",
+          "publishedAt": "2026-09-18T06:28:43.000Z"
+        },
+        {
+          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
+          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
+          "source": "latent-space",
+          "publishedAt": "2026-09-17T07:28:25.000Z"
         }
       ]
     },
@@ -119,67 +168,12 @@
       "signals": []
     },
     {
-      "id": "fusion",
-      "label": "Fusion Energy",
-      "category": "energy",
-      "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.11,
-      "weeklyCounts": [
-        14,
-        11,
-        14,
-        14,
-        4,
-        7,
-        7,
-        9,
-        14,
-        14,
-        17,
-        28,
-        25
-      ],
-      "signals": [
-        {
-          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
-          "url": "https://www.latent.space/p/openrouter",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T23:14:41.000Z"
-        },
-        {
-          "title": "🔬 An Oscar, Two Asteroids, and the Algorithm in Your sklearn: John Platt on AI for Science",
-          "url": "https://www.latent.space/p/john-platt",
-          "source": "latent-space",
-          "publishedAt": "2026-09-22T21:07:39.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
-          "source": "latent-space",
-          "publishedAt": "2026-09-18T06:28:43.000Z"
-        },
-        {
-          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
-          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
-          "source": "latent-space",
-          "publishedAt": "2026-09-17T07:28:25.000Z"
-        },
-        {
-          "title": "Humanity’s Last Invention — Richard Socher of Recursive",
-          "url": "https://www.latent.space/p/recursive",
-          "source": "latent-space",
-          "publishedAt": "2026-09-14T16:04:16.000Z"
-        }
-      ]
-    },
-    {
       "id": "open-models",
       "label": "Open Models",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.26,
+      "momentum": -0.11,
       "weeklyCounts": [
         375,
         358,
@@ -193,9 +187,21 @@
         365,
         364,
         370,
-        272
+        328
       ],
       "signals": [
+        {
+          "title": "[AINews] Opus 5.5 is good at explainer videos",
+          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T02:44:29.000Z"
+        },
+        {
+          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
+          "url": "https://www.latent.space/p/thariq",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T01:48:18.000Z"
+        },
         {
           "title": "2026 in LLMs (so far)",
           "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
@@ -213,18 +219,6 @@
           "url": "https://www.latent.space/p/ainews-the-future-of-latent-space",
           "source": "latent-space",
           "publishedAt": "2026-09-25T05:37:00.000Z"
-        },
-        {
-          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
-          "url": "https://www.latent.space/p/runway",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T01:30:57.000Z"
-        },
-        {
-          "title": "[AINews] Meta Connect 2026: Muse glasses, voice, video, and Charm",
-          "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
-          "source": "latent-space",
-          "publishedAt": "2026-09-24T08:12:59.000Z"
         }
       ]
     },
@@ -234,7 +228,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.33,
+      "momentum": -0.19,
       "weeklyCounts": [
         411,
         420,
@@ -248,9 +242,21 @@
         452,
         469,
         463,
-        310
+        375
       ],
       "signals": [
+        {
+          "title": "[AINews] Opus 5.5 is good at explainer videos",
+          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T02:44:29.000Z"
+        },
+        {
+          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
+          "url": "https://www.latent.space/p/thariq",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T01:48:18.000Z"
+        },
         {
           "title": "Quoting Muse AI Agent",
           "url": "https://simonwillison.net/2026/Sep/28/muse-ai-agent/",
@@ -268,18 +274,6 @@
           "url": "https://www.latent.space/p/openrouter",
           "source": "latent-space",
           "publishedAt": "2026-09-25T23:14:41.000Z"
-        },
-        {
-          "title": "Quoting John Gruber",
-          "url": "https://simonwillison.net/2026/Sep/25/john-gruber/",
-          "source": "simonw",
-          "publishedAt": "2026-09-25T17:22:01.000Z"
-        },
-        {
-          "title": "[AINews] The Future of Latent Space",
-          "url": "https://www.latent.space/p/ainews-the-future-of-latent-space",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T05:37:00.000Z"
         }
       ]
     },
@@ -289,7 +283,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.34,
+      "momentum": -0.21,
       "weeklyCounts": [
         81,
         60,
@@ -303,7 +297,7 @@
         85,
         92,
         103,
-        68
+        81
       ],
       "signals": [
         {
@@ -331,10 +325,10 @@
           "publishedAt": "2026-09-15T04:50:36.000Z"
         },
         {
-          "title": "Humanity’s Last Invention — Richard Socher of Recursive",
-          "url": "https://www.latent.space/p/recursive",
-          "source": "latent-space",
-          "publishedAt": "2026-09-14T16:04:16.000Z"
+          "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
+          "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
+          "source": "hf",
+          "publishedAt": "2026-08-12T16:14:36.000Z"
         }
       ]
     }
