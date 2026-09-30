@@ -4,16 +4,24 @@ import { LOCAL_HOST } from './settings.js'
 export const FEED_PATH = '/api/extension-feed'
 export const SUPPORTED_VERSION = 1
 export const REQUEST_TIMEOUT_MS = 15_000
+// A cold feed waits for parallel 30-second source budgets, then history and
+// translation. Allow that rebuild to finish while keeping a finite deadline.
+export const FEED_TIMEOUT_MS = 90_000
 
 /** Bound both the connection and response body read. */
-async function requestJson(fetchImpl, url, options = {}) {
+async function requestJson(
+  fetchImpl,
+  url,
+  options = {},
+  timeoutMs = REQUEST_TIMEOUT_MS,
+) {
   const controller = new AbortController()
   let timer
   const timeout = new Promise((_, reject) => {
     timer = setTimeout(() => {
       controller.abort()
       reject(new Error('request timed out'))
-    }, REQUEST_TIMEOUT_MS)
+    }, timeoutMs)
   })
   try {
     return await Promise.race([
@@ -45,9 +53,12 @@ export async function fetchBackendFeed(
   const url = `${baseUrl.replace(/\/$/, '')}${FEED_PATH}`
   let res, payload
   try {
-    ;({ res, body: payload } = await requestJson(fetchImpl, url, {
-      cache: 'no-cache',
-    }))
+    ;({ res, body: payload } = await requestJson(
+      fetchImpl,
+      url,
+      { cache: 'no-cache' },
+      FEED_TIMEOUT_MS,
+    ))
   } catch (error) {
     throw new Error(`cannot reach ${baseUrl} (${error.message})`)
   }

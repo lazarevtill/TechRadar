@@ -23,6 +23,7 @@ export function selectFeedContent({
   return language === 'ru' && manualRu ? manualRu : translated
 }
 
+/** Theme additions and retirements count as activity even without ranked rows. */
 export function hasWeeklyActivity(
   report: Pick<
     WeeklyReport,

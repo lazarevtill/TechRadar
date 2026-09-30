@@ -6,11 +6,38 @@ import {
   panelData,
   FEED_PATH,
   REQUEST_TIMEOUT_MS,
+  FEED_TIMEOUT_MS,
 } from '../backend.js'
 
 const ok = (body) => vi.fn(async () => new Response(JSON.stringify(body)))
 
 describe('fetchBackendFeed', () => {
+  it('allows a cold rebuild longer than the source budget to finish', async () => {
+    vi.useFakeTimers()
+    try {
+      let signal
+      const payload = { version: 1, feed: { items: [] } }
+      const fetchImpl = vi.fn((_, options) => {
+        signal = options.signal
+        return new Promise((resolve) =>
+          setTimeout(
+            () => resolve(new Response(JSON.stringify(payload))),
+            35_000,
+          ),
+        )
+      })
+      const request = fetchBackendFeed(fetchImpl, 'http://localhost:3000')
+      await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS)
+      expect(signal.aborted).toBe(false)
+      await vi.advanceTimersByTimeAsync(20_000)
+      await expect(request).resolves.toEqual(payload)
+      expect(signal.aborted).toBe(false)
+      expect(vi.getTimerCount()).toBe(0)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('times out a stalled connection and aborts the request', async () => {
     vi.useFakeTimers()
     try {
@@ -21,7 +48,7 @@ describe('fetchBackendFeed', () => {
       })
       const request = fetchBackendFeed(fetchImpl, 'http://localhost:3000')
       const rejected = expect(request).rejects.toThrow(/timed out/)
-      await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS)
+      await vi.advanceTimersByTimeAsync(FEED_TIMEOUT_MS)
       await rejected
       expect(signal.aborted).toBe(true)
     } finally {
@@ -38,7 +65,7 @@ describe('fetchBackendFeed', () => {
       }))
       const request = fetchBackendFeed(fetchImpl, 'http://localhost:3000')
       const rejected = expect(request).rejects.toThrow(/timed out/)
-      await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS)
+      await vi.advanceTimersByTimeAsync(FEED_TIMEOUT_MS)
       await rejected
     } finally {
       vi.useRealTimers()
@@ -81,6 +108,29 @@ describe('panelData', () => {
 })
 
 describe('fetchReport', () => {
+  it('keeps health and report deadlines short', async () => {
+    vi.useFakeTimers()
+    try {
+      const signals = []
+      const stalled = vi.fn((_, options) => {
+        signals.push(options.signal)
+        return new Promise(() => {})
+      })
+      const report = expect(
+        fetchReport(stalled, 'http://localhost:3000'),
+      ).rejects.toThrow(/timed out/)
+      const health = expect(
+        fetchHealth(stalled, 'http://localhost:3000'),
+      ).rejects.toThrow(/timed out/)
+      await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS)
+      await Promise.all([report, health])
+      expect(signals.every((signal) => signal.aborted)).toBe(true)
+      expect(vi.getTimerCount()).toBe(0)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('sends watch terms only over HTTPS or to a local server', async () => {
     for (const base of [
       'https://radar.example.com',

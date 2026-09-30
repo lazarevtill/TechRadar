@@ -100,6 +100,7 @@
     "eslint": "^10.10.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "17.12.0",
+    "happy-dom": "^20.14.5",
     "prettier": "^3.9.8",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "typescript-7": "npm:typescript@^7.0.2",

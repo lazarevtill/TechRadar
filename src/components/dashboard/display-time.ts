@@ -5,6 +5,7 @@ export function formatUpdatedTime(date: Date): string {
   return `${hours}:${minutes} UTC`
 }
 
+/** ISO calendar day in UTC, independent of server or browser locale. */
 export function formatCalendarDate(date: Date): string {
   return date.toISOString().slice(0, 10)
 }
