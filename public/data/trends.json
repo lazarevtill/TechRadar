@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-29T12:51:40.091Z",
+  "generatedAt": "2026-09-30T12:33:36.359Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "rising",
-      "momentum": 0.57,
+      "momentum": 0.71,
       "weeklyCounts": [
         1,
         7,
@@ -22,7 +22,7 @@
         0,
         2,
         7,
-        11
+        12
       ],
       "signals": [
         {
@@ -30,12 +30,6 @@
           "url": "https://www.latent.space/p/runway",
           "source": "latent-space",
           "publishedAt": "2026-09-25T01:30:57.000Z"
-        },
-        {
-          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
-          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T04:50:36.000Z"
         }
       ]
     },
@@ -45,7 +39,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "rising",
-      "momentum": 0.38,
+      "momentum": 0.67,
       "weeklyCounts": [
         21,
         21,
@@ -59,7 +53,7 @@
         21,
         21,
         21,
-        29
+        35
       ],
       "signals": [
         {
@@ -100,7 +94,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "rising",
-      "momentum": 0.04,
+      "momentum": 0.18,
       "weeklyCounts": [
         14,
         11,
@@ -114,7 +108,7 @@
         14,
         17,
         28,
-        29
+        33
       ],
       "signals": [
         {
@@ -144,6 +138,61 @@
       ]
     },
     {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 0.04,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        384
+      ],
+      "signals": [
+        {
+          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
+          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
+          "source": "latent-space",
+          "publishedAt": "2026-09-30T05:53:10.000Z"
+        },
+        {
+          "title": "[AINews] Opus 5.5 is good at explainer videos",
+          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T02:44:29.000Z"
+        },
+        {
+          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
+          "url": "https://www.latent.space/p/thariq",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T01:48:18.000Z"
+        },
+        {
+          "title": "2026 in LLMs (so far)",
+          "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
+          "source": "simonw",
+          "publishedAt": "2026-09-27T23:54:15.000Z"
+        },
+        {
+          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
+          "url": "https://www.latent.space/p/openrouter",
+          "source": "latent-space",
+          "publishedAt": "2026-09-25T23:14:41.000Z"
+        }
+      ]
+    },
+    {
       "id": "post-quantum",
       "label": "Post-Quantum Crypto",
       "category": "cybersecurity",
@@ -168,67 +217,12 @@
       "signals": []
     },
     {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.11,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370,
-        328
-      ],
-      "signals": [
-        {
-          "title": "[AINews] Opus 5.5 is good at explainer videos",
-          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T02:44:29.000Z"
-        },
-        {
-          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
-          "url": "https://www.latent.space/p/thariq",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T01:48:18.000Z"
-        },
-        {
-          "title": "2026 in LLMs (so far)",
-          "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
-          "source": "simonw",
-          "publishedAt": "2026-09-27T23:54:15.000Z"
-        },
-        {
-          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
-          "url": "https://www.latent.space/p/openrouter",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T23:14:41.000Z"
-        },
-        {
-          "title": "[AINews] The Future of Latent Space",
-          "url": "https://www.latent.space/p/ainews-the-future-of-latent-space",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T05:37:00.000Z"
-        }
-      ]
-    },
-    {
       "id": "llm-agents",
       "label": "LLM Agents",
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.19,
+      "momentum": -0.05,
       "weeklyCounts": [
         411,
         420,
@@ -242,9 +236,15 @@
         452,
         469,
         463,
-        375
+        440
       ],
       "signals": [
+        {
+          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
+          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
+          "source": "latent-space",
+          "publishedAt": "2026-09-30T05:53:10.000Z"
+        },
         {
           "title": "[AINews] Opus 5.5 is good at explainer videos",
           "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
@@ -268,12 +268,6 @@
           "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
           "source": "simonw",
           "publishedAt": "2026-09-27T23:54:15.000Z"
-        },
-        {
-          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
-          "url": "https://www.latent.space/p/openrouter",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T23:14:41.000Z"
         }
       ]
     },
@@ -283,7 +277,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.21,
+      "momentum": -0.1,
       "weeklyCounts": [
         81,
         60,
@@ -297,7 +291,7 @@
         85,
         92,
         103,
-        81
+        93
       ],
       "signals": [
         {
@@ -319,16 +313,16 @@
           "publishedAt": "2026-09-16T18:07:45.000Z"
         },
         {
-          "title": "[AINews] AEF-1 standard emerges for Third Party Evaluators, as Xai, OpenAI, and Anthropic all cosign",
-          "url": "https://www.latent.space/p/ainews-aef-1-standard-emerges-for",
-          "source": "latent-space",
-          "publishedAt": "2026-09-15T04:50:36.000Z"
-        },
-        {
           "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
           "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
           "source": "hf",
           "publishedAt": "2026-08-12T16:14:36.000Z"
+        },
+        {
+          "title": "Granite Embedding Multilingual R2: Open Apache 2.0 Multilingual Embeddings with 32K Context — Best Sub-100M Retrieval Quality",
+          "url": "https://huggingface.co/blog/ibm-granite/granite-embedding-multilingual-r2",
+          "source": "hf",
+          "publishedAt": "2026-05-14T18:55:01.000Z"
         }
       ]
     }
