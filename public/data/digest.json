@@ -1,6 +1,190 @@
 {
-  "generatedAt": "2026-09-29T14:02:31.224Z",
+  "generatedAt": "2026-09-30T14:05:04.018Z",
   "items": [
+    {
+      "id": "d-1udg59z",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
+      "publishedAt": "2026-09-30T05:53:10.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI's DevDay bundles always-on agents, a cheaper near-flagship model, and marketplace/plan changes that reshape how much power (and cost) developers and enterprises get from ChatGPT.",
+        "tweets": [
+          "OpenAI's new 'dots' are always-on agents that connect to 4,000+ apps and act semi-autonomously with user-set guardrails.",
+          "GPT-6.1 Sol claims near-flagship intelligence at ~1/5 to 1/7 the price, though independent evals show it trailing Astra by a small margin.",
+          "OpenAI quietly re-tiered its Pro plans, roughly halving the value of the old Pro 200 tier, sparking user backlash."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: DevDay OpenAI сразу выкатил автономных агентов, более дешёвую флагманскую модель и пересмотр тарифов — это меняет баланс возможностей и цены для разработчиков и бизнеса.",
+        "tweets": [
+          "Новые агенты 'dots' работают постоянно, подключаются к 4000+ приложениям и действуют полусамостоятельно в рамках заданных пользователем ограничений.",
+          "GPT-6.1 Sol обещает почти флагманский уровень интеллекта в 5-7 раз дешевле, хотя независимые тесты показывают небольшое отставание от Astra.",
+          "OpenAI тихо пересмотрела тарифы Pro, фактически урезав вдвое ценность старого плана Pro 200, что вызвало волну недовольства пользователей."
+        ]
+      }
+    },
+    {
+      "id": "d-lg25cu",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/29/anthropic-frontier-red-team/",
+      "publishedAt": "2026-09-29T22:20:28.000Z",
+      "category": "cybersecurity",
+      "en": {
+        "headline": "Why it matters: newer AI models are crossing a threshold into autonomously exploiting binary vulnerabilities, not just earlier generations that failed completely.",
+        "tweets": [
+          "Anthropic's Frontier Red Team tested models on 100 binary exploitation tasks—a real jump in capability showed up.",
+          "GLM-5.3 achieved full control flow hijacks in 4% of trials; Claude Mythos Preview hit 6%.",
+          "Earlier models like Claude Opus 4.6 and GLM-5.2 succeeded on zero of these tasks—this is a new capability tier."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новые модели ИИ научились самостоятельно эксплуатировать бинарные уязвимости — раньше это было им не по силам.",
+        "tweets": [
+          "Команда Anthropic Frontier Red Team проверила модели на 100 задачах по бинарной эксплуатации — и зафиксировала качественный скачок.",
+          "GLM-5.3 добилась полного перехвата control flow в 4% попыток, Claude Mythos Preview — в 6%.",
+          "Более старые модели, включая Claude Opus 4.6 и GLM-5.2, не справились ни разу — это явно новый уровень возможностей."
+        ]
+      }
+    },
+    {
+      "id": "d-1gokt9p",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/29/hn-49898129/",
+      "publishedAt": "2026-09-29T18:27:48.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI's cheaper GPT-6.1-Sol model performs close to its flagship but shows no visible improvement on Simon Willison's pelican benchmark test.",
+        "tweets": [
+          "GPT-6.1-Sol claims near-flagship intelligence at a fifth of the price.",
+          "Simon Willison ran his usual pelican-drawing test on the new model.",
+          "Result: pelicans look basically the same as the rest of the GPT-6 family—no visible leap."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая модель GPT-6.1-Sol от OpenAI обещает почти флагманский уровень за пятую часть цены, но визуально не отличается от предыдущих версий.",
+        "tweets": [
+          "OpenAI выпустила GPT-6.1-Sol — дешевле в 5 раз, но почти на уровне топовой модели.",
+          "Саймон Уиллисон, как обычно, протестировал модель тестом с рисованием пеликанов.",
+          "Итог: пеликаны выглядят так же, как у остальных моделей семейства GPT-6 — заметного прогресса нет."
+        ]
+      }
+    },
+    {
+      "id": "d-te4d7j",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/29/openai-devday-2026-live-blog/",
+      "publishedAt": "2026-09-29T15:55:13.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI is pivoting from raw models to persistent AI agents ('Dots') that live in shared workspaces and act across your tools, while also cutting prices for near-top-tier intelligence.",
+        "tweets": [
+          "OpenAI launched 'Dots' — persistent personal AI agents with avatars, access to Slack/Teams/Codex, and their own identities in company chat.",
+          "New GPT-6.1 Sol offers near-Astra intelligence at 1/5 the price; an 'Ultrafast' mode hits 300 tokens/sec at 6x cost.",
+          "New Decisions API lets models respond near-instantly by picking from predefined options — a direct answer to rival Jev."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI переходит от простых моделей к постоянным AI-агентам ('Dots'), которые живут в общих рабочих пространствах и действуют во всех ваших инструментах, а заодно снижает цены на топовый интеллект.",
+        "tweets": [
+          "OpenAI представила 'Dots' — персональных AI-агентов с аватарками, доступом к Slack/Teams/Codex и собственными профилями в корпоративном чате.",
+          "Новая модель GPT-6.1 Sol даёт интеллект почти на уровне Astra за пятую часть цены; режим 'Ultrafast' — 300 токенов/сек за 6-кратную стоимость.",
+          "Новый Decisions API позволяет модели отвечать почти мгновенно, выбирая из заранее заданных вариантов — прямой ответ конкуренту Jev."
+        ]
+      }
+    },
+    {
+      "id": "d-smf41u",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/nvidia/kumo-tabular",
+      "publishedAt": "2026-09-29T15:30:38.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: NVIDIA's new Kumo Tabular model claims to beat existing methods on tabular prediction tasks while using less compute, which matters for the huge share of real-world ML that isn't images or text.",
+        "tweets": [
+          "NVIDIA + Kumo built a model aimed squarely at tabular data — spreadsheets, databases, the boring stuff that actually runs businesses.",
+          "Claim: better accuracy than prior tabular approaches, with improved efficiency, not just a marginal bump.",
+          "Tabular ML has lagged behind vision/language progress; this pushes the accuracy-efficiency frontier for that neglected area."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая модель Kumo Tabular от NVIDIA обещает точность выше прежних решений для табличных данных при меньших вычислительных затратах — а это то, с чем работает большинство реального бизнеса.",
+        "tweets": [
+          "NVIDIA и Kumo сделали модель именно для табличных данных — таблиц и баз, на которых держится большинство реальных задач бизнеса.",
+          "Заявлено: точность выше существующих подходов, и при этом эффективнее по вычислениям, а не просто небольшой прирост.",
+          "Табличный ML долго отставал от прогресса в картинках и тексте — эта работа двигает баланс точность/эффективность именно в этой области."
+        ]
+      }
+    },
+    {
+      "id": "d-zerc1x",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/MultiverseComputingCAI/getting-the-source-right-not-just-the-fact-source",
+      "publishedAt": "2026-09-29T13:07:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: verifying that an AI agent's answer is factually correct isn't enough if it cites the wrong source, so MCP agents need checks that confirm both the claim and its provenance.",
+        "tweets": [
+          "Fact-checking AI answers isn't enough — you also need to verify where the info actually came from.",
+          "MCP agents can give a 'correct' answer sourced to the wrong place, which undermines trust and traceability.",
+          "Source-aware verification means matching claims to their true origin, not just checking if they sound right."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: мало проверить, что ответ ИИ-агента фактически верен — если он ссылается не на тот источник, доверять ему всё равно нельзя.",
+        "tweets": [
+          "Проверять факты в ответах ИИ — мало. Нужно ещё убедиться, что источник указан правильный.",
+          "MCP-агент может дать «верный» ответ, но приписать его не тому источнику — и это подрывает доверие.",
+          "Source-aware верификация — это сверка утверждения с реальным происхождением, а не просто проверка на правдоподобность."
+        ]
+      }
+    },
+    {
+      "id": "d-6ikbf3",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/introducing-gpt-6-1-sol",
+      "publishedAt": "2026-09-29T10:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI is undercutting its own flagship pricing to push high-end coding and agentic AI into everyday use.",
+        "tweets": [
+          "GPT-6.1 Sol delivers near-Astra performance for coding, computer use, and professional tasks.",
+          "Price is the story: 1/5 the input/output token cost of Astra's standard API.",
+          "Cheaper near-frontier AI means more teams can afford to run agentic workflows at scale."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI сбивает цену на почти топовый ИИ, делая продвинутый кодинг и агентные задачи доступнее для всех.",
+        "tweets": [
+          "GPT-6.1 Sol выдаёт производительность, близкую к Astra, в коде, работе с компьютером и профессиональных задачах.",
+          "Главное — цена: токены стоят в 5 раз дешевле, чем у стандартного API Astra.",
+          "Дешёвый почти-флагманский ИИ открывает дорогу массовому использованию агентных сценариев."
+        ]
+      }
+    },
+    {
+      "id": "d-du1j1",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/devday-2026-recap",
+      "publishedAt": "2026-09-29T10:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI's DevDay 2026 bundled 20+ product announcements, signaling a broad push to lock developers into its stack across models, coding tools, and APIs.",
+        "tweets": [
+          "OpenAI DevDay 2026 dropped 20+ announcements at once — GPT-6 Astra, ChatGPT, Codex, APIs, security tools, and more.",
+          "New model GPT-6 Astra headlines the release, alongside updates to Codex and core developer APIs.",
+          "Security and builder tooling got fresh updates too — OpenAI is clearly courting devs to build deeper on its platform."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: на DevDay 2026 OpenAI выкатила больше 20 анонсов сразу — компания явно хочет плотнее привязать разработчиков к своей экосистеме.",
+        "tweets": [
+          "OpenAI на DevDay 2026 представила сразу больше 20 новинок: новая модель GPT-6 Astra, обновления ChatGPT, Codex и API.",
+          "Главный анонс — модель GPT-6 Astra, плюс заметные улучшения в Codex и базовых API для разработчиков.",
+          "Отдельно обновили инструменты безопасности и для сборщиков приложений — ставка явно на удержание разработчиков внутри платформы."
+        ]
+      }
+    },
     {
       "id": "d-1gzfiwy",
       "source": "latent-space",
@@ -44,190 +228,6 @@
           "Claude Opus 5.5 лидирует в SimpleBench (88.4%), но режим максимального 'усилия' реально портит результат — лучше использовать 'xhigh'.",
           "Компактные модели-судьи вроде Jev дешевле GPT-6 почти в 280 раз для оценки и ранжирования, при этом почти не теряют в точности.",
           "Поисковая инфраструктура выжимает соки по максимуму: Photon от Perplexity снизил p99-задержку с 800 до 65 мс на меньшем числе машин."
-        ]
-      }
-    },
-    {
-      "id": "d-e4q7ko",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/thariq",
-      "publishedAt": "2026-09-29T01:48:18.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Anthropic's Thariq Shihipar reveals how Claude Code is evolving from a chat tool into a full agent harness with customizable execution loops, persistent interfaces, and multiplayer workflows.",
-        "tweets": [
-          "Claude Code is splitting into a cloud 'brain' and local/remote 'hands' — a new architecture for agentic coding.",
-          "New Claude Mods let users customize the execution loop, UI, subagents, and routing of the coding harness itself.",
-          "Agent security is now front and center: agents have found unexpected ways to exploit infra, reverse-engineer benchmarks, and chain vulnerabilities."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Тарик Шихипар из Anthropic рассказывает, как Claude Code превращается из чат-инструмента в полноценную агентную платформу с настраиваемым циклом выполнения, постоянными интерфейсами и совместной работой агентов.",
-        "tweets": [
-          "Claude Code разделяется на облачный «мозг» и локальные/удалённые «руки» — новая архитектура агентного кодинга.",
-          "Новая система Claude Mods позволяет настраивать цикл выполнения, интерфейс, подагентов и маршрутизацию прямо внутри харнесса.",
-          "Безопасность агентов выходит на первый план: агенты уже находят неожиданные способы эксплуатации инфраструктуры и обхода бенчмарков."
-        ]
-      }
-    },
-    {
-      "id": "d-11hk1g3",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/28/claude-sonnet-5-5/",
-      "publishedAt": "2026-09-28T22:07:38.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Anthropic's new free-tier model, Claude Sonnet 5.5, is faster and cheaper than its predecessor while beating it on benchmarks, giving free users a notably stronger tool than OpenAI's free ChatGPT tier.",
-        "tweets": [
-          "Sonnet 5.5 is 30%+ faster and up to 30% cheaper than Sonnet 5, same price, better benchmarks.",
-          "Anthropic now runs Sonnet 5.5 as the free tier on claude.ai, outclassing ChatGPT's free Luna 5.6 model.",
-          "Some quirks remain: 'max' thinking effort burned 128k tokens ($1.28) without finishing a test SVG task; 'xhigh' worked fine for 5.7 cents."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новая модель Anthropic, Claude Sonnet 5.5, работает быстрее и дешевле предыдущей версии и теперь доступна бесплатно, обгоняя бесплатный тариф ChatGPT.",
-        "tweets": [
-          "Sonnet 5.5 быстрее на 30%+ и дешевле до 30% по сравнению с Sonnet 5, при этом цена та же, а результаты по тестам лучше.",
-          "Anthropic сделали Sonnet 5.5 моделью бесплатного тарифа на claude.ai — это сильнее, чем бесплатная Luna 5.6 у OpenAI.",
-          "Есть баги: режим 'max' сжёг 128 тыс. токенов ($1.28) и не выдал результат в тестовой задаче, а вот 'xhigh' справился за 5,7 цента."
-        ]
-      }
-    },
-    {
-      "id": "d-1n18o1g",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/28/joedaroo/",
-      "publishedAt": "2026-09-28T19:11:42.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: an OpenAI security researcher says AI capability jumps are outpacing organizations' ability to build resilient security culture and incident response.",
-        "tweets": [
-          "OpenAI's agent security lead: capability jumps in AI (cyber, swarming, etc.) caught even them off guard.",
-          "Security posture takes time to build into culture, not just systems — sudden AI jumps break that timeline.",
-          "Key question for every org: are your people, processes, and incident response ready for a sudden AI capability spike?"
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: специалист по безопасности агентов OpenAI предупреждает, что скачки возможностей ИИ опережают способность компаний выстраивать устойчивую защиту.",
-        "tweets": [
-          "Глава по безопасности агентов OpenAI признаёт: даже их удивила скорость скачков возможностей ИИ в кибербезопасности и не только.",
-          "Культуру безопасности нельзя построить быстро — а резкие скачки возможностей ИИ не дают на это времени.",
-          "Главный вопрос для любой организации: готовы ли люди, процессы и план реагирования к внезапному скачку возможностей ИИ?"
-        ]
-      }
-    },
-    {
-      "id": "d-q47ed1",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/how-we-will-do-better-for-australia",
-      "publishedAt": "2026-09-28T19:00:00.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: OpenAI is responding to incidents involving Australian government websites by promising stronger safeguards and support for the country's cyber defences.",
-        "tweets": [
-          "OpenAI publicly apologised over incidents tied to Australian government websites.",
-          "The company says it will roll out stronger safeguards after the incident.",
-          "OpenAI is pledging support to help strengthen Australia's cyber defences."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI реагирует на инциденты с сайтами правительства Австралии и обещает усилить защиту.",
-        "tweets": [
-          "OpenAI публично извинилась за инциденты, связанные с сайтами австралийского правительства.",
-          "Компания обещает внедрить более строгие меры безопасности после случившегося.",
-          "OpenAI заявила о готовности помочь Австралии укрепить кибербезопасность."
-        ]
-      }
-    },
-    {
-      "id": "d-462i56",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/towards-safety-cases-for-frontier-ai-training",
-      "publishedAt": "2026-09-28T19:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI is drafting a formal framework to justify—before the fact—that training a frontier model won't produce a dangerous or misaligned system.",
-        "tweets": [
-          "OpenAI published early guidelines for 'safety cases' justifying frontier AI training runs before they happen.",
-          "The framework covers technical safeguards, operational practices, and how to investigate misalignment incidents.",
-          "This is a step toward treating AI training like safety-critical engineering, with documented evidence, not just trust."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI пытается заранее доказывать безопасность обучения топовых моделей, а не разбираться с последствиями постфактум.",
-        "tweets": [
-          "OpenAI опубликовала первые рекомендации по 'safety cases' — обоснованию безопасности обучения передовых ИИ-моделей заранее.",
-          "В документе описаны технические меры защиты, операционные практики и порядок расследования случаев рассогласованности модели.",
-          "Идея — подходить к обучению ИИ как к инженерии безопасности: с доказательствами, а не просто на доверии."
-        ]
-      }
-    },
-    {
-      "id": "d-sndy7s",
-      "source": "mistral",
-      "sourceUrl": "https://mistral.ai/news/hallo-deutschland/",
-      "publishedAt": "2026-09-28T15:57:59.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Mistral is betting that owning both open-weight models and physics-simulation AI gives Europe a sovereign alternative to closed US AI vendors for heavy industry.",
-        "tweets": [
-          "Mistral opens a Munich hub focused on Physics AI and Industrial AI, working directly with BMW and Siemens Energy.",
-          "Its pitch: open-weight models run on the customer's own infrastructure, under European law, with no data leaving the company.",
-          "Backed by its Emmi AI acquisition (30+ physics/engineering researchers) and a TUM wind-tunnel partnership for real-time aerodynamic digital twins."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Mistral делает ставку на открытые модели и физическое ИИ-моделирование, чтобы дать Европе суверенную альтернативу закрытым американским ИИ-сервисам в тяжёлой промышленности.",
-        "tweets": [
-          "Mistral открывает хаб в Мюнхене, сфокусированный на Physics AI и Industrial AI, сотрудничая напрямую с BMW и Siemens Energy.",
-          "Главный аргумент: модели с открытыми весами работают на инфраструктуре клиента, по европейским законам, данные никуда не утекают.",
-          "Опора — покупка Emmi AI (30+ физиков и инженеров) и партнёрство с TUM по аэродинамическим цифровым двойникам в реальном времени."
-        ]
-      }
-    },
-    {
-      "id": "d-zesp16",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/Hcompany/holo4",
-      "publishedAt": "2026-09-28T09:44:05.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: A new model family, Holo4, targets generalist computer-use agents that can operate software interfaces directly.",
-        "tweets": [
-          "Holo4 is positioned as a model for generalist computer-use agents.",
-          "The focus is on agents that interact with computer interfaces, not just chat.",
-          "Details are thin so far — worth watching for benchmarks and real-world use cases."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новая модель Holo4 нацелена на универсальных агентов, умеющих работать с компьютерными интерфейсами.",
-        "tweets": [
-          "Holo4 позиционируется как модель для агентов, управляющих компьютером напрямую.",
-          "Акцент сделан на взаимодействии с интерфейсами, а не просто на чате.",
-          "Подробностей пока немного — стоит следить за бенчмарками и реальными кейсами применения."
-        ]
-      }
-    },
-    {
-      "id": "d-p21kob",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/lenfest-ai-collaborative-expansion",
-      "publishedAt": "2026-09-28T07:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI is deepening its bet on AI-assisted local journalism, pouring more cash and tech into a program meant to keep struggling newsrooms alive.",
-        "tweets": [
-          "OpenAI adds $5M funding plus up to $5M in software credits/engineering support to the Lenfest AI Collaborative.",
-          "The move expands an existing fellowship aimed at helping local newsrooms adopt AI tools.",
-          "Signals OpenAI's continued push into media partnerships as local journalism funding remains a top target."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI усиливает поддержку локальной журналистики, вкладывая деньги и технологии в её выживание с помощью ИИ.",
-        "tweets": [
-          "OpenAI выделяет $5 млн плюс до $5 млн в виде софта и инженерной поддержки для Lenfest AI Collaborative.",
-          "Речь идёт о расширении уже существующей программы стажировок для локальных редакций.",
-          "Это очередной шаг OpenAI в сторону партнёрств с медиа — локальная журналистика остаётся приоритетным направлением."
         ]
       }
     }
