@@ -5,11 +5,46 @@ import {
   fetchReport,
   panelData,
   FEED_PATH,
+  REQUEST_TIMEOUT_MS,
 } from '../backend.js'
 
 const ok = (body) => vi.fn(async () => new Response(JSON.stringify(body)))
 
 describe('fetchBackendFeed', () => {
+  it('times out a stalled connection and aborts the request', async () => {
+    vi.useFakeTimers()
+    try {
+      let signal
+      const fetchImpl = vi.fn((_, options) => {
+        signal = options.signal
+        return new Promise(() => {})
+      })
+      const request = fetchBackendFeed(fetchImpl, 'http://localhost:3000')
+      const rejected = expect(request).rejects.toThrow(/timed out/)
+      await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS)
+      await rejected
+      expect(signal.aborted).toBe(true)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('times out a response whose body never finishes', async () => {
+    vi.useFakeTimers()
+    try {
+      const fetchImpl = vi.fn(async () => ({
+        ok: true,
+        json: () => new Promise(() => {}),
+      }))
+      const request = fetchBackendFeed(fetchImpl, 'http://localhost:3000')
+      const rejected = expect(request).rejects.toThrow(/timed out/)
+      await vi.advanceTimersByTimeAsync(REQUEST_TIMEOUT_MS)
+      await rejected
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
   it('requests the feed path on the configured server', async () => {
     const fetchImpl = ok({ version: 1, feed: { items: [] } })
     await fetchBackendFeed(fetchImpl, 'https://radar.example.com/')
