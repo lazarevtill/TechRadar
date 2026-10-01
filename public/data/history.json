@@ -978,5 +978,16 @@
       "open-models": 1,
       "multimodal": 5
     }
+  },
+  {
+    "date": "2026-10-01",
+    "topics": {
+      "llm-agents": 15,
+      "ai-coding": 9,
+      "ai-safety": 4,
+      "multimodal": 3,
+      "generative-media": 4,
+      "open-models": 1
+    }
   }
 ]

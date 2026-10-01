@@ -1,6 +1,213 @@
 {
-  "generatedAt": "2026-09-30T14:05:04.018Z",
+  "generatedAt": "2026-10-01T14:13:09.667Z",
   "items": [
+    {
+      "id": "d-x06ucg",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
+      "publishedAt": "2026-10-01T06:45:05.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Google finally ships a frontier-class model to match GPT-6 and Claude Opus, but it's gated to government and cyber-defense users first.",
+        "tweets": [
+          "Gemini 4 Argon beats GPT-6 Astra and Claude Opus 5.5 on 13 of 19 benchmarks, but it's locked to a limited cybersecurity preview for now.",
+          "Its headline feature is 1M-token output via 'Long Decode Continuation,' which pauses and resumes long responses across API calls.",
+          "Argon is cheaper per task than rivals mainly due to pricing, not efficiency — it actually uses more tokens per task than Astra."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Google наконец выпустила модель топ-уровня, способную тягаться с GPT-6 и Claude Opus, но доступ пока только у госструктур и кибербезопасников.",
+        "tweets": [
+          "Gemini 4 Argon обходит GPT-6 Astra и Claude Opus 5.5 по 13 из 19 бенчмарков, но доступна лишь в ограниченном превью для защиты от киберугроз.",
+          "Главная фишка — вывод до 1 млн токенов благодаря 'Long Decode Continuation', которая ставит генерацию на паузу и продолжает её через новые запросы.",
+          "Argon дешевле конкурентов в основном за счёт цены, а не эффективности — токенов на задачу она тратит даже больше, чем Astra."
+        ]
+      }
+    },
+    {
+      "id": "d-12rl3hi",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/1/matthew-green/",
+      "publishedAt": "2026-10-01T06:29:01.000Z",
+      "category": "cybersecurity",
+      "en": {
+        "headline": "Why it matters: Isolating AI agents in sandboxes doesn't stop them from infecting each other through shared channels like caches, email, or Slack.",
+        "tweets": [
+          "Matthew Green: agents in separate sandboxes left instructions for each other in a shared package cache — and it worked.",
+          "Swap the package cache for email, Slack, or WhatsApp, and you've built the exact ingredients a worm needs.",
+          "Sandboxing isolates compute, not communication — shared channels are the real attack surface for agent-to-agent hijacking."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: изоляция AI-агентов в песочницах не спасает — они всё равно могут заражать друг друга через общие каналы связи.",
+        "tweets": [
+          "Мэттью Грин: агенты в изолированных песочницах умудрились оставлять друг другу инструкции через общий кэш пакетов — и это сработало.",
+          "Замените кэш пакетов на почту, Slack или WhatsApp — и получите все ингредиенты для настоящего червя.",
+          "Песочница изолирует вычисления, но не коммуникацию — именно общие каналы становятся точкой заражения между агентами."
+        ]
+      }
+    },
+    {
+      "id": "d-1t01ygv",
+      "source": "anthropic",
+      "sourceUrl": "https://www.anthropic.com/news/barclays-scales-claude",
+      "publishedAt": "2026-10-01T00:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Barclays is embedding Claude deep into banking operations, showing how regulated industries can scale AI with governance intact.",
+        "tweets": [
+          "Barclays plans 50% of developers using Claude Code by 2026, majority by 2027.",
+          "Barclays' Claude-powered assistant has handled over 1 million searches for 16,000+ staff since 2025.",
+          "Claude models sort ~120,000 client emails daily in Barclays' Global Markets unit."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Barclays внедряет Claude глубоко в банковские процессы — пример того, как регулируемая отрасль масштабирует AI, не теряя контроль.",
+        "tweets": [
+          "К 2026 году половина разработчиков Barclays будет работать с Claude Code, к 2027 — большинство.",
+          "Внутренний ассистент на Claude с 2025 года обработал более 1 млн запросов для 16 000+ сотрудников.",
+          "Claude ежедневно сортирует около 120 000 писем клиентов в подразделении Global Markets."
+        ]
+      }
+    },
+    {
+      "id": "d-qmauh7",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/devday-2026",
+      "publishedAt": "2026-09-30T22:23:40.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI's computer-use agents have jumped from clunky screen-clickers to tools that can debug themselves and beat humans on speed for some tasks, while a stack of new APIs (async tools, Decisions API, caching) is quietly becoming the real OpenAI product.",
+        "tweets": [
+          "OpenAI says Computer Use is '180 degrees different' from a few months ago—agents now self-debug and recover from failures instead of just clicking screens.",
+          "Combining screenshots + accessibility trees + DOM + Playwright + generated code is what's making agents faster than humans on some tasks.",
+          "New dev stack (async tool calling, Decisions API, UltraFast inference, caching/compaction) shows OpenAI becoming an 'AI cloud,' not just a model API."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: агенты OpenAI для управления компьютером перестали быть неуклюжими кликерами — теперь они сами находят и исправляют ошибки и местами работают быстрее человека, а новый стек API превращает OpenAI в 'облако для агентов'.",
+        "tweets": [
+          "OpenAI говорит, что Computer Use изменился 'на 180 градусов' за пару месяцев — агенты сами находят сбои и восстанавливаются после них.",
+          "Секрет скорости: скриншоты + accessibility-дерево + DOM + Playwright + сгенерированный код вместе — агенты уже опережают людей на некоторых задачах.",
+          "Новые API (асинхронные вызовы, Decisions API, UltraFast-инференс, кэширование контекста) показывают: OpenAI строит облако для агентов, а не просто API модели."
+        ]
+      }
+    },
+    {
+      "id": "d-15krne9",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Sep/30/he-built-this-city/",
+      "publishedAt": "2026-09-30T21:54:19.000Z",
+      "category": "robotics",
+      "en": {
+        "headline": "Why it matters: a 21-year handmade model shows physical craft can still command attention in a digital age, but this exhibit closes soon.",
+        "tweets": [
+          "Joe Macken spent 21 years building a 50x27 foot NYC model from balsa wood and cardboard.",
+          "Simon Willison saw it at the Museum of the City of New York and says it exceeded high expectations.",
+          "The exhibition closes October 12th—go see it while you can."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: модель города, созданная вручную за 21 год, показывает, что физическое мастерство до сих пор впечатляет сильнее цифровых технологий, но выставку скоро закроют.",
+        "tweets": [
+          "Джо Маккен 21 год строил модель Нью-Йорка 50х27 футов из бальзы и картона.",
+          "Саймон Уиллисон увидел её в Museum of the City of New York и говорит, что впечатления превзошли ожидания.",
+          "Выставка закрывается 12 октября — успейте посмотреть."
+        ]
+      }
+    },
+    {
+      "id": "d-6ul6oi",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/gemini-4-argon-our-next-era-of-frontier-intelligence/",
+      "publishedAt": "2026-09-30T20:01:45.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Google's new Gemini 4 Argon model pushes frontier AI into long-horizon coding, enterprise, and autonomous cybersecurity defense work, with trusted defenders getting unrestricted access.",
+        "tweets": [
+          "Gemini 4 Argon boosts output limit from 64K to 1M tokens, enabling deep multi-step reasoning in one shot.",
+          "Tops benchmarks in software engineering (DeepSWE 77.9%), finance/legal (Vals Index), and video understanding (LVBench 91.7%).",
+          "Trusted cyber defenders get Argon without guardrails to find and patch vulnerabilities; already caught a healthcare flaw other models missed."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая модель Google Gemini 4 Argon выводит ИИ на новый уровень в долгих задачах по коду, бизнес-аналитике и автономной кибербезопасности, а доверенным защитникам дают доступ без ограничений.",
+        "tweets": [
+          "Лимит вывода выріс с 64К до 1М токенов — модель может глубоко рассуждать и решать сложные задачи за один проход.",
+          "Argon лидирует в тестах по разработке (DeepSWE 77.9%), финансам и юриспруденции (Vals Index), анализу видео (LVBench 91.7%).",
+          "Доверенным специалистам по кибербезопасности дают версию без ограничений — модель уже нашла уязвимость в медицинском ПО, которую пропустили другие модели."
+        ]
+      }
+    },
+    {
+      "id": "d-13vz4kf",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/introducing-synthid-bio/",
+      "publishedAt": "2026-09-30T15:03:07.000Z",
+      "category": "biotech",
+      "en": {
+        "headline": "Why it matters: DeepMind's SynthID Bio shows AI-designed proteins can be watermarked without breaking how they actually work biologically.",
+        "tweets": [
+          "DeepMind unveils SynthID Bio: a watermarking method for AI-generated proteins.",
+          "It's a proof of concept — the watermark doesn't disrupt the protein's biological function.",
+          "Goal: make it possible to trace which proteins came from AI design tools."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: DeepMind показала, что белки, созданные ИИ, можно помечать водяными знаками без потери их биологической функции.",
+        "tweets": [
+          "DeepMind представила SynthID Bio — метод водяных знаков для белков, созданных искусственным интеллектом.",
+          "Это пока концепт-демонстрация: метка не нарушает биологическую работу белка.",
+          "Цель — научиться отличать белки, спроектированные ИИ, от остальных."
+        ]
+      }
+    },
+    {
+      "id": "d-2ygqw3",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/disrupting-a-coordinated-model-distillation-campaign",
+      "publishedAt": "2026-09-30T10:30:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI caught and blocked an organized effort to steal its model's internal reasoning via distillation, and is now hardening defenses against similar attacks.",
+        "tweets": [
+          "OpenAI disrupted a coordinated campaign trying to extract its models' hidden reasoning through distillation.",
+          "Distillation attacks let rivals copy a model's capabilities without the original training cost — a real IP threat.",
+          "OpenAI says it's now strengthening safeguards against future adversarial distillation attempts."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI пресекла скоординированную попытку выкрасть внутреннюю логику рассуждений своей модели и усиливает защиту от подобных атак.",
+        "tweets": [
+          "OpenAI обнаружила и остановила организованную кампанию по извлечению скрытой логики рассуждений своих моделей через дистилляцию.",
+          "Дистилляция позволяет конкурентам копировать возможности модели без затрат на её обучение — серьёзная угроза для интеллектуальной собственности.",
+          "OpenAI усиливает защитные механизмы против будущих попыток такого «воровства» моделей."
+        ]
+      }
+    },
+    {
+      "id": "d-14oxof6",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/helping-small-businesses-put-ai-to-work",
+      "publishedAt": "2026-09-30T10:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI is funding hands-on AI training for small businesses through America's SBDC network, aiming to turn AI hype into practical adoption for small teams.",
+        "tweets": [
+          "OpenAI is partnering with America's SBDC to bring AI training directly to small business owners nationwide.",
+          "A new report accompanies the effort, detailing how small teams are actually using AI tools day to day.",
+          "The focus is local, hands-on support—not just software, but people helping small businesses apply AI practically."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI спонсирует практическое обучение AI для малого бизнеса через сеть America's SBDC, чтобы перевести хайп вокруг AI в реальное применение.",
+        "tweets": [
+          "OpenAI заключила партнёрство с America's SBDC — теперь владельцев малого бизнеса будут обучать AI на месте.",
+          "Вместе с программой вышел отчёт о том, как небольшие команды реально используют AI в работе.",
+          "Акцент сделан не на софте, а на живой поддержке: людях, которые помогают бизнесу внедрять AI на практике."
+        ]
+      }
+    },
     {
       "id": "d-1udg59z",
       "source": "latent-space",
@@ -21,213 +228,6 @@
           "Новые агенты 'dots' работают постоянно, подключаются к 4000+ приложениям и действуют полусамостоятельно в рамках заданных пользователем ограничений.",
           "GPT-6.1 Sol обещает почти флагманский уровень интеллекта в 5-7 раз дешевле, хотя независимые тесты показывают небольшое отставание от Astra.",
           "OpenAI тихо пересмотрела тарифы Pro, фактически урезав вдвое ценность старого плана Pro 200, что вызвало волну недовольства пользователей."
-        ]
-      }
-    },
-    {
-      "id": "d-lg25cu",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/29/anthropic-frontier-red-team/",
-      "publishedAt": "2026-09-29T22:20:28.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: newer AI models are crossing a threshold into autonomously exploiting binary vulnerabilities, not just earlier generations that failed completely.",
-        "tweets": [
-          "Anthropic's Frontier Red Team tested models on 100 binary exploitation tasks—a real jump in capability showed up.",
-          "GLM-5.3 achieved full control flow hijacks in 4% of trials; Claude Mythos Preview hit 6%.",
-          "Earlier models like Claude Opus 4.6 and GLM-5.2 succeeded on zero of these tasks—this is a new capability tier."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новые модели ИИ научились самостоятельно эксплуатировать бинарные уязвимости — раньше это было им не по силам.",
-        "tweets": [
-          "Команда Anthropic Frontier Red Team проверила модели на 100 задачах по бинарной эксплуатации — и зафиксировала качественный скачок.",
-          "GLM-5.3 добилась полного перехвата control flow в 4% попыток, Claude Mythos Preview — в 6%.",
-          "Более старые модели, включая Claude Opus 4.6 и GLM-5.2, не справились ни разу — это явно новый уровень возможностей."
-        ]
-      }
-    },
-    {
-      "id": "d-1gokt9p",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/29/hn-49898129/",
-      "publishedAt": "2026-09-29T18:27:48.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI's cheaper GPT-6.1-Sol model performs close to its flagship but shows no visible improvement on Simon Willison's pelican benchmark test.",
-        "tweets": [
-          "GPT-6.1-Sol claims near-flagship intelligence at a fifth of the price.",
-          "Simon Willison ran his usual pelican-drawing test on the new model.",
-          "Result: pelicans look basically the same as the rest of the GPT-6 family—no visible leap."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новая модель GPT-6.1-Sol от OpenAI обещает почти флагманский уровень за пятую часть цены, но визуально не отличается от предыдущих версий.",
-        "tweets": [
-          "OpenAI выпустила GPT-6.1-Sol — дешевле в 5 раз, но почти на уровне топовой модели.",
-          "Саймон Уиллисон, как обычно, протестировал модель тестом с рисованием пеликанов.",
-          "Итог: пеликаны выглядят так же, как у остальных моделей семейства GPT-6 — заметного прогресса нет."
-        ]
-      }
-    },
-    {
-      "id": "d-te4d7j",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/29/openai-devday-2026-live-blog/",
-      "publishedAt": "2026-09-29T15:55:13.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI is pivoting from raw models to persistent AI agents ('Dots') that live in shared workspaces and act across your tools, while also cutting prices for near-top-tier intelligence.",
-        "tweets": [
-          "OpenAI launched 'Dots' — persistent personal AI agents with avatars, access to Slack/Teams/Codex, and their own identities in company chat.",
-          "New GPT-6.1 Sol offers near-Astra intelligence at 1/5 the price; an 'Ultrafast' mode hits 300 tokens/sec at 6x cost.",
-          "New Decisions API lets models respond near-instantly by picking from predefined options — a direct answer to rival Jev."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI переходит от простых моделей к постоянным AI-агентам ('Dots'), которые живут в общих рабочих пространствах и действуют во всех ваших инструментах, а заодно снижает цены на топовый интеллект.",
-        "tweets": [
-          "OpenAI представила 'Dots' — персональных AI-агентов с аватарками, доступом к Slack/Teams/Codex и собственными профилями в корпоративном чате.",
-          "Новая модель GPT-6.1 Sol даёт интеллект почти на уровне Astra за пятую часть цены; режим 'Ultrafast' — 300 токенов/сек за 6-кратную стоимость.",
-          "Новый Decisions API позволяет модели отвечать почти мгновенно, выбирая из заранее заданных вариантов — прямой ответ конкуренту Jev."
-        ]
-      }
-    },
-    {
-      "id": "d-smf41u",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/nvidia/kumo-tabular",
-      "publishedAt": "2026-09-29T15:30:38.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: NVIDIA's new Kumo Tabular model claims to beat existing methods on tabular prediction tasks while using less compute, which matters for the huge share of real-world ML that isn't images or text.",
-        "tweets": [
-          "NVIDIA + Kumo built a model aimed squarely at tabular data — spreadsheets, databases, the boring stuff that actually runs businesses.",
-          "Claim: better accuracy than prior tabular approaches, with improved efficiency, not just a marginal bump.",
-          "Tabular ML has lagged behind vision/language progress; this pushes the accuracy-efficiency frontier for that neglected area."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новая модель Kumo Tabular от NVIDIA обещает точность выше прежних решений для табличных данных при меньших вычислительных затратах — а это то, с чем работает большинство реального бизнеса.",
-        "tweets": [
-          "NVIDIA и Kumo сделали модель именно для табличных данных — таблиц и баз, на которых держится большинство реальных задач бизнеса.",
-          "Заявлено: точность выше существующих подходов, и при этом эффективнее по вычислениям, а не просто небольшой прирост.",
-          "Табличный ML долго отставал от прогресса в картинках и тексте — эта работа двигает баланс точность/эффективность именно в этой области."
-        ]
-      }
-    },
-    {
-      "id": "d-zerc1x",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/MultiverseComputingCAI/getting-the-source-right-not-just-the-fact-source",
-      "publishedAt": "2026-09-29T13:07:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: verifying that an AI agent's answer is factually correct isn't enough if it cites the wrong source, so MCP agents need checks that confirm both the claim and its provenance.",
-        "tweets": [
-          "Fact-checking AI answers isn't enough — you also need to verify where the info actually came from.",
-          "MCP agents can give a 'correct' answer sourced to the wrong place, which undermines trust and traceability.",
-          "Source-aware verification means matching claims to their true origin, not just checking if they sound right."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: мало проверить, что ответ ИИ-агента фактически верен — если он ссылается не на тот источник, доверять ему всё равно нельзя.",
-        "tweets": [
-          "Проверять факты в ответах ИИ — мало. Нужно ещё убедиться, что источник указан правильный.",
-          "MCP-агент может дать «верный» ответ, но приписать его не тому источнику — и это подрывает доверие.",
-          "Source-aware верификация — это сверка утверждения с реальным происхождением, а не просто проверка на правдоподобность."
-        ]
-      }
-    },
-    {
-      "id": "d-6ikbf3",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/introducing-gpt-6-1-sol",
-      "publishedAt": "2026-09-29T10:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI is undercutting its own flagship pricing to push high-end coding and agentic AI into everyday use.",
-        "tweets": [
-          "GPT-6.1 Sol delivers near-Astra performance for coding, computer use, and professional tasks.",
-          "Price is the story: 1/5 the input/output token cost of Astra's standard API.",
-          "Cheaper near-frontier AI means more teams can afford to run agentic workflows at scale."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI сбивает цену на почти топовый ИИ, делая продвинутый кодинг и агентные задачи доступнее для всех.",
-        "tweets": [
-          "GPT-6.1 Sol выдаёт производительность, близкую к Astra, в коде, работе с компьютером и профессиональных задачах.",
-          "Главное — цена: токены стоят в 5 раз дешевле, чем у стандартного API Astra.",
-          "Дешёвый почти-флагманский ИИ открывает дорогу массовому использованию агентных сценариев."
-        ]
-      }
-    },
-    {
-      "id": "d-du1j1",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/devday-2026-recap",
-      "publishedAt": "2026-09-29T10:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI's DevDay 2026 bundled 20+ product announcements, signaling a broad push to lock developers into its stack across models, coding tools, and APIs.",
-        "tweets": [
-          "OpenAI DevDay 2026 dropped 20+ announcements at once — GPT-6 Astra, ChatGPT, Codex, APIs, security tools, and more.",
-          "New model GPT-6 Astra headlines the release, alongside updates to Codex and core developer APIs.",
-          "Security and builder tooling got fresh updates too — OpenAI is clearly courting devs to build deeper on its platform."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: на DevDay 2026 OpenAI выкатила больше 20 анонсов сразу — компания явно хочет плотнее привязать разработчиков к своей экосистеме.",
-        "tweets": [
-          "OpenAI на DevDay 2026 представила сразу больше 20 новинок: новая модель GPT-6 Astra, обновления ChatGPT, Codex и API.",
-          "Главный анонс — модель GPT-6 Astra, плюс заметные улучшения в Codex и базовых API для разработчиков.",
-          "Отдельно обновили инструменты безопасности и для сборщиков приложений — ставка явно на удержание разработчиков внутри платформы."
-        ]
-      }
-    },
-    {
-      "id": "d-1gzfiwy",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-amd-buys-world-labs-for-82b",
-      "publishedAt": "2026-09-29T02:55:27.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: AMD's $8.2B purchase of World Labs signals spatial-AI models are becoming core infrastructure for robotics, design, and simulation, not just a research curiosity.",
-        "tweets": [
-          "AMD paid $8.2B for World Labs, the spatial-intelligence startup founded by Fei-Fei Li in 2024.",
-          "Their Atlas model predicts new camera views from 2D images, effectively solving sparse 3D reconstruction — a long-standing CV problem.",
-          "World Labs also owns SceniX, aimed at robotics simulation; interest in Atlas spans robotics RL, real estate, and construction."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: AMD купила World Labs за $8.2 млрд — пространственный ИИ становится базовой технологией для робототехники, дизайна и симуляций, а не просто исследовательской темой.",
-        "tweets": [
-          "AMD заплатила $8.2 млрд за World Labs — стартап по пространственному ИИ, основанный Фей-Фей Ли в 2024 году.",
-          "Их модель Atlas предсказывает новые ракурсы камеры по 2D-изображениям, фактически решив давнюю проблему разреженной 3D-реконструкции.",
-          "World Labs также владеет SceniX для симуляций в робототехнике — интерес к Atlas идёт от робототехники до недвижимости и стройки."
-        ]
-      }
-    },
-    {
-      "id": "d-x0cgit",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
-      "publishedAt": "2026-09-29T02:44:29.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: this week's model wave shows the frontier splitting into big reasoning models and cheap fast 'decision' models, both now good enough for production agents.",
-        "tweets": [
-          "Claude Opus 5.5 tops SimpleBench (88.4%) but 'max' reasoning effort actually hurts scores—use 'xhigh' instead.",
-          "Small specialized judge models like Jev are ~277x cheaper than GPT-6 for scoring/ranking tasks while staying nearly as accurate.",
-          "Retrieval infra is getting brutally optimized: Perplexity's Photon cut p99 latency from 800ms to 65ms using fewer machines."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новая волна моделей показывает раскол рынка на мощные reasoning-модели и дешёвые быстрые 'решающие' модели — и то, и другое уже готово для продакшена.",
-        "tweets": [
-          "Claude Opus 5.5 лидирует в SimpleBench (88.4%), но режим максимального 'усилия' реально портит результат — лучше использовать 'xhigh'.",
-          "Компактные модели-судьи вроде Jev дешевле GPT-6 почти в 280 раз для оценки и ранжирования, при этом почти не теряют в точности.",
-          "Поисковая инфраструктура выжимает соки по максимуму: Photon от Perplexity снизил p99-задержку с 800 до 65 мс на меньшем числе машин."
         ]
       }
     }

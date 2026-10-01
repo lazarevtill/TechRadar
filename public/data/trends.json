@@ -1,14 +1,114 @@
 {
-  "generatedAt": "2026-09-30T14:05:04.021Z",
+  "generatedAt": "2026-10-01T14:13:09.670Z",
   "window": "rolling-120d",
   "topics": [
     {
-      "id": "multimodal",
-      "label": "Multimodal Models",
+      "id": "fusion",
+      "label": "Fusion Energy",
+      "category": "energy",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        14,
+        11,
+        14,
+        14,
+        4,
+        7,
+        7,
+        9,
+        14,
+        14,
+        17,
+        28,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
+      "id": "protein-design",
+      "label": "Protein Design",
+      "category": "biotech",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
+      "id": "humanoids",
+      "label": "Humanoid Robots",
+      "category": "robotics",
+      "stage": "prototype",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        1,
+        7,
+        7,
+        6,
+        6,
+        7,
+        7,
+        1,
+        0,
+        0,
+        2,
+        7,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
+      "id": "post-quantum",
+      "label": "Post-Quantum Crypto",
+      "category": "cybersecurity",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
+      "id": "ai-coding",
+      "label": "AI for Coding",
       "category": "ai",
       "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 1,
+      "trajectory": "cooling",
+      "momentum": -0.82,
       "weeklyCounts": [
         0,
         0,
@@ -22,75 +122,95 @@
         0,
         0,
         0,
-        37
+        49,
+        9
       ],
       "signals": [
         {
-          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
-          "url": "https://www.latent.space/p/runway",
+          "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
+          "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
           "source": "latent-space",
-          "publishedAt": "2026-09-25T01:30:57.000Z"
+          "publishedAt": "2026-10-01T06:45:05.000Z"
         },
         {
-          "title": "Introducing Gemini 3.8 Live with Live Avatar",
-          "url": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/",
-          "source": "deepmind",
-          "publishedAt": "2026-09-24T16:20:39.000Z"
-        },
-        {
-          "title": "Accelerating vision-language models with LFM2.5-VL-DSpark",
-          "url": "https://huggingface.co/blog/LiquidAI/lfm2-5-vl-dspark",
-          "source": "hf",
-          "publishedAt": "2026-09-24T14:08:57.000Z"
-        },
-        {
-          "title": "[AINews] Meta Connect 2026: Muse glasses, voice, video, and Charm",
-          "url": "https://www.latent.space/p/ainews-meta-connect-2026-muse-glasses",
+          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
+          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
           "source": "latent-space",
-          "publishedAt": "2026-09-24T08:12:59.000Z"
+          "publishedAt": "2026-09-30T05:53:10.000Z"
         },
         {
-          "title": "Gemini 3.8 TTS Playground",
-          "url": "https://simonwillison.net/2026/Sep/23/gemini-tts-playground/",
-          "source": "simonw",
-          "publishedAt": "2026-09-23T17:12:27.000Z"
+          "title": "Introducing GPT-6.1 Sol",
+          "url": "https://openai.com/index/introducing-gpt-6-1-sol",
+          "source": "openai",
+          "publishedAt": "2026-09-29T10:00:00.000Z"
+        },
+        {
+          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
+          "url": "https://www.latent.space/p/thariq",
+          "source": "latent-space",
+          "publishedAt": "2026-09-29T01:48:18.000Z"
+        },
+        {
+          "title": "Are you a Codex Original?",
+          "url": "https://openai.com/form/codex-originals",
+          "source": "openai",
+          "publishedAt": "2026-09-28T00:00:00.000Z"
         }
       ]
     },
     {
-      "id": "ai-safety",
-      "label": "AI Safety & Interpretability",
+      "id": "llm-agents",
+      "label": "LLM Agents",
       "category": "ai",
-      "stage": "research",
-      "trajectory": "rising",
-      "momentum": 1,
+      "stage": "prototype",
+      "trajectory": "cooling",
+      "momentum": -0.83,
       "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        34
+        411,
+        420,
+        426,
+        449,
+        458,
+        466,
+        456,
+        437,
+        437,
+        452,
+        469,
+        463,
+        88,
+        15
       ],
       "signals": [
         {
-          "title": "Quoting Anthropic Frontier Red Team",
-          "url": "https://simonwillison.net/2026/Sep/29/anthropic-frontier-red-team/",
-          "source": "simonw",
-          "publishedAt": "2026-09-29T22:20:28.000Z"
+          "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
+          "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
+          "source": "latent-space",
+          "publishedAt": "2026-10-01T06:45:05.000Z"
         },
         {
-          "title": "Towards safety cases for frontier AI training",
-          "url": "https://openai.com/index/towards-safety-cases-for-frontier-ai-training",
-          "source": "openai",
-          "publishedAt": "2026-09-28T19:00:00.000Z"
+          "title": "Quoting Matthew Green",
+          "url": "https://simonwillison.net/2026/Oct/1/matthew-green/",
+          "source": "simonw",
+          "publishedAt": "2026-10-01T06:29:01.000Z"
+        },
+        {
+          "title": "Why Dwarkesh is Wrong about Computer Use + How OpenAI shipped its Jev competitor in 1 Week",
+          "url": "https://www.latent.space/p/devday-2026",
+          "source": "latent-space",
+          "publishedAt": "2026-09-30T22:23:40.000Z"
+        },
+        {
+          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
+          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
+          "source": "latent-space",
+          "publishedAt": "2026-09-30T05:53:10.000Z"
+        },
+        {
+          "title": "Getting the Source Right, Not Just the Fact: Source-Aware Verification for MCP Agents",
+          "url": "https://huggingface.co/blog/MultiverseComputingCAI/getting-the-source-right-not-just-the-fact-source",
+          "source": "hf",
+          "publishedAt": "2026-09-29T13:07:00.000Z"
         }
       ]
     },
@@ -99,8 +219,8 @@
       "label": "Generative Media",
       "category": "ai",
       "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 1,
+      "trajectory": "cooling",
+      "momentum": -0.86,
       "weeklyCounts": [
         0,
         0,
@@ -114,7 +234,8 @@
         0,
         0,
         0,
-        28
+        28,
+        4
       ],
       "signals": [
         {
@@ -144,12 +265,12 @@
       ]
     },
     {
-      "id": "ai-coding",
-      "label": "AI for Coding",
+      "id": "ai-safety",
+      "label": "AI Safety & Interpretability",
       "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 1,
+      "stage": "research",
+      "trajectory": "cooling",
+      "momentum": -0.88,
       "weeklyCounts": [
         0,
         0,
@@ -163,165 +284,77 @@
         0,
         0,
         0,
-        49
+        34,
+        4
       ],
       "signals": [
         {
-          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
-          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T05:53:10.000Z"
-        },
-        {
-          "title": "Introducing GPT-6.1 Sol",
-          "url": "https://openai.com/index/introducing-gpt-6-1-sol",
-          "source": "openai",
-          "publishedAt": "2026-09-29T10:00:00.000Z"
-        },
-        {
-          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
-          "url": "https://www.latent.space/p/thariq",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T01:48:18.000Z"
-        },
-        {
-          "title": "Are you a Codex Original?",
-          "url": "https://openai.com/form/codex-originals",
-          "source": "openai",
-          "publishedAt": "2026-09-28T00:00:00.000Z"
-        },
-        {
-          "title": "2026 in LLMs (so far)",
-          "url": "https://simonwillison.net/2026/Sep/27/2026-in-llms-so-far/",
+          "title": "Quoting Matthew Green",
+          "url": "https://simonwillison.net/2026/Oct/1/matthew-green/",
           "source": "simonw",
-          "publishedAt": "2026-09-27T23:54:15.000Z"
+          "publishedAt": "2026-10-01T06:29:01.000Z"
+        },
+        {
+          "title": "Disrupting a coordinated model-distillation campaign",
+          "url": "https://openai.com/index/disrupting-a-coordinated-model-distillation-campaign",
+          "source": "openai",
+          "publishedAt": "2026-09-30T10:30:00.000Z"
+        },
+        {
+          "title": "Quoting Anthropic Frontier Red Team",
+          "url": "https://simonwillison.net/2026/Sep/29/anthropic-frontier-red-team/",
+          "source": "simonw",
+          "publishedAt": "2026-09-29T22:20:28.000Z"
+        },
+        {
+          "title": "Towards safety cases for frontier AI training",
+          "url": "https://openai.com/index/towards-safety-cases-for-frontier-ai-training",
+          "source": "openai",
+          "publishedAt": "2026-09-28T19:00:00.000Z"
         }
       ]
     },
     {
-      "id": "small-models",
-      "label": "Small & Efficient Models",
+      "id": "multimodal",
+      "label": "Multimodal Models",
       "category": "ai",
       "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 1,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        9
-      ],
-      "signals": []
-    },
-    {
-      "id": "supply-chain-security",
-      "label": "Software Supply-Chain Security",
-      "category": "cybersecurity",
-      "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 1,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        1
-      ],
-      "signals": []
-    },
-    {
-      "id": "post-quantum",
-      "label": "Post-Quantum Crypto",
-      "category": "cybersecurity",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "signals": []
-    },
-    {
-      "id": "llm-agents",
-      "label": "LLM Agents",
-      "category": "ai",
-      "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.81,
+      "momentum": -0.92,
       "weeklyCounts": [
-        411,
-        420,
-        426,
-        449,
-        458,
-        466,
-        456,
-        437,
-        437,
-        452,
-        469,
-        463,
-        88
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        37,
+        3
       ],
       "signals": [
         {
-          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
-          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T05:53:10.000Z"
-        },
-        {
-          "title": "Getting the Source Right, Not Just the Fact: Source-Aware Verification for MCP Agents",
-          "url": "https://huggingface.co/blog/MultiverseComputingCAI/getting-the-source-right-not-just-the-fact-source",
+          "title": "Open TTS Leaderboard: Scalable Evaluation for Multilingual Text-to-Speech and Voice Cloning",
+          "url": "https://huggingface.co/blog/open-tts-leaderboard",
           "source": "hf",
-          "publishedAt": "2026-09-29T13:07:00.000Z"
+          "publishedAt": "2026-09-30T00:00:00.000Z"
         },
         {
-          "title": "[AINews] Opus 5.5 is good at explainer videos",
-          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
+          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
+          "url": "https://www.latent.space/p/runway",
           "source": "latent-space",
-          "publishedAt": "2026-09-29T02:44:29.000Z"
+          "publishedAt": "2026-09-25T01:30:57.000Z"
         },
         {
-          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
-          "url": "https://www.latent.space/p/thariq",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T01:48:18.000Z"
-        },
-        {
-          "title": "Introducing dots",
-          "url": "https://openai.com/index/introducing-dots",
-          "source": "openai",
-          "publishedAt": "2026-09-29T00:00:00.000Z"
+          "title": "Introducing Gemini 3.8 Live with Live Avatar",
+          "url": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/",
+          "source": "deepmind",
+          "publishedAt": "2026-09-24T16:20:39.000Z"
         }
       ]
     },
@@ -331,7 +364,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.96,
+      "momentum": -0.93,
       "weeklyCounts": [
         375,
         358,
@@ -345,7 +378,8 @@
         365,
         364,
         370,
-        15
+        15,
+        1
       ],
       "signals": [
         {
@@ -362,7 +396,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.96,
+      "momentum": -1,
       "weeklyCounts": [
         81,
         60,
@@ -376,78 +410,57 @@
         85,
         92,
         103,
-        4
-      ],
-      "signals": []
-    },
-    {
-      "id": "fusion",
-      "label": "Fusion Energy",
-      "category": "energy",
-      "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -1,
-      "weeklyCounts": [
-        14,
-        11,
-        14,
-        14,
         4,
-        7,
-        7,
+        0
+      ],
+      "signals": []
+    },
+    {
+      "id": "small-models",
+      "label": "Small & Efficient Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -1,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         9,
-        14,
-        14,
-        17,
-        28,
         0
       ],
       "signals": []
     },
     {
-      "id": "protein-design",
-      "label": "Protein Design",
-      "category": "biotech",
-      "stage": "research",
+      "id": "supply-chain-security",
+      "label": "Software Supply-Chain Security",
+      "category": "cybersecurity",
+      "stage": "early-adopter",
       "trajectory": "cooling",
       "momentum": -1,
       "weeklyCounts": [
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        0
-      ],
-      "signals": []
-    },
-    {
-      "id": "humanoids",
-      "label": "Humanoid Robots",
-      "category": "robotics",
-      "stage": "prototype",
-      "trajectory": "cooling",
-      "momentum": -1,
-      "weeklyCounts": [
-        1,
-        7,
-        7,
-        6,
-        6,
-        7,
-        7,
-        1,
         0,
         0,
-        2,
-        7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
         0
       ],
       "signals": []
