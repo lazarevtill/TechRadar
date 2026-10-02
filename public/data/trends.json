@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T13:12:45.094Z",
+  "generatedAt": "2026-10-02T12:33:47.336Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -33,7 +33,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.83,
+      "momentum": -0.66,
       "weeklyCounts": [
         21,
         21,
@@ -48,7 +48,7 @@
         21,
         21,
         35,
-        6
+        12
       ],
       "signals": [
         {
@@ -84,12 +84,68 @@
       ]
     },
     {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.7,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        384,
+        114
+      ],
+      "signals": [
+        {
+          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
+          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T06:40:53.000Z"
+        },
+        {
+          "title": "Academia is for Ambition — Alex Zhang, MIT",
+          "url": "https://www.latent.space/p/rlm",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T00:28:04.000Z"
+        },
+        {
+          "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
+          "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
+          "source": "latent-space",
+          "publishedAt": "2026-10-01T06:45:05.000Z"
+        },
+        {
+          "title": "Why Dwarkesh is Wrong about Computer Use + How OpenAI shipped its Jev competitor in 1 Week",
+          "url": "https://www.latent.space/p/devday-2026",
+          "source": "latent-space",
+          "publishedAt": "2026-09-30T22:23:40.000Z"
+        },
+        {
+          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
+          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
+          "source": "latent-space",
+          "publishedAt": "2026-09-30T05:53:10.000Z"
+        }
+      ]
+    },
+    {
       "id": "llm-agents",
       "label": "LLM Agents",
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.85,
+      "momentum": -0.71,
       "weeklyCounts": [
         411,
         420,
@@ -104,7 +160,7 @@
         469,
         463,
         440,
-        64
+        126
       ],
       "signals": [
         {
@@ -140,68 +196,12 @@
       ]
     },
     {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.85,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370,
-        384,
-        57
-      ],
-      "signals": [
-        {
-          "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
-          "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
-          "source": "latent-space",
-          "publishedAt": "2026-10-01T06:45:05.000Z"
-        },
-        {
-          "title": "Why Dwarkesh is Wrong about Computer Use + How OpenAI shipped its Jev competitor in 1 Week",
-          "url": "https://www.latent.space/p/devday-2026",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T22:23:40.000Z"
-        },
-        {
-          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
-          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T05:53:10.000Z"
-        },
-        {
-          "title": "[AINews] Opus 5.5 is good at explainer videos",
-          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T02:44:29.000Z"
-        },
-        {
-          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
-          "url": "https://www.latent.space/p/thariq",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T01:48:18.000Z"
-        }
-      ]
-    },
-    {
       "id": "rag",
       "label": "Retrieval-Augmented Generation",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.86,
+      "momentum": -0.73,
       "weeklyCounts": [
         81,
         60,
@@ -216,7 +216,7 @@
         92,
         103,
         93,
-        13
+        25
       ],
       "signals": [
         {
@@ -238,16 +238,16 @@
           "publishedAt": "2026-09-19T05:48:28.000Z"
         },
         {
-          "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
-          "url": "https://www.latent.space/p/aiuc",
-          "source": "latent-space",
-          "publishedAt": "2026-09-16T18:07:45.000Z"
-        },
-        {
           "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
           "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
           "source": "hf",
           "publishedAt": "2026-08-12T16:14:36.000Z"
+        },
+        {
+          "title": "Granite Embedding Multilingual R2: Open Apache 2.0 Multilingual Embeddings with 32K Context — Best Sub-100M Retrieval Quality",
+          "url": "https://huggingface.co/blog/ibm-granite/granite-embedding-multilingual-r2",
+          "source": "hf",
+          "publishedAt": "2026-05-14T18:55:01.000Z"
         }
       ]
     },
@@ -257,7 +257,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.88,
+      "momentum": -0.76,
       "weeklyCounts": [
         14,
         11,
@@ -272,9 +272,15 @@
         17,
         28,
         33,
-        4
+        8
       ],
       "signals": [
+        {
+          "title": "Academia is for Ambition — Alex Zhang, MIT",
+          "url": "https://www.latent.space/p/rlm",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T00:28:04.000Z"
+        },
         {
           "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
           "url": "https://www.latent.space/p/openrouter",
@@ -292,12 +298,6 @@
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
           "source": "latent-space",
           "publishedAt": "2026-09-18T06:28:43.000Z"
-        },
-        {
-          "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
-          "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
-          "source": "latent-space",
-          "publishedAt": "2026-09-17T07:28:25.000Z"
         }
       ]
     },
@@ -307,7 +307,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.92,
+      "momentum": -0.83,
       "weeklyCounts": [
         1,
         7,
@@ -322,7 +322,7 @@
         2,
         7,
         12,
-        1
+        2
       ],
       "signals": [
         {
