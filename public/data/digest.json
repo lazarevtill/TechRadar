@@ -1,6 +1,144 @@
 {
-  "generatedAt": "2026-10-01T14:13:09.667Z",
+  "generatedAt": "2026-10-02T12:36:18.386Z",
   "items": [
+    {
+      "id": "d-opisxv",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+      "publishedAt": "2026-10-02T06:40:53.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Pi's durable, TypeScript-based agent runtime shows the industry moving toward crash-proof, multiplayer AI agents, while rival models compete on cost-efficiency over raw power.",
+        "tweets": [
+          "Pi Durable ports Pi to TypeScript, adding crash recovery, hot-swapping, and multiplayer agent state—runs anywhere JS does.",
+          "GPT-6.1 Sol's big win isn't raw capability, it's cost: $0.72/task vs $3.26 for Astra, mostly from fewer turns and cheaper caching.",
+          "FLUX 3 adds 4K native image gen and multi-image reference editing, but open weights are still 'coming soon,' not here yet."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Pi Durable показывает, куда движется индустрия ИИ-агентов — к устойчивым к сбоям, многопользовательским системам, а конкуренты соревнуются не мощностью, а экономичностью.",
+        "tweets": [
+          "Pi Durable переписали на TypeScript: агенты переживают сбои, код можно менять на лету, несколько пользователей работают с одним агентом одновременно.",
+          "Главный козырь GPT-6.1 Sol — не мощь, а цена: $0.72 за задачу против $3.26 у Astra, благодаря меньшему числу шагов и дешёвому кешу.",
+          "FLUX 3 умеет генерировать картинки в 4K и редактировать по нескольким референсам, но открытые веса обещают только 'в ближайшие недели'."
+        ]
+      }
+    },
+    {
+      "id": "d-7996a0",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
+      "publishedAt": "2026-10-02T04:01:31.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: enterprise AI agent builders often lack enough realistic task data to train or evaluate agents, and this approach shows how to auto-generate that data instead of hand-labeling it.",
+        "tweets": [
+          "Enterprise agent teams face a data bottleneck: real task traces are scarce, private, and expensive to collect.",
+          "AutoSynthData generates synthetic training data for enterprise agents, cutting reliance on manual labeling.",
+          "Synthetic data pipelines like this could become standard infrastructure for training and evaluating business-specific AI agents."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: компаниям часто не хватает реальных данных для обучения AI-агентов под конкретные задачи, и этот подход предлагает генерировать их автоматически.",
+        "tweets": [
+          "Главная проблема при обучении корпоративных агентов — нехватка реальных примеров задач: их мало, они приватны и дорого собираются.",
+          "AutoSynthData автоматически генерирует обучающие данные для корпоративных агентов, снижая потребность в ручной разметке.",
+          "Такие синтетические пайплайны данных могут стать стандартом для обучения и оценки бизнес-агентов на основе AI."
+        ]
+      }
+    },
+    {
+      "id": "d-1k72beu",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/rlm",
+      "publishedAt": "2026-10-02T00:28:04.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Academic research on 'harnesses' and recursive agent systems is revealing massive untapped capability in existing LLMs, hinting at where the next big performance gains will come from.",
+        "tweets": [
+          "MIT's Alex Zhang says the 'language model' of the future may secretly be an invisible swarm of subagents, not a single text decoder.",
+          "His Recursive Language Models (RLMs) approach helped solve ARC-AGI-3 before OpenAI's own Astra agent.",
+          "Takeaway: frontier models already have huge capability overhang — better harness design, not bigger models, may unlock it."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: исследования 'обвязок' вокруг языковых моделей и рекурсивных агентов показывают, что в существующих LLM скрыт огромный неиспользованный потенциал.",
+        "tweets": [
+          "Алекс Чжан из MIT считает, что 'языковая модель' будущего — это на самом деле невидимый рой агентов, а не единый текстовый декодер.",
+          "Его подход Recursive Language Models (RLM) помог решить ARC-AGI-3 раньше, чем это сделал собственный агент OpenAI Astra.",
+          "Главный вывод: у топовых моделей уже есть огромный запас нераскрытых возможностей — и дело не в размере, а в архитектуре обвязки."
+        ]
+      }
+    },
+    {
+      "id": "d-1nrywdf",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/the-eternal-complement",
+      "publishedAt": "2026-10-01T17:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI argues AI's biggest economic impact may come from automating routine execution work, not just generating breakthrough ideas.",
+        "tweets": [
+          "OpenAI's take: ideas are cheap, execution is the bottleneck — and that's where AI could hit hardest.",
+          "The next economy may be shaped less by genius insights and more by who can grind through routine work faster.",
+          "Betting on AI for breakthroughs misses the point — the real leverage is in the boring, repetitive tasks behind them."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: в OpenAI считают, что главный эффект ИИ — не прорывные идеи, а автоматизация рутинной работы, которая стоит за ними.",
+        "tweets": [
+          "Идеи дёшевы, узкое место — их воплощение. Именно здесь ИИ может дать максимальный эффект.",
+          "Будущую экономику определит не гениальность, а скорость рутинного исполнения — и тут ИИ выходит на первый план.",
+          "Ставка на ИИ ради прорывов упускает суть: реальная сила — в скучных повторяющихся задачах за кулисами."
+        ]
+      }
+    },
+    {
+      "id": "d-frqlpl",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/albertsons-reimagining-retail",
+      "publishedAt": "2026-10-01T16:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a major US grocery chain is rolling out ChatGPT Enterprise and the OpenAI API across internal teams and customer-facing shopping tools.",
+        "tweets": [
+          "Albertsons is deploying ChatGPT Enterprise and the OpenAI API, not just piloting them.",
+          "Goal: speed up internal team workflows while making grocery shopping simpler for customers.",
+          "Another sign AI tools are moving from tech companies into mainstream retail operations."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: крупная продуктовая сеть в США внедряет ChatGPT Enterprise и API OpenAI как во внутренних процессах, так и в сервисах для покупателей.",
+        "tweets": [
+          "Albertsons не просто тестирует, а разворачивает ChatGPT Enterprise и OpenAI API в реальной работе.",
+          "Цель — ускорить работу команд внутри компании и упростить покупки для клиентов.",
+          "Ещё один пример того, как ИИ-инструменты приходят из техкомпаний в обычный ритейл."
+        ]
+      }
+    },
+    {
+      "id": "d-1o11iee",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/allenai/olmocore3",
+      "publishedAt": "2026-10-01T15:01:43.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Allen AI's Olmo-core 3 makes training trillion-parameter mixture-of-experts models far cheaper and fully open, lowering the barrier for non-giant labs.",
+        "tweets": [
+          "Olmo-core 3 scaled MoE experts from 8 to 128 while active params per token stayed ~3.2B — total capacity jumped 4.6B to 47B with <5% throughput loss.",
+          "Switching from FSDP to a DDP-based system boosted throughput 2.7x: 52,000 tokens/sec/GPU vs 19,400 on the old stack (47B MoE, 8x B300 GPUs).",
+          "Lower-precision MXFP8 format gave 21% higher throughput and cut peak memory from 103GiB to 95GiB; system benchmarked past 1 trillion params, fully open-source."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Olmo-core 3 от Allen AI удешевляет обучение MoE-моделей на триллионы параметров и полностью открыт для сообщества.",
+        "tweets": [
+          "Число экспертов увеличили с 8 до 128, активные параметры на токен остались ~3.2 млрд — общая ёмкость выросла с 4.6 до 47 млрд, потери скорости менее 5%.",
+          "Переход с FSDP на DDP-архитектуру дал ускорение в 2.7 раза: 52 000 токенов/сек на GPU против 19 400 на старом стеке (модель 47 млрд, 8 GPU B300).",
+          "Формат MXFP8 поднял скорость на 21% и снизил пиковую память со 103 до 95 ГиБ; систему уже проверили на моделях свыше триллиона параметров."
+        ]
+      }
+    },
     {
       "id": "d-x06ucg",
       "source": "latent-space",
@@ -71,163 +209,25 @@
       }
     },
     {
-      "id": "d-qmauh7",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/devday-2026",
-      "publishedAt": "2026-09-30T22:23:40.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI's computer-use agents have jumped from clunky screen-clickers to tools that can debug themselves and beat humans on speed for some tasks, while a stack of new APIs (async tools, Decisions API, caching) is quietly becoming the real OpenAI product.",
-        "tweets": [
-          "OpenAI says Computer Use is '180 degrees different' from a few months ago—agents now self-debug and recover from failures instead of just clicking screens.",
-          "Combining screenshots + accessibility trees + DOM + Playwright + generated code is what's making agents faster than humans on some tasks.",
-          "New dev stack (async tool calling, Decisions API, UltraFast inference, caching/compaction) shows OpenAI becoming an 'AI cloud,' not just a model API."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: агенты OpenAI для управления компьютером перестали быть неуклюжими кликерами — теперь они сами находят и исправляют ошибки и местами работают быстрее человека, а новый стек API превращает OpenAI в 'облако для агентов'.",
-        "tweets": [
-          "OpenAI говорит, что Computer Use изменился 'на 180 градусов' за пару месяцев — агенты сами находят сбои и восстанавливаются после них.",
-          "Секрет скорости: скриншоты + accessibility-дерево + DOM + Playwright + сгенерированный код вместе — агенты уже опережают людей на некоторых задачах.",
-          "Новые API (асинхронные вызовы, Decisions API, UltraFast-инференс, кэширование контекста) показывают: OpenAI строит облако для агентов, а не просто API модели."
-        ]
-      }
-    },
-    {
-      "id": "d-15krne9",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Sep/30/he-built-this-city/",
-      "publishedAt": "2026-09-30T21:54:19.000Z",
-      "category": "robotics",
-      "en": {
-        "headline": "Why it matters: a 21-year handmade model shows physical craft can still command attention in a digital age, but this exhibit closes soon.",
-        "tweets": [
-          "Joe Macken spent 21 years building a 50x27 foot NYC model from balsa wood and cardboard.",
-          "Simon Willison saw it at the Museum of the City of New York and says it exceeded high expectations.",
-          "The exhibition closes October 12th—go see it while you can."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: модель города, созданная вручную за 21 год, показывает, что физическое мастерство до сих пор впечатляет сильнее цифровых технологий, но выставку скоро закроют.",
-        "tweets": [
-          "Джо Маккен 21 год строил модель Нью-Йорка 50х27 футов из бальзы и картона.",
-          "Саймон Уиллисон увидел её в Museum of the City of New York и говорит, что впечатления превзошли ожидания.",
-          "Выставка закрывается 12 октября — успейте посмотреть."
-        ]
-      }
-    },
-    {
-      "id": "d-6ul6oi",
-      "source": "deepmind",
-      "sourceUrl": "https://deepmind.google/blog/gemini-4-argon-our-next-era-of-frontier-intelligence/",
-      "publishedAt": "2026-09-30T20:01:45.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Google's new Gemini 4 Argon model pushes frontier AI into long-horizon coding, enterprise, and autonomous cybersecurity defense work, with trusted defenders getting unrestricted access.",
-        "tweets": [
-          "Gemini 4 Argon boosts output limit from 64K to 1M tokens, enabling deep multi-step reasoning in one shot.",
-          "Tops benchmarks in software engineering (DeepSWE 77.9%), finance/legal (Vals Index), and video understanding (LVBench 91.7%).",
-          "Trusted cyber defenders get Argon without guardrails to find and patch vulnerabilities; already caught a healthcare flaw other models missed."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новая модель Google Gemini 4 Argon выводит ИИ на новый уровень в долгих задачах по коду, бизнес-аналитике и автономной кибербезопасности, а доверенным защитникам дают доступ без ограничений.",
-        "tweets": [
-          "Лимит вывода выріс с 64К до 1М токенов — модель может глубоко рассуждать и решать сложные задачи за один проход.",
-          "Argon лидирует в тестах по разработке (DeepSWE 77.9%), финансам и юриспруденции (Vals Index), анализу видео (LVBench 91.7%).",
-          "Доверенным специалистам по кибербезопасности дают версию без ограничений — модель уже нашла уязвимость в медицинском ПО, которую пропустили другие модели."
-        ]
-      }
-    },
-    {
-      "id": "d-13vz4kf",
-      "source": "deepmind",
-      "sourceUrl": "https://deepmind.google/blog/introducing-synthid-bio/",
-      "publishedAt": "2026-09-30T15:03:07.000Z",
-      "category": "biotech",
-      "en": {
-        "headline": "Why it matters: DeepMind's SynthID Bio shows AI-designed proteins can be watermarked without breaking how they actually work biologically.",
-        "tweets": [
-          "DeepMind unveils SynthID Bio: a watermarking method for AI-generated proteins.",
-          "It's a proof of concept — the watermark doesn't disrupt the protein's biological function.",
-          "Goal: make it possible to trace which proteins came from AI design tools."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: DeepMind показала, что белки, созданные ИИ, можно помечать водяными знаками без потери их биологической функции.",
-        "tweets": [
-          "DeepMind представила SynthID Bio — метод водяных знаков для белков, созданных искусственным интеллектом.",
-          "Это пока концепт-демонстрация: метка не нарушает биологическую работу белка.",
-          "Цель — научиться отличать белки, спроектированные ИИ, от остальных."
-        ]
-      }
-    },
-    {
-      "id": "d-2ygqw3",
+      "id": "d-cowdu3",
       "source": "openai",
-      "sourceUrl": "https://openai.com/index/disrupting-a-coordinated-model-distillation-campaign",
-      "publishedAt": "2026-09-30T10:30:00.000Z",
+      "sourceUrl": "https://openai.com/index/the-den-family-social",
+      "publishedAt": "2026-10-01T00:00:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: OpenAI caught and blocked an organized effort to steal its model's internal reasoning via distillation, and is now hardening defenses against similar attacks.",
+        "headline": "Why it matters: a small social club used ChatGPT to cut grant and licensing paperwork from days to hours, freeing 10-15 hours weekly for expansion.",
         "tweets": [
-          "OpenAI disrupted a coordinated campaign trying to extract its models' hidden reasoning through distillation.",
-          "Distillation attacks let rivals copy a model's capabilities without the original training cost — a real IP threat.",
-          "OpenAI says it's now strengthening safeguards against future adversarial distillation attempts."
+          "Social club The Den saved 10-15 hours/week using ChatGPT Work while opening a new location.",
+          "Grant applications: 3 days down to 2 hours. Liquor-license materials: 4 days down to 3 hours.",
+          "Shows how AI tools can cut admin grunt work for small businesses scaling operations."
         ]
       },
       "ru": {
-        "headline": "Почему важно: OpenAI пресекла скоординированную попытку выкрасть внутреннюю логику рассуждений своей модели и усиливает защиту от подобных атак.",
+        "headline": "Почему важно: небольшой социальный клуб с помощью ChatGPT сократил оформление грантов и лицензий с дней до часов, высвободив 10-15 часов в неделю на рост.",
         "tweets": [
-          "OpenAI обнаружила и остановила организованную кампанию по извлечению скрытой логики рассуждений своих моделей через дистилляцию.",
-          "Дистилляция позволяет конкурентам копировать возможности модели без затрат на её обучение — серьёзная угроза для интеллектуальной собственности.",
-          "OpenAI усиливает защитные механизмы против будущих попыток такого «воровства» моделей."
-        ]
-      }
-    },
-    {
-      "id": "d-14oxof6",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/helping-small-businesses-put-ai-to-work",
-      "publishedAt": "2026-09-30T10:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI is funding hands-on AI training for small businesses through America's SBDC network, aiming to turn AI hype into practical adoption for small teams.",
-        "tweets": [
-          "OpenAI is partnering with America's SBDC to bring AI training directly to small business owners nationwide.",
-          "A new report accompanies the effort, detailing how small teams are actually using AI tools day to day.",
-          "The focus is local, hands-on support—not just software, but people helping small businesses apply AI practically."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI спонсирует практическое обучение AI для малого бизнеса через сеть America's SBDC, чтобы перевести хайп вокруг AI в реальное применение.",
-        "tweets": [
-          "OpenAI заключила партнёрство с America's SBDC — теперь владельцев малого бизнеса будут обучать AI на месте.",
-          "Вместе с программой вышел отчёт о том, как небольшие команды реально используют AI в работе.",
-          "Акцент сделан не на софте, а на живой поддержке: людях, которые помогают бизнесу внедрять AI на практике."
-        ]
-      }
-    },
-    {
-      "id": "d-1udg59z",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
-      "publishedAt": "2026-09-30T05:53:10.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI's DevDay bundles always-on agents, a cheaper near-flagship model, and marketplace/plan changes that reshape how much power (and cost) developers and enterprises get from ChatGPT.",
-        "tweets": [
-          "OpenAI's new 'dots' are always-on agents that connect to 4,000+ apps and act semi-autonomously with user-set guardrails.",
-          "GPT-6.1 Sol claims near-flagship intelligence at ~1/5 to 1/7 the price, though independent evals show it trailing Astra by a small margin.",
-          "OpenAI quietly re-tiered its Pro plans, roughly halving the value of the old Pro 200 tier, sparking user backlash."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: DevDay OpenAI сразу выкатил автономных агентов, более дешёвую флагманскую модель и пересмотр тарифов — это меняет баланс возможностей и цены для разработчиков и бизнеса.",
-        "tweets": [
-          "Новые агенты 'dots' работают постоянно, подключаются к 4000+ приложениям и действуют полусамостоятельно в рамках заданных пользователем ограничений.",
-          "GPT-6.1 Sol обещает почти флагманский уровень интеллекта в 5-7 раз дешевле, хотя независимые тесты показывают небольшое отставание от Astra.",
-          "OpenAI тихо пересмотрела тарифы Pro, фактически урезав вдвое ценность старого плана Pro 200, что вызвало волну недовольства пользователей."
+          "Клуб The Den сэкономил 10-15 часов в неделю благодаря ChatGPT Work при открытии новой точки.",
+          "Заявки на гранты: было 3 дня, стало 2 часа. Документы на алкогольную лицензию: было 4 дня, стало 3 часа.",
+          "Пример того, как ИИ снимает рутину с малого бизнеса и ускоряет масштабирование."
         ]
       }
     }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-01T14:13:09.670Z",
+  "generatedAt": "2026-10-02T12:36:18.388Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -108,7 +108,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.82,
+      "momentum": -0.63,
       "weeklyCounts": [
         0,
         0,
@@ -123,9 +123,15 @@
         0,
         0,
         49,
-        9
+        18
       ],
       "signals": [
+        {
+          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
+          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T06:40:53.000Z"
+        },
         {
           "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
           "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
@@ -149,12 +155,6 @@
           "url": "https://www.latent.space/p/thariq",
           "source": "latent-space",
           "publishedAt": "2026-09-29T01:48:18.000Z"
-        },
-        {
-          "title": "Are you a Codex Original?",
-          "url": "https://openai.com/form/codex-originals",
-          "source": "openai",
-          "publishedAt": "2026-09-28T00:00:00.000Z"
         }
       ]
     },
@@ -164,7 +164,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.83,
+      "momentum": -0.64,
       "weeklyCounts": [
         411,
         420,
@@ -179,9 +179,27 @@
         469,
         463,
         88,
-        15
+        32
       ],
       "signals": [
+        {
+          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
+          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T06:40:53.000Z"
+        },
+        {
+          "title": "AutoSynthData: Generating Training Data for Enterprise Agents",
+          "url": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
+          "source": "hf",
+          "publishedAt": "2026-10-02T04:01:31.000Z"
+        },
+        {
+          "title": "Academia is for Ambition — Alex Zhang, MIT",
+          "url": "https://www.latent.space/p/rlm",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T00:28:04.000Z"
+        },
         {
           "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
           "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
@@ -193,74 +211,6 @@
           "url": "https://simonwillison.net/2026/Oct/1/matthew-green/",
           "source": "simonw",
           "publishedAt": "2026-10-01T06:29:01.000Z"
-        },
-        {
-          "title": "Why Dwarkesh is Wrong about Computer Use + How OpenAI shipped its Jev competitor in 1 Week",
-          "url": "https://www.latent.space/p/devday-2026",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T22:23:40.000Z"
-        },
-        {
-          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
-          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T05:53:10.000Z"
-        },
-        {
-          "title": "Getting the Source Right, Not Just the Fact: Source-Aware Verification for MCP Agents",
-          "url": "https://huggingface.co/blog/MultiverseComputingCAI/getting-the-source-right-not-just-the-fact-source",
-          "source": "hf",
-          "publishedAt": "2026-09-29T13:07:00.000Z"
-        }
-      ]
-    },
-    {
-      "id": "generative-media",
-      "label": "Generative Media",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.86,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        28,
-        4
-      ],
-      "signals": [
-        {
-          "title": "[AINews] AMD buys World Labs for $8.2B, as Atlas solves sparse reconstruction problem for robotics, design and more",
-          "url": "https://www.latent.space/p/ainews-amd-buys-world-labs-for-82b",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T02:55:27.000Z"
-        },
-        {
-          "title": "Kākāpō Party",
-          "url": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
-          "source": "simonw",
-          "publishedAt": "2026-09-26T23:39:06.000Z"
-        },
-        {
-          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
-          "url": "https://www.latent.space/p/runway",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T01:30:57.000Z"
-        },
-        {
-          "title": "Introducing Gemini 3.8 Live with Live Avatar",
-          "url": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/",
-          "source": "deepmind",
-          "publishedAt": "2026-09-24T16:20:39.000Z"
         }
       ]
     },
@@ -270,7 +220,7 @@
       "category": "ai",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.88,
+      "momentum": -0.76,
       "weeklyCounts": [
         0,
         0,
@@ -285,7 +235,7 @@
         0,
         0,
         34,
-        4
+        8
       ],
       "signals": [
         {
@@ -315,12 +265,12 @@
       ]
     },
     {
-      "id": "multimodal",
-      "label": "Multimodal Models",
+      "id": "generative-media",
+      "label": "Generative Media",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.92,
+      "momentum": -0.79,
       "weeklyCounts": [
         0,
         0,
@@ -334,27 +284,21 @@
         0,
         0,
         0,
-        37,
-        3
+        28,
+        6
       ],
       "signals": [
         {
-          "title": "Open TTS Leaderboard: Scalable Evaluation for Multilingual Text-to-Speech and Voice Cloning",
-          "url": "https://huggingface.co/blog/open-tts-leaderboard",
-          "source": "hf",
-          "publishedAt": "2026-09-30T00:00:00.000Z"
-        },
-        {
-          "title": "Runway’s WorldPrompt and the Engineering of Real-Time Worlds",
-          "url": "https://www.latent.space/p/runway",
+          "title": "[AINews] AMD buys World Labs for $8.2B, as Atlas solves sparse reconstruction problem for robotics, design and more",
+          "url": "https://www.latent.space/p/ainews-amd-buys-world-labs-for-82b",
           "source": "latent-space",
-          "publishedAt": "2026-09-25T01:30:57.000Z"
+          "publishedAt": "2026-09-29T02:55:27.000Z"
         },
         {
-          "title": "Introducing Gemini 3.8 Live with Live Avatar",
-          "url": "https://deepmind.google/blog/introducing-gemini-38-live-with-live-avatar/",
-          "source": "deepmind",
-          "publishedAt": "2026-09-24T16:20:39.000Z"
+          "title": "Kākāpō Party",
+          "url": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
+          "source": "simonw",
+          "publishedAt": "2026-09-26T23:39:06.000Z"
         }
       ]
     },
@@ -364,7 +308,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.93,
+      "momentum": -0.87,
       "weeklyCounts": [
         375,
         358,
@@ -379,7 +323,7 @@
         364,
         370,
         15,
-        1
+        2
       ],
       "signals": [
         {
@@ -387,6 +331,38 @@
           "url": "https://www.latent.space/p/openrouter",
           "source": "latent-space",
           "publishedAt": "2026-09-25T23:14:41.000Z"
+        }
+      ]
+    },
+    {
+      "id": "multimodal",
+      "label": "Multimodal Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.89,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        37,
+        4
+      ],
+      "signals": [
+        {
+          "title": "Open TTS Leaderboard: Scalable Evaluation for Multilingual Text-to-Speech and Voice Cloning",
+          "url": "https://huggingface.co/blog/open-tts-leaderboard",
+          "source": "hf",
+          "publishedAt": "2026-09-30T00:00:00.000Z"
         }
       ]
     },
