@@ -18,7 +18,7 @@ import { fetchWithRetry } from '@/server/utils/fetch-utils'
  */
 const DATA_BASE_URL =
   process.env.DIGEST_DATA_BASE_URL ??
-  'https://raw.githubusercontent.com/liseren91/TechRadar/main/public/data'
+  'https://raw.githubusercontent.com/lazarevtill/TechRadar/main/public/data'
 
 /**
  * Committed copies, as a fallback when the fetch fails. `public/` is the dev
@@ -30,11 +30,14 @@ const LOCAL_CANDIDATES = (file: string) => [
   `dist/client/data/${file}`,
 ]
 
-function readLocal(file: string): unknown | null {
+function readLocal(
+  file: string,
+  validate: (data: unknown) => unknown,
+): unknown | null {
   for (const candidate of LOCAL_CANDIDATES(file)) {
     if (existsSync(candidate)) {
       try {
-        return JSON.parse(readFileSync(candidate, 'utf8'))
+        return validate(JSON.parse(readFileSync(candidate, 'utf8')))
       } catch {
         // fall through to the next candidate
       }
@@ -52,12 +55,17 @@ export async function loadDataFile(
   fetcher: (url: string) => Promise<Response> = (url) =>
     fetchWithRetry(url, { retries: 2, timeout: 10_000 }),
 ): Promise<unknown> {
+  const validate = (data: unknown): unknown => {
+    if (file === 'digest.json') return DigestFileSchema.parse(data)
+    if (file === 'trends.json') return TrendsFileSchema.parse(data)
+    return data
+  }
   try {
     const res = await fetcher(`${DATA_BASE_URL}/${file}`)
     if (!res.ok) throw new Error(`${file}: HTTP ${res.status}`)
-    return await res.json()
+    return validate(await res.json())
   } catch (error) {
-    const local = readLocal(file)
+    const local = readLocal(file, validate)
     if (local !== null) {
       console.warn(
         `[digest] remote ${file} failed (${(error as Error).message}); serving the committed copy`,

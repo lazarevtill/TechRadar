@@ -188,6 +188,7 @@ export interface Translations {
   downloadExtension: string
   downloading: string
   downloaded: string
+  extensionDownloadError: string
   close: string
   proTip: string
   proTipText: string
@@ -481,6 +482,7 @@ export const translations: Record<Language, Translations> = {
     downloadExtension: 'Download extension',
     downloading: 'Downloading',
     downloaded: 'Downloaded',
+    extensionDownloadError: 'Could not download the extension. Please retry.',
     close: 'Close',
     proTip: 'Tip',
     proTipText: 'After installing, open a new tab to see the radar.',
@@ -778,6 +780,7 @@ export const translations: Record<Language, Translations> = {
     downloadExtension: 'Скачать расширение',
     downloading: 'Загрузка',
     downloaded: 'Скачано',
+    extensionDownloadError: 'Не удалось скачать расширение. Повторите попытку.',
     close: 'Закрыть',
     proTip: 'Подсказка',
     proTipText: 'После установки откройте новую вкладку, чтобы увидеть радар.',
