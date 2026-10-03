@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T12:33:47.336Z",
+  "generatedAt": "2026-10-03T11:39:00.365Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -33,7 +33,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.66,
+      "momentum": -0.49,
       "weeklyCounts": [
         21,
         21,
@@ -48,7 +48,7 @@
         21,
         21,
         35,
-        12
+        18
       ],
       "signals": [
         {
@@ -89,7 +89,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.7,
+      "momentum": -0.55,
       "weeklyCounts": [
         375,
         358,
@@ -104,9 +104,21 @@
         364,
         370,
         384,
-        114
+        171
       ],
       "signals": [
+        {
+          "title": "[AINews] not much happened today",
+          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
+          "source": "latent-space",
+          "publishedAt": "2026-10-03T08:45:15.000Z"
+        },
+        {
+          "title": "Inside-Out AI: Rebuilding Airbnb Behind the Scenes and Across the Guest Experience",
+          "url": "https://www.latent.space/p/airbnb",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T14:04:49.000Z"
+        },
         {
           "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
           "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
@@ -124,18 +136,6 @@
           "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
           "source": "latent-space",
           "publishedAt": "2026-10-01T06:45:05.000Z"
-        },
-        {
-          "title": "Why Dwarkesh is Wrong about Computer Use + How OpenAI shipped its Jev competitor in 1 Week",
-          "url": "https://www.latent.space/p/devday-2026",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T22:23:40.000Z"
-        },
-        {
-          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
-          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T05:53:10.000Z"
         }
       ]
     },
@@ -145,7 +145,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.71,
+      "momentum": -0.57,
       "weeklyCounts": [
         411,
         420,
@@ -160,9 +160,15 @@
         469,
         463,
         440,
-        126
+        188
       ],
       "signals": [
+        {
+          "title": "[AINews] not much happened today",
+          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
+          "source": "latent-space",
+          "publishedAt": "2026-10-03T08:45:15.000Z"
+        },
         {
           "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
           "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
@@ -186,12 +192,6 @@
           "url": "https://www.latent.space/p/thariq",
           "source": "latent-space",
           "publishedAt": "2026-09-29T01:48:18.000Z"
-        },
-        {
-          "title": "Quoting Muse AI Agent",
-          "url": "https://simonwillison.net/2026/Sep/28/muse-ai-agent/",
-          "source": "simonw",
-          "publishedAt": "2026-09-28T04:01:30.000Z"
         }
       ]
     },
@@ -201,7 +201,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.73,
+      "momentum": -0.6,
       "weeklyCounts": [
         81,
         60,
@@ -216,9 +216,15 @@
         92,
         103,
         93,
-        25
+        37
       ],
       "signals": [
+        {
+          "title": "Inside-Out AI: Rebuilding Airbnb Behind the Scenes and Across the Guest Experience",
+          "url": "https://www.latent.space/p/airbnb",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T14:04:49.000Z"
+        },
         {
           "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
           "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
@@ -230,12 +236,6 @@
           "url": "https://www.latent.space/p/openrouter",
           "source": "latent-space",
           "publishedAt": "2026-09-25T23:14:41.000Z"
-        },
-        {
-          "title": "[AINews] Here are 6 Clones of Jev in 2 days",
-          "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
-          "source": "latent-space",
-          "publishedAt": "2026-09-19T05:48:28.000Z"
         },
         {
           "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
@@ -257,7 +257,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.76,
+      "momentum": -0.67,
       "weeklyCounts": [
         14,
         11,
@@ -272,7 +272,7 @@
         17,
         28,
         33,
-        8
+        11
       ],
       "signals": [
         {
@@ -292,12 +292,6 @@
           "url": "https://www.latent.space/p/john-platt",
           "source": "latent-space",
           "publishedAt": "2026-09-22T21:07:39.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-612",
-          "source": "latent-space",
-          "publishedAt": "2026-09-18T06:28:43.000Z"
         }
       ]
     },
@@ -307,7 +301,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.83,
+      "momentum": -0.75,
       "weeklyCounts": [
         1,
         7,
@@ -322,7 +316,7 @@
         2,
         7,
         12,
-        2
+        3
       ],
       "signals": [
         {

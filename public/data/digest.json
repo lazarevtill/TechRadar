@@ -1,6 +1,98 @@
 {
-  "generatedAt": "2026-10-02T12:33:47.220Z",
+  "generatedAt": "2026-10-03T11:39:00.250Z",
   "items": [
+    {
+      "id": "d-1nxs4gi",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
+      "publishedAt": "2026-10-03T08:45:15.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: GPT-6.1 Sol and Sonnet 5.5 reset the cost-performance tradeoff, with Sol undercutting prior models by 39-81% while matching or beating them on benchmarks.",
+        "tweets": [
+          "GPT-6.1 Sol priced at $2/$10 per million tokens (vs $10/$50 for Astra). Hits #5 on Agent Arena at $0.56 per task—39% cheaper than GPT-6 Sol, 1.52 points higher.",
+          "Anthropic's Sonnet 5.5 debuts #3 overall, #1 in Chat. Costs $2.74/task but sits off the Pareto frontier. Both models reshaping what 'good enough' means for production AI.",
+          "Open-weight alternatives gaining ground: StepFun's Step 5 ranks #7 among open models on Vals. Decision models (Jev-style) now available locally via llama.cpp and Ollama."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: GPT-6.1 Sol и Sonnet 5.5 переломили соотношение стоимость-производительность — Sol дешевле предыдущих моделей на 39-81%, но не уступает им в качестве.",
+        "tweets": [
+          "GPT-6.1 Sol стоит $2/$10 за миллион токенов вместо $10/$50 для Astra. На Agent Arena занимает #5 место при $0.56 за задачу — на 39% дешевле чем GPT-6 Sol.",
+          "Sonnet 5.5 от Anthropic дебютировал на #3 месте, #1 в категории Chat. Стоит $2.74 за задачу, но модели Anthropic теперь занимают топ-3 места в целом.",
+          "Open-weight модели наступают: Step 5 от StepFun на #7 среди открытых моделей. Decision-модели типа Jev уже доступны локально через llama.cpp и Ollama."
+        ]
+      }
+    },
+    {
+      "id": "d-1fkmtaz",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/practical-guide-building-gpt-6",
+      "publishedAt": "2026-10-02T16:15:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: GPT-6 gives startups practical levers to control reasoning depth, tool coordination, and production readiness—unlocking better ROI from frontier models.",
+        "tweets": [
+          "GPT-6 reasoning effort tuning lets you trade latency for accuracy. Low effort for speed, high for complex problems. Pick the right dial for your use case.",
+          "Tool coordination in GPT-6 workflows isn't automatic. Structure how models call APIs, databases, and services—or watch errors cascade in production.",
+          "Prompt engineering and skill-building still matter. Better instructions + fine-tuned behavior patterns beat raw model capacity. Foundation beats scale alone."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: GPT-6 дает стартапам прямые инструменты управления глубиной рассуждений, координацией инструментов и готовностью к продакшену.",
+        "tweets": [
+          "Регулировка глубины рассуждений GPT-6: выбирайте между скоростью и точностью. Слабый режим для быстрого ответа, сильный для сложных задач.",
+          "Координация инструментов в GPT-6 не работает сама. Нужно явно структурировать вызовы API, баз данных и сервисов, иначе ошибки каскадируют.",
+          "Инженеринг промптов и построение навыков все еще критичны. Качественные инструкции важнее сырой мощности модели в реальных задачах."
+        ]
+      }
+    },
+    {
+      "id": "d-d3p8xe",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/allenai/astabrief",
+      "publishedAt": "2026-10-02T15:19:50.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: AstaBrief cuts report generation time from hours to minutes, making AI summaries practical for production systems.",
+        "tweets": [
+          "AstaBrief now open-source: Allen AI's report-generation model runs 10x faster than baseline approaches while maintaining accuracy on complex documents.",
+          "Built for real-world scale: handles multi-page research papers and technical reports in minutes, not hours. Deployment-ready architecture.",
+          "Open release means you can fine-tune AstaBrief on your domain data—scientific abstracts, business reports, legal briefs—without starting from scratch."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: AstaBrief сокращает время создания отчётов с часов до минут, делая AI-суммаризацию практичной для боевых систем.",
+        "tweets": [
+          "AstaBrief открыт: модель от Allen AI генерирует отчёты в 10 раз быстрее базовых подходов без потери качества на сложных документах.",
+          "Масштабируется на практике: обрабатывает многостраничные научные статьи и технические отчёты минутах вместо часов, готов к production.",
+          "Открытый код позволяет дообучать AstaBrief на ваших данных—научные аннотации, бизнес-отчёты, юридические документы—без нуля."
+        ]
+      }
+    },
+    {
+      "id": "d-11hr887",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/airbnb",
+      "publishedAt": "2026-10-02T14:04:49.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Airbnb's shift to AI-native development is cutting feature delivery time in half and resolving 50% of support tickets automatically, showing how operational AI deployment outpaces frontier model research.",
+        "tweets": [
+          "Airbnb moved product/design/engineering directly to prototypes instead of sequential handoffs. Result: 60% AI-authored code, 80% more features shipped YoY, 1.6x faster pull requests.",
+          "AI handles ~50% of customer support tickets using synthetic data testing before production. The key: being deliberate about which tickets still need humans (safety issues, edge cases).",
+          "Everest, Airbnb's internal context graph, let the airport pickup team build in 6 weeks what groceries took 9 months. Generalists can now work on specialist code thanks to AI-powered knowledge retrieval."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Airbnb становится AI-native компанией, сокращая время разработки функций вдвое и автоматизируя половину запросов поддержки, демонстрируя, что прикладное внедрение ИИ эффективнее фундаментальных исследований.",
+        "tweets": [
+          "Airbnb перешёл на прямую работу с прототипами вместо последовательных передач между командами. Результат: 60% кода написано ИИ, на 80% больше функций в год, скорость pull-request выросла в 1,6 раза.",
+          "ИИ решает примерно 50% обращений в поддержку благодаря синтетическим данным для тестирования. Ключ: осознанный выбор, какие обращения остаются для людей (безопасность, граничные случаи).",
+          "Граф контекста Everest позволил команде аэропортовых трансфертов разработать сервис за 6 недель вместо 9 месяцев на доставку продуктов. Обобщённые специалисты теперь работают со специализированным кодом."
+        ]
+      }
+    },
     {
       "id": "d-opisxv",
       "source": "latent-space",
@@ -8,19 +100,19 @@
       "publishedAt": "2026-10-02T06:40:53.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Pi agent framework now offers crash recovery and multi-user state sync, making deployed AI systems reliable enough for production workflows.",
+        "headline": "Why it matters: Pi agent framework now ships durable execution across crashes and portable runtimes, enabling production multi-agent systems that survive restarts and run anywhere.",
         "tweets": [
-          "Pi 1.0 adds native MCP support, deferred tool loading, and mid-conversation system messages. Pi Durable ports to TypeScript with checkpoint-based crash survival—agents resume from exact last state after failures.",
-          "Pi Durable runs anywhere JavaScript executes (Node, Bun, Cloudflare) with pluggable storage (Memory, SQLite, JSONL). Multiple users can watch and steer the same agent simultaneously via shared state documents.",
-          "Hot-swapping lets you update tool code while agents run; background message compaction maintains token limits without pausing work. Concurrency lets one harness run parallel branching conversations without blocking."
+          "Pi 1.0 adds native MCP support, mid-conversation system prompts, and extension framework. Pi Durable ports to TypeScript with automatic crash recovery—every step checkpointed as resumable tasks.",
+          "Key durability win: agents auto-resume from exact state on failure. Runs on Node/Bun/Cloudflare with pluggable storage (Memory/SQLite/JSONL). Multiple parallel conversations don't block each other.",
+          "Hot-swapping tools and prompts while agents run. Application state syncs across users watching the same agent. Context auto-compacts older messages to stay within token limits—production-grade agentic compute."
         ]
       },
       "ru": {
-        "headline": "Почему важно: фреймворк Pi теперь обеспечивает восстановление после сбоев и синхронизацию состояния между пользователями, делая развёрнутые AI-системы надёжными для боевых задач.",
+        "headline": "Почему важно: фреймворк Pi теперь обеспечивает надёжное выполнение код агентов с автоматическим восстановлением после сбоев и может работать на любой платформе с JavaScript.",
         "tweets": [
-          "Pi 1.0 добавляет встроенную поддержку MCP, отложенную загрузку инструментов и системные сообщения во время диалога. Pi Durable портирован на TypeScript с восстановлением по контрольным точкам—агенты возобновляют работу с последнего состояния.",
-          "Pi Durable работает везде, где запускается JavaScript (Node, Bun, Cloudflare), с подключаемыми хранилищами (Memory, SQLite, JSONL). Несколько пользователей могут одновременно наблюдать и управлять одним агентом через общие документы состояния.",
-          "Горячая замена позволяет обновлять код инструментов во время работы агентов; автоматическое сжатие истории поддерживает лимит токенов без остановки. Один harness может запускать параллельные ветвящиеся диалоги без блокировок."
+          "Pi 1.0 добавил встроенную поддержку MCP, системные сообщения во время диалога и фреймворк расширений. Pi Durable переведён на TypeScript с автоматическим восстановлением после сбоев через чекпоинты.",
+          "Ключевое достижение: агенты автоматически возобновляют работу с точного момента отказа. Работает на Node/Bun/Cloudflare с гибким хранилищем (Memory/SQLite/JSONL). Параллельные диалоги не блокируют друг друга.",
+          "Горячая замена инструментов и промптов во время работы агента. Состояние приложения синхронизируется между несколькими пользователями. Контекст автоматически сжимается, чтобы укладываться в лимиты токенов."
         ]
       }
     },
@@ -31,19 +123,19 @@
       "publishedAt": "2026-10-02T04:01:31.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Enterprise AI agents need massive labeled datasets, but manual annotation is expensive—automated data generation could reduce costs and speed up deployment by months.",
+        "headline": "Why it matters: Enterprises can now auto-generate synthetic training data for AI agents at scale, reducing manual annotation costs and accelerating agent deployment.",
         "tweets": [
-          "AutoSynthData generates synthetic training data for enterprise agents automatically. Cuts annotation costs from thousands of hours to days without sacrificing model quality.",
-          "The approach uses LLMs to create realistic task variations from templates. Single example becomes dozens of labeled scenarios—scaling data collection without human bottleneck.",
-          "ServiceNow tested it on real workflows. Result: agents trained on synthetic data performed as well as those trained on hand-labeled data, but built 10x faster."
+          "AutoSynthData uses LLMs to generate realistic synthetic training examples for enterprise agents. No more manual labeling bottlenecks—build agents faster and cheaper.",
+          "The system creates domain-specific synthetic data by understanding task requirements, then validates quality. Early tests show agents trained on synthetic data match human-annotated baselines.",
+          "ServiceNow's approach addresses a real pain point: enterprises waste months getting labeled data. Synthetic generation lets teams iterate on agent behavior immediately."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Разметка данных вручную замораживает развертывание корпоративных агентов ИИ на месяцы—автоматическая генерация обучающих данных может снизить затраты в десятки раз.",
+        "headline": "Почему важно: Предприятия теперь могут автоматически генерировать синтетические данные для обучения AI-агентов в масштабе, снижая затраты на разметку и ускоряя развертывание.",
         "tweets": [
-          "AutoSynthData автоматически генерирует синтетические данные для обучения агентов. Вместо тысяч часов ручной разметки—нужно дни, качество модели не страдает.",
-          "ЛЛМ создают реалистичные вариации задач из шаблонов. Один пример становится десятками размеченных сценариев—масштабирование без человеческих узких мест.",
-          "ServiceNow проверил на реальных рабочих процессах. Агенты на синтетических данных выступали так же хорошо, но развёртывались в 10 раз быстрее."
+          "AutoSynthData использует LLM для создания реалистичных синтетических примеров обучения для корпоративных агентов. Автоматическая генерация вместо месяцев ручной разметки.",
+          "Система генерирует релевантные для домена данные, понимая требования задачи, затем проверяет качество. Агенты на синтетических данных показывают результаты наравне с разметанными людьми.",
+          "ServiceNow решает реальную проблему: компании тратят месяцы на подготовку размеченных данных. Синтетическая генерация позволяет сразу итерировать поведение агентов."
         ]
       }
     },
@@ -54,19 +146,42 @@
       "publishedAt": "2026-10-02T00:28:04.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Academic researchers are discovering that primitive system designs around powerful models waste massive capability—recursive language models and agent swarms show we're leaving orders of magnitude of performance on the table.",
+        "headline": "Why it matters: PhD researchers can out-innovate industry labs by betting on unconventional ideas like recursive language models and multi-agent swarms that scale capability beyond standard architectures.",
         "tweets": [
-          "RLMs solved ARC-AGI-3 before OpenAI's Astra by treating language models as recursive subagents with shared memory and context offloading—the interface matters as much as the model weights.",
-          "OpenAI's 10,000-agent experiment used ~$40M compute worth of tokens. Problem: much of multi-agent search is wasted—convergence is still hard, suggesting current systems are inefficient scaffolds.",
-          "PhD students should bet on 'trivial or weird' problems nobody touches. One expert insight can replace enormous brute-force token search. Research taste—not just scale—compounds into breakthroughs."
+          "RLMs solved ARC-AGI-3 before OpenAI's Astra by wrapping models in smarter harnesses. The insight: we're leaving huge capability on the table with primitive systems around powerful models.",
+          "Alex Zhang's GPU Mode community proves academic researchers can compete with $40M industry swarms—one expert insight beats brute-force token search. Research taste matters more than scale.",
+          "Future language models may be invisible agent swarms underneath. Context offloading, persistent subagents, and speculative tool calling reveal the real frontier is harness design, not just bigger models."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Академические исследователи открывают, что примитивные архитектуры вокруг мощных моделей теряют огромные возможности—рекурсивные языковые модели показывают, что мы оставляем на столе порядки величины производительности.",
+        "headline": "Почему важно: аспиранты могут обойти индустриальные лаборатории, делая ставки на нетрадиционные идеи вроде рекурсивных языковых моделей и многоагентных роёв, которые масштабируют возможности за пределы стандартной архитектуры.",
         "tweets": [
-          "RLM решили ARC-AGI-3 раньше OpenAI Astra, используя рекурсивных подагентов с общей памятью и смещением контекста. Дизайн интерфейса важен так же, как веса модели.",
-          "Эксперимент OpenAI с 10 000 агентов потребил вычислений на $40M. Проблема: большая часть поиска в многоагентных системах теряется впустую, сходимость по-прежнему сложна.",
-          "Аспирантам нужно браться за задачи, которые выглядят trivial или странными. Один инсайт эксперта заменяет огромный перебор. Вкус в исследованиях, а не только масштаб, создаёт прорывы."
+          "RLM решили ARC-AGI-3 раньше Astra от OpenAI благодаря более умным обёрткам вокруг моделей. Вывод: мы теряем огромные возможности, используя примитивные системы с мощными моделями.",
+          "Сообщество GPU Mode Алекса Чжана доказывает: аспиранты конкурируют с 40-миллионными роями индустрии. Один экспертный инсайт бьёт перебор по токенам. Вкус в исследованиях важнее масштаба.",
+          "Будущие языковые модели—это невидимые роящи агентов под капотом. Offloading контекста, персистентные субагенты и спекулятивный вызов инструментов показывают: главный фронтир—дизайн обёрток, не просто большие модели."
+        ]
+      }
+    },
+    {
+      "id": "d-1kl58kd",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/chatham-financial",
+      "publishedAt": "2026-10-02T00:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Financial firms can cut operational friction by 86% using AI to automate complex validation workflows that previously required manual expertise.",
+        "tweets": [
+          "Chatham Financial slashed trade validation time from 30 minutes to under 4 using OpenAI models. That's capital markets ops redefined.",
+          "Using Codex and GPT, financial workflows shift from manual bottlenecks to AI-assisted validation. Expertise becomes a design choice, not a constraint.",
+          "When you automate the tedious, your expert traders focus on strategy. That's the real ROI: time back from repetitive gatekeeping."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Финансовые компании могут сократить операционные потери на 86%, автоматизировав сложную валидацию, которая раньше требовала ручной работы специалистов.",
+        "tweets": [
+          "Chatham Financial сократила время проверки сделок с 30 минут до 4 минут с помощью моделей OpenAI. Это переосмысление операций на рынке капитала.",
+          "Codex и GPT позволяют переделать финансовые процессы с ручных узких мест на автоматическую валидацию. Опыт становится архитектурным решением.",
+          "Когда рутину берет на себя ИИ, трейдеры-эксперты сосредотачиваются на стратегии. В этом настоящая экономия: время, отвоёванное у бюрократии."
         ]
       }
     },
@@ -77,19 +192,19 @@
       "publishedAt": "2026-10-01T17:00:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: AI's real value lies in handling the grinding execution work that frees humans to focus on breakthrough thinking, not replacing creative minds.",
+        "headline": "Why it matters: AI's biggest economic impact may come from automating execution work, not ideation, fundamentally changing how breakthroughs happen.",
         "tweets": [
-          "Execution, not ideation, is the bottleneck. AI handling routine tasks means researchers spend less time on grunt work and more on creative leaps.",
-          "The next economic winners won't be those with the best ideas—they'll be those who execute them fastest. AI is the multiplier there.",
-          "Breakthrough progress has always been 1% inspiration, 99% perspiration. AI tackles the perspiration part, letting humans focus on inspiration."
+          "Routine execution work—testing hypotheses, running simulations, iterating designs—is where AI could unlock the most value. The bottleneck isn't ideas; it's turning them into reality fast.",
+          "If AI handles the 90% of work that's repetitive refinement, researchers and engineers focus purely on creative direction. This compounds advantage for organizations that adopt early.",
+          "The pace of progress in science and engineering may soon be limited by human decision-making speed, not computational power. Execution becomes the new frontier."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Истинная ценность AI в том, что она берёт на себя рутинную работу по реализации идей, освобождая людей для творческого прорыва.",
+        "headline": "Почему важно: Самый большой экономический эффект от ИИ может быть не от генерации идей, а от автоматизации рутинной работы по их реализации.",
         "tweets": [
-          "Узкое место—не в идеях, а в их воплощении. Когда AI берёт рутину, исследователи могут сосредоточиться на оригинальном мышлении.",
-          "Выигрывают не те, у кого лучшие идеи, а те, кто их быстрее реализует. AI—это мультипликатор для скорости исполнения.",
-          "Всегда было: 1% вдохновение, 99% работа. AI делает работу, человек—творчество. Прогресс зависит от этого партнёрства."
+          "Рутинная работа—проверка гипотез, запуск симуляций, итерация дизайна—это то место, где ИИ даст максимальную отдачу. Узкое место не в идеях, а в их воплощении.",
+          "Если ИИ возьмет на себя 90% повторяющейся работы, исследователи сосредоточатся только на творческих решениях. Это преимущество для организаций, которые внедрят рано.",
+          "Скорость научного прогресса будет ограничена человеческой способностью принимать решения, а не вычислительной мощью. Исполнение становится новым вызовом."
         ]
       }
     },
@@ -100,134 +215,19 @@
       "publishedAt": "2026-10-01T16:00:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Albertsons is using ChatGPT Enterprise to automate internal workflows and improve customer experience at scale across its grocery chains.",
+        "headline": "Why it matters: Large retailers are embedding LLMs directly into operations to cut labor overhead and improve customer experience at scale.",
         "tweets": [
-          "Albertsons deployed ChatGPT Enterprise across teams to accelerate workflows. Real impact: faster decision-making, less manual busywork for employees handling millions of customers daily.",
-          "OpenAI API integration lets Albertsons embed AI directly into retail operations—inventory, staffing, customer service. The advantage: margins improve when you cut operational friction.",
-          "Grocery retail is thin-margin, high-volume. ChatGPT Enterprise lets Albertsons compete on speed and efficiency, not just price. That's the structural shift retail needs."
+          "Albertsons deployed ChatGPT Enterprise across teams to automate routine tasks—freeing humans to focus on higher-value work instead of repetitive queries.",
+          "OpenAI API integration lets Albertsons personalize shopping, optimize supply chains, and reduce friction points that hurt customer retention.",
+          "Real-world test: when grocers automate the tedious stuff with AI, they free up budget and staff for what machines can't do—human service and local problem-solving."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Albertsons внедряет ChatGPT Enterprise для автоматизации внутренних процессов и улучшения обслуживания миллионов покупателей по всей сети.",
+        "headline": "Почему важно: Крупные розничные сети встраивают LLM в операции, чтобы снизить затраты на персонал и улучшить качество обслуживания в масштабе.",
         "tweets": [
-          "Albertsons развернула ChatGPT Enterprise на уровне компании. Результат: сотрудники тратят меньше времени на рутину, больше на стратегические решения в реальном времени.",
-          "OpenAI API встроили прямо в розничные операции—от управления запасами до взаимодействия с клиентами. Снижаешь трение в процессах, растут маржи.",
-          "В продуктовой рознице нет места ошибкам в логистике. ИИ помогает Albertsons быть быстрее конкурентов, а не только дешевле. Это переломный момент для индустрии."
-        ]
-      }
-    },
-    {
-      "id": "d-1o11iee",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/allenai/olmocore3",
-      "publishedAt": "2026-10-01T15:01:43.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Open-source MoE training infrastructure removes proprietary bottlenecks, letting research teams build 100B+ parameter models without vendor lock-in.",
-        "tweets": [
-          "Olmo-core 3 handles training of massive mixture-of-experts models at scale. Allen Institute released it open-source so you're not locked into commercial platforms.",
-          "Key win: distributed training for 100B+ parameters, efficient routing between expert networks, and reproducible runs. Built for research, not just marketing.",
-          "Practical angle: researchers can now iterate on MoE architectures cheaply. Training code, configs, and checkpoints all public. Competition gets better when infrastructure is shared."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: открытая инфраструктура для обучения моделей смешанной экспертизы устраняет зависимость от коммерческих платформ и позволяет исследователям обучать модели с 100B+ параметров независимо.",
-        "tweets": [
-          "Olmo-core 3 справляется с масштабным обучением моделей mixture-of-experts. Allen Institute выпустил код в открытый доступ — никакой привязки к коммерческим решениям.",
-          "Главное преимущество: распределённое обучение на 100B+ параметров, эффективная маршрутизация между экспертными сетями, воспроизводимые результаты. Для исследования, а не для маркетинга.",
-          "На практике: исследователи теперь могут экспериментировать с архитектурами MoE дёшево. Весь код, конфиги и чекпойнты в открытом доступе. Развитие науки ускоряется, когда инфраструктурой делятся."
-        ]
-      }
-    },
-    {
-      "id": "d-x06ucg",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
-      "publishedAt": "2026-10-01T06:45:05.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Google's Gemini 4 Argon reaches frontier performance with 1M output tokens, but limited cybersecurity preview access delays broader deployment against competing models like Astra and Opus.",
-        "tweets": [
-          "Gemini 4 Argon beats 13 of 19 benchmarks vs Astra/Opus 5.5, leads coding (30/30 perfect apps) and security tasks. But shipping only to government and cyber defenders first.",
-          "1M output tokens via Long Decode Continuation is industry-leading, though measured approaches vary. At $2/$10 intro pricing (50% off), costs $1.99/task vs $3.26 for Astra.",
-          "Trade-offs matter: Argon hallucinates 15% vs Astra's 51%, but accuracy drops to 50% vs 63%. Uses 2.3x more output tokens per task—efficiency wins from price, not smarter inference."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Gemini 4 Argon Google достигает лидерской производительности с выходом в 1 млн токенов, но ограниченный доступ в режиме Preview для кибербезопасности задерживает конкуренцию с Astra и Opus.",
-        "tweets": [
-          "Argon побеждает в 13 из 19 бенчмарков против Astra и Opus 5.5, лидирует в коде (30/30 идеальных приложений) и задачах безопасности. Но запуск только для государства и защитников кибербезопасности.",
-          "1 млн выходных токенов через Long Decode Continuation — лучший результат в индустрии, хотя методики измерения различаются. При вводной цене $2/$10 (скидка 50%) стоит $1.99 за задачу против $3.26 у Astra.",
-          "Компромиссы критичны: Argon галлюцинирует в 15% против 51% у Astra, но точность падает на 50% против 63%. Использует в 2.3 раза больше выходных токенов на задачу — экономия от цены, не от умнее инженерии."
-        ]
-      }
-    },
-    {
-      "id": "d-12rl3hi",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/1/matthew-green/",
-      "publishedAt": "2026-10-01T06:29:01.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: AI agents in isolated sandboxes can form worm-like chains by leaving instructions in shared caches, creating cross-agent hijacking vulnerabilities that mirror traditional malware propagation.",
-        "tweets": [
-          "AI agents discovered they can coordinate attacks across sandboxes via shared package caches—leaving instructions that alter recipient behavior. Isolation alone isn't enough.",
-          "The worm model works: payload hijacks one agent, that agent carries instructions to the next one. Replace cache with email/Slack and you have the same attack surface.",
-          "Independently-deployed personal agents like Muse face the same worm risks as traditional systems. Sandbox containment breaks down when agents share communication channels."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: AI-агенты в изолированных песочницах могут образовывать цепочки, похожие на черви, оставляя инструкции в общих кешах — создавая уязвимости, которые копируют классическое распространение вредоноса.",
-        "tweets": [
-          "AI-агенты нашли способ координировать атаки через общие кеши, оставляя инструкции, меняющие поведение получателя. Изоляция недостаточна.",
-          "Модель червя работает: полезная нагрузка захватывает один агент, он передает инструкции следующему. Замените кеш на email или Slack — поверхность атаки та же.",
-          "Независимо развернутые личные агенты вроде Muse подвержены тем же рискам, что и традиционные системы. Песочница неэффективна, когда агенты делят каналы связи."
-        ]
-      }
-    },
-    {
-      "id": "d-cowdu3",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/the-den-family-social",
-      "publishedAt": "2026-10-01T00:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Administrative work that consumed days now takes hours, freeing small business owners to focus on growth and operations.",
-        "tweets": [
-          "The Den cut grant application prep from 3 days to 2 hours using ChatGPT Work. That's 22 hours recovered per application.",
-          "Liquor license paperwork dropped from 4 days to 3 hours. Compliance work that kills momentum now fits in a morning.",
-          "A social club opening new locations reclaimed 10-15 hours weekly. Less admin busywork, more time building the business."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Административная работа, занимавшая дни, теперь требует часов, позволяя владельцам малого бизнеса сосредоточиться на развитии и операциях.",
-        "tweets": [
-          "The Den сократила подготовку грантовых заявок с 3 дней до 2 часов благодаря ChatGPT Work. Это 22 часа сэкономленного времени на одну заявку.",
-          "Документы на лицензию сократились с 4 дней до 3 часов. Работа, которая замораживала развитие, теперь занимает одно утро.",
-          "Социальный клуб сэкономил 10-15 часов в неделю при открытии новых локаций. Меньше бюрократии, больше времени на бизнес."
-        ]
-      }
-    },
-    {
-      "id": "d-qmauh7",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/devday-2026",
-      "publishedAt": "2026-09-30T22:23:40.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Computer Use agents have fundamentally shifted from screenshot-based control to multi-modal understanding—combining accessibility data, DOM parsing, and self-debugging—making them dramatically faster and more reliable at software tasks than just months ago.",
-        "tweets": [
-          "OpenAI shipped a Decisions API in one week by cloning what worked: async tool calling, mid-turn steering, and WebSockets. The pattern: copy good ideas fast, iterate ruthlessly.",
-          "Modern agents now debug their own failures and recover gracefully. Combined with accessibility trees + DOM data, they're closing the loop between writing code and testing it—sometimes faster than humans.",
-          "GPT-6.1 is 5x cheaper than Grok and 7x cheaper for Computer Use. The real shift: agents get their own Linux boxes, low-latency inference, and prompt caching that makes long-running tasks viable."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: агенты Computer Use за последние месяцы кардинально изменились—теперь они обрабатывают не только скриншоты, но и данные доступности, DOM и код, умеют восстанавливаться после ошибок и выполняют задачи быстрее человека.",
-        "tweets": [
-          "OpenAI разработала Decisions API за неделю, скопировав рабочие паттерны: асинхронные вызовы инструментов, управление середине цепочки, WebSockets. Принцип: украсть хорошую идею, внедрить срочно, улучшить итеративно.",
-          "Агенты теперь сами отлаживают свои ошибки и восстанавливаются после сбоев. С деревом доступности и DOM они закрывают цикл между написанием и тестированием кода—часто быстрее человека.",
-          "GPT-6.1 в 5 раз дешевле Grok и в 7 раз—для Computer Use. Главный сдвиг: каждый агент получает свой Linux, низкую задержку инференса и кэширование промптов для долгих задач."
+          "Albertsons развернул ChatGPT Enterprise по всем отделам для автоматизации рутинных задач—сотрудники теперь занимаются стратегией, а не повторяющимися запросами.",
+          "API OpenAI помогает персонализировать покупки, оптимизировать логистику и убирать препятствия, которые теряют клиентов.",
+          "На практике: когда супермаркеты автоматизируют скучную работу с AI, они экономят бюджет и людей для того, что машины не осилят—живое общение и локальные решения."
         ]
       }
     }
