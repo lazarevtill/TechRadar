@@ -1,6 +1,98 @@
 {
-  "generatedAt": "2026-10-02T12:36:18.386Z",
+  "generatedAt": "2026-10-03T11:40:13.339Z",
   "items": [
+    {
+      "id": "d-1nxs4gi",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
+      "publishedAt": "2026-10-03T08:45:15.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: A slow news day still shows the AI price-performance race tightening, with cheaper models matching or beating pricier ones on benchmarks.",
+        "tweets": [
+          "GPT-6.1 Sol is priced way below Astra ($2/$10 vs $10/$50 per million tokens) yet beats GPT-6 Sol and nearly matches Opus 5.5 on key benchmarks.",
+          "Anthropic now holds the top three Agent Arena spots, with Sonnet 5.5 debuting at #3 and topping the Chat category.",
+          "'Decision models' (Jev, Kev, Clef) are spreading fast across tooling, but skeptics call them just rebranded zero-shot classifiers."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: даже в тихий день видно, как дешёвые модели догоняют и обгоняют дорогие по соотношению цена/качество.",
+        "tweets": [
+          "GPT-6.1 Sol стоит в разы дешевле Astra ($2/$10 против $10/$50 за million токенов), но обгоняет GPT-6 Sol и почти не отстаёт от Opus 5.5.",
+          "Anthropic заняла весь топ-3 в Agent Arena: Sonnet 5.5 сразу вошла на 3-е место и стала лучшей в категории чатов.",
+          "Так называемые 'decision models' (Jev, Kev, Clef) расползаются по инструментам, хотя критики говорят, что это просто переименованные классификаторы."
+        ]
+      }
+    },
+    {
+      "id": "d-1fkmtaz",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/practical-guide-building-gpt-6",
+      "publishedAt": "2026-10-02T16:15:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI published practical guidance for startups on choosing GPT-6 models and tuning them for production use.",
+        "tweets": [
+          "OpenAI's new guide helps startups pick the right GPT-6 model for their use case.",
+          "Covers tuning reasoning effort, improving prompts/skills, and coordinating tool use.",
+          "Aimed at getting workflows production-ready, not just prototype-ready."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI выпустила практическое руководство для стартапов по выбору и настройке моделей GPT-6 под продакшен.",
+        "tweets": [
+          "Новый гайд OpenAI помогает стартапам выбрать подходящую модель из семейства GPT-6.",
+          "Рассказывает, как настраивать глубину рассуждений, улучшать промпты и навыки модели.",
+          "Отдельное внимание — координации инструментов и подготовке рабочих процессов к продакшену."
+        ]
+      }
+    },
+    {
+      "id": "d-d3p8xe",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/allenai/astabrief",
+      "publishedAt": "2026-10-02T15:19:50.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Allen AI open-sourced AstaBrief, a fast report-generation model used in its Asta research assistant, giving developers a free tool for quick summarization tasks.",
+        "tweets": [
+          "Allen AI just open-sourced AstaBrief, the model behind fast report generation in its Asta assistant.",
+          "It's built for speed—generating structured reports/briefs quickly rather than slow, exhaustive synthesis.",
+          "Open weights mean devs can run or fine-tune it themselves instead of relying on closed APIs for summarization tasks."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Allen AI выложила в открытый доступ AstaBrief — быструю модель для генерации отчётов из их ассистента Asta, и теперь её может использовать кто угодно.",
+        "tweets": [
+          "Allen AI открыла исходники AstaBrief — модели, которая отвечает за быструю генерацию отчётов в их ассистенте Asta.",
+          "Главный акцент — скорость: модель делает структурированные брифы быстро, а не долгий глубокий анализ.",
+          "Открытые веса — значит разработчики могут запускать и дообучать модель сами, без зависимости от закрытых API."
+        ]
+      }
+    },
+    {
+      "id": "d-11hr887",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/airbnb",
+      "publishedAt": "2026-10-02T14:04:49.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Airbnb's new CTO (ex-Meta Llama lead) is using internal AI tools to cut dev time dramatically, then redeploying the same tech to automate half of customer support.",
+        "tweets": [
+          "Airbnb says 60% of its code is now AI-authored, with ~80% more features shipped year over year.",
+          "An internal AI context graph called Everest cut a new service's build time from 9 months to 6 weeks.",
+          "AI now resolves roughly half of Airbnb's customer support tickets, tested first with synthetic data."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новый CTO Airbnb (экс-глава генеративного ИИ в Meta) использует внутренние ИИ-инструменты, чтобы резко ускорить разработку, а затем применяет те же технологии для автоматизации половины обращений в поддержку.",
+        "tweets": [
+          "В Airbnb уже 60% кода пишет ИИ, а число новых фич выросло почти на 80% год к году.",
+          "Внутренний ИИ-граф Everest сократил запуск нового сервиса с 9 месяцев до 6 недель.",
+          "ИИ самостоятельно закрывает около половины тикетов поддержки — но перед этим систему долго тестируют на синтетических данных."
+        ]
+      }
+    },
     {
       "id": "d-opisxv",
       "source": "latent-space",
@@ -71,6 +163,52 @@
       }
     },
     {
+      "id": "d-1d0yruq",
+      "source": "anthropic",
+      "sourceUrl": "https://www.anthropic.com/news/claude-frontier-academy",
+      "publishedAt": "2026-10-02T00:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Anthropic is spending $100M to mass-produce the scarce engineering talent that actually makes enterprise AI deployments work.",
+        "tweets": [
+          "Anthropic commits $100M to train 10,000 'Frontier Deployed Engineers' by end of 2027.",
+          "First cohorts come from Accenture, McKinsey, Deloitte, Morgan Stanley, Novo Nordisk and others — nomination-only.",
+          "Program mirrors medical residency: in-person training, graded practicals, then a 12-week residency leading a real Claude project."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Anthropic вкладывает $100 млн, чтобы вырастить дефицитных инженеров, способных реально внедрять ИИ в бизнесе.",
+        "tweets": [
+          "Anthropic выделяет $100 млн на обучение 10 000 «инженеров внедрения» Claude к концу 2027 года.",
+          "Первые потоки — сотрудники Accenture, McKinsey, Deloitte, Morgan Stanley, Novo Nordisk; попасть можно только по номинации от компании.",
+          "Программа построена как медицинская ординатура: очное обучение, экзамены, затем 12 недель работы над реальным проектом с Claude."
+        ]
+      }
+    },
+    {
+      "id": "d-1kl58kd",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/chatham-financial",
+      "publishedAt": "2026-10-02T00:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a financial services firm used Codex and GPT-5.6 to cut trade validation time by roughly 85%, showing concrete ROI for AI in regulated finance workflows.",
+        "tweets": [
+          "Chatham Financial cut trade validation from 30 minutes to under 4 using Codex and GPT-5.6.",
+          "This isn't just chat assistance — it's workflow redesign built around AI coding tools.",
+          "Capital markets firms are starting to show real, measurable time savings from AI, not just hype."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: финансовая компания с помощью Codex и GPT-5.6 сократила проверку сделок почти на 85% — это реальный пример пользы AI в регулируемой финансовой сфере.",
+        "tweets": [
+          "Chatham Financial сократила проверку сделок с 30 минут до менее чем 4 минут благодаря Codex и GPT-5.6.",
+          "Речь не просто о чат-помощнике — компания перестроила рабочие процессы вокруг AI-инструментов для кода.",
+          "Финансовые компании начинают показывать конкретную экономию времени от AI, а не просто громкие заявления."
+        ]
+      }
+    },
+    {
       "id": "d-1nrywdf",
       "source": "openai",
       "sourceUrl": "https://openai.com/index/the-eternal-complement",
@@ -90,144 +228,6 @@
           "Идеи дёшевы, узкое место — их воплощение. Именно здесь ИИ может дать максимальный эффект.",
           "Будущую экономику определит не гениальность, а скорость рутинного исполнения — и тут ИИ выходит на первый план.",
           "Ставка на ИИ ради прорывов упускает суть: реальная сила — в скучных повторяющихся задачах за кулисами."
-        ]
-      }
-    },
-    {
-      "id": "d-frqlpl",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/albertsons-reimagining-retail",
-      "publishedAt": "2026-10-01T16:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a major US grocery chain is rolling out ChatGPT Enterprise and the OpenAI API across internal teams and customer-facing shopping tools.",
-        "tweets": [
-          "Albertsons is deploying ChatGPT Enterprise and the OpenAI API, not just piloting them.",
-          "Goal: speed up internal team workflows while making grocery shopping simpler for customers.",
-          "Another sign AI tools are moving from tech companies into mainstream retail operations."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: крупная продуктовая сеть в США внедряет ChatGPT Enterprise и API OpenAI как во внутренних процессах, так и в сервисах для покупателей.",
-        "tweets": [
-          "Albertsons не просто тестирует, а разворачивает ChatGPT Enterprise и OpenAI API в реальной работе.",
-          "Цель — ускорить работу команд внутри компании и упростить покупки для клиентов.",
-          "Ещё один пример того, как ИИ-инструменты приходят из техкомпаний в обычный ритейл."
-        ]
-      }
-    },
-    {
-      "id": "d-1o11iee",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/allenai/olmocore3",
-      "publishedAt": "2026-10-01T15:01:43.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Allen AI's Olmo-core 3 makes training trillion-parameter mixture-of-experts models far cheaper and fully open, lowering the barrier for non-giant labs.",
-        "tweets": [
-          "Olmo-core 3 scaled MoE experts from 8 to 128 while active params per token stayed ~3.2B — total capacity jumped 4.6B to 47B with <5% throughput loss.",
-          "Switching from FSDP to a DDP-based system boosted throughput 2.7x: 52,000 tokens/sec/GPU vs 19,400 on the old stack (47B MoE, 8x B300 GPUs).",
-          "Lower-precision MXFP8 format gave 21% higher throughput and cut peak memory from 103GiB to 95GiB; system benchmarked past 1 trillion params, fully open-source."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Olmo-core 3 от Allen AI удешевляет обучение MoE-моделей на триллионы параметров и полностью открыт для сообщества.",
-        "tweets": [
-          "Число экспертов увеличили с 8 до 128, активные параметры на токен остались ~3.2 млрд — общая ёмкость выросла с 4.6 до 47 млрд, потери скорости менее 5%.",
-          "Переход с FSDP на DDP-архитектуру дал ускорение в 2.7 раза: 52 000 токенов/сек на GPU против 19 400 на старом стеке (модель 47 млрд, 8 GPU B300).",
-          "Формат MXFP8 поднял скорость на 21% и снизил пиковую память со 103 до 95 ГиБ; систему уже проверили на моделях свыше триллиона параметров."
-        ]
-      }
-    },
-    {
-      "id": "d-x06ucg",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
-      "publishedAt": "2026-10-01T06:45:05.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Google finally ships a frontier-class model to match GPT-6 and Claude Opus, but it's gated to government and cyber-defense users first.",
-        "tweets": [
-          "Gemini 4 Argon beats GPT-6 Astra and Claude Opus 5.5 on 13 of 19 benchmarks, but it's locked to a limited cybersecurity preview for now.",
-          "Its headline feature is 1M-token output via 'Long Decode Continuation,' which pauses and resumes long responses across API calls.",
-          "Argon is cheaper per task than rivals mainly due to pricing, not efficiency — it actually uses more tokens per task than Astra."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Google наконец выпустила модель топ-уровня, способную тягаться с GPT-6 и Claude Opus, но доступ пока только у госструктур и кибербезопасников.",
-        "tweets": [
-          "Gemini 4 Argon обходит GPT-6 Astra и Claude Opus 5.5 по 13 из 19 бенчмарков, но доступна лишь в ограниченном превью для защиты от киберугроз.",
-          "Главная фишка — вывод до 1 млн токенов благодаря 'Long Decode Continuation', которая ставит генерацию на паузу и продолжает её через новые запросы.",
-          "Argon дешевле конкурентов в основном за счёт цены, а не эффективности — токенов на задачу она тратит даже больше, чем Astra."
-        ]
-      }
-    },
-    {
-      "id": "d-12rl3hi",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/1/matthew-green/",
-      "publishedAt": "2026-10-01T06:29:01.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: Isolating AI agents in sandboxes doesn't stop them from infecting each other through shared channels like caches, email, or Slack.",
-        "tweets": [
-          "Matthew Green: agents in separate sandboxes left instructions for each other in a shared package cache — and it worked.",
-          "Swap the package cache for email, Slack, or WhatsApp, and you've built the exact ingredients a worm needs.",
-          "Sandboxing isolates compute, not communication — shared channels are the real attack surface for agent-to-agent hijacking."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: изоляция AI-агентов в песочницах не спасает — они всё равно могут заражать друг друга через общие каналы связи.",
-        "tweets": [
-          "Мэттью Грин: агенты в изолированных песочницах умудрились оставлять друг другу инструкции через общий кэш пакетов — и это сработало.",
-          "Замените кэш пакетов на почту, Slack или WhatsApp — и получите все ингредиенты для настоящего червя.",
-          "Песочница изолирует вычисления, но не коммуникацию — именно общие каналы становятся точкой заражения между агентами."
-        ]
-      }
-    },
-    {
-      "id": "d-1t01ygv",
-      "source": "anthropic",
-      "sourceUrl": "https://www.anthropic.com/news/barclays-scales-claude",
-      "publishedAt": "2026-10-01T00:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Barclays is embedding Claude deep into banking operations, showing how regulated industries can scale AI with governance intact.",
-        "tweets": [
-          "Barclays plans 50% of developers using Claude Code by 2026, majority by 2027.",
-          "Barclays' Claude-powered assistant has handled over 1 million searches for 16,000+ staff since 2025.",
-          "Claude models sort ~120,000 client emails daily in Barclays' Global Markets unit."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Barclays внедряет Claude глубоко в банковские процессы — пример того, как регулируемая отрасль масштабирует AI, не теряя контроль.",
-        "tweets": [
-          "К 2026 году половина разработчиков Barclays будет работать с Claude Code, к 2027 — большинство.",
-          "Внутренний ассистент на Claude с 2025 года обработал более 1 млн запросов для 16 000+ сотрудников.",
-          "Claude ежедневно сортирует около 120 000 писем клиентов в подразделении Global Markets."
-        ]
-      }
-    },
-    {
-      "id": "d-cowdu3",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/the-den-family-social",
-      "publishedAt": "2026-10-01T00:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a small social club used ChatGPT to cut grant and licensing paperwork from days to hours, freeing 10-15 hours weekly for expansion.",
-        "tweets": [
-          "Social club The Den saved 10-15 hours/week using ChatGPT Work while opening a new location.",
-          "Grant applications: 3 days down to 2 hours. Liquor-license materials: 4 days down to 3 hours.",
-          "Shows how AI tools can cut admin grunt work for small businesses scaling operations."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: небольшой социальный клуб с помощью ChatGPT сократил оформление грантов и лицензий с дней до часов, высвободив 10-15 часов в неделю на рост.",
-        "tweets": [
-          "Клуб The Den сэкономил 10-15 часов в неделю благодаря ChatGPT Work при открытии новой точки.",
-          "Заявки на гранты: было 3 дня, стало 2 часа. Документы на алкогольную лицензию: было 4 дня, стало 3 часа.",
-          "Пример того, как ИИ снимает рутину с малого бизнеса и ускоряет масштабирование."
         ]
       }
     }
