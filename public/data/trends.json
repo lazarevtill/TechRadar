@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-03T11:40:13.341Z",
+  "generatedAt": "2026-10-04T12:21:12.991Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -108,7 +108,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.44,
+      "momentum": -0.25,
       "weeklyCounts": [
         411,
         420,
@@ -123,9 +123,15 @@
         469,
         463,
         88,
-        49
+        66
       ],
       "signals": [
+        {
+          "title": "The Agent Said It Was Done. The Database Disagreed.",
+          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+          "source": "hf",
+          "publishedAt": "2026-10-03T22:56:48.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
@@ -149,12 +155,6 @@
           "url": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
           "source": "hf",
           "publishedAt": "2026-10-02T04:01:31.000Z"
-        },
-        {
-          "title": "Academia is for Ambition — Alex Zhang, MIT",
-          "url": "https://www.latent.space/p/rlm",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T00:28:04.000Z"
         }
       ]
     },
@@ -164,7 +164,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.45,
+      "momentum": -0.27,
       "weeklyCounts": [
         0,
         0,
@@ -179,9 +179,15 @@
         0,
         0,
         49,
-        27
+        36
       ],
       "signals": [
+        {
+          "title": "The Agent Said It Was Done. The Database Disagreed.",
+          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+          "source": "hf",
+          "publishedAt": "2026-10-03T22:56:48.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
@@ -205,12 +211,6 @@
           "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
           "source": "latent-space",
           "publishedAt": "2026-09-30T05:53:10.000Z"
-        },
-        {
-          "title": "Introducing GPT-6.1 Sol",
-          "url": "https://openai.com/index/introducing-gpt-6-1-sol",
-          "source": "openai",
-          "publishedAt": "2026-09-29T10:00:00.000Z"
         }
       ]
     },
@@ -220,7 +220,7 @@
       "category": "ai",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.65,
+      "momentum": -0.53,
       "weeklyCounts": [
         0,
         0,
@@ -235,7 +235,7 @@
         0,
         0,
         34,
-        12
+        16
       ],
       "signals": [
         {
@@ -270,7 +270,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.71,
+      "momentum": -0.68,
       "weeklyCounts": [
         0,
         0,
@@ -285,7 +285,7 @@
         0,
         0,
         28,
-        8
+        9
       ],
       "signals": [
         {
@@ -293,12 +293,6 @@
           "url": "https://www.latent.space/p/ainews-amd-buys-world-labs-for-82b",
           "source": "latent-space",
           "publishedAt": "2026-09-29T02:55:27.000Z"
-        },
-        {
-          "title": "Kākāpō Party",
-          "url": "https://simonwillison.net/2026/Sep/26/kakapo-party/",
-          "source": "simonw",
-          "publishedAt": "2026-09-26T23:39:06.000Z"
         }
       ]
     },
@@ -308,7 +302,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.8,
+      "momentum": -0.73,
       "weeklyCounts": [
         375,
         358,
@@ -323,7 +317,7 @@
         364,
         370,
         15,
-        3
+        4
       ],
       "signals": [
         {
@@ -340,7 +334,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.86,
+      "momentum": -0.84,
       "weeklyCounts": [
         0,
         0,
@@ -355,7 +349,7 @@
         0,
         0,
         37,
-        5
+        6
       ],
       "signals": [
         {

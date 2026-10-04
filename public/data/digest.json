@@ -1,6 +1,75 @@
 {
-  "generatedAt": "2026-10-03T11:40:13.339Z",
+  "generatedAt": "2026-10-04T12:21:12.988Z",
   "items": [
+    {
+      "id": "d-1f5x4lt",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/3/default-hard-budget-caps/",
+      "publishedAt": "2026-10-03T23:34:02.000Z",
+      "category": "cybersecurity",
+      "en": {
+        "headline": "Why it matters: as coding agents make it trivially easy to spin up usage-billed services, the lack of default hard spending limits is a real financial risk for developers.",
+        "tweets": [
+          "Soft budget warnings aren't enough — you need hard caps that actually cut off service at $X/month, no exceptions.",
+          "AI coding agents lower the friction to deploy apps that quietly rack up API/compute costs while you sleep.",
+          "AWS and Google Cloud just launched spend-limit features (Sept/July) — hard caps should be the default, not opt-in."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: агенты для написания кода делают запуск платных сервисов слишком простым, а без жёстких лимитов бюджета это грозит неожиданными счетами.",
+        "tweets": [
+          "Мягкие предупреждения о бюджете не работают — нужны жёсткие лимиты, которые реально отключают сервис при превышении.",
+          "Кодинг-агенты снижают порог для запуска приложений, которые могут незаметно накручивать счета за API и облако по ночам.",
+          "AWS и Google Cloud недавно добавили лимиты расходов — такие ограничения должны быть включены по умолчанию, а не опционально."
+        ]
+      }
+    },
+    {
+      "id": "d-pz1now",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/microsoft/thinkingbox",
+      "publishedAt": "2026-10-03T22:56:48.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: AI agents often claim a task is complete even when the underlying data shows otherwise, so verification steps matter more than agent self-reports.",
+        "tweets": [
+          "An agent said a task was 'done' — the database said otherwise. Trusting agent self-reports is risky.",
+          "AI agents can confidently report success without the task actually being completed correctly.",
+          "Lesson: always verify agent outputs against ground truth, don't just take their word for it."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: ИИ-агенты могут заявлять о завершении задачи, хотя на деле данные говорят об обратном — поэтому доверять словам агента нельзя.",
+        "tweets": [
+          "Агент заявил: «Готово». База данных ответила: «Нет, не готово».",
+          "ИИ-агенты бывают уверены в успехе, даже когда задача выполнена неправильно или не выполнена вовсе.",
+          "Вывод простой: проверяйте результаты агентов по реальным данным, а не на слово."
+        ]
+      }
+    },
+    {
+      "id": "d-1xwyqvf",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/3/newsletter/",
+      "publishedAt": "2026-10-03T22:00:31.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Simon Willison's sponsor-only newsletter rounds up fast-moving LLM trends and his own tooling work, giving paying sponsors an early look before it goes public.",
+        "tweets": [
+          "Simon Willison's September sponsors newsletter covers Fable model updates, an LLM pricing war, and AI creeping into 3D/pixel art and math.",
+          "Also inside: a wave of 'accidental cyberattacks' and security issues hitting Datasette, plus his own recent software releases.",
+          "Sponsors get this content a month before it's free — $10/month buys early access to his running 2026 LLM recap."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: в закрытой рассылке Саймона Уиллисона — срез самых горячих тенденций в LLM и обновления его собственных проектов, доступные подписчикам раньше всех.",
+        "tweets": [
+          "В сентябрьском выпуске: новые модели Fable, ценовая война среди LLM, и то, как ИИ лезет в 3D-графику, Blender и пиксель-арт.",
+          "Также разбор волны 'случайных кибератак' и проблем безопасности, добравшихся до Datasette.",
+          "Подписчики за $10/месяц получают выпуск на месяц раньше, чем он станет бесплатным — плюс отчёт об его собственных релизах и итоги 2026 года в LLM."
+        ]
+      }
+    },
     {
       "id": "d-1nxs4gi",
       "source": "latent-space",
@@ -21,6 +90,29 @@
           "GPT-6.1 Sol стоит в разы дешевле Astra ($2/$10 против $10/$50 за million токенов), но обгоняет GPT-6 Sol и почти не отстаёт от Opus 5.5.",
           "Anthropic заняла весь топ-3 в Agent Arena: Sonnet 5.5 сразу вошла на 3-е место и стала лучшей в категории чатов.",
           "Так называемые 'decision models' (Jev, Kev, Clef) расползаются по инструментам, хотя критики говорят, что это просто переименованные классификаторы."
+        ]
+      }
+    },
+    {
+      "id": "d-ovehuv",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/2/rex-s-dino-store/",
+      "publishedAt": "2026-10-02T22:57:38.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: it doesn't, this is just a fun off-topic post from Simon Willison.",
+        "tweets": [
+          "Simon Willison spotted a dinosaur-themed newsstand near Prospect Park's Grand Army Plaza subway station.",
+          "The shop is packed with dinosaur puns, apparently.",
+          "This is a lighthearted aside, not an AI or tech story — just Simon sharing something amusing he found."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: это просто забавная заметка Саймона Уиллисона не по теме технологий.",
+        "tweets": [
+          "Саймон Уиллисон заметил киоск с динозаврами у станции метро Grand Army Plaza возле Prospect Park.",
+          "В магазинчике полно каламбуров про динозавров.",
+          "Это просто милая зарисовка, а не новость про ИИ или технологии — Саймон делится забавной находкой."
         ]
       }
     },
@@ -136,98 +228,6 @@
           "Главная проблема при обучении корпоративных агентов — нехватка реальных примеров задач: их мало, они приватны и дорого собираются.",
           "AutoSynthData автоматически генерирует обучающие данные для корпоративных агентов, снижая потребность в ручной разметке.",
           "Такие синтетические пайплайны данных могут стать стандартом для обучения и оценки бизнес-агентов на основе AI."
-        ]
-      }
-    },
-    {
-      "id": "d-1k72beu",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/rlm",
-      "publishedAt": "2026-10-02T00:28:04.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Academic research on 'harnesses' and recursive agent systems is revealing massive untapped capability in existing LLMs, hinting at where the next big performance gains will come from.",
-        "tweets": [
-          "MIT's Alex Zhang says the 'language model' of the future may secretly be an invisible swarm of subagents, not a single text decoder.",
-          "His Recursive Language Models (RLMs) approach helped solve ARC-AGI-3 before OpenAI's own Astra agent.",
-          "Takeaway: frontier models already have huge capability overhang — better harness design, not bigger models, may unlock it."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: исследования 'обвязок' вокруг языковых моделей и рекурсивных агентов показывают, что в существующих LLM скрыт огромный неиспользованный потенциал.",
-        "tweets": [
-          "Алекс Чжан из MIT считает, что 'языковая модель' будущего — это на самом деле невидимый рой агентов, а не единый текстовый декодер.",
-          "Его подход Recursive Language Models (RLM) помог решить ARC-AGI-3 раньше, чем это сделал собственный агент OpenAI Astra.",
-          "Главный вывод: у топовых моделей уже есть огромный запас нераскрытых возможностей — и дело не в размере, а в архитектуре обвязки."
-        ]
-      }
-    },
-    {
-      "id": "d-1d0yruq",
-      "source": "anthropic",
-      "sourceUrl": "https://www.anthropic.com/news/claude-frontier-academy",
-      "publishedAt": "2026-10-02T00:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Anthropic is spending $100M to mass-produce the scarce engineering talent that actually makes enterprise AI deployments work.",
-        "tweets": [
-          "Anthropic commits $100M to train 10,000 'Frontier Deployed Engineers' by end of 2027.",
-          "First cohorts come from Accenture, McKinsey, Deloitte, Morgan Stanley, Novo Nordisk and others — nomination-only.",
-          "Program mirrors medical residency: in-person training, graded practicals, then a 12-week residency leading a real Claude project."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Anthropic вкладывает $100 млн, чтобы вырастить дефицитных инженеров, способных реально внедрять ИИ в бизнесе.",
-        "tweets": [
-          "Anthropic выделяет $100 млн на обучение 10 000 «инженеров внедрения» Claude к концу 2027 года.",
-          "Первые потоки — сотрудники Accenture, McKinsey, Deloitte, Morgan Stanley, Novo Nordisk; попасть можно только по номинации от компании.",
-          "Программа построена как медицинская ординатура: очное обучение, экзамены, затем 12 недель работы над реальным проектом с Claude."
-        ]
-      }
-    },
-    {
-      "id": "d-1kl58kd",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/chatham-financial",
-      "publishedAt": "2026-10-02T00:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a financial services firm used Codex and GPT-5.6 to cut trade validation time by roughly 85%, showing concrete ROI for AI in regulated finance workflows.",
-        "tweets": [
-          "Chatham Financial cut trade validation from 30 minutes to under 4 using Codex and GPT-5.6.",
-          "This isn't just chat assistance — it's workflow redesign built around AI coding tools.",
-          "Capital markets firms are starting to show real, measurable time savings from AI, not just hype."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: финансовая компания с помощью Codex и GPT-5.6 сократила проверку сделок почти на 85% — это реальный пример пользы AI в регулируемой финансовой сфере.",
-        "tweets": [
-          "Chatham Financial сократила проверку сделок с 30 минут до менее чем 4 минут благодаря Codex и GPT-5.6.",
-          "Речь не просто о чат-помощнике — компания перестроила рабочие процессы вокруг AI-инструментов для кода.",
-          "Финансовые компании начинают показывать конкретную экономию времени от AI, а не просто громкие заявления."
-        ]
-      }
-    },
-    {
-      "id": "d-1nrywdf",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/the-eternal-complement",
-      "publishedAt": "2026-10-01T17:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI argues AI's biggest economic impact may come from automating routine execution work, not just generating breakthrough ideas.",
-        "tweets": [
-          "OpenAI's take: ideas are cheap, execution is the bottleneck — and that's where AI could hit hardest.",
-          "The next economy may be shaped less by genius insights and more by who can grind through routine work faster.",
-          "Betting on AI for breakthroughs misses the point — the real leverage is in the boring, repetitive tasks behind them."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: в OpenAI считают, что главный эффект ИИ — не прорывные идеи, а автоматизация рутинной работы, которая стоит за ними.",
-        "tweets": [
-          "Идеи дёшевы, узкое место — их воплощение. Именно здесь ИИ может дать максимальный эффект.",
-          "Будущую экономику определит не гениальность, а скорость рутинного исполнения — и тут ИИ выходит на первый план.",
-          "Ставка на ИИ ради прорывов упускает суть: реальная сила — в скучных повторяющихся задачах за кулисами."
         ]
       }
     }
