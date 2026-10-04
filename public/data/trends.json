@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-03T11:39:00.365Z",
+  "generatedAt": "2026-10-04T12:20:53.543Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -33,7 +33,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.49,
+      "momentum": -0.31,
       "weeklyCounts": [
         21,
         21,
@@ -48,7 +48,7 @@
         21,
         21,
         35,
-        18
+        24
       ],
       "signals": [
         {
@@ -89,7 +89,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.55,
+      "momentum": -0.41,
       "weeklyCounts": [
         375,
         358,
@@ -104,7 +104,7 @@
         364,
         370,
         384,
-        171
+        227
       ],
       "signals": [
         {
@@ -145,7 +145,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.57,
+      "momentum": -0.43,
       "weeklyCounts": [
         411,
         420,
@@ -160,7 +160,7 @@
         469,
         463,
         440,
-        188
+        250
       ],
       "signals": [
         {
@@ -201,7 +201,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.6,
+      "momentum": -0.47,
       "weeklyCounts": [
         81,
         60,
@@ -216,7 +216,7 @@
         92,
         103,
         93,
-        37
+        49
       ],
       "signals": [
         {
@@ -257,7 +257,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.67,
+      "momentum": -0.58,
       "weeklyCounts": [
         14,
         11,
@@ -272,7 +272,7 @@
         17,
         28,
         33,
-        11
+        14
       ],
       "signals": [
         {
@@ -301,7 +301,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.75,
+      "momentum": -0.67,
       "weeklyCounts": [
         1,
         7,
@@ -316,7 +316,7 @@
         2,
         7,
         12,
-        3
+        4
       ],
       "signals": [
         {
