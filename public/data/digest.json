@@ -1,6 +1,29 @@
 {
-  "generatedAt": "2026-10-04T12:21:12.988Z",
+  "generatedAt": "2026-10-05T14:37:18.088Z",
   "items": [
+    {
+      "id": "d-162qkqd",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
+      "publishedAt": "2026-10-05T10:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI is building ad infrastructure directly into ChatGPT, signaling monetization plans that will shape how AI assistants surface sponsored content.",
+        "tweets": [
+          "OpenAI rolls out a new visual ad format inside ChatGPT, moving beyond text-only interactions.",
+          "New measurement and attribution tools let advertisers track performance of ads shown in AI conversations.",
+          "Brand suitability controls are expanding, suggesting OpenAI is preparing ChatGPT for serious ad-supported scale."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI встраивает рекламную инфраструктуру прямо в ChatGPT, что намекает на планы монетизации и будущее появление спонсорского контента в ответах ИИ.",
+        "tweets": [
+          "В ChatGPT появился новый визуальный формат рекламы — не только текст, но и картинки.",
+          "Добавлены инструменты измерения и атрибуции, чтобы рекламодатели могли отслеживать эффективность показов в диалогах с ИИ.",
+          "Расширяются настройки безопасности бренда — похоже, OpenAI готовит ChatGPT к серьёзному масштабированию рекламы."
+        ]
+      }
+    },
     {
       "id": "d-1f5x4lt",
       "source": "simonw",
@@ -205,29 +228,6 @@
           "Pi Durable переписали на TypeScript: агенты переживают сбои, код можно менять на лету, несколько пользователей работают с одним агентом одновременно.",
           "Главный козырь GPT-6.1 Sol — не мощь, а цена: $0.72 за задачу против $3.26 у Astra, благодаря меньшему числу шагов и дешёвому кешу.",
           "FLUX 3 умеет генерировать картинки в 4K и редактировать по нескольким референсам, но открытые веса обещают только 'в ближайшие недели'."
-        ]
-      }
-    },
-    {
-      "id": "d-7996a0",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
-      "publishedAt": "2026-10-02T04:01:31.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: enterprise AI agent builders often lack enough realistic task data to train or evaluate agents, and this approach shows how to auto-generate that data instead of hand-labeling it.",
-        "tweets": [
-          "Enterprise agent teams face a data bottleneck: real task traces are scarce, private, and expensive to collect.",
-          "AutoSynthData generates synthetic training data for enterprise agents, cutting reliance on manual labeling.",
-          "Synthetic data pipelines like this could become standard infrastructure for training and evaluating business-specific AI agents."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: компаниям часто не хватает реальных данных для обучения AI-агентов под конкретные задачи, и этот подход предлагает генерировать их автоматически.",
-        "tweets": [
-          "Главная проблема при обучении корпоративных агентов — нехватка реальных примеров задач: их мало, они приватны и дорого собираются.",
-          "AutoSynthData автоматически генерирует обучающие данные для корпоративных агентов, снижая потребность в ручной разметке.",
-          "Такие синтетические пайплайны данных могут стать стандартом для обучения и оценки бизнес-агентов на основе AI."
         ]
       }
     }
