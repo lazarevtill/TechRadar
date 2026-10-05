@@ -1,6 +1,29 @@
 {
-  "generatedAt": "2026-10-04T12:20:53.429Z",
+  "generatedAt": "2026-10-05T14:36:08.978Z",
   "items": [
+    {
+      "id": "d-162qkqd",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/new-chatgpt-ads-format-and-measurement",
+      "publishedAt": "2026-10-05T10:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: ChatGPT ads now include visual formats and better tracking, giving advertisers clearer ROI measurement for AI-based campaigns.",
+        "tweets": [
+          "OpenAI rolled out visual ad formats in ChatGPT beyond text. Advertisers can now use images to grab attention in conversations where people actively seek information.",
+          "New measurement tools let brands track ad performance directly. Attribution partnerships show which ads actually drive conversions, not just impressions.",
+          "Brand suitability controls let advertisers choose where their ads appear. Reduces risk of showing luxury brands next to low-intent searches."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Реклама в ChatGPT теперь поддерживает визуальные форматы и точное измерение результатов, давая рекламодателям ясное понимание эффективности.",
+        "tweets": [
+          "OpenAI добавила визуальные объявления в ChatGPT. Теперь рекламодатели могут использовать изображения прямо в диалогах, где люди ищут информацию.",
+          "Новые инструменты измерения показывают реальный результат реклам. Партнерства по атрибуции отслеживают конверсии, а не только просмотры.",
+          "Бренды могут контролировать контекст показа объявлений. Премиум-товары не появятся рядом с поиском, где нет заинтересованности."
+        ]
+      }
+    },
     {
       "id": "d-1f5x4lt",
       "source": "simonw",
@@ -8,19 +31,19 @@
       "publishedAt": "2026-10-03T23:34:02.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: AI agents and automation tools are making it dangerously easy to spin up code that racks up unexpected cloud bills—hard spending caps need to be default, not opt-in.",
+        "headline": "Why it matters: AI coding agents can spin up expensive API calls unattended—you need hard budget caps that actually shut services down, not just warn you after the damage is done.",
         "tweets": [
-          "AWS and Google Cloud finally launching hard budget caps that pause services instead of warning emails. This matters: coding agents can rack up thousands in charges while you sleep.",
-          "Soft caps don't work. People ignore warning emails at midnight. Hard limits that kill service when budget hits are the only protection against runaway API calls bankrupting personal projects.",
-          "Feature request: make hard spending caps the default on every pay-per-use service. Let power users opt into 'remove cap' checkbox if they dare. It's basic risk management for the AI agent era."
+          "Coding agents reduce friction to deploy useful things, but a rogue service can rack up thousands in charges overnight. Soft caps (warning emails) won't cut it—you need hard limits that kill the service.",
+          "AWS and Google Cloud finally added hard spend caps that pause projects when limits hit. This should be the default everywhere, not an opt-in afterthought that only experienced devs remember.",
+          "Most people prefer service errors over surprise $10k+ bills. If you want unlimited spending, make that an explicit checkbox. Safety first, dangerous mode opt-in."
         ]
       },
       "ru": {
-        "headline": "Почему важно: AI-агенты и автоматизация упрощают запуск кода, который неконтролируемо тратит деньги на облачные сервисы — нужны жёсткие лимиты расходов по умолчанию.",
+        "headline": "Почему важно: AI-агенты могут запустить дорогие API-вызовы без присмотра—нужны жёсткие лимиты расходов, которые отключают сервис, а не просто отправляют предупреждение после ущерба.",
         "tweets": [
-          "AWS и Google Cloud наконец добавили жёсткие лимиты, которые приостанавливают сервис вместо предупредительных писем. Суть проблемы: агенты могут потратить тысячи долларов за ночь.",
-          "Мягкие лимиты не помогают. Люди игнорируют письма в полночь. Только жёсткое отключение при достижении бюджета защищает от разорительных счётов за API.",
-          "Нужна фишка: жёсткие лимиты расходов по умолчанию на всех сервисах с оплатой по использованию. Опция 'убрать лимит' — только явное согласие пользователя на свой риск."
+          "Агенты кодирования снижают барьер к развёртыванию полезных сервисов, но сбежавший процесс может накопить тысячи долларов за ночь. Мягкие лимиты (письма-предупреждения) не помогут—нужны жёсткие пределы.",
+          "AWS и Google Cloud наконец добавили жёсткие лимиты, которые приостанавливают проекты при превышении. Это должно быть стандартом везде, а не опцией, которую помнят только опытные разработчики.",
+          "Большинство предпочтут ошибки сервиса неожиданному счёту на 10+ тысяч. Если хочешь неограниченные расходы—явно подтверди это. Безопасность по умолчанию, опасный режим по согласию."
         ]
       }
     },
@@ -31,19 +54,19 @@
       "publishedAt": "2026-10-03T22:56:48.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: AI agents can confidently claim tasks are complete while leaving critical work undone, creating a trust gap between agent assertions and actual system state.",
+        "headline": "Why it matters: AI agents claiming task completion doesn't guarantee the actual work succeeded—verification gaps can hide silent failures in production systems.",
         "tweets": [
-          "AI agents hallucinate completion. They confidently report 'task done' while databases show failures. This reliability gap matters when agents control production systems.",
-          "The core problem: agents operate on language predictions, not verified state. A query 'succeeded' in words but failed in execution? Agent won't know without explicit verification loops.",
-          "Fix requires agents to query actual system state, not just generate plausible-sounding responses. Think databases as ground truth, not language models as oracles."
+          "Agent said 'task done' but the database rolled back silently. Classic mismatch between agent confidence and ground truth that breaks reliability.",
+          "Thinking boxes help agents reason through uncertainty, but they still need explicit verification loops to catch when their outputs don't match reality.",
+          "Production lesson: never trust an agent's self-report. Build mandatory checks that verify state changes actually persisted before marking success."
         ]
       },
       "ru": {
-        "headline": "Почему важно: AI-агенты уверенно заявляют об окончании задач, хотя базы данных показывают ошибки — это разрыв между словами и реальным состоянием систем.",
+        "headline": "Почему важно: когда агент ИИ заявляет о завершении задачи, это не гарантирует реальный результат — пробелы в проверке скрывают молчаливые сбои.",
         "tweets": [
-          "Агенты галлюцинируют завершение работы. Докладывают 'готово', а база данных показывает сбой. В production-системах это критично.",
-          "Суть проблемы: агенты предсказывают текст, не проверяя реальное состояние. Запрос 'выполнен' на словах, но упал на деле — агент об этом не знает.",
-          "Решение: агентам нужно запрашивать актуальное состояние системы, а не генерировать правдоподобные ответы. База данных — источник истины, не языковая модель."
+          "Агент докладывает 'готово', а база данных откатила изменения незамеченным. Классический разрыв между уверенностью модели и реальным состоянием.",
+          "Блоки размышления помогают агентам рассуждать при неопределённости, но нужны явные проверочные циклы, чтобы ловить несоответствия.",
+          "На боевых системах: никогда не верьте самоотчёту агента. Нужна обязательная валидация—убедитесь, что изменения действительно сохранились."
         ]
       }
     },
@@ -54,19 +77,19 @@
       "publishedAt": "2026-10-03T22:00:31.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: A monthly digest covering AI model pricing wars, LLM advances in math, and emerging cybersecurity risks gives practitioners a structured view of what's actually shifting in the field.",
+        "headline": "Why it matters: A monthly digest of AI, security, and software trends helps engineers stay current without spending hours on research.",
         "tweets": [
-          "Fable class models and pricing wars are reshaping the LLM landscape—not just hype, but competitive pressure changing what's viable to build and deploy.",
-          "LLMs tackling mathematics and 3D graphics hint at multimodal capability boundaries expanding; worth tracking if your stack relies on specific model strengths.",
-          "Accidental cyberattacks and the 'vulnapocalypse' for tools like Datasette signal that open-source infrastructure needs hardened defaults, not optional security."
+          "Fable class models expanding, pricing wars heating up, and LLMs tackling math problems - the AI landscape is shifting fast this month.",
+          "Datasette faces a vulnapocalypse while accidental cyberattacks spike across systems. Security gaps are multiplying faster than fixes.",
+          "Blender 3D graphics, pixel art workflows, and LLM mathematics capabilities show how AI tools are infiltrating creative and technical domains."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Ежемесячный обзор ценовых войн в LLM, прогресса нейросетей в математике и новых киберугроз помогает разработчикам отслеживать реальные сдвиги в индустрии.",
+        "headline": "Почему важно: Ежемесячный дайджест трендов в AI, безопасности и софтвере помогает инженерам оставаться в курсе без затраты часов на исследования.",
         "tweets": [
-          "Война цен между моделями и появление Fable-класса меняют экономику AI—это не маркетинг, а реальное давление на выбор инструментов разработчиков.",
-          "LLM решают задачи математики и 3D-графики; если ваш стек зависит от специфических возможностей моделей, это нужно отслеживать активно.",
-          "Случайные кибератаки и уязвимости в Datasette показывают: open-source инструменты должны иметь безопасность по умолчанию, а не дополнительной опцией."
+          "Модели класса Fable расширяются, война цен обостряется, LLM берутся за математику — ландшафт AI быстро меняется в этом месяце.",
+          "Datasette столкнулась с уязвимостями, случайные кибератаки растут. Бреши в безопасности множатся быстрее, чем исправляются.",
+          "Blender, пиксель-арт и способность LLM решать математические задачи показывают, как AI проникает в творческие и технические области."
         ]
       }
     },
@@ -77,19 +100,19 @@
       "publishedAt": "2026-10-03T08:45:15.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: GPT-6.1 Sol and Sonnet 5.5 reset the cost-performance bar, with Sol 39% cheaper than its predecessor and Sonnet claiming top chat rankings.",
+        "headline": "Why it matters: GPT-6.1 Sol and Sonnet 5.5 reset cost-performance expectations, with Sol undercutting previous models by 40% while matching or beating their performance.",
         "tweets": [
-          "OpenAI's GPT-6.1 Sol drops to $2/$10 per million tokens (vs $10/$50 for Astra), beats GPT-6 by 6.4 points on DeepSWE, and costs 39% less while scoring higher. Speed + cheap actually works.",
-          "Anthropic's Sonnet 5.5 debuts at #3 in Agent Arena, #1 in Chat category. The tradeoff: $2.74/task vs Opus at $1.58. Ranks near Astra at 80% lower cost on WebDev benchmarks.",
-          "Decision models (Jev-style) gain traction with llama.cpp support and local inference. Perplexity's pplx-decider claims 85.7% average across benchmarks. Skeptics say it's zero-shot classifiers rebranded."
+          "OpenAI's GPT-6.1 Sol costs $2/$10 per million tokens vs $10/$50 for Astra—39% cheaper than GPT-6 Sol while scoring higher on code benchmarks.",
+          "Sonnet 5.5 dominates Chat Arena at #1 but misses the Pareto frontier due to higher per-task cost; Anthropic holds top 3 Agent Arena spots.",
+          "Decision models gaining traction: Perplexity's pplx-decider-v1-27b hits 85.7% across benchmarks, though skeptics call them rebranded zero-shot classifiers."
         ]
       },
       "ru": {
-        "headline": "Почему важно: GPT-6.1 Sol и Sonnet 5.5 переопределили соотношение цены и производительности, Sol на 39% дешевле предшественника при лучшем качестве.",
+        "headline": "Почему важно: GPT-6.1 Sol и Sonnet 5.5 переопределили соотношение цены и производительности, причём Sol дешевле предыдущих моделей на 40% при лучших или равных результатах.",
         "tweets": [
-          "GPT-6.1 Sol стоит $2/$10 за миллион токенов (вместо $10/$50 для Astra), опережает GPT-6 на 6.4 пункта и на 39% дешевле при более высокой точности. Скорость и цена наконец совпали.",
-          "Sonnet 5.5 от Anthropic занял #3 в Agent Arena, #1 в категории чата. Минус: $2.74 за задачу против $1.58 у Opus. На WebDev близко к Astra при 80% экономии.",
-          "Decision-модели (Jev-стиль) набирают популярность с поддержкой llama.cpp и локальным выводом. pplx-decider Perplexity показывает 85.7% в среднем. Скептики видят переупаковку zero-shot классификаторов."
+          "GPT-6.1 Sol стоит $2/$10 за миллион токенов против $10/$50 для Astra—на 39% дешевле GPT-6 Sol, но с более высокими баллами на тестах кода.",
+          "Sonnet 5.5 лидирует в категории Chat, но выбивается из Парето-границы из-за высокой цены за задачу; модели Anthropic занимают три первых места в Agent Arena.",
+          "Decision-модели набирают популярность: pplx-decider-v1-27b Perplexity показывает 85.7% на 11 бенчмарках, хотя критики называют их переупакованными нулевыми классификаторами."
         ]
       }
     },
@@ -100,19 +123,19 @@
       "publishedAt": "2026-10-02T22:57:38.000Z",
       "category": "web3",
       "en": {
-        "headline": "Why it matters: A former Brooklyn newsstand now run by a dinosaur avatar shows how creative projects blend physical spaces with digital personas.",
+        "headline": "Why it matters: A Brooklyn subway newsstand now operated by an AI dinosaur character demonstrates how creative projects use emerging tech for public art installations.",
         "tweets": [
-          "Rex's Dino Store: a working newsstand in Grand Army Plaza subway station operated entirely by a dinosaur character. The pun density is off the charts.",
-          "Physical retail + digital identity experiment happening in plain sight at Brooklyn's Prospect Park entrance. Dinosaur-themed, obviously.",
-          "Art project or business venture? A former newsstand transformed into a pun-filled dino operation challenges what 'store operator' means in 2026."
+          "A former newsstand in Grand Army Plaza subway station is now run by a dinosaur character. The pun density is off the charts.",
+          "Located at the entrance to Brooklyn's Prospect Park, this art installation blends public transit with creative character-driven experiences.",
+          "Unexpected art projects in everyday spaces like subway stations create moments of surprise and delight for commuters."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Киоск в бруклинском метро, управляемый динозавром, демонстрирует слияние физического пространства с цифровым персонажем.",
+        "headline": "Почему важно: Киоск в бруклинском метро, которым управляет динозавр, показывает, как креативные проекты используют технологии для паблик-арта в общественных местах.",
         "tweets": [
-          "Rex's Dino Store: работающий киоск в станции Grand Army Plaza, управляемый персонажем-динозавром. Плотность динозаврских каламбуров зашкаливает.",
-          "Эксперимент на стыке физической розницы и цифровой идентичности разворачивается на входе в парк Prospect в Бруклине.",
-          "Арт-проект или бизнес? Бывший газетный киоск превратился в пространство, полное каламбуров и управляемое динозавром."
+          "Бывший киоск газет на станции Grand Army Plaza теперь работает под управлением персонажа-динозавра. Плотность динозаврических каламбуров зашкаливает.",
+          "Инсталляция расположена у входа в парк Prospect Park и смешивает трансзит с креативностью и оригинальностью.",
+          "Неожиданный паблик-арт в метро создаёт моменты удивления для пассажиров в повседневной рутине."
         ]
       }
     },
@@ -123,19 +146,19 @@
       "publishedAt": "2026-10-02T16:15:00.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: GPT-6 gives startups concrete levers to control reasoning depth, tool orchestration, and production readiness instead of guessing which model fits their workload.",
+        "headline": "Why it matters: GPT-6 gives startups concrete choices on model selection, reasoning depth, and production readiness instead of one-size-fits-all approaches.",
         "tweets": [
-          "GPT-6 lets you dial reasoning effort up or down per task—heavy lifting for complex problems, fast responses for simple ones. Not all queries need full compute.",
-          "Tool coordination gets native support in GPT-6. Chain APIs without manual gluing; the model handles sequencing and error recovery automatically.",
-          "Prompt engineering still works, but now paired with configurable reasoning depth and skill composition. Three levers beat one. Test empirically in staging."
+          "GPT-6 family lets you dial reasoning effort up or down—pick heavy compute for complex problems, skip it for speed on simpler tasks. Match the tool to the actual work.",
+          "Prompt engineering and tool coordination now matter more than raw model power. Good workflows beat bigger models when you're shipping to production.",
+          "Startups need a production checklist: model choice → reasoning tuning → prompt iteration → tool chains. The guide walks through each step, not just hype."
         ]
       },
       "ru": {
-        "headline": "Почему важно: GPT-6 даёт стартапам конкретные способы управлять глубиной рассуждения, оркестровкой инструментов и производственной готовностью вместо угадывания нужной модели.",
+        "headline": "Почему важно: GPT-6 дает стартапам четкие инструменты для выбора модели, настройки глубины рассуждений и подготовки к production вместо универсального решения.",
         "tweets": [
-          "GPT-6 позволяет регулировать усилия на рассуждение по задачам—полная мощь для сложного, быстрый ответ для простого. Не все запросы требуют максимальных вычислений.",
-          "Координация инструментов встроена в GPT-6. Соединяйте API без ручной склейки—модель сама управляет последовательностью и восстановлением ошибок.",
-          "Инженерия промптов по-прежнему работает, но теперь с регулируемой глубиной рассуждения и композицией умений. Три рычага лучше одного. Тестируйте эмпирически."
+          "В семействе GPT-6 можно регулировать объем вычислений для рассуждений: тяжелую обработку для сложных задач, минимум—для скорости. Инструмент под задачу.",
+          "Инженеринг промптов и координация инструментов теперь важнее сырой мощности модели. Хорошие рабочие процессы побеждают более крупные модели в production.",
+          "Стартапам нужен checklist: выбор модели → настройка рассуждений → итерация промптов → цепочки инструментов. Гайд разбирает каждый шаг конкретно."
         ]
       }
     },
@@ -146,19 +169,19 @@
       "publishedAt": "2026-10-02T15:19:50.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: AstaBrief cuts report generation time significantly, making research paper summarization practical for real-world workflows.",
+        "headline": "Why it matters: Open-source report generation models let engineers build document automation without proprietary dependencies.",
         "tweets": [
-          "AstaBrief is now open-source. It generates concise research summaries 3-5x faster than larger models without sacrificing quality.",
-          "Built for academic papers: extracts key findings, methods, and results into structured briefs. Works well on domain-specific documents.",
-          "Uses efficient architecture to run on modest hardware. Teams can now automate report generation without expensive inference costs."
+          "AstaBrief generates multi-page reports in seconds, not minutes. Speed matters for real-time applications like research synthesis and legal summaries.",
+          "Open-sourcing means you control the model, tweak prompts for your domain, and avoid vendor lock-in. Deploy on your own hardware.",
+          "Built on instruction-tuning approach that's reproducible. Engineers can audit how it works instead of guessing at black-box APIs."
         ]
       },
       "ru": {
-        "headline": "Почему важно: AstaBrief ускоряет создание отчётов в 3-5 раз, делая автоматизацию научных кратких излечений реально применимой.",
+        "headline": "Почему важно: Открытые модели генерации отчётов дают инженерам контроль над автоматизацией документов без привязки к облачным API.",
         "tweets": [
-          "AstaBrief теперь в открытом доступе. Генерирует краткие резюме научных статей значительно быстрее больших моделей, без потери качества.",
-          "Специализирован на академических текстах: выделяет ключевые находки, методологию и результаты. Хорошо работает с узкоспециальными документами.",
-          "Экономный архитектурный дизайн позволяет запускать на простом оборудовании. Компании получают автоматизацию отчётов без дорогостоящих вычислений."
+          "AstaBrief создаёт многостраничные отчёты за секунды. Скорость критична для синтеза исследований и юридических резюме в реальном времени.",
+          "Открытый код значит полный контроль: подстраивайте под свою область, избегайте vendor lock-in, развёртывайте на своём оборудовании.",
+          "Базируется на воспроизводимом подходе с instruction-tuning. Можно проверить логику модели вместо угадывания в чёрном ящике API."
         ]
       }
     },
@@ -169,19 +192,19 @@
       "publishedAt": "2026-10-02T14:04:49.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Airbnb's new CTO is rewiring the company to use AI for both internal development speed and customer-facing features, cutting feature delivery cycles from months to weeks.",
+        "headline": "Why it matters: Airbnb's new CTO is systematically rebuilding the company as AI-native, cutting feature development cycles from months to weeks and automating half of customer support.",
         "tweets": [
-          "Airbnb went AI-native fast: 60% of code is now AI-authored, engineers shipping 1.6x more pull requests. The trick? Skip design docs and jump straight to code prototypes.",
-          "Their internal context graph 'Everest' lets generalist engineers work on specialist code. Airport pickups took 6 weeks to build instead of 8-9 months by reusing learnings from grocery delivery.",
-          "AI resolves ~50% of Airbnb's support tickets. Secret sauce: synthetic data testing before production, plus deliberate human handoff for safety-critical issues."
+          "60% of Airbnb's code is now AI-authored. Average engineer productivity up 1.6x. They killed handoffs between product, design, and engineering—teams now prototype directly in code.",
+          "Grocery delivery took 9 months to build. Airport pickups took 6 weeks. The difference: Everest, an internal AI context graph that lets generalists work on specialist code.",
+          "AI resolves ~50% of support tickets using synthetic data for testing. Airbnb is deliberate about the hard cases they don't solve yet—safety issues stay human."
         ]
       },
       "ru": {
-        "headline": "Почему важно: новый CTO Airbnb перестраивает компанию, чтобы использовать AI как для ускорения разработки, так и для преобразования опыта гостей, сокращая циклы доставки функций с месяцев до недель.",
+        "headline": "Почему важно: Новый CTO Airbnb переделывает компанию как AI-native, сокращая цикл разработки с месяцев до недель и автоматизируя половину запросов в поддержку.",
         "tweets": [
-          "Airbnb быстро стал AI-native: 60% кода написано AI, инженеры выпускают в 1,6 раза больше pull request'ов. Ключ: отказ от дизайн-документов в пользу прототипов кода.",
-          "Внутренний граф контекста Everest позволяет универсальным инженерам работать со специализированным кодом. Аэропортный трансфер разработали за 6 недель вместо 8-9 месяцев, переиспользуя опыт доставки продуктов.",
-          "AI решает ~50% запросов в поддержку Airbnb. Главное: синтетические данные для тестирования перед production, плюс осознанная передача человеку для критичных по безопасности случаев."
+          "60% кода Airbnb написано ИИ. Производительность инженеров выросла в 1.6 раза. Компания отменила передачи между продуктом, дизайном и разработкой—все работают с прототипами в коде.",
+          "Доставка продуктов разрабатывалась 9 месяцев. Трансфер в аэропорту—6 недель. Разница в Everest, внутреннем графе контекста на ИИ, который позволяет обычным разработчикам работать со специальным кодом.",
+          "ИИ решает ~50% запросов в поддержку благодаря синтетическим данным для тестирования. Airbnb сознательно оставляет сложные случаи людям, особенно по безопасности."
         ]
       }
     },
@@ -192,42 +215,19 @@
       "publishedAt": "2026-10-02T06:40:53.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Pi agent framework now survives crashes and runs anywhere with TypeScript, while new frontier models trade raw capability for efficiency and cost.",
+        "headline": "Why it matters: Pi agent framework now survives crashes and runs anywhere with TypeScript, while frontier models trade raw capability for efficiency gains.",
         "tweets": [
-          "Pi Durable checkpoints every step so agents resume exactly where they crashed. Runs on Node, Bun, or Cloudflare with pluggable storage. Game changer for production agentic systems.",
-          "GPT-6.1 Sol costs $0.72 per task vs $3.26 for Astra—not smaller tokens, smarter caching and fewer turns. Efficiency is the new frontier after scaling plateaus.",
-          "FLUX 3 does 4K native generation + multi-turn editing. Tavus video agents hit 48% human-mistaken rate. Image synthesis and video interaction racing toward production quality."
+          "Pi Durable checkpoints every agent step—if it crashes, it resumes from exact state. Runs on Node, Bun, or Cloudflare with pluggable storage. Multi-user steering of same agent now possible.",
+          "GPT-6.1 Sol beats GPT-6 by 30% cost: cheaper cache reads and fewer turns, not just token count. Gemini 4 Argon leans on internal validation; coding quality dispute between Google and critics remains unresolved.",
+          "FLUX 3 goes 4K native, takes 10 reference images, edits specific regions. Tavus Griffin video agent passed 48% human-detection threshold—still not a general Turing test."
         ]
       },
       "ru": {
-        "headline": "Почему важно: фреймворк Pi теперь переживает сбои и работает везде благодаря TypeScript, а новые передовые модели жертвуют мощностью ради эффективности и стоимости.",
+        "headline": "Почему важно: Pi теперь восстанавливается после сбоев и работает везде через TypeScript, а новые модели выбирают эффективность вместо шквала возможностей.",
         "tweets": [
-          "Pi Durable сохраняет состояние на каждом шаге—при перезагрузке агент продолжит с того же места. Работает на Node, Bun, Cloudflare с гибкими хранилищами. Решение для боевых систем с агентами.",
-          "GPT-6.1 Sol стоит $0.72 за задачу против $3.26 за Astra—экономия не в токенах, а в умном кешировании и меньших итерациях. После плато масштабирования ставка на эффективность.",
-          "FLUX 3 генерирует 4K-видео с многоступенчатым редактированием. Видеоагенты Tavus достигли 48% совпадений с человеком. Синтез изображений и видео быстро становятся production-ready."
-        ]
-      }
-    },
-    {
-      "id": "d-7996a0",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
-      "publishedAt": "2026-10-02T04:01:31.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Enterprise AI agents need massive amounts of labeled training data, and AutoSynthData automates this bottleneck using LLMs to generate realistic synthetic examples.",
-        "tweets": [
-          "AutoSynthData uses LLMs to generate synthetic training data for enterprise agents at scale. No more manual labeling bottlenecks for customer service workflows.",
-          "The system produces domain-specific examples that reflect real enterprise scenarios, reducing the gap between lab tests and production performance.",
-          "Generated synthetic data cuts time-to-deployment for enterprise agents from months of annotation work to weeks. ServiceNow + HF collaboration shows practical path forward."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Корпоративные AI-агенты требуют огромные объёмы размеченных данных, а AutoSynthData автоматизирует эту узкую горлышку, используя LLM для создания реалистичных синтетических примеров.",
-        "tweets": [
-          "AutoSynthData генерирует синтетические данные для обучения корпоративных агентов в масштабе. Конец ручной разметке для рабочих процессов поддержки клиентов.",
-          "Система создаёт примеры, специфичные для отрасли, которые отражают реальные сценарии в компаниях и снижают разрыв между тестами и боевым использованием.",
-          "Синтетические данные сокращают время внедрения корпоративных агентов с месяцев разметки до недель. ServiceNow и HF показывают практический путь вперёд."
+          "Pi Durable сохраняет каждый шаг агента—при перезагрузке восстанавливает точное состояние. Работает на Node, Bun и Cloudflare с гибким хранилищем. Несколько пользователей теперь могут управлять одним агентом.",
+          "GPT-6.1 Sol дешевле на 30%: выигрыш за счёт кэша и меньше обращений, не просто токенов. Gemini 4 Argon опирается на внутреннюю валидацию; спор о качестве кода между Google и критиками открыт.",
+          "FLUX 3 генерирует 4K, принимает 10 референсов, редактирует по маскам. Видеоагент Tavus Griffin прошёл проверку на 48% человечности—но это не полный тест Тьюринга."
         ]
       }
     }
