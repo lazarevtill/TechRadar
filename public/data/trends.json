@@ -1,7 +1,119 @@
 {
-  "generatedAt": "2026-10-05T14:37:18.091Z",
+  "generatedAt": "2026-10-06T13:24:39.144Z",
   "window": "rolling-120d",
   "topics": [
+    {
+      "id": "llm-agents",
+      "label": "LLM Agents",
+      "category": "ai",
+      "stage": "prototype",
+      "trajectory": "rising",
+      "momentum": 0.03,
+      "weeklyCounts": [
+        411,
+        420,
+        426,
+        449,
+        458,
+        466,
+        456,
+        437,
+        437,
+        452,
+        469,
+        463,
+        88,
+        91
+      ],
+      "signals": [
+        {
+          "title": "Quoting Felix Rieseberg",
+          "url": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
+          "source": "simonw",
+          "publishedAt": "2026-10-05T23:56:47.000Z"
+        },
+        {
+          "title": "The Agent Said It Was Done. The Database Disagreed.",
+          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+          "source": "hf",
+          "publishedAt": "2026-10-03T22:56:48.000Z"
+        },
+        {
+          "title": "[AINews] not much happened today",
+          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
+          "source": "latent-space",
+          "publishedAt": "2026-10-03T08:45:15.000Z"
+        },
+        {
+          "title": "A model guide for the GPT-6 family",
+          "url": "https://openai.com/index/practical-guide-building-gpt-6",
+          "source": "openai",
+          "publishedAt": "2026-10-02T16:15:00.000Z"
+        },
+        {
+          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
+          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T06:40:53.000Z"
+        }
+      ]
+    },
+    {
+      "id": "ai-coding",
+      "label": "AI for Coding",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 0.02,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        49,
+        50
+      ],
+      "signals": [
+        {
+          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
+          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
+          "source": "latent-space",
+          "publishedAt": "2026-10-06T06:28:43.000Z"
+        },
+        {
+          "title": "The Agent Said It Was Done. The Database Disagreed.",
+          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+          "source": "hf",
+          "publishedAt": "2026-10-03T22:56:48.000Z"
+        },
+        {
+          "title": "[AINews] not much happened today",
+          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
+          "source": "latent-space",
+          "publishedAt": "2026-10-03T08:45:15.000Z"
+        },
+        {
+          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
+          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T06:40:53.000Z"
+        },
+        {
+          "title": "pwasm 0.2a0",
+          "url": "https://simonwillison.net/2026/Oct/1/pwasm/",
+          "source": "simonw",
+          "publishedAt": "2026-10-01T17:10:31.000Z"
+        }
+      ]
+    },
     {
       "id": "fusion",
       "label": "Fusion Energy",
@@ -103,124 +215,12 @@
       "signals": []
     },
     {
-      "id": "llm-agents",
-      "label": "LLM Agents",
-      "category": "ai",
-      "stage": "prototype",
-      "trajectory": "cooling",
-      "momentum": -0.09,
-      "weeklyCounts": [
-        411,
-        420,
-        426,
-        449,
-        458,
-        466,
-        456,
-        437,
-        437,
-        452,
-        469,
-        463,
-        88,
-        80
-      ],
-      "signals": [
-        {
-          "title": "The Agent Said It Was Done. The Database Disagreed.",
-          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
-          "source": "hf",
-          "publishedAt": "2026-10-03T22:56:48.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
-          "source": "latent-space",
-          "publishedAt": "2026-10-03T08:45:15.000Z"
-        },
-        {
-          "title": "A model guide for the GPT-6 family",
-          "url": "https://openai.com/index/practical-guide-building-gpt-6",
-          "source": "openai",
-          "publishedAt": "2026-10-02T16:15:00.000Z"
-        },
-        {
-          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
-          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T06:40:53.000Z"
-        },
-        {
-          "title": "AutoSynthData: Generating Training Data for Enterprise Agents",
-          "url": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
-          "source": "hf",
-          "publishedAt": "2026-10-02T04:01:31.000Z"
-        }
-      ]
-    },
-    {
-      "id": "ai-coding",
-      "label": "AI for Coding",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.12,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        49,
-        43
-      ],
-      "signals": [
-        {
-          "title": "The Agent Said It Was Done. The Database Disagreed.",
-          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
-          "source": "hf",
-          "publishedAt": "2026-10-03T22:56:48.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
-          "source": "latent-space",
-          "publishedAt": "2026-10-03T08:45:15.000Z"
-        },
-        {
-          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
-          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T06:40:53.000Z"
-        },
-        {
-          "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
-          "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
-          "source": "latent-space",
-          "publishedAt": "2026-10-01T06:45:05.000Z"
-        },
-        {
-          "title": "[AINews] OpenAI DevDay 2026: Dots, 6.1 Sol, Ultrafast, Decisions API, Agents API, Spaces, Marketplace, and 1.2 Billion ChatGPT WAU",
-          "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
-          "source": "latent-space",
-          "publishedAt": "2026-09-30T05:53:10.000Z"
-        }
-      ]
-    },
-    {
       "id": "ai-safety",
       "label": "AI Safety & Interpretability",
       "category": "ai",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.41,
+      "momentum": -0.32,
       "weeklyCounts": [
         0,
         0,
@@ -235,7 +235,7 @@
         0,
         0,
         34,
-        20
+        23
       ],
       "signals": [
         {
@@ -255,12 +255,50 @@
           "url": "https://simonwillison.net/2026/Sep/29/anthropic-frontier-red-team/",
           "source": "simonw",
           "publishedAt": "2026-09-29T22:20:28.000Z"
+        }
+      ]
+    },
+    {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.47,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        15,
+        8
+      ],
+      "signals": [
+        {
+          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
+          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
+          "source": "latent-space",
+          "publishedAt": "2026-10-06T06:28:43.000Z"
         },
         {
-          "title": "Towards safety cases for frontier AI training",
-          "url": "https://openai.com/index/towards-safety-cases-for-frontier-ai-training",
-          "source": "openai",
-          "publishedAt": "2026-09-28T19:00:00.000Z"
+          "title": "Qwen3.8 27B addition in words",
+          "url": "https://simonwillison.net/2026/Oct/4/qwen38-addition-in-words/",
+          "source": "simonw",
+          "publishedAt": "2026-10-04T23:34:00.000Z"
+        },
+        {
+          "title": "Open-sourcing AstaBrief, the fast report-generation model in Asta",
+          "url": "https://huggingface.co/blog/allenai/astabrief",
+          "source": "hf",
+          "publishedAt": "2026-10-02T15:19:50.000Z"
         }
       ]
     },
@@ -287,46 +325,7 @@
         28,
         10
       ],
-      "signals": [
-        {
-          "title": "[AINews] AMD buys World Labs for $8.2B, as Atlas solves sparse reconstruction problem for robotics, design and more",
-          "url": "https://www.latent.space/p/ainews-amd-buys-world-labs-for-82b",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T02:55:27.000Z"
-        }
-      ]
-    },
-    {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.67,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370,
-        15,
-        5
-      ],
-      "signals": [
-        {
-          "title": "Open-sourcing AstaBrief, the fast report-generation model in Asta",
-          "url": "https://huggingface.co/blog/allenai/astabrief",
-          "source": "hf",
-          "publishedAt": "2026-10-02T15:19:50.000Z"
-        }
-      ]
+      "signals": []
     },
     {
       "id": "multimodal",
@@ -334,7 +333,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.81,
+      "momentum": -0.78,
       "weeklyCounts": [
         0,
         0,
@@ -349,7 +348,7 @@
         0,
         0,
         37,
-        7
+        8
       ],
       "signals": [
         {

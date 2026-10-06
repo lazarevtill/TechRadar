@@ -1,6 +1,98 @@
 {
-  "generatedAt": "2026-10-05T14:37:18.088Z",
+  "generatedAt": "2026-10-06T13:24:39.142Z",
   "items": [
+    {
+      "id": "d-uthuwd",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/tiiuae/falcon-emirati",
+      "publishedAt": "2026-10-06T06:44:39.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a dedicated Emirati-dialect LLM shows that regional language models need cultural grounding, not just translation, to be useful.",
+        "tweets": [
+          "Falcon-Emirati targets the Emirati Arabic dialect specifically, not generic MSA Arabic.",
+          "The model aims to capture local culture and nuance, not just vocabulary swaps.",
+          "Shows a growing trend: dialect-specific LLMs over one-size-fits-all Arabic models."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: модель Falcon-Emirati показывает, что для региональных языковых моделей важна не просто механический перевод, а культурный контекст.",
+        "tweets": [
+          "Falcon-Emirati заточен именно под эмиратский диалект, а не под стандартный литературный арабский.",
+          "Цель модели — передавать культурные нюансы, а не просто заменять слова.",
+          "Это часть тренда на диалектные LLM вместо универсальных арабских моделей."
+        ]
+      }
+    },
+    {
+      "id": "d-28wj9w",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
+      "publishedAt": "2026-10-06T06:28:43.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Reflection finally shipped a from-scratch US open model, but it trails China's frontier releases and shows real limits of brute-force compute scaling.",
+        "tweets": [
+          "Reflection's Beam (501B total/23B active MoE) is the first real product from a year-long stealth project — Apache 2.0 weights coming this month.",
+          "Claimed 80.9 on SWE-bench and 3-4x GLM-5.2 efficiency, but analysts estimate only ~12% MFU during training and place it below DeepSeek V4 Flash.",
+          "Separately, SemiAnalysis found Claude subscriptions deliver far more API-equivalent value than OpenAI's — though the gap shrinks once task cost is normalized."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Reflection наконец выпустила полностью обученную в США открытую модель, но она уступает китайским лидерам и наглядно показывает пределы наращивания вычислений в лоб.",
+        "tweets": [
+          "Beam от Reflection (501B параметров, 23B активных, MoE) — первый реальный продукт после года в стелс-режиме, веса Apache 2.0 обещают в этом месяце.",
+          "Заявлено 80.9 на SWE-bench и эффективность в 3-4 раза выше GLM-5.2, но MFU при обучении всего ~12%, а по бенчмаркам модель уступает DeepSeek V4 Flash.",
+          "Отдельно SemiAnalysis выяснил: подписки Claude дают больше пользы на доллар, чем у OpenAI, хотя разрыв сокращается при учёте стоимости задач."
+        ]
+      }
+    },
+    {
+      "id": "d-1ui1rtd",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
+      "publishedAt": "2026-10-05T23:56:47.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Anthropic moved Cowork's sandbox VM from your laptop to the cloud, fixing battery drain and letting agent sessions keep running when you close the lid.",
+        "tweets": [
+          "Cowork used to ship a VM to your machine for safety/security — great for capability, brutal for battery and disk.",
+          "New version runs inference AND the VM in the cloud, each session its own isolated sandbox.",
+          "Local device now only handles file-access tool calls, meaning Cowork can run from your phone and survive a closed laptop."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Anthropic перенесла VM-песочницу Cowork с ноутбука пользователя в облако, избавившись от расхода батареи и позволив сессиям агента работать даже при закрытой крышке.",
+        "tweets": [
+          "Раньше Cowork гонял VM локально ради безопасности — круто по возможностям, но убивало батарею и диск.",
+          "Теперь и модель, и VM работают в облаке, у каждой сессии своя изолированная песочница.",
+          "Устройство пользователя теперь только обрабатывает вызовы доступа к файлам — можно работать с телефона, и работа не останавливается при закрытии ноутбука."
+        ]
+      }
+    },
+    {
+      "id": "d-u3byi7",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/eu-text-provenance",
+      "publishedAt": "2026-10-05T15:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI is rolling out text watermarking to comply with EU provenance rules, starting with limited access for researchers before any broader rollout.",
+        "tweets": [
+          "OpenAI outlines its plan for watermarking AI-generated text to meet new EU provenance requirements.",
+          "Detection tools will be gated — researchers get access first, not the general public.",
+          "This is a compliance move, not a universal anti-fake-text fix; scope and limits still need clarifying."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: OpenAI внедряет водяные знаки для текста, чтобы соответствовать новым правилам ЕС о происхождении контента, и начинает с ограниченного доступа для исследователей.",
+        "tweets": [
+          "OpenAI рассказала, как планирует маркировать сгенерированный текст под требования ЕС по прозрачности происхождения контента.",
+          "Доступ к инструментам детекции сначала получат только исследователи, а не все пользователи.",
+          "Это шаг ради соответствия закону, а не универсальное решение против фейковых текстов — детали и ограничения пока размыты."
+        ]
+      }
+    },
     {
       "id": "d-162qkqd",
       "source": "openai",
@@ -21,6 +113,29 @@
           "В ChatGPT появился новый визуальный формат рекламы — не только текст, но и картинки.",
           "Добавлены инструменты измерения и атрибуции, чтобы рекламодатели могли отслеживать эффективность показов в диалогах с ИИ.",
           "Расширяются настройки безопасности бренда — похоже, OpenAI готовит ChatGPT к серьёзному масштабированию рекламы."
+        ]
+      }
+    },
+    {
+      "id": "d-1jpeqrs",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/4/qwen38-addition-in-words/",
+      "publishedAt": "2026-10-04T23:34:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a small local LLM nails large-number addition when allowed to reason step-by-step, showing reasoning mode dramatically boosts arithmetic reliability without external tools.",
+        "tweets": [
+          "Qwen3.8-27B tested on adding huge numbers written out as words, run locally on a DGX Spark.",
+          "With reasoning disabled, accuracy was patchy across number sizes (30 samples per pair).",
+          "With reasoning enabled, it nailed 167/169 one-shot attempts—no calculator, just careful digit-by-digit addition."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: небольшая локальная LLM почти безошибочно складывает огромные числа, если ей разрешено рассуждать шаг за шагом — это сильно повышает надёжность арифметики без внешних инструментов.",
+        "tweets": [
+          "Qwen3.8-27B проверили на сложении больших чисел, записанных словами, локально на DGX Spark.",
+          "Без режима рассуждений результаты скакали в зависимости от размера чисел (30 попыток на пару).",
+          "С включённым рассуждением модель справилась в 167 из 169 попыток с первого раза — без калькулятора, просто считая по разрядам."
         ]
       }
     },
@@ -113,121 +228,6 @@
           "GPT-6.1 Sol стоит в разы дешевле Astra ($2/$10 против $10/$50 за million токенов), но обгоняет GPT-6 Sol и почти не отстаёт от Opus 5.5.",
           "Anthropic заняла весь топ-3 в Agent Arena: Sonnet 5.5 сразу вошла на 3-е место и стала лучшей в категории чатов.",
           "Так называемые 'decision models' (Jev, Kev, Clef) расползаются по инструментам, хотя критики говорят, что это просто переименованные классификаторы."
-        ]
-      }
-    },
-    {
-      "id": "d-ovehuv",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/2/rex-s-dino-store/",
-      "publishedAt": "2026-10-02T22:57:38.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: it doesn't, this is just a fun off-topic post from Simon Willison.",
-        "tweets": [
-          "Simon Willison spotted a dinosaur-themed newsstand near Prospect Park's Grand Army Plaza subway station.",
-          "The shop is packed with dinosaur puns, apparently.",
-          "This is a lighthearted aside, not an AI or tech story — just Simon sharing something amusing he found."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: это просто забавная заметка Саймона Уиллисона не по теме технологий.",
-        "tweets": [
-          "Саймон Уиллисон заметил киоск с динозаврами у станции метро Grand Army Plaza возле Prospect Park.",
-          "В магазинчике полно каламбуров про динозавров.",
-          "Это просто милая зарисовка, а не новость про ИИ или технологии — Саймон делится забавной находкой."
-        ]
-      }
-    },
-    {
-      "id": "d-1fkmtaz",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/practical-guide-building-gpt-6",
-      "publishedAt": "2026-10-02T16:15:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: OpenAI published practical guidance for startups on choosing GPT-6 models and tuning them for production use.",
-        "tweets": [
-          "OpenAI's new guide helps startups pick the right GPT-6 model for their use case.",
-          "Covers tuning reasoning effort, improving prompts/skills, and coordinating tool use.",
-          "Aimed at getting workflows production-ready, not just prototype-ready."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: OpenAI выпустила практическое руководство для стартапов по выбору и настройке моделей GPT-6 под продакшен.",
-        "tweets": [
-          "Новый гайд OpenAI помогает стартапам выбрать подходящую модель из семейства GPT-6.",
-          "Рассказывает, как настраивать глубину рассуждений, улучшать промпты и навыки модели.",
-          "Отдельное внимание — координации инструментов и подготовке рабочих процессов к продакшену."
-        ]
-      }
-    },
-    {
-      "id": "d-d3p8xe",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/allenai/astabrief",
-      "publishedAt": "2026-10-02T15:19:50.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Allen AI open-sourced AstaBrief, a fast report-generation model used in its Asta research assistant, giving developers a free tool for quick summarization tasks.",
-        "tweets": [
-          "Allen AI just open-sourced AstaBrief, the model behind fast report generation in its Asta assistant.",
-          "It's built for speed—generating structured reports/briefs quickly rather than slow, exhaustive synthesis.",
-          "Open weights mean devs can run or fine-tune it themselves instead of relying on closed APIs for summarization tasks."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Allen AI выложила в открытый доступ AstaBrief — быструю модель для генерации отчётов из их ассистента Asta, и теперь её может использовать кто угодно.",
-        "tweets": [
-          "Allen AI открыла исходники AstaBrief — модели, которая отвечает за быструю генерацию отчётов в их ассистенте Asta.",
-          "Главный акцент — скорость: модель делает структурированные брифы быстро, а не долгий глубокий анализ.",
-          "Открытые веса — значит разработчики могут запускать и дообучать модель сами, без зависимости от закрытых API."
-        ]
-      }
-    },
-    {
-      "id": "d-11hr887",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/airbnb",
-      "publishedAt": "2026-10-02T14:04:49.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Airbnb's new CTO (ex-Meta Llama lead) is using internal AI tools to cut dev time dramatically, then redeploying the same tech to automate half of customer support.",
-        "tweets": [
-          "Airbnb says 60% of its code is now AI-authored, with ~80% more features shipped year over year.",
-          "An internal AI context graph called Everest cut a new service's build time from 9 months to 6 weeks.",
-          "AI now resolves roughly half of Airbnb's customer support tickets, tested first with synthetic data."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новый CTO Airbnb (экс-глава генеративного ИИ в Meta) использует внутренние ИИ-инструменты, чтобы резко ускорить разработку, а затем применяет те же технологии для автоматизации половины обращений в поддержку.",
-        "tweets": [
-          "В Airbnb уже 60% кода пишет ИИ, а число новых фич выросло почти на 80% год к году.",
-          "Внутренний ИИ-граф Everest сократил запуск нового сервиса с 9 месяцев до 6 недель.",
-          "ИИ самостоятельно закрывает около половины тикетов поддержки — но перед этим систему долго тестируют на синтетических данных."
-        ]
-      }
-    },
-    {
-      "id": "d-opisxv",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
-      "publishedAt": "2026-10-02T06:40:53.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Pi's durable, TypeScript-based agent runtime shows the industry moving toward crash-proof, multiplayer AI agents, while rival models compete on cost-efficiency over raw power.",
-        "tweets": [
-          "Pi Durable ports Pi to TypeScript, adding crash recovery, hot-swapping, and multiplayer agent state—runs anywhere JS does.",
-          "GPT-6.1 Sol's big win isn't raw capability, it's cost: $0.72/task vs $3.26 for Astra, mostly from fewer turns and cheaper caching.",
-          "FLUX 3 adds 4K native image gen and multi-image reference editing, but open weights are still 'coming soon,' not here yet."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Pi Durable показывает, куда движется индустрия ИИ-агентов — к устойчивым к сбоям, многопользовательским системам, а конкуренты соревнуются не мощностью, а экономичностью.",
-        "tweets": [
-          "Pi Durable переписали на TypeScript: агенты переживают сбои, код можно менять на лету, несколько пользователей работают с одним агентом одновременно.",
-          "Главный козырь GPT-6.1 Sol — не мощь, а цена: $0.72 за задачу против $3.26 у Astra, благодаря меньшему числу шагов и дешёвому кешу.",
-          "FLUX 3 умеет генерировать картинки в 4K и редактировать по нескольким референсам, но открытые веса обещают только 'в ближайшие недели'."
         ]
       }
     }
