@@ -1,39 +1,14 @@
 {
-  "generatedAt": "2026-10-05T14:36:09.091Z",
+  "generatedAt": "2026-10-06T13:17:57.557Z",
   "window": "rolling-120d",
   "topics": [
-    {
-      "id": "post-quantum",
-      "label": "Post-Quantum Crypto",
-      "category": "cybersecurity",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        6,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "signals": []
-    },
     {
       "id": "protein-design",
       "label": "Protein Design",
       "category": "biotech",
       "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.14,
+      "trajectory": "rising",
+      "momentum": 0.03,
       "weeklyCounts": [
         21,
         21,
@@ -48,7 +23,7 @@
         21,
         21,
         35,
-        30
+        36
       ],
       "signals": [
         {
@@ -84,12 +59,37 @@
       ]
     },
     {
+      "id": "post-quantum",
+      "label": "Post-Quantum Crypto",
+      "category": "cybersecurity",
+      "stage": "research",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        6,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
       "id": "open-models",
       "label": "Open Models",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.26,
+      "momentum": -0.11,
       "weeklyCounts": [
         375,
         358,
@@ -104,9 +104,21 @@
         364,
         370,
         384,
-        283
+        340
       ],
       "signals": [
+        {
+          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
+          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
+          "source": "latent-space",
+          "publishedAt": "2026-10-06T06:28:43.000Z"
+        },
+        {
+          "title": "Qwen3.8 27B addition in words",
+          "url": "https://simonwillison.net/2026/Oct/4/qwen38-addition-in-words/",
+          "source": "simonw",
+          "publishedAt": "2026-10-04T23:34:00.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
@@ -124,18 +136,6 @@
           "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
           "source": "latent-space",
           "publishedAt": "2026-10-02T06:40:53.000Z"
-        },
-        {
-          "title": "Academia is for Ambition — Alex Zhang, MIT",
-          "url": "https://www.latent.space/p/rlm",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T00:28:04.000Z"
-        },
-        {
-          "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
-          "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
-          "source": "latent-space",
-          "publishedAt": "2026-10-01T06:45:05.000Z"
         }
       ]
     },
@@ -145,7 +145,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.29,
+      "momentum": -0.15,
       "weeklyCounts": [
         411,
         420,
@@ -160,9 +160,15 @@
         469,
         463,
         440,
-        312
+        375
       ],
       "signals": [
+        {
+          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
+          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
+          "source": "latent-space",
+          "publishedAt": "2026-10-06T06:28:43.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
@@ -186,12 +192,6 @@
           "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
           "source": "latent-space",
           "publishedAt": "2026-09-29T02:44:29.000Z"
-        },
-        {
-          "title": "Claude Code’s Next Era — Thariq Shihipar, Anthropic",
-          "url": "https://www.latent.space/p/thariq",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T01:48:18.000Z"
         }
       ]
     },
@@ -201,7 +201,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.34,
+      "momentum": -0.22,
       "weeklyCounts": [
         81,
         60,
@@ -216,7 +216,7 @@
         92,
         103,
         93,
-        61
+        73
       ],
       "signals": [
         {
@@ -257,7 +257,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.48,
+      "momentum": -0.39,
       "weeklyCounts": [
         14,
         11,
@@ -272,7 +272,7 @@
         17,
         28,
         33,
-        17
+        20
       ],
       "signals": [
         {
@@ -301,7 +301,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.58,
+      "momentum": -0.5,
       "weeklyCounts": [
         1,
         7,
@@ -316,7 +316,7 @@
         2,
         7,
         12,
-        5
+        6
       ],
       "signals": [
         {
