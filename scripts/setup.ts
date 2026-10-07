@@ -24,6 +24,7 @@ import { createInterface } from 'node:readline/promises'
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { parseTopicsFile } from '../src/server/utils/topics-config'
+import { chatUrl } from '../src/server/utils/judge'
 
 // --- options ---------------------------------------------------------------
 
@@ -40,7 +41,12 @@ export interface Options {
   publicBaseUrl?: string
   mymemoryEmail?: string
   openalexMailto?: string
+  /** An OpenAI-compatible server (Ollama, vLLM, LM Studio, llama.cpp). */
   llmBaseUrl?: string
+  /** Which model that server should load; it cannot be guessed. */
+  llmModel?: string
+  /** A self-hosted TypeSafe deployment, which speaks a different protocol. */
+  typesafeBaseUrl?: string
   llmOff: boolean
   /** A topics file to install as config/topics.json; '' means the example. */
   topics?: string
@@ -90,9 +96,13 @@ Optional integrations
   --openalex-mailto <email> OpenAlex polite pool
 
 Where judgments are made
-  --llm-base-url <url>      Send them to your own endpoint instead of the
-                            hosted service — IP, hostname or http(s) URL. The
-                            endpoint must speak the TypeSafe API.
+  --llm-base-url <url>      Your own OpenAI-compatible server — Ollama, vLLM,
+                            LM Studio, llama.cpp. IP, host:port or full URL;
+                            nothing leaves your network. Needs --llm-model.
+  --llm-model <name>        Which model that server answers with, e.g.
+                            qwen3:8b. There is no sensible default.
+  --typesafe-base-url <url> A TypeSafe deployment of your own (a different
+                            protocol from the above); still needs a key.
   --no-llm                  Run with no model at all: the radar still collects,
                             links and ranks by engagement, and every item reads
                             "Unclassified".
@@ -190,6 +200,12 @@ export function parseArgs(argv: string[]): Options | 'help' {
       case '--llm-base-url':
         o.llmBaseUrl = next(i++, a)
         break
+      case '--llm-model':
+        o.llmModel = next(i++, a)
+        break
+      case '--typesafe-base-url':
+        o.typesafeBaseUrl = next(i++, a)
+        break
       case '--topics':
         o.topics = next(i++, a)
         break
@@ -251,10 +267,21 @@ export function parseArgs(argv: string[]): Options | 'help' {
         throw new UsageError(`unknown flag "${a}" (try --help)`)
     }
   }
-  if (o.llmOff && o.llmBaseUrl) {
+  if (o.llmOff && (o.llmBaseUrl || o.typesafeBaseUrl)) {
     throw new UsageError(
-      '--no-llm and --llm-base-url contradict each other: one turns judgments off, the other says where to send them. Pick one.',
+      '--no-llm and a judgment endpoint contradict each other: one turns judgments off, the other says where to send them. Pick one.',
     )
+  }
+  // Guessing a model would send items to a server that is not loaded with the
+  // one the person meant, and the radar would look broken rather than
+  // misconfigured.
+  if (o.llmBaseUrl && !o.llmModel) {
+    throw new UsageError(
+      '--llm-base-url also needs --llm-model <name> — the server has to be told which model to answer with (e.g. --llm-model qwen3:8b).',
+    )
+  }
+  if (o.llmModel && !o.llmBaseUrl) {
+    throw new UsageError('--llm-model needs --llm-base-url <url>')
   }
   return o
 }
@@ -303,7 +330,10 @@ export function envValues(
     MYMEMORY_EMAIL: o.mymemoryEmail,
     OPENALEX_MAILTO: o.openalexMailto,
     TYPESAFE_API_KEY: secrets.typesafe,
-    TYPESAFE_BASE_URL: o.llmBaseUrl,
+    TYPESAFE_BASE_URL: o.typesafeBaseUrl,
+    LLM_BASE_URL: o.llmBaseUrl,
+    LLM_MODEL: o.llmModel,
+    JUDGE_BACKEND: o.llmOff ? 'none' : undefined,
     GITHUB_TOKEN: secrets.github,
     ADMIN_TOKEN: secrets.admin,
   }
@@ -350,6 +380,51 @@ export function detectRuntime(): Runtime {
     dockerFlavour: flavour,
     compose: compose.ok,
     bun: Boolean(process.versions.bun),
+  }
+}
+
+// --- judgment endpoint -----------------------------------------------------
+
+/**
+ * Asks the configured server for one trivial judgment. A wrong port or a
+ * model that is not pulled is the most likely thing to be wrong about a
+ * self-hosted setup, and finding out here beats finding out from a feed full
+ * of "Unclassified" an hour later. Never fatal: the server may simply not be
+ * up yet.
+ */
+export async function probeLlm(
+  baseUrl: string,
+  model: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<string> {
+  const url = chatUrl(baseUrl)
+  try {
+    const response = await fetchImpl(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        temperature: 0,
+        messages: [{ role: 'user', content: 'Reply with the word ok.' }],
+        max_tokens: 5,
+      }),
+      signal: AbortSignal.timeout(20_000),
+    })
+    const text = await response.text()
+    if (!response.ok) {
+      // Ollama says "model not found, try pulling it first" here, which is
+      // the single most useful message to pass straight through.
+      return `${url} answered ${response.status}: ${text.slice(0, 200)}`
+    }
+    const body = JSON.parse(text) as {
+      choices?: { message?: { content?: string } }[]
+    }
+    if (typeof body.choices?.[0]?.message?.content !== 'string') {
+      return `${url} replied, but not in the OpenAI chat-completions shape — check it is the /v1 endpoint`
+    }
+    return `ok: ${model} answered at ${url}`
+  } catch (error) {
+    return `${url} did not answer (${(error as Error).message}) — is the server running, and is the port right?`
   }
 }
 
@@ -533,13 +608,25 @@ async function main(argv: string[]): Promise<number> {
       console.log(
         'Running with no model (--no-llm): items are collected, linked and ranked by engagement; each reads "Unclassified".',
       )
-    } else if (!secrets.typesafe) {
-      console.log(
-        'No TYPESAFE_API_KEY: the radar still runs, but every live item shows as Unclassified and ranking falls back to engagement only.',
-      )
     } else if (o.llmBaseUrl) {
       console.log(
-        `Judgments go to ${o.llmBaseUrl} rather than the hosted service.`,
+        `Judgments stay on your network: ${o.llmModel} at ${o.llmBaseUrl}. Nothing is sent to a hosted service.`,
+      )
+      if (!o.dryRun) {
+        const result = await probeLlm(o.llmBaseUrl, o.llmModel!)
+        console.log(
+          result.startsWith('ok:')
+            ? `  ${result}`
+            : `  warning: ${result}\n  Writing the configuration anyway — the radar retries every rebuild.`,
+        )
+      }
+    } else if (!secrets.typesafe) {
+      console.log(
+        'No TYPESAFE_API_KEY and no --llm-base-url: the radar still runs, but every live item shows as Unclassified and ranking falls back to engagement only.',
+      )
+    } else if (o.typesafeBaseUrl) {
+      console.log(
+        `Judgments go to your TypeSafe deployment at ${o.typesafeBaseUrl}.`,
       )
     }
 

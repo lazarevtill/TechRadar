@@ -1,4 +1,5 @@
-import { TypeSafeClient, noul, score } from '@typesafe-ai/sdk'
+import { noul, score } from '@typesafe-ai/sdk'
+import { getJudge, type Judge, type Question } from '@/server/utils/judge'
 import { countUsage } from '@/server/utils/usage'
 import {
   contentHash,
@@ -92,20 +93,10 @@ const judgmentRules = () => ({
   topicFingerprint: effectiveFingerprint(),
 })
 
-let client: TypeSafeClient | null | undefined
-
-function getClient(): TypeSafeClient | null {
-  if (client !== undefined) return client
-  const apiKey = process.env.TYPESAFE_API_KEY
-  if (!apiKey) {
-    console.warn(
-      '[jev] TYPESAFE_API_KEY is not set — signals are ranked from engagement only',
-    )
-    client = null
-    return client
-  }
-  client = new TypeSafeClient({ apiKey })
-  return client
+// Who answers is decided in server/utils/judge.ts; here it is only "someone
+// or nobody", and nobody means engagement-only ranking.
+function getClient(): Judge | null {
+  return getJudge()
 }
 
 export type AskSignal = (input: SignalJudgeInput) => Promise<SignalJudgment>
@@ -117,8 +108,12 @@ type Answer =
 
 async function askJev(input: SignalJudgeInput): Promise<SignalJudgment> {
   const c = getClient()
-  if (!c) throw new Error('TYPESAFE_API_KEY is not set')
-  const result = await c.systemOne(buildSignalRequest(input))
+  if (!c) throw new Error('no judgment backend is configured')
+  const request = buildSignalRequest(input)
+  const result = await c.systemOne({
+    state: request.state,
+    questions: request.questions as unknown as Record<string, Question>,
+  })
   const answers = result.answers as unknown as Record<string, Answer>
 
   const noveltyAnswer = answers.novelty

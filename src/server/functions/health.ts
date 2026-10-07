@@ -13,6 +13,7 @@ import {
 } from '@/server/store/ops'
 import { CACHE_KEYS, getCached } from '@/server/utils/cache'
 import { topicsStatus } from '@/server/utils/topics-config'
+import { judgeInfo } from '@/server/utils/judge'
 import { SOURCE_CONFIG, type DataSource } from '@/lib/tech-categories'
 
 /**
@@ -44,6 +45,8 @@ export interface Health {
   sources: SourceHealth[]
   /** Tracked topics in force: how many, from where, and why a file was ignored. */
   topics: { count: number; source: string; error?: string }
+  /** Who answers the model questions: hosted, your own server, or nobody. */
+  judge: { kind: 'typesafe' | 'openai' | 'none'; detail: string }
   detail: {
     usage: ReturnType<typeof usageSince>
     storage: ReturnType<typeof storageInfo>
@@ -77,6 +80,7 @@ export async function getHealth(withDetail: boolean): Promise<Health> {
     feedAge,
     sources,
     topics,
+    judge: judgeInfo(),
     detail: withDetail
       ? {
           usage: usageSince(db, daysBefore(today, 6)),

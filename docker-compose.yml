@@ -23,6 +23,14 @@ services:
       # http(s) URL. Unset = hosted. Leaving TYPESAFE_API_KEY empty disables
       # judgments entirely (items show as Unclassified, ranking by engagement).
       TYPESAFE_BASE_URL: ${TYPESAFE_BASE_URL:-}
+      # Or judge on your own hardware with no key: any OpenAI-compatible
+      # server. From a container, localhost is the container — use
+      # host.docker.internal (Docker Desktop/OrbStack) or the host's LAN IP.
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-}
+      JUDGE_BACKEND: ${JUDGE_BACKEND:-}
       # Tracked topics, read from the mounted ./config below. A path outside
       # that directory would have to be mounted too.
       TOPICS_FILE: ${TOPICS_FILE:-config/topics.json}

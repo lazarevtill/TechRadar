@@ -113,7 +113,9 @@ secrets show as `<set, hidden>`.
 | `--openalex-mailto <email>`  | OpenAlex polite pool                                             |
 | `--topics <path>`            | Install this file as `config/topics.json` (validated first)      |
 | `--example-topics`           | Start `config/topics.json` from the shipped example              |
-| `--llm-base-url <url>`       | Send judgments to your own endpoint instead of the hosted one    |
+| `--llm-base-url <url>`       | Your own OpenAI-compatible server (Ollama, vLLM, …)              |
+| `--llm-model <name>`         | Which model it answers with; required with the above             |
+| `--typesafe-base-url <url>`  | A TypeSafe deployment of your own (different protocol)           |
 | `--no-llm`                   | Run with no model at all                                         |
 | `--typesafe-key-file <path>` | File holding `TYPESAFE_API_KEY`                                  |
 | `--github-token-file <path>` | File holding `GITHUB_TOKEN`                                      |
@@ -140,41 +142,96 @@ and the usage/storage half of `/api/health` are unprotected.
 
 ## Where judgments are made
 
-Categorization and the signal model ask a model one constrained question per
-item. You have three options.
+The radar asks a model one constrained question at a time: which area an item
+belongs to, how new the capability is, whether it is a concrete artifact,
+whether it is about each tracked topic. Numbers — stars, points, ages,
+percentiles — are always computed in code. You have four options, and
+`curl -s localhost:3000/api/health | jq .judge` always says which one is in
+force.
 
-**Hosted (default).** Set `TYPESAFE_API_KEY` and nothing else.
+### On your own hardware, with no key
 
-**Your own endpoint.** Point the radar at a deployment you run — an IP, a
-hostname or a full URL. Nothing leaves your network:
-
-```bash
-bun run setup --llm-base-url http://10.0.0.5:8080 --typesafe-key-file ~/.secrets/jev
-# or, by hand:  TYPESAFE_BASE_URL=http://10.0.0.5:8080 in .env
-```
-
-The endpoint must speak the **TypeSafe API** — the SDK asks for a labelled
-choice with a confidence, not a chat completion. A plain OpenAI-compatible
-server (Ollama, vLLM, LM Studio, llama.cpp) does **not** satisfy that contract
-today; adapting one is a code change, not configuration. See the note below.
-
-**No model at all.**
+Any OpenAI-compatible server works: **Ollama, vLLM, LM Studio, llama.cpp**.
+Nothing leaves your network and there is no per-item cost.
 
 ```bash
-bun run setup --no-llm
+ollama serve &
+ollama pull qwen3:8b
+bun run setup --llm-base-url http://localhost:11434 --llm-model qwen3:8b
 ```
 
-The radar still fetches every source, links works across them, keeps history,
-discovers nothing by model, and ranks purely by engagement. Every item reads
-"Unclassified". This is a supported mode, not a degraded accident — the
-summary strip says so explicitly.
+The installer asks that server for one judgment before writing anything, so a
+wrong port or an unpulled model is reported while you are still looking at the
+terminal. `--llm-model` is required: pointing at a server without saying which
+model it should answer with would make the radar look broken rather than
+misconfigured.
 
-> **Wanting Ollama or vLLM?** The gap is that `choice()` returns one of N
-> labels with a calibrated confidence. Reproducing that on an OpenAI-compatible
-> server means constraining generation (JSON-schema or logit-bias) and deriving
-> a confidence from logprobs, behind a provider interface the three `jev-*`
-> modules call. That is a feature with its own tests, not a URL swap — say the
-> word and it can be built.
+`LLM_BASE_URL` takes `host:port`, an IP or a full URL; `/v1/chat/completions`
+is appended if you leave it off. `LLM_API_KEY` and `LLM_TIMEOUT_MS` (default
+120 s, because local models are slow) are optional.
+
+**From Docker, `localhost` is the container.** Use `host.docker.internal`
+(Docker Desktop, OrbStack) or the host's LAN address:
+
+```bash
+LLM_BASE_URL=http://host.docker.internal:11434 LLM_MODEL=qwen3:8b \
+  docker compose up -d --build
+```
+
+What to expect from this path:
+
+- **Pick a model that follows a schema.** The adapter constrains every answer
+  to an allowed set and **rejects anything outside it** — the item is recorded
+  as unjudged rather than given a label nobody chose. A model that cannot hold
+  to the schema produces unjudged items, not wrong ones.
+- **Answers are coarser than the hosted service's.** A hosted `noul` is a
+  calibrated probability; asking a chat model for "0.73" returns a number that
+  looks calibrated and is not. So the adapter asks it to pick a rung — _no,
+  unlikely, even, likely, yes_ — and maps those to 0.02 / 0.2 / 0.5 / 0.75 /
+  0.95. Likewise a rubric answer is one level rather than a distribution, so
+  `novelty` comes out 0 or 1 and the **novel** highlight means "the model
+  placed this at rubric level ≥ 3".
+- **It is slow the first time and cheap after.** Every judgment is cached by
+  item and by the exact question (`.cache/jev-verdicts.json`), so a rebuild
+  only asks about new or edited items — the same caching as the hosted path.
+  The first build asks about a few hundred items; later ones about a handful.
+- **Each item is one request** with all its questions in it, run in parallel
+  across items. A small server will be the bottleneck; raise `LLM_TIMEOUT_MS`
+  rather than lowering the feed size.
+
+### Hosted (the default)
+
+Set `TYPESAFE_API_KEY` and nothing else. Keys come from
+[docs.typesafe.ai](https://docs.typesafe.ai/). This is the only path that
+gives calibrated probabilities, and it is what the thresholds in the signal
+model were tuned against.
+
+### A TypeSafe deployment of your own
+
+A different protocol from the OpenAI-compatible one above — labelled questions
+with confidences, not chat completions. Still needs a key:
+
+```bash
+bun run setup --typesafe-base-url http://10.0.0.5:9000 \
+  --typesafe-key-file ~/.secrets/typesafe
+```
+
+### No model at all
+
+```bash
+bun run setup --no-llm        # or JUDGE_BACKEND=none
+```
+
+The radar still fetches every source, links works across them, keeps history
+and growth, and ranks purely by engagement. It discovers no themes and every
+item reads "Unclassified". This is a supported mode, not a degraded accident —
+the summary strip says so explicitly.
+
+### Switching later
+
+Change `.env` and restart; nothing else. Cached judgments are keyed by the
+question, not by who answered it, so moving between backends reuses what is
+already there rather than re-asking.
 
 ## Making it yours
 
@@ -292,10 +349,22 @@ in use". Pick another: `bun run setup --port 8080 --force`, which rewrites
 `.env`; the host port comes from `PORT`, and the container always listens on
 3000 internally.
 
-**Every item says "Unclassified".** No `TYPESAFE_API_KEY`, or the key was
-rejected. This is a working mode, not a crash — the feed is ranked by
-engagement. `curl -s localhost:3000/api/health` and the summary strip both say
-so.
+**Every item says "Unclassified".** No judgment backend is configured, or the
+one that is cannot be reached. `curl -s localhost:3000/api/health | jq .judge`
+says which it is in one line. Running without a model is a working mode, not a
+crash — the feed is still collected, linked and ranked by engagement.
+
+**My local model is configured but items stay unjudged.** The logs name the
+cause per item (`[jev] categorize <id> failed: …`). The usual three:
+
+- `did not answer` or `not an allowed choice` — the model is not holding to
+  the schema. Try a larger or more instruction-following model; the adapter
+  refuses an answer outside the allowed set rather than guessing.
+- `answered 404: model not found` — `ollama pull <model>` first, and check
+  `--llm-model` matches the tag exactly.
+- `did not answer (The operation timed out)` — raise `LLM_TIMEOUT_MS`. From a
+  container, also check you used `host.docker.internal` or a LAN IP rather
+  than `localhost`.
 
 **My topics are not showing up.** `curl -s localhost:3000/api/health | jq
 .topics`. `"source": "built-in"` with an `error` means the file was rejected

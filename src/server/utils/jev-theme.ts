@@ -1,4 +1,5 @@
-import { TypeSafeClient, noul } from '@typesafe-ai/sdk'
+import { noul } from '@typesafe-ai/sdk'
+import { getJudge, type Question } from '@/server/utils/judge'
 import type { AskTheme, BurstCandidate } from '@/server/store/discovery'
 
 /**
@@ -24,17 +25,19 @@ export function buildThemeRequest(candidate: BurstCandidate) {
   }
 }
 
-/** The Jev asker, or null when TYPESAFE_API_KEY is not set. */
+/** The asker, or null when no judgment backend is configured. */
 export function themeAsker(): AskTheme | null {
-  const apiKey = process.env.TYPESAFE_API_KEY
-  if (!apiKey) return null
-  const client = new TypeSafeClient({ apiKey })
+  const judge = getJudge()
+  if (!judge) return null
   return async (candidate) => {
-    const { answers } = await client.systemOne(buildThemeRequest(candidate))
-    const answer = (answers as Record<string, { type: string; noul?: number }>)
-      .theme
+    const request = buildThemeRequest(candidate)
+    const { answers } = await judge.systemOne({
+      state: request.state,
+      questions: request.questions as unknown as Record<string, Question>,
+    })
+    const answer = answers.theme
     if (answer?.type !== 'noul' || typeof answer.noul !== 'number')
-      throw new Error('theme answer missing from Jev response')
+      throw new Error('theme answer missing from the judgment response')
     return answer.noul
   }
 }

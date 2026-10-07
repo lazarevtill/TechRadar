@@ -50,12 +50,38 @@ describe('parseArgs', () => {
     })
   })
 
-  it('takes a self-hosted judgment endpoint, or none at all', () => {
-    const o = opts(['--llm-base-url', 'http://10.0.0.5:8080'])
-    expect(o.llmBaseUrl).toBe('http://10.0.0.5:8080')
-    expect(envValues(o, {}).TYPESAFE_BASE_URL).toBe('http://10.0.0.5:8080')
+  it('takes a self-hosted OpenAI-compatible endpoint, or none at all', () => {
+    const o = opts([
+      '--llm-base-url',
+      'http://10.0.0.5:11434',
+      '--llm-model',
+      'qwen3:8b',
+    ])
+    const env = envValues(o, {})
+    expect(env.LLM_BASE_URL).toBe('http://10.0.0.5:11434')
+    expect(env.LLM_MODEL).toBe('qwen3:8b')
+    // A TypeSafe deployment speaks a different protocol and has its own flag.
+    expect(env.TYPESAFE_BASE_URL).toBeUndefined()
     expect(opts(['--no-llm']).llmOff).toBe(true)
+    expect(envValues(opts(['--no-llm']), {}).JUDGE_BACKEND).toBe('none')
     expect(opts([]).llmOff).toBe(false)
+  })
+
+  it('takes a self-hosted TypeSafe deployment separately', () => {
+    const o = opts(['--typesafe-base-url', 'http://10.0.0.5:9000'])
+    expect(envValues(o, {}).TYPESAFE_BASE_URL).toBe('http://10.0.0.5:9000')
+    expect(envValues(o, {}).LLM_BASE_URL).toBeUndefined()
+  })
+
+  // Pointing at a server without saying which model it should load makes the
+  // radar look broken rather than misconfigured.
+  it('will not guess a model, in either direction', () => {
+    expect(() => parseArgs(['--llm-base-url', 'http://x:11434'])).toThrow(
+      /also needs --llm-model/,
+    )
+    expect(() => parseArgs(['--llm-model', 'qwen3:8b'])).toThrow(
+      /needs --llm-base-url/,
+    )
   })
 
   it('--non-interactive implies never prompting', () => {
@@ -114,9 +140,12 @@ describe('parseArgs', () => {
   })
 
   it('rejects --no-llm together with an endpoint', () => {
-    expect(() => parseArgs(['--no-llm', '--llm-base-url', 'http://x'])).toThrow(
-      /contradict each other/,
-    )
+    expect(() =>
+      parseArgs(['--no-llm', '--llm-base-url', 'http://x', '--llm-model', 'm']),
+    ).toThrow(/contradict each other/)
+    expect(() =>
+      parseArgs(['--no-llm', '--typesafe-base-url', 'http://x']),
+    ).toThrow(/contradict each other/)
   })
 
   it('takes secrets by file path or generated token', () => {
