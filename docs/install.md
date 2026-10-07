@@ -152,7 +152,10 @@ force.
 ### On your own hardware, with no key
 
 Any OpenAI-compatible server works: **Ollama, vLLM, LM Studio, llama.cpp**.
-Nothing leaves your network and there is no per-item cost.
+No judgment leaves your network, and there is no per-item cost. (Two other
+things still reach the internet in every mode: the public APIs the items come
+from, and the title and summary of non-English items, which go to MyMemory for
+translation unless you leave that off.)
 
 ```bash
 ollama serve &
@@ -195,9 +198,16 @@ What to expect from this path:
   item and by the exact question (`.cache/jev-verdicts.json`), so a rebuild
   only asks about new or edited items — the same caching as the hosted path.
   The first build asks about a few hundred items; later ones about a handful.
-- **Each item is one request** with all its questions in it, run in parallel
-  across items. A small server will be the bottleneck; raise `LLM_TIMEOUT_MS`
-  rather than lowering the feed size.
+- **Each item is one request** with all its questions in it. The radar sends
+  at most `LLM_CONCURRENCY` (4) at a time on this path, because a local server
+  usually has one or two slots and a stampede would make every request wait
+  out the whole backlog inside its own timeout. Raise it if your server is
+  bigger.
+- **The first build is slow and may report sources as timed out.** Each source
+  has a budget covering its fetch _and_ its judgments; on this path that
+  budget is 180 s rather than 30 s (`SOURCE_BUDGET_MS` overrides it). A source
+  that runs out is retried on the next rebuild, by which time its verdicts are
+  cached.
 
 ### Hosted (the default)
 
@@ -229,9 +239,13 @@ the summary strip says so explicitly.
 
 ### Switching later
 
-Change `.env` and restart; nothing else. Cached judgments are keyed by the
-question, not by who answered it, so moving between backends reuses what is
-already there rather than re-asking.
+Change `.env` and restart; nothing else. Cached judgments are keyed by **who
+answered them as well as what was asked**, so moving between backends — or
+between two local models — re-judges rather than serving one backend's answers
+as another's. A local model's coarse rungs and the hosted service's
+probabilities are not the same measurement, and ranking them together would
+be comparing different rulers. Switching back reuses the earlier answers,
+which are still there.
 
 ## Making it yours
 
@@ -292,9 +306,18 @@ curl -s localhost:3000/api/health | jq .topics
 # { "count": 26, "source": "config/topics.json" }
 ```
 
+(Without `jq`: `curl -s localhost:3000/api/health | python3 -m json.tool`.)
+
 `TOPICS_FILE` moves the file elsewhere. In Docker, `./config` is mounted
 read-only into the container, so your file is picked up without rebuilding the
 image.
+
+**One caveat.** `config/topics.json` is gitignored, because it is yours. The
+daily digest pipeline, though, runs in GitHub Actions on a fresh checkout, so
+it does not see an un-committed file: `public/data/trends.json` keeps using
+the built-in topics while the live feed uses yours. If you want both to agree,
+commit the file in your fork (`git add -f config/topics.json`). Nothing in it
+is secret.
 
 **Themes the radar finds by itself** need no setup: bursting terms are checked
 once by Jev and tracked as `auto:<term>` alongside your topics.

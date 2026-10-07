@@ -23,7 +23,9 @@ import {
 } from '@/lib/trend-topics'
 import { CATEGORY_CONFIG, MATURITY_CONFIG } from '@/lib/tech-categories'
 
-export const TOPICS_FILE = process.env.TOPICS_FILE ?? 'config/topics.json'
+/** Where topics live unless `TOPICS_FILE` says otherwise. */
+export const DEFAULT_TOPICS_FILE = 'config/topics.json'
+export const TOPICS_FILE = process.env.TOPICS_FILE ?? DEFAULT_TOPICS_FILE
 
 export interface TopicsFile {
   /** `extend` (default) adds to the built-ins; `replace` uses only this file. */
@@ -120,7 +122,7 @@ let cache: { key: string; value: Resolved } | null = null
 
 /** Re-reads only when the file's mtime or size changes. */
 export function resolveTopics(path = TOPICS_FILE): Resolved {
-  let key = 'missing'
+  let key = `${path}:missing`
   if (existsSync(path)) {
     try {
       const s = statSync(path)
@@ -138,6 +140,16 @@ export function resolveTopics(path = TOPICS_FILE): Resolved {
   }
 
   let value = builtIn
+  // An explicitly configured file that is not there is a typo, not a choice
+  // to use the built-ins — say so instead of quietly serving something else.
+  // Missing at the default path just means "I did not customize topics".
+  // Missing anywhere else means someone named a path, so a typo there has to
+  // be visible rather than silently serving a different topic set.
+  if (!existsSync(path) && path !== DEFAULT_TOPICS_FILE) {
+    const error = `${path}: no such file`
+    console.error(`::warning::[topics] ${error} — using the built-in set`)
+    value = { ...builtIn, error }
+  }
   if (existsSync(path)) {
     try {
       const file = parseTopicsFile(readFileSync(path, 'utf8'))

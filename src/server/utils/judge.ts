@@ -113,6 +113,53 @@ function answerSchema(q: Question) {
   }
 }
 
+/**
+ * The questions as prose, which is the only form that reaches the model on a
+ * self-hosted server: Ollama, llama.cpp and vLLM compile `response_format`
+ * into a decoding grammar, and a grammar carries the allowed *values* but not
+ * the schema's `description` text. Put the rubric only in the schema and the
+ * model would be choosing between `"0".."4"` having never been told what the
+ * levels mean — every answer valid, every answer a guess.
+ */
+export function renderQuestions(questions: Record<string, Question>): string {
+  const lines: string[] = []
+  for (const [key, q] of Object.entries(questions)) {
+    switch (q.type) {
+      case 'noul':
+        lines.push(
+          `"${key}": ${q.instructions}\n  Answer with one of: ${Object.keys(
+            NOUL_LEVELS,
+          ).join(', ')}.`,
+        )
+        break
+      case 'choice':
+        lines.push(
+          `"${key}": ${q.instructions}\n${Object.entries(q.criteria)
+            .map(([k, v]) => `  - ${k}: ${v}`)
+            .join('\n')}\n  Answer with exactly one of those keys.`,
+        )
+        break
+      case 'score':
+        lines.push(
+          `"${key}": ${q.instructions}\n${q.criteria
+            .map((c, i) => `  - ${i}: ${c}`)
+            .join('\n')}\n  Answer with the one number that fits best.`,
+        )
+        break
+    }
+  }
+  return lines.join('\n\n')
+}
+
+/**
+ * Enough room for one short value per question plus the JSON punctuation, so
+ * a model that starts looping is cut off instead of holding a slot on a
+ * single-threaded local server until the timeout.
+ */
+export function maxTokensFor(questions: Record<string, Question>): number {
+  return 128 + 48 * Object.keys(questions).length
+}
+
 export function buildChatRequest(
   request: JudgeRequest,
   model: string,
@@ -126,6 +173,7 @@ export function buildChatRequest(
     // Judgments must not drift between two runs over the same item, or the
     // verdict cache would be storing noise.
     temperature: 0,
+    max_tokens: maxTokensFor(request.questions),
     messages: [
       {
         role: 'system',
@@ -134,7 +182,9 @@ export function buildChatRequest(
       },
       {
         role: 'user',
-        content: `Item:\n${JSON.stringify(request.state, null, 2)}\n\nAnswer each field of the schema.`,
+        content: `Item:\n${JSON.stringify(request.state, null, 2)}\n\nQuestions:\n\n${renderQuestions(
+          request.questions,
+        )}\n\nReply with a JSON object whose keys are the quoted names above.`,
       },
     ],
     response_format: {
@@ -194,28 +244,32 @@ export function readAnswers(
     }
     const value = raw.trim().toLowerCase()
     switch (q.type) {
+      // `Object.hasOwn`, not `in` or a bare lookup: "constructor" and
+      // "__proto__" are inherited keys, so a model replying with either would
+      // otherwise pass as an allowed value and store a function or {} as a
+      // probability.
       case 'noul': {
-        const noul = NOUL_LEVELS[value]
-        if (noul === undefined) {
+        if (!Object.hasOwn(NOUL_LEVELS, value)) {
           throw new Error(`"${key}": ${trim(raw)} is not one of the rungs`)
         }
-        answers[key] = { type: 'noul', noul }
+        answers[key] = { type: 'noul', noul: NOUL_LEVELS[value] }
         break
       }
       case 'choice': {
-        if (!(value in q.criteria)) {
+        if (!Object.hasOwn(q.criteria, value)) {
           throw new Error(`"${key}": ${trim(raw)} is not an allowed choice`)
         }
         answers[key] = { type: 'choice', choice: value }
         break
       }
       case 'score': {
+        // Number() would take "", "0x2" and "1e0" — an empty answer becoming
+        // level 0 is a fabricated "commentary" verdict, not a failure.
+        if (!/^\d+$/.test(value)) {
+          throw new Error(`"${key}": ${trim(raw)} is not a rubric level`)
+        }
         const level = Number(value)
-        if (
-          !Number.isInteger(level) ||
-          level < 0 ||
-          level >= q.criteria.length
-        ) {
+        if (level >= q.criteria.length) {
           throw new Error(`"${key}": ${trim(raw)} is not a rubric level`)
         }
         answers[key] = {
@@ -235,6 +289,8 @@ export interface OpenAiJudgeOptions {
   apiKey?: string
   /** Local models on modest hardware are slow; this is per item. */
   timeoutMs?: number
+  /** Requests in flight at once; a local server has few slots. */
+  concurrency?: number
 }
 
 /**
@@ -250,39 +306,64 @@ export function chatUrl(baseUrl: string): string {
   return `${base}/v1/chat/completions`
 }
 
+/**
+ * A local server usually has one or two slots. The feed asks about a few
+ * hundred items and the callers fire them all at once, which on a hosted
+ * service is fine and on Ollama means every request waits out the whole
+ * backlog inside its own timeout — and each source fetch has only a 30 s
+ * budget. So the self-hosted path queues instead of stampeding.
+ */
+function limiter(max: number) {
+  let active = 0
+  const waiting: (() => void)[] = []
+  return async function run<T>(task: () => Promise<T>): Promise<T> {
+    if (active >= max) await new Promise<void>((r) => waiting.push(r))
+    active++
+    try {
+      return await task()
+    } finally {
+      active--
+      waiting.shift()?.()
+    }
+  }
+}
+
 export function openAiJudge(options: OpenAiJudgeOptions): Judge {
   const url = chatUrl(options.baseUrl)
+  const queue = limiter(Math.max(1, options.concurrency ?? 4))
   return {
-    async systemOne(request) {
-      const response = await fetchWithRetry(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options.apiKey
-            ? { Authorization: `Bearer ${options.apiKey}` }
-            : {}),
-        },
-        body: JSON.stringify(buildChatRequest(request, options.model)),
-        timeout: options.timeoutMs ?? 120_000,
-      })
-      if (!response.ok) {
-        throw new Error(
-          `${url} answered ${response.status}: ${trim(await response.text())}`,
-        )
-      }
-      const body = (await response.json()) as {
-        choices?: { message?: { content?: string } }[]
-        error?: { message?: string }
-      }
-      if (body.error) {
-        throw new Error(`${url}: ${body.error.message ?? 'unknown error'}`)
-      }
-      const content = body.choices?.[0]?.message?.content
-      if (typeof content !== 'string' || !content.trim()) {
-        throw new Error(`${url} returned no content`)
-      }
-      return { answers: readAnswers(request.questions, extractJson(content)) }
-    },
+    systemOne: (request) => queue(() => ask(request)),
+  }
+
+  async function ask(request: JudgeRequest) {
+    const response = await fetchWithRetry(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.apiKey
+          ? { Authorization: `Bearer ${options.apiKey}` }
+          : {}),
+      },
+      body: JSON.stringify(buildChatRequest(request, options.model)),
+      timeout: options.timeoutMs ?? 120_000,
+    })
+    if (!response.ok) {
+      throw new Error(
+        `${url} answered ${response.status}: ${trim(await response.text())}`,
+      )
+    }
+    const body = (await response.json()) as {
+      choices?: { message?: { content?: string } }[]
+      error?: { message?: string }
+    }
+    if (body.error) {
+      throw new Error(`${url}: ${body.error.message ?? 'unknown error'}`)
+    }
+    const content = body.choices?.[0]?.message?.content
+    if (typeof content !== 'string' || !content.trim()) {
+      throw new Error(`${url} returned no content`)
+    }
+    return { answers: readAnswers(request.questions, extractJson(content)) }
   }
 }
 
@@ -290,8 +371,16 @@ export function openAiJudge(options: OpenAiJudgeOptions): Judge {
 
 export interface JudgeConfig {
   kind: JudgeKind
-  /** Why, in one phrase, for the startup line and /api/health. */
+  /** Why, in one phrase, for the startup line and the operator panel. */
   detail: string
+  /**
+   * Whether this backend's `noul` and `score` answers are probabilities or
+   * the coarse ladder. Verdicts from the two are not interchangeable, so this
+   * goes into the verdict-cache key.
+   */
+  calibrated: boolean
+  /** Identifies the answerer for the verdict cache; '' for the default. */
+  fingerprint: string
 }
 
 /**
@@ -305,49 +394,80 @@ export function judgeConfig(env: NodeJS.ProcessEnv = process.env): JudgeConfig {
   const model = env.LLM_MODEL?.trim()
   const key = env.TYPESAFE_API_KEY?.trim()
 
+  const off = (detail: string): JudgeConfig => ({
+    kind: 'none',
+    detail,
+    calibrated: false,
+    fingerprint: '',
+  })
+
   if (forced && !['auto', 'typesafe', 'openai', 'none'].includes(forced)) {
-    return {
-      kind: 'none',
-      detail: `JUDGE_BACKEND="${forced}" is not auto, typesafe, openai or none — running with no model`,
-    }
+    return off(
+      `JUDGE_BACKEND="${forced}" is not auto, typesafe, openai or none — running with no model`,
+    )
   }
-  if (forced === 'none') return { kind: 'none', detail: 'JUDGE_BACKEND=none' }
+  if (forced === 'none') return off('JUDGE_BACKEND=none')
 
   const auto = !forced || forced === 'auto'
   const wantsOpenAi = forced === 'openai' || (auto && Boolean(llm))
   if (wantsOpenAi) {
     if (!llm) {
-      return {
-        kind: 'none',
-        detail: 'JUDGE_BACKEND=openai but LLM_BASE_URL is not set',
-      }
+      return off('JUDGE_BACKEND=openai but LLM_BASE_URL is not set')
     }
     if (!model) {
-      return {
-        kind: 'none',
-        detail: `LLM_BASE_URL is set to ${llm} but LLM_MODEL is not — the server needs to be told which model to load`,
-      }
+      return off(
+        `LLM_BASE_URL is set to ${llm} but LLM_MODEL is not — the server needs to be told which model to answer with`,
+      )
     }
     return {
       kind: 'openai',
       detail: `${model} at ${chatUrl(llm)}`,
+      calibrated: false,
+      // The model is part of it: a 1.5B model's answers are not a larger
+      // model's, and reusing one for the other is worse than re-asking.
+      fingerprint: `openai:${model}`,
     }
   }
 
   if (forced === 'typesafe' && !key) {
-    return {
-      kind: 'none',
-      detail: 'JUDGE_BACKEND=typesafe but TYPESAFE_API_KEY is not set',
-    }
+    return off('JUDGE_BACKEND=typesafe but TYPESAFE_API_KEY is not set')
   }
   if (!key) {
-    return { kind: 'none', detail: 'no TYPESAFE_API_KEY and no LLM_BASE_URL' }
+    // Half a local setup is the likeliest way to end up here, and falling
+    // back to a hosted service would send items off the network of someone
+    // who meant to keep them on it.
+    if (model) {
+      return off(
+        'LLM_MODEL is set but LLM_BASE_URL is not — set both to judge locally, or TYPESAFE_API_KEY to use the hosted service',
+      )
+    }
+    return off('no TYPESAFE_API_KEY and no LLM_BASE_URL')
+  }
+  if (model && !llm) {
+    console.warn(
+      '[judge] LLM_MODEL is set but LLM_BASE_URL is not, so judgments go to the hosted TypeSafe service. Set LLM_BASE_URL too to keep them local.',
+    )
   }
   const base = env.TYPESAFE_BASE_URL?.trim()
   return {
     kind: 'typesafe',
     detail: base ? `TypeSafe (Jev) at ${base}` : 'TypeSafe (Jev), hosted',
+    calibrated: true,
+    // Empty on purpose: this is the backend every existing deployment is
+    // already using, and changing its key would re-judge — and re-charge for
+    // — every cached item on upgrade.
+    fingerprint: '',
   }
+}
+
+/**
+ * Goes into the verdict-cache key so verdicts from different answerers never
+ * mix: the coarse ladder of a local model beside calibrated probabilities
+ * would be ranked as if they were the same measurement. '' for the hosted
+ * default, which keeps every existing cache entry valid.
+ */
+export function judgeFingerprint(): string {
+  return judgeInfo().fingerprint
 }
 
 let cached: { judge: Judge | null; config: JudgeConfig } | undefined
@@ -369,11 +489,14 @@ function judge(): { judge: Judge | null; config: JudgeConfig } {
   const config = judgeConfig()
   let built: Judge | null = null
   if (config.kind === 'openai') {
+    // Trimmed: a trailing newline from a CRLF .env would make the bearer
+    // header invalid and be retried three times per item.
     built = openAiJudge({
-      baseUrl: process.env.LLM_BASE_URL!,
-      model: process.env.LLM_MODEL!,
-      apiKey: process.env.LLM_API_KEY,
-      timeoutMs: Number(process.env.LLM_TIMEOUT_MS) || undefined,
+      baseUrl: process.env.LLM_BASE_URL!.trim(),
+      model: process.env.LLM_MODEL!.trim(),
+      apiKey: process.env.LLM_API_KEY?.trim() || undefined,
+      timeoutMs: Number(process.env.LLM_TIMEOUT_MS?.trim()) || undefined,
+      concurrency: Number(process.env.LLM_CONCURRENCY?.trim()) || undefined,
     })
     console.log(`[judge] self-hosted: ${config.detail}`)
   } else if (config.kind === 'typesafe') {

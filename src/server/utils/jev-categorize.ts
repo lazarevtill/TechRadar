@@ -1,5 +1,10 @@
 import { choice } from '@typesafe-ai/sdk'
-import { getJudge, type Judge, type Question } from '@/server/utils/judge'
+import {
+  getJudge,
+  judgeFingerprint,
+  type Judge,
+  type Question,
+} from '@/server/utils/judge'
 import { countUsage } from '@/server/utils/usage'
 import type { TechCategory } from '@/lib/tech-categories'
 import {
@@ -106,7 +111,12 @@ export async function categorizeItems(
   await Promise.all(
     inputs.map(async (input) => {
       const key = STORE_PREFIX + input.id
-      const hash = contentHash(buildCategoryRequest(input))
+      // The answerer is part of the key, so a local model's verdicts are
+      // never served as the hosted service's. Empty for the hosted default,
+      // which keeps every cache entry written before this existed valid.
+      const request = buildCategoryRequest(input)
+      const fp = judgeFingerprint()
+      const hash = contentHash(fp ? [request, fp] : request)
       const known = store.get<RadarArea | 'none'>(key, hash)
       if (known) {
         cached++

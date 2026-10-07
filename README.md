@@ -53,22 +53,41 @@ Requires [Bun](https://bun.sh/) (Node.js 22.13+ also runs the Vite app and
 tests).
 
 ```bash
-bun install
-bun run dev        # http://localhost:3000
+bun run setup      # asks a few questions, writes .env, starts the radar
 ```
 
-No `.env` is required to run: live data comes from public APIs. With
-`TYPESAFE_API_KEY` set, Jev categorizes items and judges novelty, substance,
-topics and discovered themes; without it items show as unclassified and are
-ranked from engagement only (the dashboard says so).
+`bun run setup` is the short path: it detects Docker (Docker Desktop,
+OrbStack, Colima, podman) or Bun, takes every setting as a flag for unattended
+installs, and refuses secrets as inline flag values. See
+[docs/install.md](docs/install.md) for the flags, how to make the radar track
+your own topics, and how to run the judgments on your own hardware. By hand:
 
 ```bash
+bun install
+bun run dev        # http://localhost:3000
 cp .env.example .env
 ```
+
+No `.env` is required to run: live data comes from public APIs. With a
+judgment backend configured, items are categorized and judged for novelty,
+substance, topics and discovered themes; without one they show as unclassified
+and are ranked from engagement only (the dashboard says so). Three backends
+are supported and `/api/health` reports which is in force:
+
+| Backend                   | How                                            |
+| ------------------------- | ---------------------------------------------- |
+| TypeSafe (Jev), hosted    | `TYPESAFE_API_KEY`                             |
+| Your own hardware, no key | `LLM_BASE_URL` + `LLM_MODEL` (Ollama, vLLM, …) |
+| None                      | `JUDGE_BACKEND=none`, or configure nothing     |
 
 | Variable                          | Purpose                                                                       |
 | --------------------------------- | ----------------------------------------------------------------------------- |
 | `TYPESAFE_API_KEY`                | Jev judgments (required by `generate:feed`)                                   |
+| `TYPESAFE_BASE_URL`               | A TypeSafe deployment of your own instead of the hosted one                   |
+| `LLM_BASE_URL`, `LLM_MODEL`       | Judge on your own OpenAI-compatible server (Ollama, vLLM, LM Studio)          |
+| `LLM_API_KEY`, `LLM_TIMEOUT_MS`   | Optional, for that server (timeout default 120000)                            |
+| `JUDGE_BACKEND`                   | `auto` (default), `typesafe`, `openai` or `none`                              |
+| `TOPICS_FILE`                     | Your own tracked topics, read at runtime (default `config/topics.json`)       |
 | `ANTHROPIC_API_KEY`               | Digest summaries, `generate:feed` only                                        |
 | `GITHUB_TOKEN`                    | More GitHub searches per refresh (no scopes)                                  |
 | `MYMEMORY_EMAIL`                  | Tenfold MyMemory translation quota                                            |

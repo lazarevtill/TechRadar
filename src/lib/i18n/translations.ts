@@ -297,9 +297,9 @@ export const translations: Record<Language, Translations> = {
     sources: 'Sources',
     languages: 'Languages',
     highlighted: 'Highlighted',
-    judgedByJev: 'Judged by Jev',
+    judgedByJev: 'Judged by a model',
     noJevKey:
-      'Ranked from engagement only: TYPESAFE_API_KEY is not set, so novelty, substance and topic convergence are unavailable.',
+      'Ranked from engagement only: no judgment backend answered, so novelty, substance and topic convergence are unavailable. /api/health says which one is configured.',
     categoryDistribution: 'By category',
     maturity: 'Maturity',
     refreshData: 'Refresh data',
@@ -593,9 +593,9 @@ export const translations: Record<Language, Translations> = {
     sources: 'Источники',
     languages: 'Языки',
     highlighted: 'Выделено',
-    judgedByJev: 'Оценено Jev',
+    judgedByJev: 'Оценено моделью',
     noJevKey:
-      'Ранжирование только по вовлечённости: TYPESAFE_API_KEY не задан, поэтому новизна, содержательность и совпадение тем недоступны.',
+      'Ранжирование только по вовлечённости: ни один бэкенд оценки не ответил, поэтому новизна, содержательность и совпадение тем недоступны. Какой настроен — покажет /api/health.',
     categoryDistribution: 'По категориям',
     maturity: 'Зрелость',
     refreshData: 'Обновить данные',

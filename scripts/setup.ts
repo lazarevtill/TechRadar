@@ -24,7 +24,13 @@ import { createInterface } from 'node:readline/promises'
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
 import { parseTopicsFile } from '../src/server/utils/topics-config'
-import { chatUrl } from '../src/server/utils/judge'
+import {
+  buildChatRequest,
+  chatUrl,
+  readAnswers,
+  extractJson,
+  type Question,
+} from '../src/server/utils/judge'
 
 // --- options ---------------------------------------------------------------
 
@@ -395,20 +401,35 @@ export function detectRuntime(): Runtime {
 export async function probeLlm(
   baseUrl: string,
   model: string,
+  apiKey?: string,
   fetchImpl: typeof fetch = fetch,
 ): Promise<string> {
   const url = chatUrl(baseUrl)
+  // The same request shape the radar sends, one trivial question: a server
+  // that rejects json_schema, or a model that cannot hold to it, has to fail
+  // here rather than after the first rebuild.
+  const questions: Record<string, Question> = {
+    about_software: {
+      type: 'choice',
+      instructions: 'Is the item below about software?',
+      criteria: { yes: 'It is about software', no: 'It is not' },
+    },
+  }
+  const body = buildChatRequest(
+    { state: { title: 'A Rust web server' }, questions },
+    model,
+  )
   try {
     const response = await fetchImpl(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model,
-        temperature: 0,
-        messages: [{ role: 'user', content: 'Reply with the word ok.' }],
-        max_tokens: 5,
-      }),
-      signal: AbortSignal.timeout(20_000),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+      },
+      body: JSON.stringify(body),
+      // A cold local model can take a minute to load; a shorter wait would
+      // report "not running" for a server that is merely starting.
+      signal: AbortSignal.timeout(90_000),
     })
     const text = await response.text()
     if (!response.ok) {
@@ -416,13 +437,23 @@ export async function probeLlm(
       // the single most useful message to pass straight through.
       return `${url} answered ${response.status}: ${text.slice(0, 200)}`
     }
-    const body = JSON.parse(text) as {
+    const payload = JSON.parse(text) as {
       choices?: { message?: { content?: string } }[]
+      error?: { message?: string }
     }
-    if (typeof body.choices?.[0]?.message?.content !== 'string') {
-      return `${url} replied, but not in the OpenAI chat-completions shape — check it is the /v1 endpoint`
+    if (payload.error) {
+      return `${url}: ${payload.error.message ?? 'unknown error'}`
     }
-    return `ok: ${model} answered at ${url}`
+    const content = payload.choices?.[0]?.message?.content
+    if (typeof content !== 'string' || !content.trim()) {
+      return `${url} replied with no content — check it is an OpenAI-compatible /v1 endpoint, and that the model is not a reasoning-only one`
+    }
+    try {
+      readAnswers(questions, extractJson(content))
+    } catch (error) {
+      return `${model} answered but not within the schema (${(error as Error).message}) — the radar would record items as unjudged. Try a larger or more instruction-following model.`
+    }
+    return `ok: ${model} answered at ${url}, within the schema`
   } catch (error) {
     return `${url} did not answer (${(error as Error).message}) — is the server running, and is the port right?`
   }
@@ -452,7 +483,10 @@ export function installTopics(from: string, dryRun: boolean): string {
     )
   }
   if (existsSync(TOPICS_TARGET) && !dryRun) {
-    return `${TOPICS_TARGET} already exists — left as it is. Edit it directly, or delete it to start over.`
+    return (
+      `${TOPICS_TARGET} already exists, so ${src} was checked (${count} topic${count === 1 ? '' : 's'}, valid) but not copied over it. ` +
+      `Delete ${TOPICS_TARGET} first to replace it, or edit it in place.`
+    )
   }
   if (!dryRun) {
     mkdirSync('config', { recursive: true })
@@ -610,15 +644,29 @@ async function main(argv: string[]): Promise<number> {
       )
     } else if (o.llmBaseUrl) {
       console.log(
-        `Judgments stay on your network: ${o.llmModel} at ${o.llmBaseUrl}. Nothing is sent to a hosted service.`,
+        `Judgments stay on your network: ${o.llmModel} at ${o.llmBaseUrl}. No judgment goes to a hosted service.`,
       )
       if (!o.dryRun) {
-        const result = await probeLlm(o.llmBaseUrl, o.llmModel!)
+        const result = await probeLlm(
+          o.llmBaseUrl,
+          o.llmModel!,
+          process.env.LLM_API_KEY,
+        )
         console.log(
           result.startsWith('ok:')
             ? `  ${result}`
             : `  warning: ${result}\n  Writing the configuration anyway — the radar retries every rebuild.`,
         )
+        // The probe ran from here, not from inside the container, so a
+        // passing localhost probe says nothing about what the radar will see.
+        if (
+          o.mode === 'docker' &&
+          /\/\/(localhost|127\.0\.0\.1)[:/]/.test(chatUrl(o.llmBaseUrl))
+        ) {
+          console.log(
+            '  note: inside a container, localhost is the container. Use http://host.docker.internal:<port> or the host LAN address instead.',
+          )
+        }
       }
     } else if (!secrets.typesafe) {
       console.log(

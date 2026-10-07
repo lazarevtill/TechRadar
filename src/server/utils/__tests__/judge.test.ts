@@ -6,8 +6,10 @@ import {
   chatUrl,
   extractJson,
   judgeConfig,
+  maxTokensFor,
   openAiJudge,
   readAnswers,
+  renderQuestions,
   scoreProbabilities,
   NOUL_LEVELS,
   type Question,
@@ -59,10 +61,35 @@ describe('buildChatRequest', () => {
     expect(schema.properties.substance.enum).toEqual(Object.keys(NOUL_LEVELS))
   })
 
-  it('carries the rubric text, which is the whole question', () => {
-    const body = JSON.stringify(req)
-    expect(body).toContain('A step change')
-    expect(body).toContain('quantum computing')
+  // Ollama, llama.cpp and vLLM compile response_format into a decoding
+  // grammar, which carries the allowed values but not the schema's
+  // `description` text. A question that lives only in the schema is a
+  // question the model never sees: it would pick between "0".."4" having
+  // never been told what the levels mean.
+  it('puts every question in the prompt the model actually reads', () => {
+    const prompt = (req.messages as { role: string; content: string }[]).find(
+      (m) => m.role === 'user',
+    )!.content
+    expect(prompt).toContain('A step change')
+    expect(prompt).toContain('quantum computing')
+    expect(prompt).toContain('Is it a concrete artifact?')
+    expect(prompt).toContain('no, unlikely, even, likely, yes')
+  })
+
+  // A model that starts looping would otherwise hold a slot on a
+  // single-threaded local server until the 120 s timeout.
+  it('caps output length by the number of questions asked', () => {
+    expect(req.max_tokens).toBe(maxTokensFor(questions))
+    expect(maxTokensFor(questions)).toBeGreaterThan(
+      maxTokensFor({ one: questions.substance }),
+    )
+  })
+
+  it('renders each kind of question with its allowed answers', () => {
+    const text = renderQuestions(questions)
+    expect(text).toContain('- quantum:')
+    expect(text).toContain('Answer with exactly one of those keys')
+    expect(text).toContain('Answer with the one number that fits best')
   })
 
   // Two runs over the same item must agree, or the verdict cache stores noise.
@@ -109,6 +136,27 @@ describe('readAnswers', () => {
     ['a non-integer level', { novelty: '2.5' }, /not a rubric level/],
     ['a missing answer', { area: undefined }, /did not answer "area"/],
     ['a number where a label belongs', { area: 7 }, /did not answer "area"/],
+    // `in` and a bare lookup read inherited keys: "constructor" would pass as
+    // an allowed value and store a function as a probability.
+    [
+      'an inherited key as a rung',
+      { substance: 'constructor' },
+      /not one of the rungs/,
+    ],
+    ['__proto__ as a rung', { substance: '__proto__' }, /not one of the rungs/],
+    [
+      'an inherited key as a choice',
+      { area: 'constructor' },
+      /not an allowed choice/,
+    ],
+    ['__proto__ as a choice', { area: '__proto__' }, /not an allowed choice/],
+    // Number() takes all of these; an empty answer becoming level 0 is a
+    // fabricated "commentary" verdict, not a failure.
+    ['an empty level', { novelty: '' }, /not a rubric level/],
+    ['a whitespace level', { novelty: '   ' }, /not a rubric level/],
+    ['a hex level', { novelty: '0x2' }, /not a rubric level/],
+    ['an exponent level', { novelty: '1e0' }, /not a rubric level/],
+    ['a negative level', { novelty: '-1' }, /not a rubric level/],
   ])('refuses %s', (_label, override, message) => {
     const reply = {
       area: 'quantum',
@@ -180,9 +228,39 @@ describe('judgeConfig', () => {
   })
 
   it('uses the hosted service when only a key is set', () => {
+    const c = judgeConfig({ TYPESAFE_API_KEY: 'sk' } as NodeJS.ProcessEnv)
+    expect(c.kind).toBe('typesafe')
+    expect(c.detail).toBe('TypeSafe (Jev), hosted')
+    expect(c.calibrated).toBe(true)
+    // Empty on purpose: every existing deployment is on this backend, and a
+    // non-empty fingerprint would re-judge — and re-charge for — every
+    // cached item on upgrade.
+    expect(c.fingerprint).toBe('')
+  })
+
+  // A local model's coarse ladder and the hosted service's probabilities are
+  // not the same measurement; verdicts must not be served across them.
+  it('fingerprints a local backend by its model', () => {
+    const c = judgeConfig({
+      LLM_BASE_URL: 'http://localhost:11434',
+      LLM_MODEL: 'qwen3:8b',
+    } as NodeJS.ProcessEnv)
+    expect(c.calibrated).toBe(false)
+    expect(c.fingerprint).toBe('openai:qwen3:8b')
     expect(
-      judgeConfig({ TYPESAFE_API_KEY: 'sk' } as NodeJS.ProcessEnv),
-    ).toEqual({ kind: 'typesafe', detail: 'TypeSafe (Jev), hosted' })
+      judgeConfig({
+        LLM_BASE_URL: 'http://localhost:11434',
+        LLM_MODEL: 'qwen3:1.7b',
+      } as NodeJS.ProcessEnv).fingerprint,
+    ).not.toBe(c.fingerprint)
+  })
+
+  // Falling back to a hosted service here would send items off the network
+  // of someone who meant to keep them on it.
+  it('does not fall back to hosted when only LLM_MODEL is set', () => {
+    const c = judgeConfig({ LLM_MODEL: 'qwen3:8b' } as NodeJS.ProcessEnv)
+    expect(c.kind).toBe('none')
+    expect(c.detail).toMatch(/LLM_MODEL is set but LLM_BASE_URL is not/)
   })
 
   it('names a self-hosted TypeSafe deployment', () => {
@@ -347,5 +425,58 @@ describe('openAiJudge over HTTP', () => {
         questions,
       }),
     ).rejects.toThrow(message as RegExp)
+  })
+})
+
+describe('openAiJudge concurrency', () => {
+  const one: Record<string, Question> = {
+    s: { type: 'noul', instructions: 'x' },
+  }
+
+  // A local server usually has one or two slots. The callers fire a few
+  // hundred items at once, and each request's timeout covers its queue time,
+  // so a stampede makes every one of them time out together.
+  it('never has more than the configured number of requests in flight', async () => {
+    let inFlight = 0
+    let peak = 0
+    server = createServer((req, res) => {
+      inFlight++
+      peak = Math.max(peak, inFlight)
+      req.resume()
+      setTimeout(() => {
+        inFlight--
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(
+          JSON.stringify({
+            choices: [{ message: { content: '{"s":"yes"}' } }],
+          }),
+        )
+      }, 25)
+    })
+    await new Promise<void>((r) => server!.listen(0, '127.0.0.1', r))
+    const port = (server!.address() as { port: number }).port
+    const judge = openAiJudge({
+      baseUrl: `http://127.0.0.1:${port}`,
+      model: 'm',
+      concurrency: 3,
+    })
+    const results = await Promise.all(
+      Array.from({ length: 12 }, () =>
+        judge.systemOne({ state: {}, questions: one }),
+      ),
+    )
+    expect(results).toHaveLength(12)
+    expect(peak).toBeLessThanOrEqual(3)
+    expect(peak).toBeGreaterThan(1)
+  })
+
+  it('still releases its slot when a request fails', async () => {
+    const { url } = await serve(() => ({ status: 500, payload: {} }))
+    const judge = openAiJudge({ baseUrl: url, model: 'm', concurrency: 1 })
+    for (let i = 0; i < 3; i++) {
+      await expect(
+        judge.systemOne({ state: {}, questions: one }),
+      ).rejects.toThrow(/answered 500/)
+    }
   })
 })

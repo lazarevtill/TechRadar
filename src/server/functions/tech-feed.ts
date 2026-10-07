@@ -29,6 +29,7 @@ import { recordSourceRuns, recordUsage } from '@/server/store/ops'
 import { topicSeries, type TopicSeries } from '@/server/store/series'
 import { drainUsage } from '@/server/utils/usage'
 import { effectiveTopics } from '@/server/utils/topics-config'
+import { judgeInfo } from '@/server/utils/judge'
 import { alertOnSourceChanges } from './health'
 import { sendWatchAlerts } from './watch-alerts'
 import {
@@ -387,6 +388,20 @@ function evaluateInBackground(db: Db, day: string) {
  */
 const SOURCE_BUDGET_MS = 30_000
 
+/**
+ * A self-hosted model answers in seconds, not milliseconds, and
+ * categorization happens inside the budget above. Thirty seconds would end
+ * every source as a `timeout` on the first build — and three empty runs mark
+ * a source down and fire an alert — so that path gets a longer budget. Once
+ * verdicts are cached a rebuild asks about only the handful of new items, and
+ * the extra room goes unused.
+ */
+function sourceBudgetMs(): number {
+  const override = Number(process.env.SOURCE_BUDGET_MS?.trim())
+  if (override > 0) return override
+  return judgeInfo().kind === 'openai' ? 180_000 : SOURCE_BUDGET_MS
+}
+
 /** A short, loggable reason for a failed fetch. */
 function errorMessage(error: unknown): string {
   const text = error instanceof Error ? error.message : String(error)
@@ -423,7 +438,7 @@ async function withinBudget(
   const started = Date.now()
   let timer: ReturnType<typeof setTimeout> | undefined
   const timeout = new Promise<null>((resolve) => {
-    timer = setTimeout(() => resolve(null), SOURCE_BUDGET_MS)
+    timer = setTimeout(() => resolve(null), sourceBudgetMs())
   })
   // A fetcher that fails reports why (it rethrows after logging), so health
   // and alerts can tell an outage from a quiet day. A rejection that arrives

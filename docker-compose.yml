@@ -7,6 +7,11 @@ services:
         # in the extension's Settings); set for a deployed host.
         EXTENSION_BACKEND_URL: ${EXTENSION_BACKEND_URL:-http://localhost:3000}
     image: ghcr.io/lazarevtill/techradar:latest
+    # So LLM_BASE_URL=http://host.docker.internal:11434 reaches a model server
+    # on the host. Docker Desktop and OrbStack provide this name themselves;
+    # Docker Engine on Linux does not, and this adds it.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     ports:
       # Host port is configurable (bun run setup --port, or PORT in .env);
       # inside the container the server always listens on 3000.

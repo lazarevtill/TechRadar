@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -11,6 +11,7 @@ import {
   topicsStatus,
   resetTopicsCache,
   TopicsConfigError,
+  DEFAULT_TOPICS_FILE,
 } from '../topics-config'
 import { TOPIC_LABELS, fingerprintOf } from '@/lib/trend-topics'
 
@@ -109,11 +110,17 @@ describe('mergeTopics', () => {
 })
 
 describe('resolveTopics', () => {
-  it('falls back to the built-in set when there is no file', () => {
-    const r = resolveTopics(join(dir, 'absent.json'))
-    expect(r.source).toBe('built-in')
-    expect(r.topics).toEqual(TOPIC_LABELS)
+  it('falls back to the built-in set when topics were not customized', () => {
+    const r = resolveTopics(DEFAULT_TOPICS_FILE)
+    // A developer running this may have their own topics file; either way the
+    // default path must never report an error.
     expect(r.error).toBeUndefined()
+    if (existsSync(DEFAULT_TOPICS_FILE)) {
+      expect(r.source).toBe(DEFAULT_TOPICS_FILE)
+    } else {
+      expect(r.source).toBe('built-in')
+      expect(r.topics).toEqual(TOPIC_LABELS)
+    }
   })
 
   it('uses the file when it is valid', () => {
@@ -137,6 +144,18 @@ describe('resolveTopics', () => {
     const r = resolveTopics(file)
     expect(r.error).toMatch(/zero topics/)
     expect(r.topics).toEqual(TOPIC_LABELS)
+  })
+
+  // Missing at the default path just means topics were not customized;
+  // missing at a named path is a typo, and staying silent would serve a
+  // different topic set than the one asked for.
+  it('reports a named file that does not exist, but not the default', () => {
+    const r = resolveTopics(join(dir, 'nope.json'))
+    expect(r.error).toMatch(/no such file/)
+    expect(r.topics).toEqual(TOPIC_LABELS)
+
+    resetTopicsCache()
+    expect(resolveTopics(DEFAULT_TOPICS_FILE).error).toBeUndefined()
   })
 
   it('re-reads after the file changes', () => {

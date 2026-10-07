@@ -1,5 +1,10 @@
 import { noul, score } from '@typesafe-ai/sdk'
-import { getJudge, type Judge, type Question } from '@/server/utils/judge'
+import {
+  getJudge,
+  judgeFingerprint,
+  type Judge,
+  type Question,
+} from '@/server/utils/judge'
 import { countUsage } from '@/server/utils/usage'
 import {
   contentHash,
@@ -87,11 +92,18 @@ export function buildSignalRequest(input: SignalJudgeInput) {
 const STORE_PREFIX = 'signal:'
 // TOPIC_FINGERPRINT would only cover the built-in set; the resolved one is
 // what the questions above were actually built from.
-const judgmentRules = () => ({
-  NOVEL_FROM_LEVEL,
-  TOPIC_THRESHOLD,
-  topicFingerprint: effectiveFingerprint(),
-})
+const judgmentRules = () => {
+  const rules: Record<string, unknown> = {
+    NOVEL_FROM_LEVEL,
+    TOPIC_THRESHOLD,
+    topicFingerprint: effectiveFingerprint(),
+  }
+  // Only present for a non-default answerer, so caches written before this
+  // existed keep hitting rather than re-judging every item on upgrade.
+  const fp = judgeFingerprint()
+  if (fp) rules.judge = fp
+  return rules
+}
 
 // Who answers is decided in server/utils/judge.ts; here it is only "someone
 // or nobody", and nobody means engagement-only ranking.
