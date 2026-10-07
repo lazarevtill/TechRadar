@@ -1043,5 +1043,17 @@
       "ai-safety": 3,
       "multimodal": 1
     }
+  },
+  {
+    "date": "2026-10-07",
+    "topics": {
+      "open-models": 7,
+      "llm-agents": 12,
+      "ai-safety": 2,
+      "small-models": 1,
+      "multimodal": 1,
+      "generative-media": 2,
+      "ai-coding": 6
+    }
   }
 ]
