@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { parseArgs, renderEnv, envValues, HELP } from '../setup'
+import { writeFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { parseArgs, renderEnv, envValues, installTopics, HELP } from '../setup'
 
 const opts = (argv: string[]) => {
   const o = parseArgs(argv)
@@ -88,6 +91,34 @@ describe('parseArgs', () => {
     )
   })
 
+  // The space-separated form is what people actually type, and by the time the
+  // error appears the secret is already in their shell history.
+  it('names the alternative for both spellings of an inline secret', () => {
+    for (const argv of [
+      ['--typesafe-key', 'sk-live-abc'],
+      ['--github-token', 'ghp_abc'],
+    ]) {
+      expect(() => parseArgs(argv)).toThrow(/does not take a value/)
+      expect(() => parseArgs(argv)).toThrow(/-file <path>/)
+    }
+    expect(() => parseArgs(['--typesafe-key=sk-live-abc'])).toThrow(
+      /--typesafe-key-file/,
+    )
+  })
+
+  it('takes a topics file, or the shipped example', () => {
+    expect(opts(['--topics', 'my-topics.json']).topics).toBe('my-topics.json')
+    expect(opts(['--example-topics']).topics).toBe('')
+    expect(opts([]).topics).toBeUndefined()
+    expect(HELP).toContain('--topics <path>')
+  })
+
+  it('rejects --no-llm together with an endpoint', () => {
+    expect(() => parseArgs(['--no-llm', '--llm-base-url', 'http://x'])).toThrow(
+      /contradict each other/,
+    )
+  })
+
   it('takes secrets by file path or generated token', () => {
     const o = opts([
       '--typesafe-key-file',
@@ -161,5 +192,47 @@ describe('envValues', () => {
     expect(
       envValues(opts([]), { typesafe: 'sk', admin: 'tok' }).TYPESAFE_API_KEY,
     ).toBe('sk')
+  })
+})
+
+// A topic's definition is the question Jev is asked about every item, so a
+// typo would show up as judgments quietly going missing. The installer
+// validates the file while the person is still looking at the terminal.
+describe('installTopics', () => {
+  it('accepts the shipped example and says what it did', () => {
+    const message = installTopics('', true)
+    expect(message).toMatch(/Would write config\/topics\.json \(2 topics/)
+    expect(message).toMatch(/no rebuild needed/)
+  })
+
+  it('refuses a file that is not usable, naming every problem', () => {
+    const bad = join(tmpdir(), `topics-bad-${process.pid}.json`)
+    writeFileSync(
+      bad,
+      JSON.stringify({
+        topics: {
+          Bad: {
+            label: '',
+            category: 'gardening',
+            stage: 'nope',
+            definition: 'short',
+          },
+        },
+      }),
+    )
+    try {
+      expect(() => installTopics(bad, true)).toThrow(/not a usable topics file/)
+      expect(() => installTopics(bad, true)).toThrow(/gardening/)
+      expect(() => installTopics(bad, true)).toThrow(/nope/)
+      expect(() => installTopics(bad, true)).toThrow(/longer than 30/)
+    } finally {
+      rmSync(bad, { force: true })
+    }
+  })
+
+  it('refuses a path that does not exist', () => {
+    expect(() => installTopics('/nope/topics.json', true)).toThrow(
+      /does not exist/,
+    )
   })
 })

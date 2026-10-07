@@ -5,11 +5,11 @@ import {
   verdictStore,
   type VerdictStore,
 } from '@/server/utils/verdict-store'
+import { topicQuestion } from '@/lib/trend-topics'
 import {
-  TOPIC_FINGERPRINT,
-  TOPIC_LABELS,
-  topicQuestion,
-} from '@/lib/trend-topics'
+  effectiveFingerprint,
+  effectiveTopics,
+} from '@/server/utils/topics-config'
 import type { SignalJudgment } from '@/lib/signal-model'
 
 /**
@@ -71,7 +71,7 @@ export function buildSignalRequest(input: SignalJudgeInput) {
       novelty: score(NOVELTY_QUESTION, NOVELTY_LEVELS),
       substance: noul(SUBSTANCE_QUESTION),
       ...Object.fromEntries(
-        Object.entries(TOPIC_LABELS).map(([id, topic]) => [
+        Object.entries(effectiveTopics()).map(([id, topic]) => [
           `topic:${id}`,
           noul(topicQuestion(topic)),
         ]),
@@ -84,7 +84,13 @@ export function buildSignalRequest(input: SignalJudgeInput) {
 // full request (item text, rubric, topic questions) plus the thresholds that
 // turn answers into the stored judgment, so changing any of them re-judges.
 const STORE_PREFIX = 'signal:'
-const JUDGMENT_RULES = { NOVEL_FROM_LEVEL, TOPIC_THRESHOLD, TOPIC_FINGERPRINT }
+// TOPIC_FINGERPRINT would only cover the built-in set; the resolved one is
+// what the questions above were actually built from.
+const judgmentRules = () => ({
+  NOVEL_FROM_LEVEL,
+  TOPIC_THRESHOLD,
+  topicFingerprint: effectiveFingerprint(),
+})
 
 let client: TypeSafeClient | null | undefined
 
@@ -162,7 +168,7 @@ export async function judgeSignals(
   await Promise.all(
     inputs.map(async (input) => {
       const key = STORE_PREFIX + input.id
-      const hash = contentHash([buildSignalRequest(input), JUDGMENT_RULES])
+      const hash = contentHash([buildSignalRequest(input), judgmentRules()])
       const known = store.get<SignalJudgment>(key, hash)
       if (known) {
         cached++

@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   fetchTechFeedFn,
@@ -13,7 +14,7 @@ import type {
   OriginalLanguage,
 } from '@/lib/tech-categories'
 
-import type { DiscoveredTheme } from '@/lib/trend-topics'
+import type { DiscoveredTheme, TrendTopic } from '@/lib/trend-topics'
 import { watchMatcher } from '@/lib/watch'
 import type { TrackRecord } from '@/server/store/predictions'
 import type { TopicSeries } from '@/server/store/series'
@@ -63,6 +64,14 @@ export interface UseTechFeedResult {
   trackRecord: TrackRecord | null
   /** Per topic: new works per day (last 30 days) and where it started. */
   topicSeries: Record<string, TopicSeries>
+  /**
+   * The tracked topic set the server resolved for this build, by id. A
+   * deployment can add to or replace it (`TOPICS_FILE`), so this is the only
+   * source of names and areas — the built-in map may not be what is running.
+   */
+  topics: Record<string, TrendTopic>
+  /** Display names for every topic id in the feed, tracked and discovered. */
+  topicLabels: Record<string, string>
 }
 
 /** Shared with the route loader, which prefetches it during SSR. */
@@ -80,6 +89,22 @@ export function useTechFeed(): UseTechFeedResult {
   })
 
   const queryClient = useQueryClient()
+
+  // Names for every topic id the feed can carry. Derived here once rather
+  // than in each panel, and from the payload rather than the built-in map,
+  // because the tracked set is resolved on the server at runtime.
+  const { topics, themes, topicLabels } = useMemo(() => {
+    const topics = data?.topics ?? {}
+    const themes = data?.themes ?? []
+    return {
+      topics,
+      themes,
+      topicLabels: Object.fromEntries([
+        ...Object.entries(topics).map(([id, t]) => [id, t.label]),
+        ...themes.map((t) => [t.id, t.label]),
+      ]) as Record<string, string>,
+    }
+  }, [data])
 
   // Force refresh - clears the server caches (operator token and throttle
   // apply), then refetches. The rebuild also writes history, so views derived
@@ -103,9 +128,11 @@ export function useTechFeed(): UseTechFeedResult {
     refetch,
     forceRefresh,
     fetchedAt: data?.fetchedAt ? new Date(data.fetchedAt) : null,
-    themes: data?.themes ?? [],
+    themes,
     trackRecord: data?.trackRecord ?? null,
     topicSeries: data?.topicSeries ?? {},
+    topics,
+    topicLabels,
   }
 }
 

@@ -10,6 +10,27 @@ cd TechRadar
 bun run setup
 ```
 
+### What you need
+
+- **[Bun](https://bun.sh) 1.2+** — `curl -fsSL https://bun.sh/install | bash`.
+  Needed to run the installer itself, and to run the radar in `local` mode.
+- **A Docker engine with the compose plugin**, for `docker` mode only. Docker
+  Desktop, OrbStack, Colima and podman-compose all work.
+- **~1 GB of disk** for the image, plus the history database, which grows by a
+  few MB a month.
+- **No keys.** Everything below is optional; the radar runs without any.
+
+Two names appear throughout. **TypeSafe** is the judgment service the radar
+asks one constrained question at a time; **Jev** is the model behind it. Where
+this file says "a judgment", it means one of those calls — a category for an
+item, how novel it is, whether it is about a tracked topic. They are the only
+paid calls the running server makes, and they are cached so an unchanged item
+is never asked about twice. A key is optional: see
+[Where judgments are made](#where-judgments-are-made). Keys come from
+[docs.typesafe.ai](https://docs.typesafe.ai/) — if you do not have one, run
+with `--no-llm` and add it later by putting `TYPESAFE_API_KEY=…` in `.env` and
+restarting.
+
 It detects what you have (Docker engine and flavour, Bun), asks where to run,
 writes an owner-only `.env` built from the documented `.env.example`, and starts
 the radar. Nothing it writes is required: with no keys at all the radar runs,
@@ -90,6 +111,10 @@ secrets show as `<set, hidden>`.
 | `--public-base-url <url>`    | Link used inside the report                                      |
 | `--mymemory-email <email>`   | Raises the translation quota tenfold                             |
 | `--openalex-mailto <email>`  | OpenAlex polite pool                                             |
+| `--topics <path>`            | Install this file as `config/topics.json` (validated first)      |
+| `--example-topics`           | Start `config/topics.json` from the shipped example              |
+| `--llm-base-url <url>`       | Send judgments to your own endpoint instead of the hosted one    |
+| `--no-llm`                   | Run with no model at all                                         |
 | `--typesafe-key-file <path>` | File holding `TYPESAFE_API_KEY`                                  |
 | `--github-token-file <path>` | File holding `GITHUB_TOKEN`                                      |
 | `--admin-token <mode>`       | `generate` (default), `none`, or `file:<path>`                   |
@@ -158,30 +183,61 @@ No rebuild: set them per browser in the dashboard and in the extension's
 Settings, and server-side for the webhook report with `--watch` /
 `REPORT_WATCH`.
 
-**Tracked topics** — the 24 themes the radar scores convergence against, in
-`src/lib/trend-topics.ts`. Each is a label, a radar area, a maturity stage and a
-one-sentence `definition`, which is the yes/no question Jev judges each item
-against:
+**Tracked topics** — the themes the radar scores convergence against. These are
+configuration, not code: put them in `config/topics.json` and the server reads
+them at startup. The installer can write a starting file for you:
 
-```ts
-'llm-agents': {
-  label: 'LLM Agents',
-  category: 'ai',
-  stage: 'prototype',
-  definition:
-    'AI agents built on language models: agent frameworks, agentic workflows, models calling tools or acting autonomously',
-},
+```bash
+bun run setup --example-topics        # or: --topics ./my-topics.json
 ```
 
-Add or edit entries and rebuild. Two things make this safe to hand to an
-assistant: `TOPIC_FINGERPRINT` is derived from the topic set, so cached verdicts
-are automatically re-judged rather than serving answers that never saw your new
-question; and `src/lib/__tests__/trend-topics.test.ts` fails if a topic has an
-unknown area or stage, a too-short definition, or if the set stops covering all
-eight radar areas. Run `bun run test` after editing.
+```json
+{
+  "mode": "extend",
+  "topics": {
+    "homomorphic-encryption": {
+      "label": "Homomorphic Encryption",
+      "category": "cybersecurity",
+      "stage": "research",
+      "definition": "Computing directly on encrypted data: FHE schemes, encrypted inference, privacy-preserving computation on untrusted hardware"
+    }
+  }
+}
+```
 
-This is a code change, not configuration — so a prebuilt image cannot have your
-topics. Build your own (`docker compose up --build`, which the installer does).
+- `mode` is `extend` (default — your topics on top of the built-in 24) or
+  `replace` (only yours).
+- `category` is one of the eight radar areas: `ai`, `energy`, `biotech`,
+  `robotics`, `web3`, `quantum`, `space`, `cybersecurity`.
+- `stage` is `research`, `prototype`, `early-adopter` or `mass-market`.
+- **`definition` is the question**, asked of every item the radar collects.
+  Write it as the thing you want found, with the concrete words that would
+  appear in a paper or a repo. A vague definition produces a vague topic.
+
+Changing topics needs no rebuild and no restart: the file is re-read when it
+changes, and the next rebuild (within 5 minutes, or press "Rebuild now") uses
+the new set. Three things keep this safe:
+
+- the file is **validated** when the installer writes it and again every time
+  it is read; every problem is named at once, with the id, the field and what
+  was expected;
+- a file that does not parse is **reported, not obeyed** — `/api/health` says
+  `topics file ignored: …` and lists it under `problems`, and the radar keeps
+  running on the built-in set rather than going dark;
+- the topic set is fingerprinted, so editing a definition **re-judges** items
+  instead of serving cached answers that never saw your new question. Expect a
+  one-off batch of judgments after a change.
+
+Check it took:
+
+```bash
+curl -s localhost:3000/api/health | jq .topics
+# { "count": 26, "source": "config/topics.json" }
+```
+
+`TOPICS_FILE` moves the file elsewhere. In Docker, `./config` is mounted
+read-only into the container, so your file is picked up without rebuilding the
+image.
 
 **Themes the radar finds by itself** need no setup: bursting terms are checked
 once by Jev and tracked as `auto:<term>` alongside your topics.
@@ -213,6 +269,46 @@ docker compose pull && docker compose up -d   # update a published image
 docker compose down                     # stop (the volume survives)
 docker compose down -v                  # stop and delete history
 ```
+
+## Updating and removing
+
+```bash
+git pull && docker compose up -d --build   # update your own build
+docker compose down                        # stop; history and verdicts survive
+docker compose down -v                     # stop and delete them
+```
+
+`.env` and `config/topics.json` are yours and are never overwritten by an
+update. Removing the radar is `docker compose down -v` plus deleting the clone.
+
+## When something is wrong
+
+**The installer refuses to start docker mode.** It needs a _running_ engine:
+`docker info` must succeed. Start Docker Desktop/OrbStack/Colima first, or use
+`--mode local`.
+
+**The port is already in use.** `docker compose up` fails with "address already
+in use". Pick another: `bun run setup --port 8080 --force`, which rewrites
+`.env`; the host port comes from `PORT`, and the container always listens on
+3000 internally.
+
+**Every item says "Unclassified".** No `TYPESAFE_API_KEY`, or the key was
+rejected. This is a working mode, not a crash — the feed is ranked by
+engagement. `curl -s localhost:3000/api/health` and the summary strip both say
+so.
+
+**My topics are not showing up.** `curl -s localhost:3000/api/health | jq
+.topics`. `"source": "built-in"` with an `error` means the file was rejected
+and the message says exactly which field; `"source": "config/topics.json"` with
+your count means it was read, and the items carrying it appear after the next
+rebuild (5 minutes, or press "Rebuild now").
+
+**A source shows as down.** Sources fail independently and recover on their
+own; `/api/health` lists each one, and a single failing source never stops the
+rest. Several at once usually means no outbound network from the container.
+
+**The feed is empty on first start.** The first build fetches thirteen sources
+and takes up to a minute. `docker compose logs -f techradar` shows it working.
 
 Deploying to a server (VPS with Caddy, Railway, other platforms) is in
 [deploy.md](deploy.md).

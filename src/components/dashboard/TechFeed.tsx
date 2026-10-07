@@ -82,7 +82,7 @@ export function TechFeed() {
   const [highlightedOnly, setHighlightedOnly] = useState(false)
   // Topic and watch-term focus can be set from other panels.
   const focus = useFeedFocus()
-  const { themes } = useTechFeed()
+  const { themes, topicLabels } = useTechFeed()
 
   const filters: FilterOptions = useMemo(
     () => ({
@@ -266,9 +266,9 @@ export function TechFeed() {
             <button
               className="chip-muted"
               onClick={() => setFeedFocus({ topic: null })}
-              aria-label={`${t.clearFilter}: ${topicLabel(focus.topic, themes)}`}
+              aria-label={`${t.clearFilter}: ${topicLabel(focus.topic, themes, topicLabels)}`}
             >
-              {topicLabel(focus.topic, themes)} ×
+              {topicLabel(focus.topic, themes, topicLabels)} ×
             </button>
           )}
           {focus.watch && (

@@ -28,6 +28,7 @@ import { historyDb, utcDay, type Db } from '@/server/store/db'
 import { recordSourceRuns, recordUsage } from '@/server/store/ops'
 import { topicSeries, type TopicSeries } from '@/server/store/series'
 import { drainUsage } from '@/server/utils/usage'
+import { effectiveTopics } from '@/server/utils/topics-config'
 import { alertOnSourceChanges } from './health'
 import { sendWatchAlerts } from './watch-alerts'
 import {
@@ -1767,6 +1768,13 @@ async function buildTechFeed() {
     trackRecord: record,
     /** Per topic in this feed: new works per day (30 days) and its origin. */
     topicSeries: topicHistory,
+    /**
+     * The tracked topic set this build used, by id. It is resolved at runtime
+     * (`TOPICS_FILE`), so a client cannot derive names or areas from the
+     * built-in map — a deployment's own topics would render as raw ids in no
+     * category. Discovered themes are in `themes`.
+     */
+    topics: effectiveTopics(),
     fetchedAt: new Date().toISOString(),
   }
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import {
-  TOPIC_LABELS,
+  effectiveTopics,
   TOPIC_THRESHOLD,
   buildTopicRequest,
   createTopicAsker,
@@ -18,7 +18,7 @@ describe('buildTopicRequest', () => {
     expect(req.state.title).toBe('A new agent framework')
     expect(req.state.content).toHaveLength(6000)
     expect(Object.keys(req.questions).sort()).toEqual(
-      Object.keys(TOPIC_LABELS).sort(),
+      Object.keys(effectiveTopics()).sort(),
     )
     for (const q of Object.values(req.questions)) expect(q.type).toBe('noul')
   })

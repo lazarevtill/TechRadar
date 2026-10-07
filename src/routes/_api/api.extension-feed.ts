@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { getTechFeed } from '@/server/functions/tech-feed'
 import { getDigest, getTrends } from '@/server/functions/digest'
-import { TOPIC_LABELS } from '@/lib/trend-topics'
 import { CONVERGENCE_MIN_SOURCES } from '@/lib/signal-model'
 
 /**
@@ -39,10 +38,11 @@ export const Route = createFileRoute('/_api/api/extension-feed')({
             trends,
             // Rule thresholds the extension displays (additive field).
             thresholds: { convergenceMinSources: CONVERGENCE_MIN_SOURCES },
-            // Names for the topic ids in item.signal.topics (additive field),
-            // tracked topics and the themes the radar discovered itself.
+            // Names for the topic ids in item.signal.topics (additive field):
+            // the tracked set this build resolved, plus the themes the radar
+            // discovered itself.
             topicLabels: Object.fromEntries([
-              ...Object.entries(TOPIC_LABELS).map(([id, t]) => [id, t.label]),
+              ...Object.entries(feed.topics).map(([id, t]) => [id, t.label]),
               ...(feed.themes ?? []).map((t) => [t.id, t.label]),
             ]),
           },

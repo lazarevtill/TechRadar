@@ -13,10 +13,17 @@
  * `--<name>-file <path>`, leave them in the environment, or type them at the
  * prompt (input is not echoed). This mirrors the hard rule in AGENTS.md.
  */
-import { existsSync, readFileSync, writeFileSync, chmodSync } from 'node:fs'
+import {
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  chmodSync,
+  mkdirSync,
+} from 'node:fs'
 import { createInterface } from 'node:readline/promises'
 import { spawnSync } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
+import { parseTopicsFile } from '../src/server/utils/topics-config'
 
 // --- options ---------------------------------------------------------------
 
@@ -35,6 +42,8 @@ export interface Options {
   openalexMailto?: string
   llmBaseUrl?: string
   llmOff: boolean
+  /** A topics file to install as config/topics.json; '' means the example. */
+  topics?: string
   /** 'generate' mints one, 'none' leaves it unset, or a path to read. */
   adminToken: 'generate' | 'none' | { file: string }
   typesafeKeyFile?: string
@@ -64,6 +73,13 @@ What the radar tracks
   --backend-url <url>       Address the built extension points at by default
                             (EXTENSION_BACKEND_URL). Default http://localhost:<port>.
                             OrbStack users: http://techradar.orb.local works too.
+  --topics <path>           Install this file as config/topics.json — the
+                            topics the radar scores every item against. It is
+                            validated here, so a mistake is caught now rather
+                            than as bad judgments later. Read at startup, so
+                            editing it later needs no rebuild.
+  --example-topics          Start config/topics.json from the shipped example,
+                            ready to edit.
 
 Optional integrations
   --report-webhook <url>    Weekly report  (REPORT_WEBHOOK_URL)
@@ -174,6 +190,12 @@ export function parseArgs(argv: string[]): Options | 'help' {
       case '--llm-base-url':
         o.llmBaseUrl = next(i++, a)
         break
+      case '--topics':
+        o.topics = next(i++, a)
+        break
+      case '--example-topics':
+        o.topics = ''
+        break
       case '--no-llm':
         o.llmOff = true
         break
@@ -214,8 +236,13 @@ export function parseArgs(argv: string[]): Options | 'help' {
       case '--force':
         o.force = true
         break
+      case '--typesafe-key':
+      case '--github-token':
+        throw new UsageError(
+          `${a} does not take a value — it would be visible in \`ps\` and saved to your shell history. Use ${a}-file <path>, export the variable, or type it when asked.`,
+        )
       default:
-        // A bare secret is the mistake worth naming precisely.
+        // Same mistake written with "=" rather than a space.
         if (/^--(typesafe-key|github-token|admin-token)=/.test(a)) {
           throw new UsageError(
             `${a.split('=')[0]} does not take an inline value — ps would expose it. Use --${a.split('=')[0].replace(/^--/, '')}-file <path>.`,
@@ -223,6 +250,11 @@ export function parseArgs(argv: string[]): Options | 'help' {
         }
         throw new UsageError(`unknown flag "${a}" (try --help)`)
     }
+  }
+  if (o.llmOff && o.llmBaseUrl) {
+    throw new UsageError(
+      '--no-llm and --llm-base-url contradict each other: one turns judgments off, the other says where to send them. Pick one.',
+    )
   }
   return o
 }
@@ -319,6 +351,39 @@ export function detectRuntime(): Runtime {
     compose: compose.ok,
     bun: Boolean(process.versions.bun),
   }
+}
+
+// --- tracked topics --------------------------------------------------------
+
+export const TOPICS_TARGET = 'config/topics.json'
+const TOPICS_EXAMPLE = 'config/topics.example.json'
+
+/**
+ * Installs a topics file, validating it here rather than letting a typo
+ * surface later as silently missing judgments. Returns what to tell the user.
+ */
+export function installTopics(from: string, dryRun: boolean): string {
+  const src = from || TOPICS_EXAMPLE
+  if (!existsSync(src)) {
+    throw new UsageError(`--topics: ${src} does not exist`)
+  }
+  const body = readFileSync(src, 'utf8')
+  let count: number
+  try {
+    count = Object.keys(parseTopicsFile(body).topics).length
+  } catch (e) {
+    throw new UsageError(
+      `${src} is not a usable topics file — ${(e as Error).message}`,
+    )
+  }
+  if (existsSync(TOPICS_TARGET) && !dryRun) {
+    return `${TOPICS_TARGET} already exists — left as it is. Edit it directly, or delete it to start over.`
+  }
+  if (!dryRun) {
+    mkdirSync('config', { recursive: true })
+    writeFileSync(TOPICS_TARGET, body)
+  }
+  return `${dryRun ? 'Would write' : 'Wrote'} ${TOPICS_TARGET} (${count} topic${count === 1 ? '' : 's'}${from ? '' : ', from the example'}). Edit it and restart — no rebuild needed.`
 }
 
 // --- prompting -------------------------------------------------------------
@@ -432,7 +497,19 @@ async function main(argv: string[]): Promise<number> {
         'Watch terms for the weekly report, comma separated',
         '',
       )
+      // The topic set is what the radar scores convergence against — the one
+      // thing most people want to make their own.
+      if (o.topics === undefined && !existsSync(TOPICS_TARGET)) {
+        const yes = await ask(
+          rl,
+          'Track your own topics on top of the built-in 24? (writes config/topics.json to edit)',
+          'n',
+        )
+        if (/^y/i.test(yes)) o.topics = ''
+      }
     }
+
+    if (o.topics !== undefined) console.log(installTopics(o.topics, o.dryRun))
 
     // Secrets
     const secrets: { typesafe?: string; github?: string; admin?: string } = {}
@@ -507,7 +584,10 @@ async function main(argv: string[]): Promise<number> {
     // Start
     if (o.mode === 'docker') {
       console.log('Starting: docker compose up -d --build')
-      const r = spawnSync('docker', ['compose', 'up', '-d', '--build'], {
+      const composeArgs = ['compose']
+      if (o.envFile !== '.env') composeArgs.push('--env-file', o.envFile)
+      composeArgs.push('up', '-d', '--build')
+      const r = spawnSync('docker', composeArgs, {
         stdio: 'inherit',
         env: { ...process.env, PORT: String(o.port) },
       })

@@ -4,7 +4,7 @@ import { DigestItemSchema, type DigestItem } from './summarize'
 import { summarizeAll } from './batch'
 import { computeTrends, type SignalSnapshot } from './momentum'
 import {
-  TOPIC_LABELS,
+  effectiveTopics,
   createTopicAsker,
   tagPosts,
   snapshotFromTags,
@@ -232,7 +232,7 @@ async function main() {
   writeFileSync(historyPath, JSON.stringify(trimmed, null, 2))
 
   const labels = Object.fromEntries(
-    Object.entries(TOPIC_LABELS).map(([id, d]) => [
+    Object.entries(effectiveTopics()).map(([id, d]) => [
       id,
       { label: d.label, category: d.category, stage: d.stage },
     ]),

@@ -1,0 +1,17 @@
+{
+  "mode": "extend",
+  "topics": {
+    "homomorphic-encryption": {
+      "label": "Homomorphic Encryption",
+      "category": "cybersecurity",
+      "stage": "research",
+      "definition": "Computing directly on encrypted data: FHE schemes, encrypted inference, privacy-preserving computation on untrusted hardware"
+    },
+    "solid-state-batteries": {
+      "label": "Solid-State Batteries",
+      "category": "energy",
+      "stage": "prototype",
+      "definition": "Batteries with a solid electrolyte rather than liquid: sulfide or oxide cells, lithium-metal anodes, manufacturing scale-up"
+    }
+  }
+}

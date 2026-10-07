@@ -1,5 +1,5 @@
 import type { DataSource } from '@/lib/tech-categories'
-import { TOPIC_LABELS } from '@/lib/trend-topics'
+import { effectiveTopics } from '@/server/utils/topics-config'
 import { daysBefore, type Db } from './db'
 import { groupByKeys } from './identity'
 import { recordThemePrediction } from './predictions'
@@ -145,7 +145,7 @@ export function overlaps(a: string, b: string): boolean {
 
 /** Already covered by a hand-written tracked topic? */
 export function coveredByTrackedTopic(term: string): boolean {
-  return Object.values(TOPIC_LABELS).some((t) => {
+  return Object.values(effectiveTopics()).some((t) => {
     const words = new Set(
       `${t.label} ${t.definition}`.toLowerCase().split(/[^\p{L}\p{N}]+/u),
     )
