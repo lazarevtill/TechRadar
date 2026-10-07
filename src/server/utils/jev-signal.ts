@@ -1,15 +1,21 @@
-import { TypeSafeClient, noul, score } from '@typesafe-ai/sdk'
+import { noul, score } from '@typesafe-ai/sdk'
+import {
+  getJudge,
+  judgeFingerprint,
+  type Judge,
+  type Question,
+} from '@/server/utils/judge'
 import { countUsage } from '@/server/utils/usage'
 import {
   contentHash,
   verdictStore,
   type VerdictStore,
 } from '@/server/utils/verdict-store'
+import { topicQuestion } from '@/lib/trend-topics'
 import {
-  TOPIC_FINGERPRINT,
-  TOPIC_LABELS,
-  topicQuestion,
-} from '@/lib/trend-topics'
+  effectiveFingerprint,
+  effectiveTopics,
+} from '@/server/utils/topics-config'
 import type { SignalJudgment } from '@/lib/signal-model'
 
 /**
@@ -71,7 +77,7 @@ export function buildSignalRequest(input: SignalJudgeInput) {
       novelty: score(NOVELTY_QUESTION, NOVELTY_LEVELS),
       substance: noul(SUBSTANCE_QUESTION),
       ...Object.fromEntries(
-        Object.entries(TOPIC_LABELS).map(([id, topic]) => [
+        Object.entries(effectiveTopics()).map(([id, topic]) => [
           `topic:${id}`,
           noul(topicQuestion(topic)),
         ]),
@@ -84,22 +90,25 @@ export function buildSignalRequest(input: SignalJudgeInput) {
 // full request (item text, rubric, topic questions) plus the thresholds that
 // turn answers into the stored judgment, so changing any of them re-judges.
 const STORE_PREFIX = 'signal:'
-const JUDGMENT_RULES = { NOVEL_FROM_LEVEL, TOPIC_THRESHOLD, TOPIC_FINGERPRINT }
-
-let client: TypeSafeClient | null | undefined
-
-function getClient(): TypeSafeClient | null {
-  if (client !== undefined) return client
-  const apiKey = process.env.TYPESAFE_API_KEY
-  if (!apiKey) {
-    console.warn(
-      '[jev] TYPESAFE_API_KEY is not set — signals are ranked from engagement only',
-    )
-    client = null
-    return client
+// TOPIC_FINGERPRINT would only cover the built-in set; the resolved one is
+// what the questions above were actually built from.
+const judgmentRules = () => {
+  const rules: Record<string, unknown> = {
+    NOVEL_FROM_LEVEL,
+    TOPIC_THRESHOLD,
+    topicFingerprint: effectiveFingerprint(),
   }
-  client = new TypeSafeClient({ apiKey })
-  return client
+  // Only present for a non-default answerer, so caches written before this
+  // existed keep hitting rather than re-judging every item on upgrade.
+  const fp = judgeFingerprint()
+  if (fp) rules.judge = fp
+  return rules
+}
+
+// Who answers is decided in server/utils/judge.ts; here it is only "someone
+// or nobody", and nobody means engagement-only ranking.
+function getClient(): Judge | null {
+  return getJudge()
 }
 
 export type AskSignal = (input: SignalJudgeInput) => Promise<SignalJudgment>
@@ -111,8 +120,12 @@ type Answer =
 
 async function askJev(input: SignalJudgeInput): Promise<SignalJudgment> {
   const c = getClient()
-  if (!c) throw new Error('TYPESAFE_API_KEY is not set')
-  const result = await c.systemOne(buildSignalRequest(input))
+  if (!c) throw new Error('no judgment backend is configured')
+  const request = buildSignalRequest(input)
+  const result = await c.systemOne({
+    state: request.state,
+    questions: request.questions as unknown as Record<string, Question>,
+  })
   const answers = result.answers as unknown as Record<string, Answer>
 
   const noveltyAnswer = answers.novelty
@@ -162,7 +175,7 @@ export async function judgeSignals(
   await Promise.all(
     inputs.map(async (input) => {
       const key = STORE_PREFIX + input.id
-      const hash = contentHash([buildSignalRequest(input), JUDGMENT_RULES])
+      const hash = contentHash([buildSignalRequest(input), judgmentRules()])
       const known = store.get<SignalJudgment>(key, hash)
       if (known) {
         cached++

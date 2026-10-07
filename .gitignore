@@ -29,3 +29,6 @@ package-lock.json
 
 # VPS deployment: host-side backups (deploy/vps)
 /backups
+
+# Your own tracked topics (config/topics.example.json is the template).
+config/topics.json

@@ -187,9 +187,11 @@ export const TOPIC_LABELS: Record<string, TrendTopic> = {
  * key on it, so adding or editing a topic re-judges items instead of serving
  * verdicts that never saw the new question.
  */
-export const TOPIC_FINGERPRINT = (() => {
+export function fingerprintOf(topics: Record<string, TrendTopic>): string {
   const text = JSON.stringify(
-    Object.entries(TOPIC_LABELS).map(([id, t]) => [id, t.definition]),
+    Object.entries(topics)
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+      .map(([id, t]) => [id, t.definition]),
   )
   let h = 2166136261
   for (let i = 0; i < text.length; i++) {
@@ -197,7 +199,9 @@ export const TOPIC_FINGERPRINT = (() => {
     h = Math.imul(h, 16777619)
   }
   return (h >>> 0).toString(36)
-})()
+}
+
+export const TOPIC_FINGERPRINT = fingerprintOf(TOPIC_LABELS)
 
 export function topicQuestion(
   topic: TrendTopic,
@@ -224,8 +228,11 @@ export interface DiscoveredTheme {
 export function topicLabel(
   id: string,
   discovered: DiscoveredTheme[] = [],
+  /** Names from the server's resolved topic set; see server/utils/topics-config. */
+  labels: Record<string, string> = {},
 ): string {
   return (
+    labels[id] ??
     TOPIC_LABELS[id]?.label ??
     discovered.find((t) => t.id === id)?.label ??
     id.replace(/^auto:/, '')

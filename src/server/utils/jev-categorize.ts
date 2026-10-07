@@ -1,4 +1,10 @@
-import { TypeSafeClient, choice } from '@typesafe-ai/sdk'
+import { choice } from '@typesafe-ai/sdk'
+import {
+  getJudge,
+  judgeFingerprint,
+  type Judge,
+  type Question,
+} from '@/server/utils/judge'
 import { countUsage } from '@/server/utils/usage'
 import type { TechCategory } from '@/lib/tech-categories'
 import {
@@ -67,29 +73,25 @@ export function buildCategoryRequest(input: CategorizeInput) {
 // edited items are ever sent.
 const STORE_PREFIX = 'area:'
 
-let client: TypeSafeClient | null | undefined
-
-function getClient(): TypeSafeClient | null {
-  if (client !== undefined) return client
-  const apiKey = process.env.TYPESAFE_API_KEY
-  if (!apiKey) {
-    console.warn(
-      '[jev] TYPESAFE_API_KEY is not set — feed items are shown as uncategorized',
-    )
-    client = null
-    return client
-  }
-  client = new TypeSafeClient({ apiKey })
-  return client
-}
-
 type Ask = (input: CategorizeInput) => Promise<RadarArea | 'none'>
+
+// Who answers (hosted Jev, your own OpenAI-compatible server, or nobody) is
+// decided in one place: server/utils/judge.ts.
+function getClient(): Judge | null {
+  return getJudge()
+}
 
 async function askJev(input: CategorizeInput): Promise<RadarArea | 'none'> {
   const c = getClient()
-  if (!c) throw new Error('TYPESAFE_API_KEY is not set')
-  const { answers } = await c.systemOne(buildCategoryRequest(input))
-  return answers.area.choice
+  if (!c) throw new Error('no judgment backend is configured')
+  const request = buildCategoryRequest(input)
+  const { answers } = await c.systemOne({
+    state: request.state,
+    questions: request.questions as unknown as Record<string, Question>,
+  })
+  const area = answers.area
+  if (area?.type !== 'choice') throw new Error('area answer missing')
+  return area.choice as RadarArea | 'none'
 }
 
 /**
@@ -109,7 +111,12 @@ export async function categorizeItems(
   await Promise.all(
     inputs.map(async (input) => {
       const key = STORE_PREFIX + input.id
-      const hash = contentHash(buildCategoryRequest(input))
+      // The answerer is part of the key, so a local model's verdicts are
+      // never served as the hosted service's. Empty for the hosted default,
+      // which keeps every cache entry written before this existed valid.
+      const request = buildCategoryRequest(input)
+      const fp = judgeFingerprint()
+      const hash = contentHash(fp ? [request, fp] : request)
       const known = store.get<RadarArea | 'none'>(key, hash)
       if (known) {
         cached++

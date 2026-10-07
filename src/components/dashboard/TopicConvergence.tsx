@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTechFeed } from '@/hooks/use-tech-feed'
-import { TOPIC_LABELS, topicLabel } from '@/lib/trend-topics'
+import { topicLabel } from '@/lib/trend-topics'
 import { CATEGORY_CONFIG, type DataSource } from '@/lib/tech-categories'
 import { CONVERGENCE_MIN_SOURCES } from '@/lib/signal-model'
 import { useLanguage, getLocalizedSources } from '@/lib/i18n'
@@ -23,7 +23,15 @@ interface TopicRow {
  * changes in months; this only reports what was observed.
  */
 export function TopicConvergence() {
-  const { items, themes, isError, isLoading, topicSeries } = useTechFeed()
+  const {
+    items,
+    themes,
+    topics,
+    topicLabels,
+    isError,
+    isLoading,
+    topicSeries,
+  } = useTechFeed()
   const focus = useFeedFocus()
   const { t, language } = useLanguage()
   const localizedSources = getLocalizedSources(language)
@@ -44,10 +52,10 @@ export function TopicConvergence() {
     return [...byTopic.entries()]
       .filter(([, v]) => v.sources.size >= 2)
       .map(([id, v]) => {
-        const def = TOPIC_LABELS[id]
+        const def = topics[id]
         return {
           id,
-          label: topicLabel(id, themes),
+          label: topicLabel(id, themes, topicLabels),
           color:
             CATEGORY_CONFIG[def?.category as keyof typeof CATEGORY_CONFIG]
               ?.color ?? CATEGORY_CONFIG.uncategorized.color,
@@ -56,7 +64,7 @@ export function TopicConvergence() {
         }
       })
       .sort((a, b) => b.sources.length - a.sources.length || b.count - a.count)
-  }, [items, themes])
+  }, [items, themes, topics, topicLabels])
 
   return (
     <div className="panel">

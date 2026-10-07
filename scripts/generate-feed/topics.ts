@@ -1,11 +1,12 @@
 import { TypeSafeClient, noul } from '@typesafe-ai/sdk'
-import { TOPIC_LABELS, topicQuestion } from '../../src/lib/trend-topics'
+import { topicQuestion } from '../../src/lib/trend-topics'
+import { effectiveTopics } from '../../src/server/utils/topics-config'
 import { contentHash } from '../../src/server/utils/verdict-store'
 import type { SignalSnapshot, Signal } from './momentum'
 
 // Topic definitions live in src/lib/trend-topics.ts, shared with the live
 // feed's cross-source convergence so both tag against the same list.
-export { TOPIC_LABELS } from '../../src/lib/trend-topics'
+export { effectiveTopics } from '../../src/server/utils/topics-config'
 
 /** Noul probability at or above which a post counts toward a topic. */
 export const TOPIC_THRESHOLD = 0.5
@@ -23,7 +24,7 @@ export function buildTopicRequest(post: TopicPost) {
       content: (post.contentText ?? '').slice(0, CONTENT_CHAR_LIMIT),
     },
     questions: Object.fromEntries(
-      Object.entries(TOPIC_LABELS).map(([id, def]) => [
+      Object.entries(effectiveTopics()).map(([id, def]) => [
         id,
         noul(topicQuestion(def, 'this post (`title` and `content`)')),
       ]),
@@ -84,7 +85,7 @@ export async function tagPosts(
       if (known) return known
       sent++
       const byTopic = await ask(post)
-      const ids = Object.keys(TOPIC_LABELS).filter(
+      const ids = Object.keys(effectiveTopics()).filter(
         (id) => (byTopic[id] ?? 0) >= TOPIC_THRESHOLD,
       )
       if (key && store) store.set(key, hash, ids)

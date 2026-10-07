@@ -7,14 +7,38 @@ services:
         # in the extension's Settings); set for a deployed host.
         EXTENSION_BACKEND_URL: ${EXTENSION_BACKEND_URL:-http://localhost:3000}
     image: ghcr.io/lazarevtill/techradar:latest
+    # So LLM_BASE_URL=http://host.docker.internal:11434 reaches a model server
+    # on the host. Docker Desktop and OrbStack provide this name themselves;
+    # Docker Engine on Linux does not, and this adds it.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     ports:
-      - '3000:3000'
+      # Host port is configurable (bun run setup --port, or PORT in .env);
+      # inside the container the server always listens on 3000.
+      - '${PORT:-3000}:3000'
     environment:
       # Live data comes from public APIs and the digest from public raw URLs.
+      # Fixed on purpose: the published port above is what you change.
       PORT: 3000
       # Jev (TypeSafe) assigns feed categories. Without it every live item is
       # shown as "Unclassified". Read from the host env / .env, never inlined.
       TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
+      # Point the judgments at your own endpoint instead of the hosted service:
+      # any host that speaks the TypeSafe API, reachable by IP, hostname or
+      # http(s) URL. Unset = hosted. Leaving TYPESAFE_API_KEY empty disables
+      # judgments entirely (items show as Unclassified, ranking by engagement).
+      TYPESAFE_BASE_URL: ${TYPESAFE_BASE_URL:-}
+      # Or judge on your own hardware with no key: any OpenAI-compatible
+      # server. From a container, localhost is the container — use
+      # host.docker.internal (Docker Desktop/OrbStack) or the host's LAN IP.
+      LLM_BASE_URL: ${LLM_BASE_URL:-}
+      LLM_MODEL: ${LLM_MODEL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-}
+      JUDGE_BACKEND: ${JUDGE_BACKEND:-}
+      # Tracked topics, read from the mounted ./config below. A path outside
+      # that directory would have to be mounted too.
+      TOPICS_FILE: ${TOPICS_FILE:-config/topics.json}
       # Optional contact emails: raise the MyMemory translation quota and use
       # OpenAlex's polite pool. Read from the host env / .env.
       MYMEMORY_EMAIL: ${MYMEMORY_EMAIL:-}
@@ -34,6 +58,10 @@ services:
       # Point at a different fork's generated data if needed:
       # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
     volumes:
+      # Your own tracked topics, read at runtime (config/topics.json). Mounted
+      # as a directory because a bind mount of a file that does not exist yet
+      # makes Docker create a directory in its place.
+      - ./config:/app/config:ro
       # Jev verdicts and the history store (with its daily backups): survive
       # rebuilds, so unchanged items are never re-sent and history accumulates.
       - techradar-cache:/app/.cache

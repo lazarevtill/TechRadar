@@ -12,6 +12,8 @@ import {
   type SourceHealth,
 } from '@/server/store/ops'
 import { CACHE_KEYS, getCached } from '@/server/utils/cache'
+import { topicsStatus } from '@/server/utils/topics-config'
+import { judgeInfo } from '@/server/utils/judge'
 import { SOURCE_CONFIG, type DataSource } from '@/lib/tech-categories'
 
 /**
@@ -41,9 +43,19 @@ export interface Health {
   problems: string[]
   feedAge: number | null
   sources: SourceHealth[]
+  /** Tracked topics in force: how many, from where, and why a file was ignored. */
+  topics: { count: number; source: string; error?: string }
+  /**
+   * Which backend answers the model questions. Only the kind is public: the
+   * detail names a URL that can carry a token, so it rides in `detail` with
+   * the usage ledger, behind ADMIN_TOKEN when one is set.
+   */
+  judge: { kind: 'typesafe' | 'openai' | 'none' }
   detail: {
     usage: ReturnType<typeof usageSince>
     storage: ReturnType<typeof storageInfo>
+    /** Which model answers, and where — may contain a URL with credentials. */
+    judge: string
   } | null
 }
 
@@ -54,6 +66,8 @@ export async function getHealth(withDetail: boolean): Promise<Health> {
   const feed = getCached<{ fetchedAt: string }>(CACHE_KEYS.TECH_FEED)
   const storage = storageInfo(historyDbFile())
   const feedAge = feed ? Date.now() - Date.parse(feed.fetchedAt) : null
+  const topics = topicsStatus()
+  const judge = judgeInfo()
   const problems = [
     ...sources
       .filter((s) => s.status === 'down')
@@ -62,16 +76,23 @@ export async function getHealth(withDetail: boolean): Promise<Health> {
       ? [`feed is ${Math.round(feedAge / 60_000)} min old`]
       : []),
     ...backupProblem(storage.lastBackupDay, today),
+    // A rejected topics file is a silent downgrade to the built-in set
+    // otherwise — the operator asked for their own topics and is not getting
+    // them.
+    ...(topics.error ? [`topics file ignored: ${topics.error}`] : []),
   ]
   return {
     ok: problems.length === 0,
     problems,
     feedAge,
     sources,
+    topics,
+    judge: { kind: judge.kind },
     detail: withDetail
       ? {
           usage: usageSince(db, daysBefore(today, 6)),
           storage,
+          judge: judge.detail,
         }
       : null,
   }

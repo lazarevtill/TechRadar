@@ -7,7 +7,8 @@
     "bun": ">=1.4.2"
   },
   "scripts": {
-    "dev": "vite dev --port 3000",
+    "dev": "vite dev --port ${PORT:-3000}",
+    "setup": "bun run scripts/setup.ts",
     "start": "bun run server.ts",
     "build": "tsr generate && ./node_modules/typescript-7/bin/tsc --noEmit && vite build && bun run build:extension",
     "build:node": "tsr generate && ./node_modules/typescript-7/bin/tsc --noEmit && FOR_SITES=true vite build && bun run build:extension",

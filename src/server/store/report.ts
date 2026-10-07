@@ -5,6 +5,7 @@ import { daysBefore, type Db } from './db'
 import { activeThemes, THEME_PREFIX } from './discovery'
 import { trackRecord, type TrackRecord } from './predictions'
 import { workGroups } from './works'
+import { effectiveTopics } from '@/server/utils/topics-config'
 
 /**
  * "What changed this week", computed from the history store alone: no model
@@ -108,11 +109,16 @@ export function weeklyReport(
     from,
     prevFrom,
   )
+  // Tracked topics are resolved at runtime, so a deployment's own topics
+  // would otherwise appear in the report as raw ids.
+  const trackedNames = Object.fromEntries(
+    Object.entries(effectiveTopics()).map(([id, t]) => [id, t.label]),
+  )
   const byTopic = new Map<string, TopicChange>()
   for (const r of topicRows) {
     const entry = byTopic.get(r.topic) ?? {
       id: r.topic,
-      label: topicLabel(r.topic, labels),
+      label: topicLabel(r.topic, labels, trackedNames),
       thisWeek: 0,
       lastWeek: 0,
     }

@@ -185,7 +185,7 @@ function SignalDetail({
   const localizedCategories = getLocalizedCategories(language)
   const localizedMaturity = getLocalizedMaturity(language)
   const localizedSources = getLocalizedSources(language)
-  const { themes } = useTechFeed()
+  const { themes, topicLabels } = useTechFeed()
   if (!item) return null
 
   const targetLang = language === 'ru' ? 'ru' : 'en'
@@ -272,7 +272,8 @@ function SignalDetail({
 
       {s.topics.length > 0 && (
         <p className="text-xs text-fg-3 mb-4">
-          {t.topics}: {s.topics.map((id) => topicLabel(id, themes)).join(', ')}
+          {t.topics}:{' '}
+          {s.topics.map((id) => topicLabel(id, themes, topicLabels)).join(', ')}
           {s.convergentSources > 1 &&
             ` · ${t.onSources.replace('{n}', String(s.convergentSources))}`}
         </p>
