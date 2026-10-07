@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-06T13:17:57.557Z",
+  "generatedAt": "2026-10-07T13:21:54.796Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "rising",
-      "momentum": 0.03,
+      "momentum": 0.2,
       "weeklyCounts": [
         21,
         21,
@@ -23,7 +23,7 @@
         21,
         21,
         35,
-        36
+        42
       ],
       "signals": [
         {
@@ -59,6 +59,62 @@
       ]
     },
     {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 0.04,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        384,
+        401
+      ],
+      "signals": [
+        {
+          "title": "[AINews] Quasi-Riemann-Hypothesis: OpenAI publishes 722 math papers solving 90 of the top 500 open math problems; “the most significant moment” in >100 years of mathematics",
+          "url": "https://www.latent.space/p/ainews-quasi-riemann-hypothesis-openai",
+          "source": "latent-space",
+          "publishedAt": "2026-10-07T04:55:44.000Z"
+        },
+        {
+          "title": "llm-mistral 0.16",
+          "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T21:32:34.000Z"
+        },
+        {
+          "title": "EmbeddingGemma 2",
+          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T20:37:53.000Z"
+        },
+        {
+          "title": "Introducing Mistral Large 4: Le chonk",
+          "url": "https://simonwillison.net/2026/Oct/6/le-chonk/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T20:18:19.000Z"
+        },
+        {
+          "title": "Mistral Large 4",
+          "url": "https://simonwillison.net/2026/Oct/6/hn-49982139/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T18:20:58.000Z"
+        }
+      ]
+    },
+    {
       "id": "post-quantum",
       "label": "Post-Quantum Crypto",
       "category": "cybersecurity",
@@ -84,68 +140,12 @@
       "signals": []
     },
     {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.11,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370,
-        384,
-        340
-      ],
-      "signals": [
-        {
-          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
-          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
-          "source": "latent-space",
-          "publishedAt": "2026-10-06T06:28:43.000Z"
-        },
-        {
-          "title": "Qwen3.8 27B addition in words",
-          "url": "https://simonwillison.net/2026/Oct/4/qwen38-addition-in-words/",
-          "source": "simonw",
-          "publishedAt": "2026-10-04T23:34:00.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
-          "source": "latent-space",
-          "publishedAt": "2026-10-03T08:45:15.000Z"
-        },
-        {
-          "title": "Inside-Out AI: Rebuilding Airbnb Behind the Scenes and Across the Guest Experience",
-          "url": "https://www.latent.space/p/airbnb",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T14:04:49.000Z"
-        },
-        {
-          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
-          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T06:40:53.000Z"
-        }
-      ]
-    },
-    {
       "id": "llm-agents",
       "label": "LLM Agents",
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.15,
+      "momentum": -0.01,
       "weeklyCounts": [
         411,
         420,
@@ -160,9 +160,15 @@
         469,
         463,
         440,
-        375
+        436
       ],
       "signals": [
+        {
+          "title": "[AINews] Quasi-Riemann-Hypothesis: OpenAI publishes 722 math papers solving 90 of the top 500 open math problems; “the most significant moment” in >100 years of mathematics",
+          "url": "https://www.latent.space/p/ainews-quasi-riemann-hypothesis-openai",
+          "source": "latent-space",
+          "publishedAt": "2026-10-07T04:55:44.000Z"
+        },
         {
           "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
           "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
@@ -186,12 +192,6 @@
           "url": "https://www.latent.space/p/ainews-openai-devday-2026-dots-61",
           "source": "latent-space",
           "publishedAt": "2026-09-30T05:53:10.000Z"
-        },
-        {
-          "title": "[AINews] Opus 5.5 is good at explainer videos",
-          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T02:44:29.000Z"
         }
       ]
     },
@@ -201,7 +201,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.22,
+      "momentum": -0.06,
       "weeklyCounts": [
         81,
         60,
@@ -216,9 +216,21 @@
         92,
         103,
         93,
-        73
+        87
       ],
       "signals": [
+        {
+          "title": "[AINews] Quasi-Riemann-Hypothesis: OpenAI publishes 722 math papers solving 90 of the top 500 open math problems; “the most significant moment” in >100 years of mathematics",
+          "url": "https://www.latent.space/p/ainews-quasi-riemann-hypothesis-openai",
+          "source": "latent-space",
+          "publishedAt": "2026-10-07T04:55:44.000Z"
+        },
+        {
+          "title": "EmbeddingGemma 2",
+          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T20:37:53.000Z"
+        },
         {
           "title": "Inside-Out AI: Rebuilding Airbnb Behind the Scenes and Across the Guest Experience",
           "url": "https://www.latent.space/p/airbnb",
@@ -236,18 +248,6 @@
           "url": "https://www.latent.space/p/openrouter",
           "source": "latent-space",
           "publishedAt": "2026-09-25T23:14:41.000Z"
-        },
-        {
-          "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
-          "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
-          "source": "hf",
-          "publishedAt": "2026-08-12T16:14:36.000Z"
-        },
-        {
-          "title": "Granite Embedding Multilingual R2: Open Apache 2.0 Multilingual Embeddings with 32K Context — Best Sub-100M Retrieval Quality",
-          "url": "https://huggingface.co/blog/ibm-granite/granite-embedding-multilingual-r2",
-          "source": "hf",
-          "publishedAt": "2026-05-14T18:55:01.000Z"
         }
       ]
     },
@@ -257,7 +257,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.39,
+      "momentum": -0.3,
       "weeklyCounts": [
         14,
         11,
@@ -272,7 +272,7 @@
         17,
         28,
         33,
-        20
+        23
       ],
       "signals": [
         {
@@ -301,7 +301,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.5,
+      "momentum": -0.42,
       "weeklyCounts": [
         1,
         7,
@@ -316,7 +316,7 @@
         2,
         7,
         12,
-        6
+        7
       ],
       "signals": [
         {
