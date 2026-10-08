@@ -1055,5 +1055,17 @@
       "generative-media": 2,
       "ai-coding": 6
     }
+  },
+  {
+    "date": "2026-10-08",
+    "topics": {
+      "llm-agents": 11,
+      "open-models": 8,
+      "small-models": 2,
+      "multimodal": 2,
+      "ai-coding": 6,
+      "ai-safety": 1,
+      "generative-media": 2
+    }
   }
 ]

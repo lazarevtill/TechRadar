@@ -1,70 +1,14 @@
 {
-  "generatedAt": "2026-10-07T13:38:33.981Z",
+  "generatedAt": "2026-10-08T14:02:33.942Z",
   "window": "rolling-120d",
   "topics": [
     {
-      "id": "llm-agents",
-      "label": "LLM Agents",
-      "category": "ai",
-      "stage": "prototype",
-      "trajectory": "rising",
-      "momentum": 0.17,
-      "weeklyCounts": [
-        411,
-        420,
-        426,
-        449,
-        458,
-        466,
-        456,
-        437,
-        437,
-        452,
-        469,
-        463,
-        88,
-        103
-      ],
-      "signals": [
-        {
-          "title": "OpenAI “rogue” agent activities found on Wikimedia projects",
-          "url": "https://simonwillison.net/2026/Oct/7/openai-rogue-agents-wikimedia/",
-          "source": "simonw",
-          "publishedAt": "2026-10-07T00:16:45.000Z"
-        },
-        {
-          "title": "Advancing computer use with Ironclad",
-          "url": "https://openai.com/index/advancing-computer-use-with-ironclad",
-          "source": "openai",
-          "publishedAt": "2026-10-06T10:00:00.000Z"
-        },
-        {
-          "title": "Quoting Felix Rieseberg",
-          "url": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
-          "source": "simonw",
-          "publishedAt": "2026-10-05T23:56:47.000Z"
-        },
-        {
-          "title": "The Agent Said It Was Done. The Database Disagreed.",
-          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
-          "source": "hf",
-          "publishedAt": "2026-10-03T22:56:48.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
-          "source": "latent-space",
-          "publishedAt": "2026-10-03T08:45:15.000Z"
-        }
-      ]
-    },
-    {
-      "id": "ai-coding",
-      "label": "AI for Coding",
+      "id": "small-models",
+      "label": "Small & Efficient Models",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 0.14,
+      "momentum": 1,
       "weeklyCounts": [
         0,
         0,
@@ -78,97 +22,50 @@
         0,
         0,
         0,
-        49,
-        56
+        9,
+        1,
+        2
       ],
       "signals": [
         {
-          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
-          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
-          "source": "latent-space",
-          "publishedAt": "2026-10-06T06:28:43.000Z"
-        },
-        {
-          "title": "The Agent Said It Was Done. The Database Disagreed.",
-          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+          "title": "Multimodal open d1 decision models for the edge",
+          "url": "https://huggingface.co/blog/LiquidAI/open-d1",
           "source": "hf",
-          "publishedAt": "2026-10-03T22:56:48.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
-          "source": "latent-space",
-          "publishedAt": "2026-10-03T08:45:15.000Z"
-        },
-        {
-          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
-          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T06:40:53.000Z"
-        },
-        {
-          "title": "pwasm 0.2a0",
-          "url": "https://simonwillison.net/2026/Oct/1/pwasm/",
-          "source": "simonw",
-          "publishedAt": "2026-10-01T17:10:31.000Z"
-        }
-      ]
-    },
-    {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370,
-        15,
-        15
-      ],
-      "signals": [
-        {
-          "title": "One Model Family, Two Gold-Level Results: Fine-Tuning Nemotron for IOI and IMO",
-          "url": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026",
-          "source": "hf",
-          "publishedAt": "2026-10-07T12:45:31.000Z"
-        },
-        {
-          "title": "llm-mistral 0.16",
-          "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T21:32:34.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2",
-          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T20:37:53.000Z"
+          "publishedAt": "2026-10-07T16:54:33.000Z"
         },
         {
           "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
           "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
           "source": "deepmind",
           "publishedAt": "2026-10-06T19:57:04.000Z"
-        },
-        {
-          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
-          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
-          "source": "latent-space",
-          "publishedAt": "2026-10-06T06:28:43.000Z"
         }
       ]
+    },
+    {
+      "id": "rag",
+      "label": "Retrieval-Augmented Generation",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "stable",
+      "momentum": 0,
+      "weeklyCounts": [
+        81,
+        60,
+        57,
+        76,
+        72,
+        77,
+        95,
+        107,
+        100,
+        85,
+        92,
+        103,
+        4,
+        0,
+        0
+      ],
+      "signals": []
     },
     {
       "id": "fusion",
@@ -190,6 +87,7 @@
         14,
         17,
         28,
+        0,
         0,
         0
       ],
@@ -216,6 +114,7 @@
         21,
         21,
         0,
+        0,
         0
       ],
       "signals": []
@@ -240,6 +139,7 @@
         0,
         2,
         7,
+        0,
         0,
         0
       ],
@@ -266,17 +166,18 @@
         0,
         0,
         0,
+        0,
         0
       ],
       "signals": []
     },
     {
-      "id": "ai-safety",
-      "label": "AI Safety & Interpretability",
-      "category": "ai",
-      "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.26,
+      "id": "supply-chain-security",
+      "label": "Software Supply-Chain Security",
+      "category": "cybersecurity",
+      "stage": "early-adopter",
+      "trajectory": "stable",
+      "momentum": 0,
       "weeklyCounts": [
         0,
         0,
@@ -290,21 +191,105 @@
         0,
         0,
         0,
-        34,
-        25
+        1,
+        0,
+        0
+      ],
+      "signals": []
+    },
+    {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.47,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        15,
+        15,
+        8
       ],
       "signals": [
         {
-          "title": "Quoting Victoria Kim",
-          "url": "https://simonwillison.net/2026/Oct/6/victoria-kim/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T23:58:56.000Z"
+          "title": "Multimodal open d1 decision models for the edge",
+          "url": "https://huggingface.co/blog/LiquidAI/open-d1",
+          "source": "hf",
+          "publishedAt": "2026-10-07T16:54:33.000Z"
         },
         {
-          "title": "Quoting Matthew Green",
-          "url": "https://simonwillison.net/2026/Oct/1/matthew-green/",
+          "title": "One Model Family, Two Gold-Level Results: Fine-Tuning Nemotron for IOI and IMO",
+          "url": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026",
+          "source": "hf",
+          "publishedAt": "2026-10-07T12:45:31.000Z"
+        },
+        {
+          "title": "llm-mistral 0.16",
+          "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
           "source": "simonw",
-          "publishedAt": "2026-10-01T06:29:01.000Z"
+          "publishedAt": "2026-10-06T21:32:34.000Z"
+        },
+        {
+          "title": "EmbeddingGemma 2",
+          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T20:37:53.000Z"
+        },
+        {
+          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
+          "source": "deepmind",
+          "publishedAt": "2026-10-06T19:57:04.000Z"
+        }
+      ]
+    },
+    {
+      "id": "multimodal",
+      "label": "Multimodal Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.78,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        37,
+        9,
+        2
+      ],
+      "signals": [
+        {
+          "title": "Multimodal open d1 decision models for the edge",
+          "url": "https://huggingface.co/blog/LiquidAI/open-d1",
+          "source": "hf",
+          "publishedAt": "2026-10-07T16:54:33.000Z"
+        },
+        {
+          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
+          "source": "deepmind",
+          "publishedAt": "2026-10-06T19:57:04.000Z"
         }
       ]
     },
@@ -314,7 +299,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.57,
+      "momentum": -0.83,
       "weeklyCounts": [
         0,
         0,
@@ -329,7 +314,8 @@
         0,
         0,
         28,
-        12
+        12,
+        2
       ],
       "signals": [
         {
@@ -347,40 +333,65 @@
       ]
     },
     {
-      "id": "multimodal",
-      "label": "Multimodal Models",
+      "id": "llm-agents",
+      "label": "LLM Agents",
       "category": "ai",
-      "stage": "early-adopter",
+      "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.76,
+      "momentum": -0.89,
       "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        37,
-        9
+        411,
+        420,
+        426,
+        449,
+        458,
+        466,
+        456,
+        437,
+        437,
+        452,
+        469,
+        463,
+        88,
+        103,
+        11
       ],
       "signals": [
         {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
+          "title": "[AINews] Claude Haiku 5.5 — better than GPT-6 Luna at the same pricing",
+          "url": "https://www.latent.space/p/ainews-claude-haiku-55-better-than",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T07:27:51.000Z"
+        },
+        {
+          "title": "Can a Cloud-Native Harness Make Agents Reliable Beyond the Desktop?",
+          "url": "https://www.latent.space/p/stacklok",
+          "source": "latent-space",
+          "publishedAt": "2026-10-07T14:10:45.000Z"
+        },
+        {
+          "title": "OpenAI “rogue” agent activities found on Wikimedia projects",
+          "url": "https://simonwillison.net/2026/Oct/7/openai-rogue-agents-wikimedia/",
+          "source": "simonw",
+          "publishedAt": "2026-10-07T00:16:45.000Z"
+        },
+        {
+          "title": "Advancing computer use with Ironclad",
+          "url": "https://openai.com/index/advancing-computer-use-with-ironclad",
+          "source": "openai",
+          "publishedAt": "2026-10-06T10:00:00.000Z"
+        },
+        {
+          "title": "Quoting Felix Rieseberg",
+          "url": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
+          "source": "simonw",
+          "publishedAt": "2026-10-05T23:56:47.000Z"
         }
       ]
     },
     {
-      "id": "small-models",
-      "label": "Small & Efficient Models",
+      "id": "ai-coding",
+      "label": "AI for Coding",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
@@ -398,50 +409,50 @@
         0,
         0,
         0,
-        9,
-        1
+        49,
+        56,
+        6
       ],
       "signals": [
         {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
+          "title": "Can a Cloud-Native Harness Make Agents Reliable Beyond the Desktop?",
+          "url": "https://www.latent.space/p/stacklok",
+          "source": "latent-space",
+          "publishedAt": "2026-10-07T14:10:45.000Z"
+        },
+        {
+          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
+          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
+          "source": "latent-space",
+          "publishedAt": "2026-10-06T06:28:43.000Z"
+        },
+        {
+          "title": "The Agent Said It Was Done. The Database Disagreed.",
+          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+          "source": "hf",
+          "publishedAt": "2026-10-03T22:56:48.000Z"
+        },
+        {
+          "title": "[AINews] not much happened today",
+          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
+          "source": "latent-space",
+          "publishedAt": "2026-10-03T08:45:15.000Z"
+        },
+        {
+          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
+          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T06:40:53.000Z"
         }
       ]
     },
     {
-      "id": "rag",
-      "label": "Retrieval-Augmented Generation",
+      "id": "ai-safety",
+      "label": "AI Safety & Interpretability",
       "category": "ai",
-      "stage": "early-adopter",
+      "stage": "research",
       "trajectory": "cooling",
-      "momentum": -1,
-      "weeklyCounts": [
-        81,
-        60,
-        57,
-        76,
-        72,
-        77,
-        95,
-        107,
-        100,
-        85,
-        92,
-        103,
-        4,
-        0
-      ],
-      "signals": []
-    },
-    {
-      "id": "supply-chain-security",
-      "label": "Software Supply-Chain Security",
-      "category": "cybersecurity",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -1,
+      "momentum": -0.96,
       "weeklyCounts": [
         0,
         0,
@@ -455,10 +466,18 @@
         0,
         0,
         0,
-        1,
-        0
+        34,
+        25,
+        1
       ],
-      "signals": []
+      "signals": [
+        {
+          "title": "Quoting Victoria Kim",
+          "url": "https://simonwillison.net/2026/Oct/6/victoria-kim/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T23:58:56.000Z"
+        }
+      ]
     }
   ]
 }
