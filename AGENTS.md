@@ -32,6 +32,9 @@ new-tab extension, both served by one Bun server.
 ### Build, test, and development commands
 
 Use Bun (1.4.2+) and the committed `bun.lock`; tests also need Node 22.13+.
+The type-check scripts launch TypeScript through Node so they run on Windows
+as well as Linux. Keep dependency installs and history databases isolated
+when verifying locally.
 
 - `bun install`: install dependencies.
 - `bun run dev`: start Vite at `http://localhost:3000`.
@@ -72,6 +75,13 @@ deterministic unit tests. No coverage threshold is configured. To check
 sources end to end, run the server and read `/api/health`. For extension UI
 changes, run `bun run build:extension`, load `dist/extension/unpacked` in
 Chrome (`chrome://extensions`, Developer mode) and check the new-tab page.
+Source results with invalid publication dates are discarded before recording
+history, and the source health records the discarded count. Preserve this
+isolation when changing source normalization.
+Use `scripts/qa/compose.override.yml` for isolated, keyless Docker fixtures;
+the procedure and expected results are in `docs/local-verification.md`.
+Initial browser rendering must match SSR: use explicit date/number formatting,
+and restore browser-only preferences after hydration.
 
 ### Commit and pull request guidelines
 

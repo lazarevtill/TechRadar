@@ -431,7 +431,7 @@ function fetchOnce(
   return running
 }
 
-async function withinBudget(
+export async function withinBudget(
   source: DataSource,
   fetcher: () => Promise<RawItem[]>,
 ): Promise<BudgetedRun> {
@@ -445,7 +445,22 @@ async function withinBudget(
   // after the budget ran out is already too late to matter and is logged by
   // the fetcher itself.
   const run = fetchOnce(source, fetcher).then(
-    (items) => ({ items, error: null as string | null }),
+    (items) => {
+      // Upstream dates are untrusted. An invalid Date would otherwise abort
+      // history recording and throw during the whole feed's serialization.
+      const valid = items.filter(
+        (item) =>
+          item.publishedAt instanceof Date &&
+          Number.isFinite(item.publishedAt.getTime()),
+      )
+      const dropped = items.length - valid.length
+      return {
+        items: valid,
+        error: dropped
+          ? `invalid publication dates: discarded ${dropped} of ${items.length} items`
+          : null,
+      }
+    },
     (error: unknown) => ({
       items: [] as RawItem[],
       error: errorMessage(error),
@@ -1091,6 +1106,13 @@ async function fetchPubMed(): Promise<RawItem[]> {
   }
 }
 
+/** HAL also returns ISO timestamps; preserve an explicit timezone. */
+export function parseHALSubmittedDate(value: string): Date {
+  const normalized = value.trim().replace(' ', 'T')
+  const zoned = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(normalized)
+  return new Date(zoned ? normalized : `${normalized}Z`)
+}
+
 async function fetchHAL(): Promise<RawItem[]> {
   // Check cache first
   const cached = getCached<RawItem[]>(CACHE_KEYS.HAL)
@@ -1136,7 +1158,7 @@ async function fetchHAL(): Promise<RawItem[]> {
         // author declares: often just a year or month ("2026", "2025-10") and
         // sometimes in the future, which showed as negative ages.
         publishedAt: doc.submittedDate_s
-          ? new Date(`${doc.submittedDate_s.replace(' ', 'T')}Z`)
+          ? parseHALSubmittedDate(doc.submittedDate_s)
           : new Date(doc.producedDate_s || Date.now()),
         whyItMatters: `Research by ${(doc.authFullName_s || []).slice(0, 2).join(', ')} from French academic institutions.`,
         originalLanguage: detectedLang as OriginalLanguage,

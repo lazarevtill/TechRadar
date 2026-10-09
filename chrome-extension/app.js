@@ -9,6 +9,7 @@ import {
   topicRows,
 } from './lib/views.js'
 import { CACHE_DURATION_MS } from './lib/config.js'
+import { savedFeed } from './lib/feed-cache.js'
 import {
   DEFAULT_SETTINGS,
   FEED_SIZE_CHOICES,
@@ -767,17 +768,46 @@ function applyPayload(payload) {
   state.trends = panelData(payload.trends, 'topics')
 }
 
+let feedRequest = 0
+let reportRequest = 0
+let healthRequest = 0
+
 async function fetchAllData(force = false) {
+  const request = ++feedRequest
+  const backendUrl = state.settings.backendUrl
+  const current = () =>
+    request === feedRequest && backendUrl === state.settings.backendUrl
   state.isLoading = true
   updateStatusBadge(true)
 
   try {
     // Stale-while-revalidate: paint the last copy right away, so a new tab
     // never waits on the network just because the cache aged out.
-    const cached = await getCachedData()
+    let cached = await getCachedData()
+    if (!current()) return
     if (cached) {
-      applyPayload(cached.payload)
-      state.lastFetched = new Date(cached.timestamp)
+      try {
+        applyPayload(cached.payload)
+        state.lastFetched = new Date(cached.timestamp)
+        if (cached.lastError) state.error = cached.lastError
+        // Render optional panels even when the saved feed is empty.
+        state.isLoading = false
+        try {
+          render()
+        } finally {
+          state.isLoading = true
+        }
+      } catch {
+        // A partially written or older nested payload must not block recovery.
+        cached = null
+        applyPayload({ version: 1, feed: { items: [] } })
+        state.lastFetched = null
+        state.error = null
+        await storageSet('techRadarFeed', null)
+        if (!current()) return
+      }
+    }
+    if (cached) {
       // A copy is only "fresh" if the last attempt succeeded: after a failure,
       // every new tab asks the server again and keeps the banner until it
       // answers.
@@ -786,25 +816,27 @@ async function fetchAllData(force = false) {
         state.error = null
         return
       }
-      if (cached.lastError) state.error = cached.lastError
-      render()
     }
 
-    const payload = await fetchBackendFeed(fetch, state.settings.backendUrl)
+    const payload = await fetchBackendFeed(fetch, backendUrl)
+    if (!current()) return
     applyPayload(payload)
     state.lastFetched = new Date()
     state.error = null
     await cacheData({ payload, timestamp: Date.now(), lastError: null })
   } catch (error) {
+    if (!current()) return
     console.error('Failed to fetch data:', error)
     state.error = error.message
     await recordFailure(error.message)
   } finally {
-    state.isLoading = false
-    updateStatusBadge(false)
-    render()
-    loadReport()
-    loadHealth()
+    if (current()) {
+      state.isLoading = false
+      updateStatusBadge(false)
+      render()
+      loadReport()
+      loadHealth()
+    }
   }
 }
 
@@ -838,16 +870,7 @@ function storageSet(key, value) {
 }
 
 async function getCachedData() {
-  return new Promise((resolve) => {
-    if (chrome?.storage?.local) {
-      chrome.storage.local.get(['techRadarFeed'], (result) => {
-        resolve(result.techRadarFeed || null)
-      })
-    } else {
-      const cached = localStorage.getItem('techRadarFeed')
-      resolve(cached ? JSON.parse(cached) : null)
-    }
-  })
+  return savedFeed(await storageGet('techRadarFeed'))
 }
 
 /** Keep the saved copy, but remember that refreshing it failed. */
@@ -862,14 +885,7 @@ async function cacheData(data) {
     timestamp: data.timestamp,
     lastError: data.lastError ?? null,
   }
-  return new Promise((resolve) => {
-    if (chrome?.storage?.local) {
-      chrome.storage.local.set({ techRadarFeed: payload }, resolve)
-    } else {
-      localStorage.setItem('techRadarFeed', JSON.stringify(payload))
-      resolve()
-    }
-  })
+  return storageSet('techRadarFeed', payload)
 }
 
 // ============================================
@@ -1178,9 +1194,16 @@ function renderTrends() {
 /** Fetch the weekly report for the reader's watch terms (panel only). */
 /** The server's public health (sources, feed age) for the footer line. */
 async function loadHealth() {
+  const request = ++healthRequest
+  const backendUrl = state.settings.backendUrl
   try {
-    state.health = await fetchHealth(fetch, state.settings.backendUrl)
+    const health = await fetchHealth(fetch, backendUrl)
+    if (request !== healthRequest || backendUrl !== state.settings.backendUrl)
+      return
+    state.health = health
   } catch {
+    if (request !== healthRequest || backendUrl !== state.settings.backendUrl)
+      return
     state.health = null
   }
   renderHealth()
@@ -1201,8 +1224,14 @@ function renderHealth() {
 async function loadReport() {
   if (!state.settings.panels.week) return
   const { backendUrl, watchTerms } = state.settings
+  const request = ++reportRequest
+  const id = reportCacheId(backendUrl, watchTerms)
+  const current = () =>
+    request === reportRequest &&
+    id === reportCacheId(state.settings.backendUrl, state.settings.watchTerms)
   try {
     const report = await fetchReport(fetch, backendUrl, watchTerms)
+    if (!current()) return
     state.report = report
     await storageSet(REPORT_CACHE_KEY, {
       id: reportCacheId(backendUrl, watchTerms),
@@ -1210,6 +1239,7 @@ async function loadReport() {
       report,
     })
   } catch (error) {
+    if (!current()) return
     // Unreachable: keep showing the last report from this server (marked as
     // saved). A server that answers with an error says so instead — a saved
     // copy would hide that and could stay on screen indefinitely.
@@ -1220,6 +1250,7 @@ async function loadReport() {
           watchTerms,
         )
       : null
+    if (!current()) return
     state.report = saved
       ? { ...saved.report, savedAt: saved.at }
       : { error: error.message, unreachable: Boolean(error.unreachable) }

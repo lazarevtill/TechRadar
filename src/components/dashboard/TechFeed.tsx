@@ -34,6 +34,7 @@ function VirtualizedFeed({ items }: { items: TechItem[] }) {
 
   const virtualizer = useVirtualizer({
     count: items.length,
+    getItemKey: (index) => items[index].id,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 96,
     overscan: 6,

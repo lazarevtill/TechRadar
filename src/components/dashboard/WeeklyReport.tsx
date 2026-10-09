@@ -5,6 +5,7 @@ import { parseWatchTerms } from '@/lib/watch'
 import { useLanguage, getLocalizedSources } from '@/lib/i18n'
 import { useWatchTerms } from '@/hooks/use-watch-terms'
 import { toggleFeedFocus, useFeedFocus } from '@/hooks/use-feed-focus'
+import { hasWeeklyActivity } from './presentation-state'
 
 const noop = () => () => {}
 /** False during the server render and hydration, true after. */
@@ -97,12 +98,7 @@ export function WeeklyReport() {
               ? t.weekRequestFailed
               : t.weekUnavailable}
         </p>
-      ) : report.topics.length +
-          report.risers.length +
-          report.crossSource.length +
-          report.makers.length +
-          report.watch.length ===
-        0 ? (
+      ) : !hasWeeklyActivity(report) ? (
         <p className="px-4 py-6 text-xs text-fg-3">{t.weekNothing}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 px-4 py-3 text-xs">

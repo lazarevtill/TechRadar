@@ -45,7 +45,13 @@ Secrets live in the gitignored `.env` (Bun loads it for `bun run …`):
 
 Non-secret server settings: `HISTORY_DB` (default `.cache/history.db`), `HISTORY_RETAIN_DAYS` (365), `BACKUP_DIR` (default `backups/` next to the DB), `FEED_SCHEDULE_MINUTES` (5; 0 = rebuild only on requests and no daily maintenance), `REPORT_WATCH` (watch terms for the webhook report), `PUBLIC_BASE_URL` (link in the report), `JEV_CACHE_FILE`, `OPENALEX_MAILTO`.
 
-Build and the extension need no secrets. Neither key may reach client code, `public/data`, or the extension — the extension only ever talks to the server.
+Build and the extension need no secrets. Neither key may reach client code, `public/data`, or the extension - the extension only ever talks to the server.
+
+Digest and trends default to this fork's `lazarevtill/TechRadar/main/public/data`.
+`DIGEST_DATA_BASE_URL` overrides the data origin. Both remote and committed
+fallback files are schema-validated before they enter the cache.
+The TypeScript scripts use `node ./node_modules/typescript-7/bin/tsc` for
+portable Windows/Linux execution.
 
 Deployment (VPS over SSH with Caddy, Railway, other platforms) is in `docs/deploy.md`; `AGENTS.md` is the same as a procedure for coding agents — follow it when asked to deploy. Docker: `docker compose up --build` locally; `.github/workflows/publish-image.yml` pushes `ghcr.io/lazarevtill/techradar` on every push to `main`. `DIGEST_DATA_BASE_URL` points the server at another fork's data.
 
