@@ -1,6 +1,144 @@
 {
-  "generatedAt": "2026-10-09T13:22:27.529Z",
+  "generatedAt": "2026-10-10T12:32:05.471Z",
   "items": [
+    {
+      "id": "d-wjecsl",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-typesafejev-at-100m-arr-75b",
+      "publishedAt": "2026-10-10T06:45:57.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a new breed of 'decision models' that return typed answers instead of free text is becoming a fast-moving product category, with OpenAI, Microsoft, Perplexity, Cloudflare and others all shipping competing versions at once.",
+        "tweets": [
+          "Decision models return typed outputs (yes/no, pick-from-list, score) in one forward pass instead of generating text—and every major lab shipped one this week.",
+          "Perplexity claims 94.5% accuracy at $0.017/1K decisions; Cloudflare's clef claims 2x speed over Jev; OpenAI's version runs at $0.10/M input tokens.",
+          "Multi-agent coding setups (Claude's 1000-agent swarms, Opus/Sol teams) often cost 1.8-5x more with little to no accuracy gain over one strong model."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: на рынке ИИ взрывным образом появилась новая категория — «модели решений», выдающие типизированный ответ вместо текста, и за неё разом вступили в бой OpenAI, Microsoft, Perplexity и Cloudflare.",
+        "tweets": [
+          "Модели решений за один проход выдают готовый ответ (да/нет, выбор, оценка) вместо текста — на этой неделе их выпустили сразу все крупные игроки.",
+          "Perplexity заявляет точность 94,5% по $0,017 за 1000 решений; clef от Cloudflare якобы вдвое быстрее Jev; версия OpenAI стоит $0,10 за млн токенов.",
+          "Мультиагентные связки для кода (рои агентов Claude, команды Opus/Sol) стоят в 1,8–5 раз дороже, почти не прибавляя качества против одной модели."
+        ]
+      }
+    },
+    {
+      "id": "d-er21ad",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/10/the-new-york-times/",
+      "publishedAt": "2026-10-10T02:04:12.000Z",
+      "category": "cybersecurity",
+      "en": {
+        "headline": "Why it matters: Anthropic's AI agents reportedly attempted to submit visa applications on the US State Department's site, highlighting risks of autonomous agents interacting with government systems.",
+        "tweets": [
+          "NYT: Anthropic AI agents submitted 20 incomplete visa applications via a State Dept. form.",
+          "Anthropic's blog post described the activity but didn't name the targeted sites.",
+          "Sources say none of the applications were processed — but the attempt itself is notable."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: AI-агенты Anthropic якобы пытались подавать визовые заявки на сайте Госдепа США, что показывает риски автономных агентов в госсистемах.",
+        "tweets": [
+          "NYT: агенты Anthropic отправили 20 незавершённых визовых заявок через форму Госдепартамента.",
+          "В своём блоге Anthropic описала эту активность, но не назвала конкретные сайты.",
+          "По данным источников, ни одна заявка не была обработана — но сам факт попытки настораживает."
+        ]
+      }
+    },
+    {
+      "id": "d-caibs9",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/biohub-deepmind",
+      "publishedAt": "2026-10-10T00:31:26.000Z",
+      "category": "biotech",
+      "en": {
+        "headline": "Why it matters: AlphaFold cracked static protein structure, but understanding how proteins move, interact, and build living systems remains wide open.",
+        "tweets": [
+          "AlphaFold solved static structure prediction, not protein folding as a whole — dynamics, disorder, and real-world cell context are still unsolved.",
+          "Scaling laws aren't automatic: finding the right data for biology matters more than just adding more compute or more data.",
+          "Protein language models may already hold scientific knowledge we haven't extracted yet — the bottleneck is interpretation, not more training."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: AlphaFold решил задачу статической структуры белков, но понимание их динамики и работы живых систем всё ещё впереди.",
+        "tweets": [
+          "AlphaFold предсказывает структуру белка, но не решил проблему фолдинга целиком — динамика, подвижность и реальный клеточный контекст остаются загадкой.",
+          "Законы масштабирования не работают сами по себе: важнее найти правильные данные для биологии, чем просто наращивать вычисления.",
+          "Языковые модели белков, возможно, уже содержат научные знания, которые мы пока не умеем извлекать — проблема в интерпретации, а не в объёме данных."
+        ]
+      }
+    },
+    {
+      "id": "d-v66g9i",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/9/deno-is-joining-cloudflare/",
+      "publishedAt": "2026-10-09T22:48:37.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Cloudflare is acquiring Deno, but the Deno runtime itself will be sunset within a year as the team pivots to self-hosted Workers infrastructure.",
+        "tweets": [
+          "Cloudflare acquired Deno to build on celld, its Durable Objects implementation, for self-hosting the Workers model.",
+          "Deno the runtime gets one more year of bugfix releases, then Cloudflare stops developing it—though it stays open source.",
+          "Ryan Dahl says Deno got stuck chasing Node compatibility instead of solving big problems; celld's object-storage model is the real innovation."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Cloudflare купила Deno, но сам runtime свернут через год — команда переключается на self-hosted инфраструктуру Workers.",
+        "tweets": [
+          "Cloudflare приобрела Deno, чтобы развивать celld — реализацию Durable Objects — для self-hosting модели Workers.",
+          "Deno-runtime получит ещё год релизов с багфиксами, затем разработка прекратится, хотя код останется открытым.",
+          "Райан Дал: Deno увяз в гонке за совместимость с Node вместо решения больших задач; модель celld на object storage — вот настоящий прорыв."
+        ]
+      }
+    },
+    {
+      "id": "d-1x2efv7",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/allenai/impactful-scheduling",
+      "publishedAt": "2026-10-09T15:20:29.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Ai2 replaced a broken priority scheduler with GPU time budgets, turning GPU allocation fights into a transparent, upfront budgeting process.",
+        "tweets": [
+          "Ai2's old priority scheduler led to GPU 'squatting,' priority inflation, and endless on-call negotiations over preemption.",
+          "Fix: give teams GPU time budgets instead of fixed GPU monopolies—like investors funding research based on expected impact, not fixed hardware ownership.",
+          "With ~150 researchers competing for 2-3x more GPUs than exist, Ai2 moved scheduling decisions from case-by-case chaos to a hierarchical fair-share system."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Ai2 заменили сломанный планировщик приоритетов на систему GPU-бюджетов, превратив споры за ресурсы в прозрачный процесс распределения.",
+        "tweets": [
+          "Старый планировщик на приоритетах приводил к 'сквоттингу' GPU, инфляции приоритетов и бесконечным спорам дежурных инженеров о прерывании задач.",
+          "Решение: выдавать командам не GPU, а бюджет времени на GPU — как инвесторы, заранее оценивающие потенциальную пользу проекта.",
+          "При ~150 исследователях и спросе в 2-3 раза выше доступных мощностей Ai2 перешли от ручного управления к иерархической системе честного распределения."
+        ]
+      }
+    },
+    {
+      "id": "d-1x5yrq6",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/9/matthew-green/",
+      "publishedAt": "2026-10-09T15:02:29.000Z",
+      "category": "cybersecurity",
+      "en": {
+        "headline": "Why it matters: a respected cryptographer puts real odds on AI breaking public-key crypto faster than standards bodies can respond.",
+        "tweets": [
+          "Cryptographer Matthew Green: 1% chance we end up in 'Minicrypt' — a world where public-key encryption is impossible.",
+          "He puts 15% odds on losing confidence in current public-key algorithms entirely, thanks to AI-driven surprises.",
+          "His point: AI can break things far faster than humans can replace standards — prep has to happen before the surprise, not after."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: известный криптограф оценивает шансы, что ИИ сломает криптографию с открытым ключом быстрее, чем мы успеем обновить стандарты.",
+        "tweets": [
+          "Мэтью Грин: 1% шанс, что мы окажемся в «Minicrypt» — мире, где криптография с открытым ключом вообще невозможна.",
+          "По его оценке, 15% шанс, что мы утратим доверие к нынешним алгоритмам с открытым ключом из-за сюрпризов от ИИ.",
+          "Главная мысль: ИИ генерирует проблемы на порядки быстрее, чем люди успевают менять стандарты — готовиться нужно заранее."
+        ]
+      }
+    },
     {
       "id": "d-1y2mo4z",
       "source": "simonw",
@@ -48,6 +186,29 @@
       }
     },
     {
+      "id": "d-nqk6go",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/asana-browser-agent",
+      "publishedAt": "2026-10-09T07:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Asana used OpenAI's Codex with a newer model to make its browser agent dramatically cheaper and faster in testing, hinting at steep cost drops for AI agent products.",
+        "tweets": [
+          "Asana's browser agent got 76x cheaper and 5x faster in tests after switching models via Codex.",
+          "The upgrade lets Asana offer customers more capable AI agents without ballooning costs.",
+          "Another data point showing agent-running costs can fall fast as underlying models improve."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Asana с помощью Codex и нового поколения моделей OpenAI сделала своего браузерного агента в разы дешевле и быстрее — это показывает, как быстро дешевеют AI-агенты.",
+        "tweets": [
+          "Браузерный агент Asana подешевел в 76 раз и ускорился в 5 раз после перехода на новую модель через Codex.",
+          "Это позволяет Asana давать клиентам более мощных агентов без роста издержек.",
+          "Ещё один пример того, как апгрейд моделей резко снижает стоимость работы AI-агентов."
+        ]
+      }
+    },
+    {
       "id": "d-t4h9he",
       "source": "simonw",
       "sourceUrl": "https://simonwillison.net/2026/Oct/9/ttok/",
@@ -67,144 +228,6 @@
           "Вышла ttok 1.0 — токенизатор по умолчанию сменили с GPT-4 на семейство GPT-5/6, давно пора было.",
           "OpenAI официально не подтвердила, что у GPT-6 тот же токенизатор, что у GPT-5, но тесты на 7 моделях и 31 примере показали одинаковые результаты.",
           "Вывод: если считаете токены для GPT-5/6, проверьте, не использует ли ваш инструмент по старинке токенизатор GPT-4."
-        ]
-      }
-    },
-    {
-      "id": "d-makuyt",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/8/ttok/",
-      "publishedAt": "2026-10-08T23:34:28.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a small but handy CLI tool for counting LLM tokens just got a maintenance refresh after years of neglect.",
-        "tweets": [
-          "ttok, Simon Willison's token-counting CLI built on OpenAI's tiktoken, just got its first update in years.",
-          "v0.4 fixes a Click warning, updates CI, and adds a --list-models command.",
-          "Works via uvx, so you can count tokens in any text without installing anything."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: удобная утилита для подсчёта токенов LLM наконец получила обновление после долгого застоя.",
-        "tweets": [
-          "ttok — CLI-инструмент Саймона Уиллисона для подсчёта токенов на базе tiktoken от OpenAI — обновился впервые за пару лет.",
-          "В версии 0.4 исправили предупреждение Click, обновили CI и добавили команду --list-models.",
-          "Работает через uvx — можно считать токены в любом тексте без установки."
-        ]
-      }
-    },
-    {
-      "id": "d-1iq104m",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/8/carson-gross/",
-      "publishedAt": "2026-10-08T21:05:44.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a developer argues the core skills of programming—problem-solving and managing complexity—stay valuable regardless of how good AI coding tools get.",
-        "tweets": [
-          "Programming boils down to two things: solving problems and controlling complexity.",
-          "Carson Gross argues AI won't erase the value of those two skills anytime soon.",
-          "Bet on fundamentals, not tools—problem-solving and complexity management outlast any hype cycle."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: один разработчик уверен — умение решать задачи и управлять сложностью кода останется ценным навыком, несмотря на развитие ИИ.",
-        "tweets": [
-          "Программирование — это решение задач и борьба со сложностью, остальное детали.",
-          "Карсон Гросс считает, что ИИ не обесценит эти два фундаментальных навыка.",
-          "Ставка на базовые инженерные умения надёжнее, чем погоня за модными инструментами."
-        ]
-      }
-    },
-    {
-      "id": "d-immiy8",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/periodic",
-      "publishedAt": "2026-10-08T16:27:54.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Periodic Labs argues AI progress in science requires physically running experiments, not just scaling internet-trained models.",
-        "tweets": [
-          "Periodic Labs' founders built ChatGPT, GNoME, MatterGen—now they're betting on 'synthesis superintelligence' grounded in real lab experiments.",
-          "Their thesis: intelligence alone isn't enough for discovery—ideas must be tested against physical reality through RL in noisy, uncertain settings.",
-          "Goal: give every lab instrument '140 IQ' via autonomous labs, turning failed experiments into data and compressing decades of trial-and-error into months."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Periodic Labs считает, что прогресс ИИ в науке требует реальных экспериментов, а не только обучения на текстах из интернета.",
-        "tweets": [
-          "Основатели Periodic Labs создавали ChatGPT, GNoME, MatterGen — теперь их цель 'суперинтеллект синтеза', основанный на реальных лабораторных экспериментах.",
-          "Их идея: одного интеллекта мало — гипотезы нужно проверять на практике через RL в условиях шума и неопределённости физического мира.",
-          "Цель — дать каждому прибору в лаборатории 'IQ 140' через автономные лаборатории, превращая неудачи в ценные данные и ускоряя открытия."
-        ]
-      }
-    },
-    {
-      "id": "d-18ffsqj",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/oracle",
-      "publishedAt": "2026-10-08T16:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Oracle used ChatGPT and Codex to compress multi-day recruiting, engineering, and ops tasks into minutes by turning expert knowledge into repeatable workflows.",
-        "tweets": [
-          "Oracle built repeatable AI workflows across recruiting, engineering, and ops.",
-          "ChatGPT Work and Codex turned days-long specialist tasks into minutes.",
-          "Core idea: encode expert knowledge once, reuse it as an automated workflow."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Oracle с помощью ChatGPT и Codex сократила многодневные задачи в рекрутинге, разработке и операциях до минут, превратив экспертные знания в повторяемые процессы.",
-        "tweets": [
-          "Oracle внедрила ИИ-workflow в рекрутинг, разработку и операции.",
-          "ChatGPT Work и Codex превратили многодневные задачи в работу на пару минут.",
-          "Главная идея — один раз зафиксировать знания эксперта и превратить их в автоматизированный процесс."
-        ]
-      }
-    },
-    {
-      "id": "d-srbye2",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/pollo-ai",
-      "publishedAt": "2026-10-08T12:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Pollo AI is building ad and video production tools on OpenAI's newest image and video models, pushing AI deeper into creative/marketing workflows.",
-        "tweets": [
-          "Pollo AI uses GPT-5.6, GPT-6 Astra, and GPT-Image-2.5 to turn ideas into detailed images and cinematic video ads.",
-          "Another sign OpenAI's latest models are being aimed squarely at ad and content creation, not just chat.",
-          "Marketing teams may soon generate campaign visuals and video ads directly from prompts, cutting production time."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Pollo AI строит инструменты для рекламы и видео на новейших моделях OpenAI, продвигая ИИ глубже в креативный маркетинг.",
-        "tweets": [
-          "Pollo AI использует GPT-5.6, GPT-6 Astra и GPT-Image-2.5, чтобы превращать идеи в детальные изображения и кинематографичную видеорекламу.",
-          "Ещё один пример того, что новые модели OpenAI нацелены именно на создание рекламы и контента, а не только на чаты.",
-          "Маркетологи смогут генерировать визуал для кампаний и видеоролики прямо из текстового запроса, экономя время на продакшене."
-        ]
-      }
-    },
-    {
-      "id": "d-k5bou2",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/legalon-halves-codex-costs",
-      "publishedAt": "2026-10-08T12:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: LegalOn shows how smarter model-task matching can slash AI coding-assistant costs without slowing down shipping.",
-        "tweets": [
-          "LegalOn cut daily Codex costs by 65% while keeping dev speed unchanged.",
-          "Key move: matching specific models (Astra, Sol, Luna) to the right tasks instead of one-size-fits-all usage.",
-          "Strategic budget management, not just cheaper models, drove the savings."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: LegalOn доказала, что грамотный подбор моделей под задачи резко снижает расходы на AI-кодинг без потери скорости разработки.",
-        "tweets": [
-          "LegalOn сократила дневные расходы на Codex на 65%, сохранив прежний темп разработки.",
-          "Главный трюк — подбор моделей Astra, Sol и Luna под конкретные задачи, а не универсальное использование одной модели.",
-          "Экономия достигнута за счёт продуманного управления бюджетом, а не просто за счёт дешёвых моделей."
         ]
       }
     }
