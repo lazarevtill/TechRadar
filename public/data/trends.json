@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-10T12:32:05.474Z",
+  "generatedAt": "2026-10-11T12:49:47.624Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 5,
+      "momentum": 7,
       "weeklyCounts": [
         0,
         0,
@@ -24,7 +24,7 @@
         0,
         9,
         1,
-        6
+        8
       ],
       "signals": [
         {
@@ -32,6 +32,63 @@
           "url": "https://huggingface.co/blog/LiquidAI/open-d1",
           "source": "hf",
           "publishedAt": "2026-10-07T16:54:33.000Z"
+        },
+        {
+          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
+          "source": "deepmind",
+          "publishedAt": "2026-10-06T19:57:04.000Z"
+        }
+      ]
+    },
+    {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 1,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        15,
+        15,
+        30
+      ],
+      "signals": [
+        {
+          "title": "Multimodal open d1 decision models for the edge",
+          "url": "https://huggingface.co/blog/LiquidAI/open-d1",
+          "source": "hf",
+          "publishedAt": "2026-10-07T16:54:33.000Z"
+        },
+        {
+          "title": "One Model Family, Two Gold-Level Results: Fine-Tuning Nemotron for IOI and IMO",
+          "url": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026",
+          "source": "hf",
+          "publishedAt": "2026-10-07T12:45:31.000Z"
+        },
+        {
+          "title": "llm-mistral 0.16",
+          "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T21:32:34.000Z"
+        },
+        {
+          "title": "EmbeddingGemma 2",
+          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
+          "source": "simonw",
+          "publishedAt": "2026-10-06T20:37:53.000Z"
         },
         {
           "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
@@ -63,7 +120,7 @@
         21,
         0,
         0,
-        1
+        2
       ],
       "signals": [
         {
@@ -96,7 +153,7 @@
         0,
         0,
         0,
-        1
+        2
       ],
       "signals": [
         {
@@ -108,53 +165,74 @@
       ]
     },
     {
-      "id": "open-models",
-      "label": "Open Models",
+      "id": "robot-learning",
+      "label": "Robot Learning",
+      "category": "robotics",
+      "stage": "prototype",
+      "trajectory": "rising",
+      "momentum": 1,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "signals": [
+        {
+          "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
+          "url": "https://www.latent.space/p/standard-bots",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T14:04:11.000Z"
+        }
+      ]
+    },
+    {
+      "id": "multimodal",
+      "label": "Multimodal Models",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 0.53,
+      "momentum": 0.22,
       "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370,
-        15,
-        15,
-        23
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        37,
+        9,
+        11
       ],
       "signals": [
+        {
+          "title": "Pollo AI turns creative ideas into campaigns with OpenAI",
+          "url": "https://openai.com/index/pollo-ai",
+          "source": "openai",
+          "publishedAt": "2026-10-08T12:00:00.000Z"
+        },
         {
           "title": "Multimodal open d1 decision models for the edge",
           "url": "https://huggingface.co/blog/LiquidAI/open-d1",
           "source": "hf",
           "publishedAt": "2026-10-07T16:54:33.000Z"
-        },
-        {
-          "title": "One Model Family, Two Gold-Level Results: Fine-Tuning Nemotron for IOI and IMO",
-          "url": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026",
-          "source": "hf",
-          "publishedAt": "2026-10-07T12:45:31.000Z"
-        },
-        {
-          "title": "llm-mistral 0.16",
-          "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T21:32:34.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2",
-          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T20:37:53.000Z"
         },
         {
           "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
@@ -295,57 +373,12 @@
       "signals": []
     },
     {
-      "id": "multimodal",
-      "label": "Multimodal Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.11,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        37,
-        9,
-        8
-      ],
-      "signals": [
-        {
-          "title": "Pollo AI turns creative ideas into campaigns with OpenAI",
-          "url": "https://openai.com/index/pollo-ai",
-          "source": "openai",
-          "publishedAt": "2026-10-08T12:00:00.000Z"
-        },
-        {
-          "title": "Multimodal open d1 decision models for the edge",
-          "url": "https://huggingface.co/blog/LiquidAI/open-d1",
-          "source": "hf",
-          "publishedAt": "2026-10-07T16:54:33.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
-        }
-      ]
-    },
-    {
       "id": "generative-media",
       "label": "Generative Media",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.33,
+      "momentum": -0.08,
       "weeklyCounts": [
         0,
         0,
@@ -361,7 +394,7 @@
         0,
         28,
         12,
-        8
+        11
       ],
       "signals": [
         {
@@ -390,7 +423,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.68,
+      "momentum": -0.59,
       "weeklyCounts": [
         0,
         0,
@@ -406,7 +439,7 @@
         0,
         49,
         56,
-        18
+        23
       ],
       "signals": [
         {
@@ -447,7 +480,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.7,
+      "momentum": -0.61,
       "weeklyCounts": [
         411,
         420,
@@ -463,7 +496,7 @@
         463,
         88,
         103,
-        31
+        40
       ],
       "signals": [
         {
@@ -504,7 +537,7 @@
       "category": "ai",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.8,
+      "momentum": -0.72,
       "weeklyCounts": [
         0,
         0,
@@ -520,7 +553,7 @@
         0,
         34,
         25,
-        5
+        7
       ],
       "signals": [
         {

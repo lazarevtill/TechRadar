@@ -1,6 +1,98 @@
 {
-  "generatedAt": "2026-10-10T12:32:05.471Z",
+  "generatedAt": "2026-10-11T12:49:47.621Z",
   "items": [
+    {
+      "id": "d-1mstaus",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/11/dwarf-fortress/",
+      "publishedAt": "2026-10-11T00:52:37.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a legendary no-version-control holdout finally caved, closing an unusual real-world experiment.",
+        "tweets": [
+          "Dwarf Fortress dev Tarn Adams avoided version control for 15+ years — a wild choice for such a complex codebase.",
+          "By 2013 and 2016 he openly admitted he just wasn't 'cut out for' using source control.",
+          "By 2023, after the Steam release made them millionaires, he finally mentioned using version control tools."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: легендарный разработчик, годами игнорировавший систему контроля версий, всё же её внедрил.",
+        "tweets": [
+          "Создатель Dwarf Fortress Тарн Адамс больше 15 лет обходился без контроля версий — удивительно для такой сложной кодовой базы.",
+          "В 2013 и 2016 году он честно признавался, что просто «не создан» для работы с системами контроля версий.",
+          "К 2023 году, после успешного релиза в Steam и заработанных миллионов, он всё-таки упомянул, что теперь использует контроль версий."
+        ]
+      }
+    },
+    {
+      "id": "d-f17tis",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/10/python-actions/",
+      "publishedAt": "2026-10-10T23:58:04.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Python 3.15.0 is now officially supported in GitHub Actions' python-versions repo, so CI matrices can test against the new release today.",
+        "tweets": [
+          "Python 3.15.0 just landed in actions/python-versions — add \"3.15\" to your GitHub Actions test matrix now.",
+          "Simon Willison had ChatGPT poll the repo hourly waiting for this update — a quirky way to track infra releases.",
+          "Niche but practical: if your CI tests multiple Python versions, you can start validating against 3.15 stable today."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Python 3.15.0 теперь официально поддерживается в actions/python-versions, так что можно тестировать проекты на новой версии прямо в GitHub Actions.",
+        "tweets": [
+          "Python 3.15.0 добавлен в actions/python-versions — можно смело прописывать \"3.15\" в матрице тестов GitHub Actions.",
+          "Саймон Уиллисон попросил ChatGPT раз в час проверять репозиторий, ожидая этого обновления — забавный лайфхак для слежки за релизами.",
+          "Мелочь, но полезная: если у вас CI гоняет тесты на разных версиях Python, пора добавить 3.15 в список."
+        ]
+      }
+    },
+    {
+      "id": "d-dj1frv",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/nyc2026",
+      "publishedAt": "2026-10-10T22:07:17.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a niche newsletter update, not a technical announcement, with no substantive content disclosed.",
+        "tweets": [
+          "This post is a paywalled subscriber perk notice, not an AI research update.",
+          "Latent.Space is organizing NYC meetups for its paid subscriber tier.",
+          "No technical details are available in the public content — it's a subscription pitch."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: это анонс для подписчиков, а не техническая новость, и содержательных деталей тут нет.",
+        "tweets": [
+          "Этот пост — закрытое уведомление для платных подписчиков, а не технический анонс.",
+          "Latent.Space организует офлайн-встречи в Нью-Йорке для платных подписчиков.",
+          "Публичная часть текста не содержит технических подробностей — это призыв оформить подписку."
+        ]
+      }
+    },
+    {
+      "id": "d-xrifl",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/standard-bots",
+      "publishedAt": "2026-10-10T14:04:11.000Z",
+      "category": "robotics",
+      "en": {
+        "headline": "Why it matters: Standard Bots shows that reliable industrial robotics comes from small, targeted models and full-stack hardware control, not huge frontier-scale AI.",
+        "tweets": [
+          "Standard Bots raised $200M at a $1B valuation; customers include NASA, Amazon, Lockheed Martin.",
+          "Its biggest model is only low-billions of parameters—data quality and targeted fixes beat chasing scale.",
+          "Inference runs on-prem, not cloud: factories lack reliable internet, and uptime is non-negotiable."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Standard Bots доказывает, что надёжная промышленная робототехника держится на компактных моделях и полном контроле железа, а не на гигантских ИИ-моделях.",
+        "tweets": [
+          "Standard Bots привлекла $200 млн при оценке $1 млрд; среди клиентов NASA, Amazon и Lockheed Martin.",
+          "Их крупнейшая модель — всего несколько миллиардов параметров: качество данных важнее объёма.",
+          "Вычисления делаются локально на заводе, а не в облаке — интернет там ненадёжен, а простои недопустимы."
+        ]
+      }
+    },
     {
       "id": "d-wjecsl",
       "source": "latent-space",
@@ -136,98 +228,6 @@
           "Мэтью Грин: 1% шанс, что мы окажемся в «Minicrypt» — мире, где криптография с открытым ключом вообще невозможна.",
           "По его оценке, 15% шанс, что мы утратим доверие к нынешним алгоритмам с открытым ключом из-за сюрпризов от ИИ.",
           "Главная мысль: ИИ генерирует проблемы на порядки быстрее, чем люди успевают менять стандарты — готовиться нужно заранее."
-        ]
-      }
-    },
-    {
-      "id": "d-1y2mo4z",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/9/built-using-my-voice/",
-      "publishedAt": "2026-10-09T12:54:06.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: it shows a realistic, non-hype workflow where voice coding handles rough feature design while keyboard review still handles the finishing details.",
-        "tweets": [
-          "Simon Willison built a new newsletter archive feature for his blog mostly by talking to ChatGPT's Codex voice mode while cooking dinner.",
-          "The model (GPT-6 Astra) built a new Django model, migrations, templates, and four import scripts from verbal instructions alone.",
-          "Voice got him 90% there, but he still switched to typing for code review, fixing a Git-vs-API import choice, and detail tweaks before shipping."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: это честный пример того, что голосовое программирование уже работает для черновой разработки, но финальная доводка всё равно требует клавиатуры.",
-        "tweets": [
-          "Саймон Уиллисон сделал новую страницу архива рассылок для своего блога, просто разговаривая с голосовым режимом ChatGPT Codex во время готовки ужина.",
-          "Модель GPT-6 Astra по устным командам создала новую модель Django, миграции, шаблоны и четыре скрипта импорта данных.",
-          "Голос дал 90% результата, но для ревью кода, замены Git на API-импорт и мелких правок он всё же вернулся к клавиатуре перед релизом."
-        ]
-      }
-    },
-    {
-      "id": "d-bb5w2l",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/sophos",
-      "publishedAt": "2026-10-09T07:00:00.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: Sophos says OpenAI's Daybreak model slashed threat-investigation time by 96% and automated 52% of MDR cases, while keeping humans in the loop.",
-        "tweets": [
-          "Sophos cut cyber-threat investigation time by 96% using OpenAI's Daybreak model.",
-          "52% of MDR (managed detection and response) cases are now handled automatically.",
-          "Human analysts still oversee the process—automation speeds triage, doesn't replace judgment."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Sophos заявляет, что модель Daybreak от OpenAI сократила время расследования киберугроз на 96% и автоматизировала 52% случаев MDR, оставив людей в контуре контроля.",
-        "tweets": [
-          "Sophos сократила время расследования киберугроз на 96%, используя модель Daybreak от OpenAI.",
-          "52% случаев MDR (обнаружение и реагирование на угрозы) теперь обрабатываются автоматически.",
-          "Аналитики-люди всё ещё контролируют процесс — автоматизация ускоряет анализ, но не заменяет экспертизу."
-        ]
-      }
-    },
-    {
-      "id": "d-nqk6go",
-      "source": "openai",
-      "sourceUrl": "https://openai.com/index/asana-browser-agent",
-      "publishedAt": "2026-10-09T07:00:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Asana used OpenAI's Codex with a newer model to make its browser agent dramatically cheaper and faster in testing, hinting at steep cost drops for AI agent products.",
-        "tweets": [
-          "Asana's browser agent got 76x cheaper and 5x faster in tests after switching models via Codex.",
-          "The upgrade lets Asana offer customers more capable AI agents without ballooning costs.",
-          "Another data point showing agent-running costs can fall fast as underlying models improve."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Asana с помощью Codex и нового поколения моделей OpenAI сделала своего браузерного агента в разы дешевле и быстрее — это показывает, как быстро дешевеют AI-агенты.",
-        "tweets": [
-          "Браузерный агент Asana подешевел в 76 раз и ускорился в 5 раз после перехода на новую модель через Codex.",
-          "Это позволяет Asana давать клиентам более мощных агентов без роста издержек.",
-          "Ещё один пример того, как апгрейд моделей резко снижает стоимость работы AI-агентов."
-        ]
-      }
-    },
-    {
-      "id": "d-t4h9he",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/9/ttok/",
-      "publishedAt": "2026-10-09T00:34:43.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: ttok's default tokenizer finally matches modern GPT models, so token counts you estimate will actually reflect reality.",
-        "tweets": [
-          "ttok hits 1.0, switching its default tokenizer from GPT-4 to the GPT-5/6 family — a long-overdue fix.",
-          "OpenAI hasn't officially confirmed GPT-6 shares GPT-5's tokenizer, but community testing across 7 models on 31 fixtures shows identical token counts.",
-          "Takeaway: if you're estimating token costs for GPT-5/6, make sure your tooling isn't secretly still using GPT-4's tokenizer."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: утилита ttok наконец использует токенизатор GPT-5/6 по умолчанию, так что подсчёт токенов теперь ближе к реальности.",
-        "tweets": [
-          "Вышла ttok 1.0 — токенизатор по умолчанию сменили с GPT-4 на семейство GPT-5/6, давно пора было.",
-          "OpenAI официально не подтвердила, что у GPT-6 тот же токенизатор, что у GPT-5, но тесты на 7 моделях и 31 примере показали одинаковые результаты.",
-          "Вывод: если считаете токены для GPT-5/6, проверьте, не использует ли ваш инструмент по старинке токенизатор GPT-4."
         ]
       }
     }
