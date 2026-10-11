@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-10T12:31:05.423Z",
+  "generatedAt": "2026-10-11T12:48:41.543Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -24,7 +24,7 @@
         0,
         0,
         0,
-        2
+        3
       ],
       "signals": [
         {
@@ -67,7 +67,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.43,
+      "momentum": -0.14,
       "weeklyCounts": [
         1,
         7,
@@ -83,9 +83,15 @@
         7,
         12,
         7,
-        4
+        6
       ],
       "signals": [
+        {
+          "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
+          "url": "https://www.latent.space/p/standard-bots",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T14:04:11.000Z"
+        },
         {
           "title": "Synthesis Superintelligence: from Semiconductors to Superconductors — Periodic Labs’ Liam Fedus and Ekin Dogus Cubuk",
           "url": "https://www.latent.space/p/periodic",
@@ -100,7 +106,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.52,
+      "momentum": -0.37,
       "weeklyCounts": [
         81,
         60,
@@ -116,7 +122,7 @@
         103,
         93,
         87,
-        42
+        55
       ],
       "signals": [
         {
@@ -144,10 +150,10 @@
           "publishedAt": "2026-10-01T06:45:05.000Z"
         },
         {
-          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
-          "url": "https://www.latent.space/p/openrouter",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T23:14:41.000Z"
+          "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
+          "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
+          "source": "hf",
+          "publishedAt": "2026-08-12T16:14:36.000Z"
         }
       ]
     },
@@ -157,7 +163,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.52,
+      "momentum": -0.38,
       "weeklyCounts": [
         21,
         21,
@@ -173,7 +179,7 @@
         21,
         35,
         42,
-        20
+        26
       ],
       "signals": [
         {
@@ -195,16 +201,16 @@
           "publishedAt": "2026-09-29T02:44:29.000Z"
         },
         {
-          "title": "[AINews] The Future of Latent Space",
-          "url": "https://www.latent.space/p/ainews-the-future-of-latent-space",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T05:37:00.000Z"
-        },
-        {
           "title": "Engineering more resilient crops for a warming climate",
           "url": "https://deepmind.google/blog/engineering-more-resilient-crops-for-a-warming-climate/",
           "source": "deepmind",
           "publishedAt": "2025-12-04T16:23:24.000Z"
+        },
+        {
+          "title": "AlphaFold: Five years of impact",
+          "url": "https://deepmind.google/blog/alphafold-five-years-of-impact/",
+          "source": "deepmind",
+          "publishedAt": "2025-11-25T16:00:12.000Z"
         }
       ]
     },
@@ -214,7 +220,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.56,
+      "momentum": -0.42,
       "weeklyCounts": [
         375,
         358,
@@ -230,7 +236,7 @@
         370,
         384,
         401,
-        177
+        234
       ],
       "signals": [
         {
@@ -271,7 +277,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.57,
+      "momentum": -0.43,
       "weeklyCounts": [
         14,
         11,
@@ -287,7 +293,7 @@
         28,
         33,
         23,
-        10
+        13
       ],
       "signals": [
         {
@@ -307,12 +313,6 @@
           "url": "https://www.latent.space/p/rlm",
           "source": "latent-space",
           "publishedAt": "2026-10-02T00:28:04.000Z"
-        },
-        {
-          "title": "OpenRouter: from Seed to Stripe — with OpenRouter’s Alex Atallah & AMP’s Anjney Midha",
-          "url": "https://www.latent.space/p/openrouter",
-          "source": "latent-space",
-          "publishedAt": "2026-09-25T23:14:41.000Z"
         }
       ]
     },
@@ -322,7 +322,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.58,
+      "momentum": -0.44,
       "weeklyCounts": [
         411,
         420,
@@ -338,9 +338,15 @@
         463,
         440,
         436,
-        184
+        244
       ],
       "signals": [
+        {
+          "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
+          "url": "https://www.latent.space/p/standard-bots",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T14:04:11.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-60f",
@@ -364,12 +370,6 @@
           "url": "https://www.latent.space/p/stacklok",
           "source": "latent-space",
           "publishedAt": "2026-10-07T14:10:45.000Z"
-        },
-        {
-          "title": "[AINews] Quasi-Riemann-Hypothesis: OpenAI publishes 722 math papers solving 90 of the top 500 open math problems; “the most significant moment” in >100 years of mathematics",
-          "url": "https://www.latent.space/p/ainews-quasi-riemann-hypothesis-openai",
-          "source": "latent-space",
-          "publishedAt": "2026-10-07T04:55:44.000Z"
         }
       ]
     }
