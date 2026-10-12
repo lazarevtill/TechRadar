@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-11T12:48:41.543Z",
+  "generatedAt": "2026-10-12T15:22:47.094Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -24,9 +24,48 @@
         0,
         0,
         0,
-        3
+        4
       ],
       "signals": [
+        {
+          "title": "Synthesis Superintelligence: from Semiconductors to Superconductors — Periodic Labs’ Liam Fedus and Ekin Dogus Cubuk",
+          "url": "https://www.latent.space/p/periodic",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T16:27:54.000Z"
+        }
+      ]
+    },
+    {
+      "id": "humanoids",
+      "label": "Humanoid Robots",
+      "category": "robotics",
+      "stage": "prototype",
+      "trajectory": "rising",
+      "momentum": 0.14,
+      "weeklyCounts": [
+        1,
+        7,
+        7,
+        6,
+        6,
+        7,
+        7,
+        1,
+        0,
+        0,
+        2,
+        7,
+        12,
+        7,
+        8
+      ],
+      "signals": [
+        {
+          "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
+          "url": "https://www.latent.space/p/standard-bots",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T14:04:11.000Z"
+        },
         {
           "title": "Synthesis Superintelligence: from Semiconductors to Superconductors — Periodic Labs’ Liam Fedus and Ekin Dogus Cubuk",
           "url": "https://www.latent.space/p/periodic",
@@ -62,51 +101,12 @@
       "signals": []
     },
     {
-      "id": "humanoids",
-      "label": "Humanoid Robots",
-      "category": "robotics",
-      "stage": "prototype",
-      "trajectory": "cooling",
-      "momentum": -0.14,
-      "weeklyCounts": [
-        1,
-        7,
-        7,
-        6,
-        6,
-        7,
-        7,
-        1,
-        0,
-        0,
-        2,
-        7,
-        12,
-        7,
-        6
-      ],
-      "signals": [
-        {
-          "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
-          "url": "https://www.latent.space/p/standard-bots",
-          "source": "latent-space",
-          "publishedAt": "2026-10-10T14:04:11.000Z"
-        },
-        {
-          "title": "Synthesis Superintelligence: from Semiconductors to Superconductors — Periodic Labs’ Liam Fedus and Ekin Dogus Cubuk",
-          "url": "https://www.latent.space/p/periodic",
-          "source": "latent-space",
-          "publishedAt": "2026-10-08T16:27:54.000Z"
-        }
-      ]
-    },
-    {
       "id": "rag",
       "label": "Retrieval-Augmented Generation",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.37,
+      "momentum": -0.22,
       "weeklyCounts": [
         81,
         60,
@@ -122,7 +122,7 @@
         103,
         93,
         87,
-        55
+        68
       ],
       "signals": [
         {
@@ -163,7 +163,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.38,
+      "momentum": -0.24,
       "weeklyCounts": [
         21,
         21,
@@ -179,7 +179,7 @@
         21,
         35,
         42,
-        26
+        32
       ],
       "signals": [
         {
@@ -220,7 +220,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.42,
+      "momentum": -0.27,
       "weeklyCounts": [
         375,
         358,
@@ -236,7 +236,7 @@
         370,
         384,
         401,
-        234
+        291
       ],
       "signals": [
         {
@@ -272,57 +272,12 @@
       ]
     },
     {
-      "id": "fusion",
-      "label": "Fusion Energy",
-      "category": "energy",
-      "stage": "research",
-      "trajectory": "cooling",
-      "momentum": -0.43,
-      "weeklyCounts": [
-        14,
-        11,
-        14,
-        14,
-        4,
-        7,
-        7,
-        9,
-        14,
-        14,
-        17,
-        28,
-        33,
-        23,
-        13
-      ],
-      "signals": [
-        {
-          "title": "[AINews] TypeSafe/Jev at >$100M ARR, $7.5B valuation 3 weeks after launch",
-          "url": "https://www.latent.space/p/ainews-typesafejev-at-100m-arr-75b",
-          "source": "latent-space",
-          "publishedAt": "2026-10-10T06:45:57.000Z"
-        },
-        {
-          "title": "[AINews] Claude Haiku 5.5 — better than GPT-6 Luna at the same pricing",
-          "url": "https://www.latent.space/p/ainews-claude-haiku-55-better-than",
-          "source": "latent-space",
-          "publishedAt": "2026-10-08T07:27:51.000Z"
-        },
-        {
-          "title": "Academia is for Ambition — Alex Zhang, MIT",
-          "url": "https://www.latent.space/p/rlm",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T00:28:04.000Z"
-        }
-      ]
-    },
-    {
       "id": "llm-agents",
       "label": "LLM Agents",
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.44,
+      "momentum": -0.3,
       "weeklyCounts": [
         411,
         420,
@@ -338,7 +293,7 @@
         463,
         440,
         436,
-        244
+        304
       ],
       "signals": [
         {
@@ -370,6 +325,51 @@
           "url": "https://www.latent.space/p/stacklok",
           "source": "latent-space",
           "publishedAt": "2026-10-07T14:10:45.000Z"
+        }
+      ]
+    },
+    {
+      "id": "fusion",
+      "label": "Fusion Energy",
+      "category": "energy",
+      "stage": "research",
+      "trajectory": "cooling",
+      "momentum": -0.3,
+      "weeklyCounts": [
+        14,
+        11,
+        14,
+        14,
+        4,
+        7,
+        7,
+        9,
+        14,
+        14,
+        17,
+        28,
+        33,
+        23,
+        16
+      ],
+      "signals": [
+        {
+          "title": "[AINews] TypeSafe/Jev at >$100M ARR, $7.5B valuation 3 weeks after launch",
+          "url": "https://www.latent.space/p/ainews-typesafejev-at-100m-arr-75b",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T06:45:57.000Z"
+        },
+        {
+          "title": "[AINews] Claude Haiku 5.5 — better than GPT-6 Luna at the same pricing",
+          "url": "https://www.latent.space/p/ainews-claude-haiku-55-better-than",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T07:27:51.000Z"
+        },
+        {
+          "title": "Academia is for Ambition — Alex Zhang, MIT",
+          "url": "https://www.latent.space/p/rlm",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T00:28:04.000Z"
         }
       ]
     }

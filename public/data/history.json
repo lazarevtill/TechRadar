@@ -1092,5 +1092,17 @@
       "quantum-hardware": 1,
       "rag": 13
     }
+  },
+  {
+    "date": "2026-10-12",
+    "topics": {
+      "llm-agents": 60,
+      "humanoids": 2,
+      "open-models": 57,
+      "fusion": 3,
+      "protein-design": 6,
+      "quantum-hardware": 1,
+      "rag": 13
+    }
   }
 ]
