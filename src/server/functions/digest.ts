@@ -17,7 +17,7 @@ import { fetchWithRetry } from '@/server/utils/fetch-utils'
  * public URL the Chrome extension uses, and cache it server-side.
  */
 const DATA_BASE_URL =
-  process.env.DIGEST_DATA_BASE_URL ??
+  process.env.DIGEST_DATA_BASE_URL ||
   'https://raw.githubusercontent.com/lazarevtill/TechRadar/main/public/data'
 
 /**

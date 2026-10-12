@@ -12,6 +12,7 @@ import {
   type SourceHealth,
 } from '@/server/store/ops'
 import { CACHE_KEYS, getCached } from '@/server/utils/cache'
+import { feedBuiltAt, PROCESS_STARTED_AT } from '@/server/utils/feed-status'
 import { topicsStatus } from '@/server/utils/topics-config'
 import { judgeInfo } from '@/server/utils/judge'
 import { SOURCE_CONFIG, type DataSource } from '@/lib/tech-categories'
@@ -30,11 +31,38 @@ export const STALE_FEED_MS = 30 * 60_000
 /** Sources that must report; one with no recent runs counts as down. */
 export const EXPECTED_SOURCES = Object.keys(SOURCE_CONFIG) as DataSource[]
 
-/** A backup older than two days means daily maintenance stopped. */
-function backupProblem(day: string | null, today: string): string[] {
-  if (historyDbFile() === ':memory:') return []
-  if (!day) return []
-  return day < daysBefore(today, 2) ? [`last backup is from ${day}`] : []
+/**
+ * A backup older than two days means daily maintenance stopped; so does
+ * none at all in a store that began more than two days ago (`created`).
+ */
+export function backupProblem(
+  lastBackupDay: string | null,
+  today: string,
+  created: string | null,
+): string[] {
+  const due = daysBefore(today, 2)
+  if (lastBackupDay)
+    return lastBackupDay < due ? [`last backup is from ${lastBackupDay}`] : []
+  return created && created < due
+    ? [`no backup since the store began on ${created}`]
+    : []
+}
+
+/**
+ * The feed should be at most STALE_FEED_MS old. Before the first rebuild has
+ * finished there is none; that is a problem only once the server has been up
+ * that long.
+ */
+export function feedProblem(feedAge: number | null, uptime: number): string[] {
+  if (feedAge !== null)
+    return feedAge > STALE_FEED_MS
+      ? [`feed is ${Math.round(feedAge / 60_000)} min old`]
+      : []
+  return uptime > STALE_FEED_MS
+    ? [
+        `no feed built since the server started ${Math.round(uptime / 60_000)} min ago`,
+      ]
+    : []
 }
 
 export interface Health {
@@ -64,18 +92,27 @@ export async function getHealth(withDetail: boolean): Promise<Health> {
   const today = utcDay()
   const sources = sourceHealth(db, today, EXPECTED_SOURCES)
   const feed = getCached<{ fetchedAt: string }>(CACHE_KEYS.TECH_FEED)
-  const storage = storageInfo(historyDbFile())
-  const feedAge = feed ? Date.now() - Date.parse(feed.fetchedAt) : null
+  const file = historyDbFile()
+  const storage = storageInfo(file)
+  // The cached snapshot expires after a day; the last successful rebuild
+  // still says how old the feed really is.
+  const builtAt = feed ? Date.parse(feed.fetchedAt) : feedBuiltAt()
+  const feedAge = builtAt !== null ? Date.now() - builtAt : null
+  const created =
+    db.get<{ value: string }>(
+      "SELECT value FROM meta WHERE key = 'store_created'",
+    )?.value ?? null
   const topics = topicsStatus()
   const judge = judgeInfo()
   const problems = [
     ...sources
       .filter((s) => s.status === 'down')
       .map((s) => `${s.source} is down`),
-    ...(feedAge !== null && feedAge > STALE_FEED_MS
-      ? [`feed is ${Math.round(feedAge / 60_000)} min old`]
-      : []),
-    ...backupProblem(storage.lastBackupDay, today),
+    ...feedProblem(feedAge, Date.now() - PROCESS_STARTED_AT),
+    // An in-memory store is never backed up.
+    ...(file === ':memory:'
+      ? []
+      : backupProblem(storage.lastBackupDay, today, created)),
     // A rejected topics file is a silent downgrade to the built-in set
     // otherwise — the operator asked for their own topics and is not getting
     // them.

@@ -2,8 +2,11 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { historyDb, utcDay } from '@/server/store/db'
 import {
+  reportBase,
   reportText,
   weeklyReport,
+  withWatch,
+  type ReportBase,
   type WeeklyReport,
 } from '@/server/store/report'
 import {
@@ -15,34 +18,34 @@ import {
 export type ReportResult =
   { ok: true; report: WeeklyReport; text: string } | { ok: false }
 
-// Reports per watch set, reused for REPORT_CACHE_MS: building one scans a
-// fortnight of history, and the endpoint is public. At most
-// REPORT_CACHE_MAX sets are kept (oldest dropped first).
+// The part of the report that is the same for every reader (a fortnight of
+// works and several scans) is built at most once per REPORT_CACHE_MS and
+// day. The endpoint is public and readers choose their watch terms, so only
+// the terms — one query each, at most MAX_WATCH_TERMS — are computed per
+// request: varying them cannot make the server rebuild the report.
 const REPORT_CACHE_MS = 5 * 60_000
-const REPORT_CACHE_MAX = 200
-const reportCache = new Map<string, { at: number; result: ReportResult }>()
+let cachedBase: { day: string; at: number; base: ReportBase } | null = null
 
 /** The weekly report for these watch terms, from the history store. */
-export async function getWeeklyReport(watch: string[]): Promise<ReportResult> {
-  const key = watch
-    .map((w) => w.toLowerCase())
-    .sort()
-    .join('\n')
-  const hit = reportCache.get(key)
-  if (hit && Date.now() - hit.at < REPORT_CACHE_MS) return hit.result
-  let result: ReportResult
+export async function getWeeklyReport(
+  watch: string[],
+  now: number = Date.now(),
+): Promise<ReportResult> {
   try {
-    const report = weeklyReport(await historyDb(), utcDay(), watch)
-    result = { ok: true, report, text: reportText(report) }
+    const db = await historyDb()
+    const day = utcDay(new Date(now))
+    if (
+      !cachedBase ||
+      cachedBase.day !== day ||
+      now - cachedBase.at >= REPORT_CACHE_MS
+    )
+      cachedBase = { day, at: now, base: reportBase(db, day) }
+    const report = withWatch(db, cachedBase.base, watch)
+    return { ok: true, report, text: reportText(report) }
   } catch (error) {
     console.error('[report] could not build the weekly report:', error)
     return { ok: false }
   }
-  reportCache.delete(key)
-  reportCache.set(key, { at: Date.now(), result })
-  if (reportCache.size > REPORT_CACHE_MAX)
-    reportCache.delete(reportCache.keys().next().value!)
-  return result
 }
 
 export const fetchWeeklyReportFn = createServerFn({ method: 'GET' })

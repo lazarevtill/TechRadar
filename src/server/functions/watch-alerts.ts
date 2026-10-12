@@ -5,13 +5,13 @@ import {
   watchAlertText,
 } from '@/server/store/watch'
 import { parseWatchTerms } from '@/lib/watch'
-import type { SnapshotItem } from '@/server/store/history'
 
 /**
  * Immediate alerts for the server's watch terms (REPORT_WATCH), posted to
  * WATCH_WEBHOOK_URL (else REPORT_WEBHOOK_URL) as `{ "text": … }` right
  * after the rebuild that first saw a matching work. A failed post is
- * retried on the next rebuild; delivered works are never sent again.
+ * retried on later rebuilds (for WATCH_RETRY_DAYS after the work was last
+ * seen); delivered works are never sent again.
  */
 
 let sending = false
@@ -19,14 +19,13 @@ let sending = false
 export function sendWatchAlerts(
   db: Db,
   day: string,
-  items: SnapshotItem[],
   /** When this rebuild recorded its items: only newer items are news. */
   rebuildAt: string,
 ): void {
   const url = process.env.WATCH_WEBHOOK_URL || process.env.REPORT_WEBHOOK_URL
   const terms = parseWatchTerms(process.env.REPORT_WATCH)
   if (!url || terms.length === 0 || sending) return
-  const hits = newWatchHits(db, day, terms, items, rebuildAt)
+  const hits = newWatchHits(db, day, terms, rebuildAt)
   if (hits.length === 0) return
   sending = true
   fetch(url, {

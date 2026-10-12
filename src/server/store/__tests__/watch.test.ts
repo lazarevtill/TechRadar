@@ -37,7 +37,7 @@ function rebuild(
     DAY,
     time,
   )
-  return newWatchHits(db, DAY, terms, items, time)
+  return newWatchHits(db, DAY, terms, time)
 }
 
 describe('newWatchHits', () => {
@@ -104,5 +104,100 @@ describe('newWatchHits', () => {
         (h) => h.id,
       ),
     ).toEqual(['hn-2'])
+  })
+})
+
+describe('newWatchHits across days', () => {
+  const paper = {
+    id: 'arxiv-2509.00001',
+    source: 'arxiv' as const,
+    title: 'Mamba-5 scaling',
+    summary: '',
+    sourceUrl: 'https://arxiv.org/abs/2509.00001',
+  }
+  // The same paper discussed on Hacker News: one work, two items.
+  const thread = {
+    id: 'hn-9',
+    source: 'hackernews' as const,
+    title: 'Mamba-5 is out',
+    summary: '',
+    sourceUrl: 'https://arxiv.org/abs/2509.00001',
+  }
+
+  /** A rebuild on `day` at `hh` that sees these items; delivers if `deliver`. */
+  function pass(
+    db: Db,
+    day: string,
+    hh: string,
+    items: Array<typeof paper | typeof thread>,
+    deliver = true,
+  ) {
+    const now = `${day}T${hh}:00:00Z`
+    recordItems(
+      db,
+      items.map((i) => ({
+        ...i,
+        category: 'ai',
+        maturityStage: 'research',
+        publishedAt: new Date(`${day}T00:00:00Z`),
+        engagement: 1,
+      })),
+      day,
+      now,
+    )
+    const hits = newWatchHits(db, day, ['Mamba-5'], now)
+    if (deliver) markAnnounced(db, hits, day)
+    return hits.map((h) => h.id)
+  }
+
+  it('announces a work once even after the member that named it leaves', async () => {
+    const db = await openDb(':memory:')
+    pass(db, '2026-09-23', '08', [])
+    expect(pass(db, '2026-09-23', '09', [paper, thread])).toEqual([paper.id])
+    expect(pass(db, '2026-09-23', '10', [paper, thread])).toEqual([])
+    // Day 2: only the discussion is still in the fetch.
+    expect(pass(db, '2026-09-24', '09', [thread])).toEqual([])
+  })
+
+  it('recognises a work by a member that joined after the announcement', async () => {
+    const db = await openDb(':memory:')
+    pass(db, '2026-09-23', '08', [])
+    expect(pass(db, '2026-09-23', '09', [paper])).toEqual([paper.id])
+    // The discussion joins the announced work while the paper is still seen.
+    expect(pass(db, '2026-09-24', '09', [paper, thread])).toEqual([])
+    // Ten days later the paper is long gone from the window; the thread
+    // alone is still the same, already announced work.
+    expect(pass(db, '2026-10-04', '09', [thread])).toEqual([])
+  })
+
+  it('retries an undelivered alert after its item left the fetch', async () => {
+    const db = await openDb(':memory:')
+    pass(db, '2026-09-23', '08', [])
+    // The webhook failed: nothing marked.
+    expect(pass(db, '2026-09-23', '09', [paper], false)).toEqual([paper.id])
+    // The next rebuild no longer fetches the paper; it is still news.
+    expect(pass(db, '2026-09-23', '10', [])).toEqual([paper.id])
+    expect(pass(db, '2026-09-23', '11', [])).toEqual([])
+  })
+
+  it('stays quiet about everything already stored when a term is added', async () => {
+    const db = await openDb(':memory:')
+    // Seen on earlier days, before anyone watched for it.
+    recordItems(
+      db,
+      [
+        {
+          ...paper,
+          category: 'ai',
+          maturityStage: 'research',
+          publishedAt: new Date('2026-09-20T00:00:00Z'),
+          engagement: 1,
+        },
+      ],
+      '2026-09-20',
+      '2026-09-20T09:00:00Z',
+    )
+    expect(pass(db, '2026-09-23', '08', [])).toEqual([])
+    expect(pass(db, '2026-09-23', '09', [thread])).toEqual([])
   })
 })

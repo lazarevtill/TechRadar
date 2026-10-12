@@ -25,7 +25,8 @@ const daysAfter = (day: string, n: number) => daysBefore(day, -n)
  * controls (same source, same day). A random pick would hit about half the
  * time — that is the bar.
  *
- * Discovered themes are predictions too (`discovered`, subject `auto:<term>`):
+ * Discovered themes are predictions too (`discovered`, subject
+ * `auto:<term>@<day>`):
  * a hit when, in the HORIZON_DAYS after it was added, new items carrying the
  * term keep arriving at no less than half the daily rate of the burst that
  * added it (burst: RECENT_DAYS = 7, horizon 14, so "after >= baseline").

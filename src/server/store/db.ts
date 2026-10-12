@@ -8,7 +8,7 @@ import { dirname, resolve } from 'node:path'
  *
  * SQLite in one file (HISTORY_DB, default `.cache/history.db`, on the Docker
  * volume). Production runs on Bun (`bun:sqlite`); the Vite dev server and
- * vitest run on Node 22 (`node:sqlite`). Both are wrapped behind the small
+ * vitest run on Node 22.13+ (`node:sqlite`). Both are wrapped behind the small
  * `Db` interface below, which uses positional `?` parameters only.
  */
 
@@ -79,11 +79,11 @@ CREATE TABLE IF NOT EXISTS terms (
 
 -- Every highlight made, and how it turned out.
 CREATE TABLE IF NOT EXISTS predictions (
-  subject TEXT NOT NULL,     -- item id or term:…
+  subject TEXT NOT NULL,     -- item id, or auto:<term>@<day> for a discovered theme
   reason TEXT NOT NULL,
   day TEXT NOT NULL,         -- first day the highlight was made
   source TEXT,
-  baseline REAL,             -- engagement (items) or daily count (terms) then
+  baseline REAL,             -- engagement (items) or works in the burst that added it (themes) then
   outcome TEXT,              -- null until evaluated: 'hit' | 'miss' (themes), 'measured' | 'unavailable' (items)
   outcome_value REAL,
   evaluated_day TEXT,        -- day of the outcome, or of the last failed attempt while pending
@@ -104,11 +104,13 @@ CREATE TABLE IF NOT EXISTS themes (
   retired_day TEXT
 );
 
--- Works already announced for a server-side watch term (REPORT_WATCH),
--- so each is announced once.
+-- Works already announced for a server-side watch term (REPORT_WATCH), or
+-- known before the term was added, so each is announced once (watch.ts).
+-- Every member item of the work is recorded: a work id changes as members
+-- come and go, an item id does not.
 CREATE TABLE IF NOT EXISTS watch_hits (
   term TEXT NOT NULL,        -- lowercase
-  work TEXT NOT NULL,
+  work TEXT NOT NULL,        -- id of an item belonging to the work
   day TEXT NOT NULL,
   PRIMARY KEY (term, work)
 );
@@ -287,6 +289,13 @@ export async function openDb(file: string): Promise<Db> {
     'PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA busy_timeout = 5000;',
   )
   migrate(db)
+  // The day the store began (a store that predates this key: its first
+  // item), so health can tell "no backup yet" from "no backup ever".
+  db.run(
+    `INSERT OR IGNORE INTO meta (key, value)
+     SELECT 'store_created', coalesce(min(substr(first_seen, 1, 10)), ?) FROM items`,
+    utcDay(),
+  )
   return db
 }
 

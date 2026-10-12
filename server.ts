@@ -59,6 +59,11 @@
  *   - Supports partial matching for types ending with "/"
  *   - Default: text/,application/javascript,application/json,application/xml,image/svg+xml
  *
+ * IMAGINE_PREVIEW (boolean)
+ *   - Preview hosting: every static asset is sent with no-cache headers
+ *   - Default: false
+ *   - Set to "true" to enable
+ *
  * Usage:
  *   bun run server.ts
  */

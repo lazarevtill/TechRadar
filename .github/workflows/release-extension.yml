@@ -33,6 +33,10 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.2
+      # The tests below run on Node (vitest): the same version as Verify.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24.21.0'
       - run: bun install --frozen-lockfile
       - run: bun run test -- chrome-extension scripts/__tests__/build-extension.test.ts
       - run: bun run build:extension

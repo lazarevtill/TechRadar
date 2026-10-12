@@ -18,9 +18,11 @@ jobs:
         with:
           bun-version: 1.4.2
       # vitest runs on Node; the history store needs node:sqlite (22.13+).
+      # Pinned exactly, like Bun, so a runner update cannot change a result;
+      # release-extension.yml uses the same version.
       - uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: '24.21.0'
       - run: bun install --frozen-lockfile
       - run: bun run lint
       - run: bun run format:check

@@ -4,7 +4,7 @@ import { watchMatcher } from '@/lib/watch'
 import { daysBefore, type Db } from './db'
 import { activeThemes, THEME_PREFIX } from './discovery'
 import { trackRecord, type TrackRecord } from './predictions'
-import { workGroups } from './works'
+import { workGroups, type Works } from './works'
 import { effectiveTopics } from '@/server/utils/topics-config'
 
 /**
@@ -70,6 +70,22 @@ export function weeklyReport(
   today: string,
   watch: string[] = [],
 ): WeeklyReport {
+  return withWatch(db, reportBase(db, today), watch)
+}
+
+/**
+ * Everything in the report that does not depend on watch terms, with the
+ * works it was built from. This is the costly part (a fortnight of works and
+ * several scans); the watch terms are one cheap query each (withWatch), so a
+ * server can reuse one base for every reader's terms.
+ */
+export interface ReportBase {
+  report: Omit<WeeklyReport, 'watch'>
+  works: Works
+  prevFrom: string
+}
+
+export function reportBase(db: Db, today: string): ReportBase {
   const from = daysBefore(today, 6)
   const prevFrom = daysBefore(today, 13)
   const themes = activeThemes(db)
@@ -188,38 +204,6 @@ export function weeklyReport(
       to: r.last,
     }))
 
-  const watchResults = watch.map((term): WatchResult => {
-    const match = watchMatcher(term)
-    const like = `%${term.replace(/[%_\\]/g, '\\$&')}%`
-    const rows = db
-      .all<ReportItem & { first_seen: string; summary: string }>(
-        `SELECT id, source, title, summary, url, first_seen FROM items
-          WHERE substr(first_seen, 1, 10) >= ?
-            AND (title LIKE ? ESCAPE '\\' OR summary LIKE ? ESCAPE '\\')
-          ORDER BY first_seen DESC`,
-        prevFrom,
-        like,
-        like,
-      )
-      // Title or summary, like the feed's watch chips.
-      .filter((r) => match(`${r.title}\n${r.summary}`))
-    // One entry per work: a story on two sources is one mention.
-    const seen = new Set<string>()
-    const mentions = rows.filter((r) => {
-      const work = works.workOf.get(r.id) ?? r.id
-      return !seen.has(work) && seen.add(work)
-    })
-    const thisWeek = mentions.filter((r) => r.first_seen.slice(0, 10) >= from)
-    return {
-      term,
-      thisWeek: thisWeek.length,
-      lastWeek: mentions.length - thisWeek.length,
-      items: thisWeek
-        .slice(0, 5)
-        .map(({ id, source, title, url }) => ({ id, source, title, url })),
-    }
-  })
-
   // Makers: the owner part of github:/hf: identity keys. One count per
   // work, so a model and its repo from the same lab count once.
   const makerRows = db.all<{
@@ -286,25 +270,72 @@ export function weeklyReport(
     .slice(0, LIMIT)
 
   return {
-    from,
-    to: today,
-    newItems,
-    themes: {
-      added: discovered.filter((t) => t.addedDay >= from),
-      retired: db
-        .all<{ display: string }>(
-          'SELECT display FROM themes WHERE retired_day >= ?',
-          from,
-        )
-        .map((r) => r.display),
+    report: {
+      from,
+      to: today,
+      newItems,
+      themes: {
+        added: discovered.filter((t) => t.addedDay >= from),
+        retired: db
+          .all<{ display: string }>(
+            'SELECT display FROM themes WHERE retired_day >= ?',
+            from,
+          )
+          .map((r) => r.display),
+      },
+      topics,
+      crossSource,
+      risers,
+      makers,
+      trackRecord: trackRecord(db, today),
     },
-    topics,
-    crossSource,
-    risers,
-    watch: watchResults,
-    makers,
-    trackRecord: trackRecord(db, today),
+    works,
+    prevFrom,
   }
+}
+
+/** The report for these watch terms, on a base built by reportBase. */
+export function withWatch(
+  db: Db,
+  base: ReportBase,
+  watch: string[],
+): WeeklyReport {
+  const { report, works, prevFrom } = base
+  const watchResults = watch.map((term): WatchResult => {
+    const match = watchMatcher(term)
+    const like = `%${term.replace(/[%_\\]/g, '\\$&')}%`
+    const rows = db
+      .all<ReportItem & { first_seen: string; summary: string }>(
+        `SELECT id, source, title, summary, url, first_seen FROM items
+          WHERE substr(first_seen, 1, 10) >= ?
+            AND (title LIKE ? ESCAPE '\\' OR summary LIKE ? ESCAPE '\\')
+          ORDER BY first_seen DESC`,
+        prevFrom,
+        like,
+        like,
+      )
+      // Title or summary, like the feed's watch chips.
+      .filter((r) => match(`${r.title}\n${r.summary}`))
+    // One entry per work: a story on two sources is one mention.
+    const seen = new Set<string>()
+    const mentions = rows.filter((r) => {
+      const work = works.workOf.get(r.id) ?? r.id
+      return !seen.has(work) && seen.add(work)
+    })
+    const thisWeek = mentions.filter(
+      (r) => r.first_seen.slice(0, 10) >= report.from,
+    )
+    return {
+      term,
+      thisWeek: thisWeek.length,
+      lastWeek: mentions.length - thisWeek.length,
+      items: thisWeek
+        .slice(0, 5)
+        .map(({ id, source, title, url }) => ({ id, source, title, url })),
+    }
+  })
+  const { makers, trackRecord: record, ...head } = report
+  return { ...head, watch: watchResults, makers, trackRecord: record }
 }
 
 /** Plain-text rendering, for webhooks (Slack, Mattermost, n8n …). */

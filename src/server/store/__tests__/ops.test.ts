@@ -137,6 +137,34 @@ describe('dailyMaintenance', () => {
     expect(dailyMaintenance(db, TODAY, file)).toBeNull()
     db.close()
   })
+
+  it('forgets watch alerts for items it no longer keeps', async () => {
+    const db = await openDb(':memory:')
+    const snap = (id: string) => ({
+      id,
+      source: 'hackernews' as const,
+      title: id,
+      sourceUrl: `https://a.dev/${id}`,
+      summary: '',
+      category: 'ai',
+      maturityStage: 'research',
+      publishedAt: new Date('2025-01-01T00:00:00Z'),
+      engagement: 1,
+    })
+    recordItems(db, [snap('old')], '2025-01-01', '2025-01-01T00:00:00Z')
+    recordItems(db, [snap('new')], TODAY, `${TODAY}T00:00:00Z`)
+    for (const [work, day] of [
+      ['old', '2025-01-01'],
+      ['new', TODAY],
+    ])
+      db.run(
+        "INSERT INTO watch_hits (term, work, day) VALUES ('mamba', ?, ?)",
+        work,
+        day,
+      )
+    dailyMaintenance(db, TODAY, ':memory:')
+    expect(db.all('SELECT work FROM watch_hits')).toEqual([{ work: 'new' }])
+  })
 })
 
 describe('retainDays', () => {

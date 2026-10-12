@@ -35,7 +35,10 @@ services:
       LLM_MODEL: ${LLM_MODEL:-}
       LLM_API_KEY: ${LLM_API_KEY:-}
       LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-}
+      LLM_CONCURRENCY: ${LLM_CONCURRENCY:-}
       JUDGE_BACKEND: ${JUDGE_BACKEND:-}
+      # Per-source time budget (ms); empty = the built-in default.
+      SOURCE_BUDGET_MS: ${SOURCE_BUDGET_MS:-}
       # Tracked topics, read from the mounted ./config below. A path outside
       # that directory would have to be mounted too.
       TOPICS_FILE: ${TOPICS_FILE:-config/topics.json}
@@ -43,6 +46,8 @@ services:
       # OpenAlex's polite pool. Read from the host env / .env.
       MYMEMORY_EMAIL: ${MYMEMORY_EMAIL:-}
       OPENALEX_MAILTO: ${OPENALEX_MAILTO:-}
+      # Characters the dashboard's "translate" button may send per day.
+      TRANSLATE_ON_DEMAND_DAILY_CHARS: ${TRANSLATE_ON_DEMAND_DAILY_CHARS:-}
       # Optional, server-side only: more GitHub searches per refresh.
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       # Optional webhooks ({"text": ...}): weekly report and source alerts.
@@ -52,11 +57,18 @@ services:
       ALERT_WEBHOOK_URL: ${ALERT_WEBHOOK_URL:-}
       # Protects operator actions and data; set it on an internet-facing host.
       ADMIN_TOKEN: ${ADMIN_TOKEN:-}
-      # Optional: keep backups off the data volume (see README, Backups).
-      # BACKUP_DIR: /backups
+      # The schedule and the history store; empty = the built-in defaults.
+      FEED_SCHEDULE_MINUTES: ${FEED_SCHEDULE_MINUTES:-}
+      HISTORY_RETAIN_DAYS: ${HISTORY_RETAIN_DAYS:-}
+      # Optional: keep backups off the data volume (see README, Backups) —
+      # BACKUP_DIR=/backups together with the ./backups mount below.
+      BACKUP_DIR: ${BACKUP_DIR:-}
       PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-}
-      # Point at a different fork's generated data if needed:
-      # DIGEST_DATA_BASE_URL: https://raw.githubusercontent.com/<owner>/TechRadar/main/public/data
+      # Another fork's generated digest data; empty = this repository's.
+      DIGEST_DATA_BASE_URL: ${DIGEST_DATA_BASE_URL:-}
+      # Not passed, on purpose: HISTORY_DB and JEV_CACHE_FILE (fixed to the
+      # volume below) and server.ts static-asset tuning (ASSET_PRELOAD_*,
+      # IMAGINE_PREVIEW), whose defaults fit this image.
     volumes:
       # Your own tracked topics, read at runtime (config/topics.json). Mounted
       # as a directory because a bind mount of a file that does not exist yet

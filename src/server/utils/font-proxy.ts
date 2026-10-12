@@ -29,7 +29,21 @@ export function rewriteFontCss(css: string, origin: string): string {
   return css.replaceAll(GSTATIC, `${origin}${FONT_FILE_ROUTE}`)
 }
 
-export async function getCjkFontCss(origin: string): Promise<string> {
+/** The gstatic paths a stylesheet names (`s/notosansjp/v56/….woff2`). */
+export function fontFilesIn(css: string): string[] {
+  const prefix = GSTATIC.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
+  return [...css.matchAll(new RegExp(`${prefix}([^)'"\\s]+)`, 'g'))].map(
+    (m) => m[1],
+  )
+}
+
+// Every font file a relayed stylesheet has named in this process: the
+// current version's slices, and an earlier version's while readers still
+// hold that stylesheet (they keep it a day). Only these are relayed, so the
+// server fetches and caches nothing but these two fonts' slices.
+const namedFiles = new Set<string>()
+
+async function cjkCss(): Promise<string> {
   const css = await getOrSetCache(
     'fonts:cjk-css',
     async () => {
@@ -41,10 +55,19 @@ export async function getCjkFontCss(origin: string): Promise<string> {
     },
     24 * CACHE_TTL.HOUR,
   )
-  return rewriteFontCss(css, origin)
+  for (const file of fontFilesIn(css)) namedFiles.add(file)
+  return css
 }
 
-export async function getFontFile(path: string): Promise<ArrayBuffer> {
+export async function getCjkFontCss(origin: string): Promise<string> {
+  return rewriteFontCss(await cjkCss(), origin)
+}
+
+/** One font slice the stylesheet names, or null for any other path. */
+export async function getFontFile(path: string): Promise<ArrayBuffer | null> {
+  if (!isAllowedFontPath(path)) return null
+  await cjkCss()
+  if (!namedFiles.has(path)) return null
   return getOrSetCache(
     `fonts:file:${path}`,
     async () => {

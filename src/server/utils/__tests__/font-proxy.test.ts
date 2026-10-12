@@ -1,5 +1,63 @@
-import { describe, it, expect } from 'vitest'
-import { isAllowedFontPath, rewriteFontCss } from '../font-proxy'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import {
+  fontFilesIn,
+  getFontFile,
+  isAllowedFontPath,
+  rewriteFontCss,
+} from '../font-proxy'
+import { invalidateCacheByPrefix } from '../cache'
+
+afterEach(() => vi.unstubAllGlobals())
+
+const cssFor = (version: number) =>
+  [`a.0`, `a.1`]
+    .map(
+      (f) =>
+        `src: url(https://fonts.gstatic.com/s/notosansjp/v${version}/${f}.woff2) format('woff2');`,
+    )
+    .join('\n')
+
+/** Google: the stylesheet at `version`, and any font file. */
+function google(version: { current: number }) {
+  const fetchMock = vi.fn(async (url: string | URL | Request) =>
+    String(url).includes('css2')
+      ? new Response(cssFor(version.current))
+      : new Response(new Uint8Array([1, 2, 3])),
+  )
+  vi.stubGlobal('fetch', fetchMock)
+  return fetchMock
+}
+
+const fontFetches = (fetchMock: ReturnType<typeof google>) =>
+  fetchMock.mock.calls.filter(([url]) => !String(url).includes('css2')).length
+
+describe('getFontFile', () => {
+  it('relays only the slices the stylesheet names, across a version bump', async () => {
+    const version = { current: 56 }
+    const fetchMock = google(version)
+    expect(await getFontFile('s/notosansjp/v56/a.0.woff2')).not.toBeNull()
+    // A valid-looking path the stylesheet never named: no upstream request.
+    expect(await getFontFile('s/notosansjp/v56/zzz.woff2')).toBeNull()
+    expect(await getFontFile('s/roboto/v30/a.0.woff2')).toBeNull()
+    expect(fontFetches(fetchMock)).toBe(1)
+
+    // Google moves to v57; readers holding yesterday's stylesheet still ask
+    // for v56 slices, which keep working.
+    version.current = 57
+    invalidateCacheByPrefix('fonts:cjk-css')
+    expect(await getFontFile('s/notosansjp/v57/a.1.woff2')).not.toBeNull()
+    expect(await getFontFile('s/notosansjp/v56/a.1.woff2')).not.toBeNull()
+  })
+})
+
+describe('fontFilesIn', () => {
+  it('lists the gstatic paths of a stylesheet', () => {
+    expect(fontFilesIn(cssFor(56))).toEqual([
+      's/notosansjp/v56/a.0.woff2',
+      's/notosansjp/v56/a.1.woff2',
+    ])
+  })
+})
 
 describe('isAllowedFontPath', () => {
   it('accepts Google font slices only', () => {

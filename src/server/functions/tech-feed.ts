@@ -32,6 +32,7 @@ import { effectiveTopics } from '@/server/utils/topics-config'
 import { judgeInfo } from '@/server/utils/judge'
 import { alertOnSourceChanges } from './health'
 import { sendWatchAlerts } from './watch-alerts'
+import { noteFeedBuilt } from '@/server/utils/feed-status'
 import {
   evaluateDue,
   recordPredictions,
@@ -289,7 +290,7 @@ async function withHistory(
       console.error('[health] source alert check failed:', error)
     }
     try {
-      sendWatchAlerts(db, day, snapshot, now)
+      sendWatchAlerts(db, day, now)
     } catch (error) {
       console.error('[watch] alert check failed:', error)
     }
@@ -1831,6 +1832,7 @@ export function refreshTechFeed(): Promise<TechFeedPayload> {
   feedRefresh ??= buildTechFeed()
     .then((payload) => {
       setCache(CACHE_KEYS.TECH_FEED, payload, FEED_SNAPSHOT_TTL_MS)
+      noteFeedBuilt(Date.parse(payload.fetchedAt))
       return payload
     })
     .finally(() => {

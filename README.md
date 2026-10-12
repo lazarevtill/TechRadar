@@ -86,17 +86,20 @@ are supported and `/api/health` reports which is in force:
 | `TYPESAFE_BASE_URL`               | A TypeSafe deployment of your own instead of the hosted one                   |
 | `LLM_BASE_URL`, `LLM_MODEL`       | Judge on your own OpenAI-compatible server (Ollama, vLLM, LM Studio)          |
 | `LLM_API_KEY`, `LLM_TIMEOUT_MS`   | Optional, for that server (timeout default 120000)                            |
+| `LLM_CONCURRENCY`                 | Requests in flight to that server (default 4)                                 |
 | `JUDGE_BACKEND`                   | `auto` (default), `typesafe`, `openai` or `none`                              |
 | `TOPICS_FILE`                     | Your own tracked topics, read at runtime (default `config/topics.json`)       |
 | `ANTHROPIC_API_KEY`               | Digest summaries, `generate:feed` only                                        |
 | `GITHUB_TOKEN`                    | More GitHub searches per refresh (no scopes)                                  |
 | `MYMEMORY_EMAIL`                  | Tenfold MyMemory translation quota                                            |
+| `TRANSLATE_ON_DEMAND_DAILY_CHARS` | Daily budget of the "translate" button (default a fifth of the quota)         |
 | `OPENALEX_MAILTO`                 | OpenAlex polite pool                                                          |
 | `ADMIN_TOKEN`                     | Protects operator actions and data — **set it on any internet-facing server** |
 | `HISTORY_DB`                      | History database file (default `.cache/history.db`)                           |
 | `HISTORY_RETAIN_DAYS`             | Days of history kept (default 365)                                            |
 | `BACKUP_DIR`                      | Where daily backups go (default `backups/` next to the database)              |
 | `FEED_SCHEDULE_MINUTES`           | Rebuild cadence (default 5; 0 = only on requests, no maintenance)             |
+| `SOURCE_BUDGET_MS`                | Per-source time budget (default 30000; 180000 with your own model)            |
 | `REPORT_WEBHOOK_URL`              | Weekly report, posted as `{"text": …}`                                        |
 | `REPORT_WATCH`                    | Server-side watch terms (weekly report and immediate alerts)                  |
 | `WATCH_WEBHOOK_URL`               | Immediate watch alerts (default: `REPORT_WEBHOOK_URL`)                        |
@@ -107,6 +110,8 @@ are supported and `/api/health` reports which is in force:
 | `DIGEST_MODEL`, `DIGEST_BATCH`, … | Digest pipeline tuning (see `.env.example`)                                   |
 | `VITE_INSTRUMENTATION_SCRIPT_SRC` | Analytics script injected in `<head>`                                         |
 
+`.env.example` documents every setting; `docker compose` passes each into
+the container except the database paths (on the volume) and `ASSET_PRELOAD_*`.
 Keys and webhook URLs never reach client code, `public/data`, or the
 extension; `check:secrets` scans generated data in CI.
 
@@ -179,7 +184,8 @@ from counts in code.
 
 All keyless (GitHub optionally with a token). The server rebuilds the feed
 every five minutes and serves it stale-while-revalidate; each source gets a
-30-second budget per rebuild. Not included, for now: patents (the USPTO Open
+30-second budget per rebuild (180 seconds when judging on your own model;
+`SOURCE_BUDGET_MS` overrides both). Not included, for now: patents (the USPTO Open
 Data Portal requires an API key), Reddit and Bluesky (both refuse keyless
 access). Mastodon trending links were measured and left out (general news).
 
@@ -229,16 +235,20 @@ The server holds every key; clients hold none.
 
 - **What a client can do.** Everything the extension (or anyone who can reach
   the server) calls is read-only: `GET /api/extension-feed`, `/api/report`,
-  `/api/health`, `/api/export`, the CJK font relay (strict path allowlist)
-  and the dashboard's read server functions. These send `CORS *` because
-  they carry no credentials and change nothing. Reports and exports are cached
-  server-side, so repeated calls cannot multiply work.
+  `/api/health`, `/api/export`, the CJK font relay (only the font slices its
+  own stylesheet names) and the dashboard's read server functions. These send
+  `CORS *` because they carry no credentials and change nothing. Exports and
+  the costly part of the weekly report are cached server-side; a reader's
+  watch terms add one query each, so varying them cannot multiply work.
 - **What costs or changes something.** Forcing a rebuild (clears the caches
   and re-fetches every source) requires `ADMIN_TOKEN` when it is set and is
   limited to once per two minutes for everyone. The dashboard's "translate"
-  button is public but limited to 30 calls a minute for the whole server
-  (MyMemory's quota is shared). Jev and Claude are called only by the server
-  itself, on its own schedule, with results cached per item.
+  button is public: it names an item the server holds (it cannot send text),
+  is limited to 30 calls a minute for the whole server, and has its own daily
+  character budget (`TRANSLATE_ON_DEMAND_DAILY_CHARS`), so readers cannot use
+  up the MyMemory quota the feed's own translations need. Jev and Claude are
+  called only by the server itself, on its own schedule, with results cached
+  per item.
 - **Operator data.** `/api/health` is public for status (what monitors and the
   extension read); the usage ledger and storage need `ADMIN_TOKEN`.
 - **Transport.** The extension accepts `http://` for local and LAN servers

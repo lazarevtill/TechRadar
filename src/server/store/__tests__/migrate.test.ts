@@ -1,5 +1,16 @@
 import { describe, it, expect } from 'vitest'
-import { addColumn, migrate, MIGRATIONS, openDb, type Migration } from '../db'
+import { mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import {
+  addColumn,
+  migrate,
+  MIGRATIONS,
+  openDb,
+  utcDay,
+  type Migration,
+} from '../db'
+import { recordItems } from '../history'
 
 const v3: Migration = {
   version: 3,
@@ -39,5 +50,40 @@ describe('migrate', () => {
     expect(() => migrate(db, [...MIGRATIONS, v3])).toThrow(
       /newer than this build/,
     )
+  })
+})
+
+describe('store_created', () => {
+  const created = (db: Awaited<ReturnType<typeof openDb>>) =>
+    db.get("SELECT value FROM meta WHERE key = 'store_created'")
+
+  it('dates a new store today and an older store by its first item', async () => {
+    const file = join(mkdtempSync(join(tmpdir(), 'radar-created-')), 'h.db')
+    const db = await openDb(file)
+    expect(created(db)).toEqual({ value: utcDay() })
+    // A store from before the key existed: items, but no store_created.
+    recordItems(
+      db,
+      [
+        {
+          id: 'hn-1',
+          source: 'hackernews',
+          title: 't',
+          sourceUrl: 'https://a.dev/1',
+          summary: '',
+          category: 'ai',
+          maturityStage: 'research',
+          publishedAt: new Date('2026-09-01T00:00:00Z'),
+          engagement: 1,
+        },
+      ],
+      '2026-09-01',
+      '2026-09-01T08:00:00Z',
+    )
+    db.run("DELETE FROM meta WHERE key = 'store_created'")
+    db.close()
+    const reopened = await openDb(file)
+    expect(created(reopened)).toEqual({ value: '2026-09-01' })
+    reopened.close()
   })
 })

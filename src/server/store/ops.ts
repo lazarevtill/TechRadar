@@ -12,7 +12,8 @@ export interface SourceRun {
   source: string
   items: number
   ms: number
-  /** 'timeout' when the source missed its time budget, else null. */
+  /** Why the run failed — the fetcher's error, or 'timeout' when the source
+   * missed its time budget — else null. */
   error: string | null
 }
 
@@ -219,6 +220,9 @@ export function dailyMaintenance(
     for (const table of ['observations', 'item_keys', 'item_terms'])
       db.run(`DELETE FROM ${table} WHERE item_id IN (${stale})`, cutoff)
     db.run('DELETE FROM items WHERE last_seen < ?', cutoff)
+    // Watch alerts remember works through their items; forgotten items need
+    // no memory of having been announced.
+    db.run('DELETE FROM watch_hits WHERE work NOT IN (SELECT id FROM items)')
     // Terms no remaining item carries.
     db.run(
       'DELETE FROM terms WHERE term NOT IN (SELECT DISTINCT term FROM item_terms)',

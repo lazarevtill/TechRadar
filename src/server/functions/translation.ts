@@ -1,5 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { countUsage } from '@/server/utils/usage'
+import { CACHE_KEYS, getCached } from '@/server/utils/cache'
+import { historyDb, utcDay } from '@/server/store/db'
 import { z } from 'zod'
 import type { OriginalLanguage, TranslatedContent } from '@/lib/tech-categories'
 
@@ -69,10 +71,15 @@ function getCacheKey(text: string, from: string, to: string): string {
   return `${from}:${to}:${text}`
 }
 
+/** Characters of one text sent per request (longer texts are cut). */
+export const MAX_TRANSLATE_CHARS = 500
+
 async function translateText(
   text: string,
   fromLang: OriginalLanguage,
   toLang: 'en' | 'ru',
+  /** Told how many characters are sent to MyMemory, if any. */
+  onSend?: (chars: number) => void,
 ): Promise<string | null> {
   // `null` means "not translated" (quota, API error): callers must not present
   // the original text as a translation. Text already in the target language
@@ -91,7 +98,7 @@ async function translateText(
 
   try {
     // Truncate very long texts (API limit)
-    const truncatedText = text.slice(0, 500)
+    const truncatedText = text.slice(0, MAX_TRANSLATE_CHARS)
 
     const fromCode = LANG_CODES[fromLang]
     const toCode = LANG_CODES[toLang]
@@ -105,6 +112,7 @@ async function translateText(
 
     // Every attempt is counted once; each failure path below adds `failed`.
     countUsage('translate', { requests: 1, units: truncatedText.length })
+    onSend?.(truncatedText.length)
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'TechEvolutionRadar/1.0',
@@ -153,6 +161,7 @@ export async function translateContent(
   content: { title: string; summary: string; whyItMatters?: string },
   fromLang: OriginalLanguage,
   toLang: 'en' | 'ru',
+  onSend?: (chars: number) => void,
 ): Promise<TranslatedContent | null> {
   // Skip translation if already in target language
   if (fromLang === toLang) {
@@ -166,8 +175,8 @@ export async function translateContent(
   // Only the source's own text is foreign. `whyItMatters` is written in
   // English by our fetchers, so translating it "from" fr/ja/zh garbles it.
   const [title, summary] = await Promise.all([
-    translateText(content.title, fromLang, toLang),
-    translateText(content.summary, fromLang, toLang),
+    translateText(content.title, fromLang, toLang, onSend),
+    translateText(content.summary, fromLang, toLang, onSend),
   ])
   // All or nothing: a half-translated item labelled "machine-translated"
   // would misstate what the reader is looking at.
@@ -247,19 +256,13 @@ export async function batchTranslate(
   return results
 }
 
-// Server function to translate full item content (title, summary, whyItMatters)
-const translateItemSchema = z.object({
-  title: z.string().max(500),
-  summary: z.string().max(2000),
-  whyItMatters: z.string().max(1000).optional(),
-  fromLang: z.enum(['en', 'zh', 'ja', 'fr', 'de', 'es', 'ru', 'ko', 'pt']),
-  toLang: z.enum(['en', 'ru']),
-})
-
-// On-demand translation is public (the "translate" button). MyMemory's quota
-// is shared by the whole server, so these calls are limited per minute for
-// everyone together; past the limit the answer is "not now" (null) and the
-// button stays, exactly as when the quota is exhausted.
+// On-demand translation (the dashboard's "translate" button) is public and
+// shares MyMemory's daily quota with the feed's own translations. A reader
+// names an item the server holds and never sends text, calls are limited per
+// minute for everyone together, and the characters sent have their own daily
+// budget, so readers cannot spend the quota the feed needs. Past a limit the
+// answer is "not now" (null) and the button stays, exactly as when the quota
+// is exhausted.
 export const ON_DEMAND_PER_MINUTE = 30
 let windowStart = 0
 let windowCount = 0
@@ -273,21 +276,97 @@ export function allowOnDemand(now = Date.now()): boolean {
   return windowCount <= ON_DEMAND_PER_MINUTE
 }
 
+/**
+ * Characters on-demand translation may send per UTC day:
+ * TRANSLATE_ON_DEMAND_DAILY_CHARS, else a fifth of MyMemory's quota (about
+ * 5,000 a day keyless, 50,000 with MYMEMORY_EMAIL). Counted in memory, so a
+ * restart starts the day's budget again.
+ */
+export function onDemandDailyChars(
+  env: Record<string, string | undefined> = process.env,
+): number {
+  const raw = env.TRANSLATE_ON_DEMAND_DAILY_CHARS
+  const n = Number(raw)
+  if (raw !== undefined && raw !== '' && Number.isInteger(n) && n >= 0) return n
+  return env.MYMEMORY_EMAIL ? 10_000 : 1_000
+}
+
+let budgetDay = ''
+let budgetUsed = 0
+
+function onDemandCharsLeft(day: string): number {
+  if (day !== budgetDay) {
+    budgetDay = day
+    budgetUsed = 0
+  }
+  return onDemandDailyChars() - budgetUsed
+}
+
+interface HeldItem {
+  title: string
+  summary: string
+  whyItMatters?: string
+  originalLanguage: OriginalLanguage
+  translations?: { en?: TranslatedContent; ru?: TranslatedContent }
+}
+
+/** The item's own text: from the current feed, else from the history store
+ * (it may have left the feed since the reader's page loaded). */
+async function heldItem(id: string): Promise<HeldItem | null> {
+  const feed = getCached<{ items: Array<HeldItem & { id: string }> }>(
+    CACHE_KEYS.TECH_FEED,
+  )
+  const live = feed?.items.find((i) => i.id === id)
+  if (live) return live
+  try {
+    const row = (await historyDb()).get<{ title: string; summary: string }>(
+      'SELECT title, summary FROM items WHERE id = ?',
+      id,
+    )
+    if (row)
+      return {
+        ...row,
+        originalLanguage: detectLanguage(`${row.title}\n${row.summary}`),
+      }
+  } catch (error) {
+    console.error('[translation] history store unavailable:', error)
+  }
+  return null
+}
+
+/** Translate one item the server holds, within the on-demand limits. */
+export async function translateItemOnDemand(
+  id: string,
+  toLang: 'en' | 'ru',
+  now: number = Date.now(),
+): Promise<TranslatedContent | null> {
+  if (!allowOnDemand(now)) return null
+  const item = await heldItem(id)
+  if (!item) return null
+  const done = item.translations?.[toLang]
+  if (done) return done
+  const day = utcDay(new Date(now))
+  // The most this item can send: its title and summary, each cut to size.
+  // Checked and spent in the same tick (translateText counts before its
+  // first await), so concurrent calls cannot overspend.
+  const most =
+    Math.min(item.title.length, MAX_TRANSLATE_CHARS) +
+    Math.min(item.summary.length, MAX_TRANSLATE_CHARS)
+  if (onDemandCharsLeft(day) < most) return null
+  return translateContent(item, item.originalLanguage, toLang, (chars) => {
+    onDemandCharsLeft(day)
+    budgetUsed += chars
+  })
+}
+
+const translateItemSchema = z.object({
+  id: z.string().max(300),
+  toLang: z.enum(['en', 'ru']),
+})
+
 export const translateItemFn = createServerFn({ method: 'POST' })
   .inputValidator(translateItemSchema)
-  .handler(async ({ data }) => {
-    if (!allowOnDemand()) return null
-    const translated = await translateContent(
-      {
-        title: data.title,
-        summary: data.summary,
-        whyItMatters: data.whyItMatters,
-      },
-      data.fromLang as OriginalLanguage,
-      data.toLang,
-    )
-    return translated
-  })
+  .handler(({ data }) => translateItemOnDemand(data.id, data.toLang))
 
 // ============================================================================
 // LANGUAGE DETECTION

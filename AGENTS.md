@@ -96,8 +96,10 @@ Local dashboard development runs without secrets; set `TYPESAFE_API_KEY` in
 `.env` to get Jev feed categories (otherwise items show as uncategorized).
 Keep API keys and webhook URLs out of client code, extension assets, and
 generated JSON. Use `.env.example` for optional configuration and run the
-secret scanner after regenerating data. The server's public surface and its
-limits are described in the README's "Security model".
+secret scanner after regenerating data. A new server setting goes into
+`.env.example` and `docker-compose.yml` together, or Docker silently ignores
+it (`scripts/__tests__/env-settings.test.ts` checks both). The server's
+public surface and its limits are described in the README's "Security model".
 
 ## Deploying for a user
 

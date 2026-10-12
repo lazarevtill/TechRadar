@@ -57,17 +57,12 @@ export function FeedItem({ item }: FeedItemProps) {
     if (isTranslating || hasManualRu) return
     setIsTranslating(true)
     try {
+      // The server translates its own copy of the item; it never takes text.
       const result = await translateItemFn({
-        data: {
-          title: item.title,
-          summary: item.summary,
-          whyItMatters: item.whyItMatters,
-          fromLang: item.originalLanguage,
-          toLang: 'ru',
-        },
+        data: { id: item.id, toLang: 'ru' },
       })
-      // null: the translation service is unavailable (e.g. daily quota);
-      // keep the button so the reader can retry later.
+      // null: the translation service is unavailable (e.g. daily quota or
+      // the on-demand budget); keep the button so the reader can retry later.
       if (result) {
         setManualTranslation(result)
         setShowOriginal(false)

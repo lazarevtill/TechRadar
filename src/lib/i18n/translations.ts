@@ -126,7 +126,6 @@ export interface Translations {
   upvotes: string
   likes: string
   reactions: string
-  whyItMatters: string
   viewOn: string
   daysAgo: string
   today: string
@@ -282,7 +281,6 @@ export interface Translations {
 
   // Misc
   loading: string
-  error: string
 }
 
 export const translations: Record<Language, Translations> = {
@@ -420,7 +418,6 @@ export const translations: Record<Language, Translations> = {
     upvotes: 'upvotes',
     likes: 'likes',
     reactions: 'reactions',
-    whyItMatters: 'Context',
     viewOn: 'Open on',
     daysAgo: 'd ago',
     today: 'Today',
@@ -523,7 +520,7 @@ export const translations: Record<Language, Translations> = {
     infoRecencyDesc:
       'Age decay with a half-life per source: one day for Hacker News, a week for GitHub, weeks for papers.',
     infoNoveltyDesc:
-      'Jev rates the item on a four-level rubric from commentary to step change; the probability of "new capability" or above is used.',
+      'Jev rates the item on a five-level rubric from commentary to step change; the probability of "new capability" or above is used.',
     infoSubstanceDesc:
       'Jev’s probability that the item is a concrete technical artifact rather than news or opinion.',
     infoConvergenceDesc:
@@ -581,7 +578,6 @@ export const translations: Record<Language, Translations> = {
       'Live data from GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL and CiNii',
 
     loading: 'Loading',
-    error: 'Error',
   },
   ru: {
     appTitle: 'Радар эволюции технологий',
@@ -717,7 +713,6 @@ export const translations: Record<Language, Translations> = {
     upvotes: 'голосов',
     likes: 'лайков',
     reactions: 'реакций',
-    whyItMatters: 'Контекст',
     viewOn: 'Открыть на',
     daysAgo: 'д назад',
     today: 'Сегодня',
@@ -821,7 +816,7 @@ export const translations: Record<Language, Translations> = {
     infoRecencyDesc:
       'Затухание по возрасту с периодом полураспада на источник: день для Hacker News, неделя для GitHub, недели для статей.',
     infoNoveltyDesc:
-      'Jev оценивает запись по четырёхуровневой шкале от комментария до качественного скачка; используется вероятность уровня «новая возможность» и выше.',
+      'Jev оценивает запись по пятиуровневой шкале от комментария до качественного скачка; используется вероятность уровня «новая возможность» и выше.',
     infoSubstanceDesc:
       'Вероятность по оценке Jev, что запись — конкретный технический артефакт, а не новость или мнение.',
     infoConvergenceDesc:
@@ -879,7 +874,6 @@ export const translations: Record<Language, Translations> = {
       'Живые данные из GitHub, arXiv, Hacker News, Lobsters, DEV, Hugging Face, bioRxiv, medRxiv, OpenAlex, PubMed, HAL и CiNii',
 
     loading: 'Загрузка',
-    error: 'Ошибка',
   },
 }
 

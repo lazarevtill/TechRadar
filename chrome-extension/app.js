@@ -126,7 +126,7 @@ const translations = {
     retry: 'Retry',
     from: 'from',
     unscoredNote: 'items without an attention metric are unscored',
-    judged: 'judged by Jev',
+    judged: 'judged by a model',
     backendUnreachable: 'Cannot reach the TechRadar server',
     backendHint:
       'This extension shows data prepared by your TechRadar server. Start it (docker compose up -d) or check the address:',
@@ -323,7 +323,7 @@ const translations = {
     retry: 'Повторить',
     from: 'из',
     unscoredNote: 'записи без метрики внимания не оцениваются',
-    judged: 'оценено Jev',
+    judged: 'оценено моделью',
     backendUnreachable: 'Нет связи с сервером TechRadar',
     backendHint:
       'Расширение показывает данные, подготовленные вашим сервером TechRadar. Запустите его (docker compose up -d) или проверьте адрес:',
@@ -1191,7 +1191,6 @@ function renderTrends() {
   })
 }
 
-/** Fetch the weekly report for the reader's watch terms (panel only). */
 /** The server's public health (sources, feed age) for the footer line. */
 async function loadHealth() {
   const request = ++healthRequest
@@ -1221,6 +1220,7 @@ function renderHealth() {
   el.classList.toggle('bad', Boolean(h && !h.ok))
 }
 
+/** Fetch the weekly report for the reader's watch terms (panel only). */
 async function loadReport() {
   if (!state.settings.panels.week) return
   const { backendUrl, watchTerms } = state.settings
