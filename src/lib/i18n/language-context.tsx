@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   useCallback,
   type ReactNode,
 } from 'react'
@@ -26,21 +27,28 @@ export function LanguageProvider({
   children,
   defaultLanguage = 'en',
 }: LanguageProviderProps) {
-  const [language, setLanguageState] = useState<Language>(() => {
-    // Try to get from localStorage on client
-    if (typeof window !== 'undefined') {
+  // The initial client render must match SSR; restore browser preferences
+  // only after hydration, when the server text has been attached.
+  const [language, setLanguageState] = useState<Language>(defaultLanguage)
+  useEffect(() => {
+    try {
       const saved = localStorage.getItem('tech-radar-language')
       if (saved === 'en' || saved === 'ru') {
-        return saved
+        setLanguageState(saved)
       }
+    } catch {
+      // Storage can be denied; the current page still supports switching.
     }
-    return defaultLanguage
-  })
+  }, [])
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang)
     if (typeof window !== 'undefined') {
-      localStorage.setItem('tech-radar-language', lang)
+      try {
+        localStorage.setItem('tech-radar-language', lang)
+      } catch {
+        // Keep the preference for this page even when persistence is denied.
+      }
     }
   }, [])
 

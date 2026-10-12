@@ -13,11 +13,14 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
   const { t } = useLanguage()
   const [isDownloading, setIsDownloading] = useState(false)
   const [downloadComplete, setDownloadComplete] = useState(false)
+  const [downloadFailed, setDownloadFailed] = useState(false)
 
   const handleDownload = async () => {
     if (isDownloading) return
 
     setIsDownloading(true)
+    setDownloadFailed(false)
+    setDownloadComplete(false)
     try {
       const result = await downloadExtensionFn()
 
@@ -42,8 +45,9 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
         window.URL.revokeObjectURL(url)
 
         setDownloadComplete(true)
-      }
+      } else setDownloadFailed(true)
     } catch (error) {
+      setDownloadFailed(true)
       console.error('Failed to download extension:', error)
     } finally {
       setIsDownloading(false)
@@ -98,8 +102,15 @@ export function InstallationGuide({ isOpen, onClose }: InstallationGuideProps) {
                     ? `${t.downloading}…`
                     : downloadComplete
                       ? t.downloaded
-                      : t.downloadExtension}
+                      : downloadFailed
+                        ? t.retry
+                        : t.downloadExtension}
                 </button>
+              )}
+              {index === 0 && downloadFailed && (
+                <p role="alert" className="mt-2 text-xs text-danger">
+                  {t.extensionDownloadError}
+                </p>
               )}
             </div>
           </li>

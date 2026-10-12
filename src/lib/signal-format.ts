@@ -47,11 +47,11 @@ export function engagementLine(
   t: Translations,
 ): string | null {
   if (signal.engagement === null || signal.engagementUnit === null) return null
-  const count = `${signal.engagement.toLocaleString()} ${engagementUnitLabel(signal.engagementUnit, t)}`
+  const count = `${signal.engagement.toLocaleString('en-US')} ${engagementUnitLabel(signal.engagementUnit, t)}`
   if (signal.velocity === null || signal.velocity < 1) return count
   // Measured growth (since the previous day's observation) and the estimate
   // from age are different claims, so they read differently.
-  const n = Math.round(signal.velocity).toLocaleString()
+  const n = Math.round(signal.velocity).toLocaleString('en-US')
   const rate = (
     signal.velocityObserved ? t.velocityMeasured : t.velocityEstimated
   ).replace('{n}', n)

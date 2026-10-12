@@ -145,6 +145,7 @@ async function open(file: string): Promise<Db> {
           run(...p: Param[]): unknown
           all(...p: Param[]): unknown[]
           get(...p: Param[]): unknown
+          finalize(): void
         }
         close(): void
       }
@@ -172,6 +173,7 @@ function wrap(db: {
     run(...p: Param[]): unknown
     all(...p: Param[]): unknown[]
     get(...p: Param[]): unknown
+    finalize?(): void
   }
   close(): void
 }): Db {
@@ -200,7 +202,13 @@ function wrap(db: {
         throw error
       }
     },
-    close: () => db.close(),
+    close() {
+      // Bun's cached statements retain the connection after close_v2 until
+      // finalized. Release them first so file databases really close on Windows.
+      for (const statement of cache.values()) statement.finalize?.()
+      cache.clear()
+      db.close()
+    },
   }
 }
 

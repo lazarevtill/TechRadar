@@ -12,6 +12,7 @@ import { useTechFeed } from '@/hooks/use-tech-feed'
 import { SOURCE_CONFIG, type DataSource } from '@/lib/tech-categories'
 import { useQuery } from '@tanstack/react-query'
 import type { Health } from '@/server/functions/health'
+import { formatCalendarDate } from './display-time'
 
 interface SourceMetrics {
   source: DataSource
@@ -99,7 +100,7 @@ export function ParserControlPanel() {
       if (diffMins < 1) return t.justNow
       if (diffMins < 60) return `${diffMins} ${t.minutesAgo}`
       if (diffHours < 24) return `${diffHours} ${t.hoursAgo}`
-      return date.toLocaleDateString()
+      return formatCalendarDate(date)
     },
     [t],
   )

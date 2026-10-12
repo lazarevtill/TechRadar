@@ -30,6 +30,37 @@ export function Modal({
     panelRef.current?.focus()
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
+      if (e.key !== 'Tab' || !panelRef.current) return
+      const panel = panelRef.current
+      const controls = Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'a[href], button, input, select, textarea, [tabindex]',
+        ),
+      ).filter(
+        (el) =>
+          el.tabIndex >= 0 &&
+          !el.matches(':disabled') &&
+          el.getClientRects().length > 0,
+      )
+      const first = controls[0]
+      const last = controls.at(-1)
+      const active = document.activeElement
+      if (!first || !last) {
+        e.preventDefault()
+        panel.focus()
+      } else if (
+        e.shiftKey &&
+        (active === first || active === panel || !panel.contains(active))
+      ) {
+        e.preventDefault()
+        last.focus()
+      } else if (
+        !e.shiftKey &&
+        (active === last || active === panel || !panel.contains(active))
+      ) {
+        e.preventDefault()
+        first.focus()
+      }
     }
     document.addEventListener('keydown', onKey)
     const { overflow } = document.body.style

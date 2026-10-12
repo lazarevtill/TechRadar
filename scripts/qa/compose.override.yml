@@ -1,0 +1,35 @@
+services:
+  techradar:
+    image: techradar-codex-qa:20260930
+    build:
+      args:
+        EXTENSION_BACKEND_URL: http://localhost:${QA_PORT:-43177}
+    ports: !override
+      - '127.0.0.1:${QA_PORT:-43177}:3000'
+    environment:
+      PORT: 3000
+      QA_APP_ROOT: /app
+      QA_STATE_ROOT: /app/.cache
+      FEED_SCHEDULE_MINUTES: 0.5
+      TYPESAFE_API_KEY: ''
+      GITHUB_TOKEN: ''
+      MYMEMORY_EMAIL: ''
+      OPENALEX_MAILTO: ''
+      REPORT_WEBHOOK_URL: ''
+      WATCH_WEBHOOK_URL: ''
+      ALERT_WEBHOOK_URL: ''
+      REPORT_WATCH: ''
+      ADMIN_TOKEN: ''
+      PUBLIC_BASE_URL: ''
+    command: ['bun', 'run', '/qa/server.ts']
+    volumes:
+      - ./scripts/qa/server.ts:/qa/server.ts:ro
+    mem_limit: 512m
+    cpus: 1.0
+    restart: 'no'
+    networks:
+      - qa-http
+networks:
+  default:
+    internal: true
+  qa-http: {}

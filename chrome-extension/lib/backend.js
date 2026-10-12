@@ -3,6 +3,42 @@ import { LOCAL_HOST } from './settings.js'
 
 export const FEED_PATH = '/api/extension-feed'
 export const SUPPORTED_VERSION = 1
+export const REQUEST_TIMEOUT_MS = 15_000
+// A cold feed waits for parallel 30-second source budgets, then history and
+// translation. Allow that rebuild to finish while keeping a finite deadline.
+export const FEED_TIMEOUT_MS = 90_000
+
+/** Bound both the connection and response body read. */
+async function requestJson(
+  fetchImpl,
+  url,
+  options = {},
+  timeoutMs = REQUEST_TIMEOUT_MS,
+) {
+  const controller = new AbortController()
+  let timer
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => {
+      controller.abort()
+      reject(new Error('request timed out'))
+    }, timeoutMs)
+  })
+  try {
+    return await Promise.race([
+      (async () => {
+        const res = await fetchImpl(url, {
+          ...options,
+          signal: controller.signal,
+        })
+        const body = await res.json().catch(() => null)
+        return { res, body }
+      })(),
+      timeout,
+    ])
+  } finally {
+    clearTimeout(timer)
+  }
+}
 
 /**
  * Fetch the extension payload from the TechRadar server.
@@ -15,14 +51,18 @@ export async function fetchBackendFeed(
   baseUrl = BACKEND_URL,
 ) {
   const url = `${baseUrl.replace(/\/$/, '')}${FEED_PATH}`
-  let res
+  let res, payload
   try {
-    res = await fetchImpl(url, { cache: 'no-cache' })
+    ;({ res, body: payload } = await requestJson(
+      fetchImpl,
+      url,
+      { cache: 'no-cache' },
+      FEED_TIMEOUT_MS,
+    ))
   } catch (error) {
     throw new Error(`cannot reach ${baseUrl} (${error.message})`)
   }
   if (!res.ok) throw new Error(`${url} answered HTTP ${res.status}`)
-  const payload = await res.json()
   if (
     payload?.version !== SUPPORTED_VERSION ||
     !Array.isArray(payload.feed?.items)
@@ -61,9 +101,9 @@ export async function fetchReport(fetchImpl, baseUrl, watchTerms = []) {
       ? `?watch=${encodeURIComponent(watchTerms.join(','))}`
       : ''
   const url = `${baseUrl.replace(/\/$/, '')}${REPORT_PATH}${query}`
-  let res
+  let res, report
   try {
-    res = await fetchImpl(url)
+    ;({ res, body: report } = await requestJson(fetchImpl, url))
   } catch (error) {
     // Unreachable server, not a server without a report.
     const unreachable = new Error(`cannot reach ${baseUrl} (${error.message})`)
@@ -71,7 +111,6 @@ export async function fetchReport(fetchImpl, baseUrl, watchTerms = []) {
     throw unreachable
   }
   if (!res.ok) throw new Error(`${url} answered HTTP ${res.status}`)
-  const report = await res.json()
   if (!Array.isArray(report?.topics) || !Array.isArray(report?.watch))
     throw new Error(`${url} returned an unexpected report`)
   return withheld ? { ...report, watchWithheld: true } : report
@@ -82,8 +121,7 @@ export const HEALTH_PATH = '/api/health'
 /** The server's public health: ok, problems, per-source status. */
 export async function fetchHealth(fetchImpl, baseUrl) {
   const url = `${baseUrl.replace(/\/$/, '')}${HEALTH_PATH}`
-  const res = await fetchImpl(url, { cache: 'no-store' })
-  const body = await res.json().catch(() => null)
+  const { res, body } = await requestJson(fetchImpl, url, { cache: 'no-store' })
   if (!body || typeof body.ok !== 'boolean')
     throw new Error(`${url} answered HTTP ${res.status}`)
   // Only well-formed parts are kept: the server is a user setting.

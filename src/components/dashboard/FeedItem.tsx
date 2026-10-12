@@ -17,6 +17,7 @@ import { getTranslatedContent } from '@/hooks/use-tech-feed'
 import { translateItemFn } from '@/server/functions/translation'
 import { engagementLine, formatScore, reasonLabel } from '@/lib/signal-format'
 import { CategoryDot } from './icons'
+import { selectFeedContent } from './presentation-state'
 
 interface FeedItemProps {
   item: TechItem
@@ -44,7 +45,7 @@ export function FeedItem({ item }: FeedItemProps) {
   const translatedContent = getTranslatedContent(item, targetLang)
   const isTranslated =
     item.originalLanguage !== targetLang && !!item.translations?.[targetLang]
-  const hasManualRu = manualTranslation !== null
+  const hasManualRu = language === 'ru' && manualTranslation !== null
   // Offered when the UI is Russian and no Russian text exists yet.
   const canTranslateToRussian =
     language === 'ru' &&
@@ -78,11 +79,13 @@ export function FeedItem({ item }: FeedItemProps) {
     }
   }
 
-  const display = showOriginal
-    ? { title: item.title, summary: item.summary }
-    : hasManualRu
-      ? manualTranslation
-      : translatedContent
+  const display = selectFeedContent({
+    original: item,
+    translated: translatedContent,
+    manualRu: manualTranslation,
+    language,
+    showOriginal,
+  })
   const showingTranslation = !showOriginal && (isTranslated || hasManualRu)
 
   const daysAgo = Math.floor(

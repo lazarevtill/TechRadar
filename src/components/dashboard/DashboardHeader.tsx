@@ -4,6 +4,7 @@ import { useTechFeed } from '@/hooks/use-tech-feed'
 import { useLanguage } from '@/lib/i18n'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { InfoModal } from './InfoModal'
+import { formatUpdatedTime } from './display-time'
 
 export function DashboardHeader() {
   const { fetchedAt, isFetching } = useTechFeed()
@@ -27,7 +28,7 @@ export function DashboardHeader() {
           {isFetching
             ? `${t.updating}…`
             : fetchedAt
-              ? `${t.updated} ${fetchedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+              ? `${t.updated} ${formatUpdatedTime(fetchedAt)}`
               : ''}
         </span>
         <button onClick={() => setIsInfoOpen(true)} className="btn">
