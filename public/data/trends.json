@@ -1,232 +1,47 @@
 {
-  "generatedAt": "2026-10-07T13:38:33.981Z",
+  "generatedAt": "2026-10-13T14:10:37.570Z",
   "window": "rolling-120d",
   "topics": [
     {
-      "id": "llm-agents",
-      "label": "LLM Agents",
-      "category": "ai",
-      "stage": "prototype",
-      "trajectory": "rising",
-      "momentum": 0.17,
-      "weeklyCounts": [
-        411,
-        420,
-        426,
-        449,
-        458,
-        466,
-        456,
-        437,
-        437,
-        452,
-        469,
-        463,
-        88,
-        103
-      ],
-      "signals": [
-        {
-          "title": "OpenAI “rogue” agent activities found on Wikimedia projects",
-          "url": "https://simonwillison.net/2026/Oct/7/openai-rogue-agents-wikimedia/",
-          "source": "simonw",
-          "publishedAt": "2026-10-07T00:16:45.000Z"
-        },
-        {
-          "title": "Advancing computer use with Ironclad",
-          "url": "https://openai.com/index/advancing-computer-use-with-ironclad",
-          "source": "openai",
-          "publishedAt": "2026-10-06T10:00:00.000Z"
-        },
-        {
-          "title": "Quoting Felix Rieseberg",
-          "url": "https://simonwillison.net/2026/Oct/5/felix-rieseberg/",
-          "source": "simonw",
-          "publishedAt": "2026-10-05T23:56:47.000Z"
-        },
-        {
-          "title": "The Agent Said It Was Done. The Database Disagreed.",
-          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
-          "source": "hf",
-          "publishedAt": "2026-10-03T22:56:48.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
-          "source": "latent-space",
-          "publishedAt": "2026-10-03T08:45:15.000Z"
-        }
-      ]
-    },
-    {
-      "id": "ai-coding",
-      "label": "AI for Coding",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 0.14,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        49,
-        56
-      ],
-      "signals": [
-        {
-          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
-          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
-          "source": "latent-space",
-          "publishedAt": "2026-10-06T06:28:43.000Z"
-        },
-        {
-          "title": "The Agent Said It Was Done. The Database Disagreed.",
-          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
-          "source": "hf",
-          "publishedAt": "2026-10-03T22:56:48.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-cee",
-          "source": "latent-space",
-          "publishedAt": "2026-10-03T08:45:15.000Z"
-        },
-        {
-          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
-          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
-          "source": "latent-space",
-          "publishedAt": "2026-10-02T06:40:53.000Z"
-        },
-        {
-          "title": "pwasm 0.2a0",
-          "url": "https://simonwillison.net/2026/Oct/1/pwasm/",
-          "source": "simonw",
-          "publishedAt": "2026-10-01T17:10:31.000Z"
-        }
-      ]
-    },
-    {
-      "id": "open-models",
-      "label": "Open Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        375,
-        358,
-        348,
-        414,
-        398,
-        396,
-        394,
-        398,
-        388,
-        365,
-        364,
-        370,
-        15,
-        15
-      ],
-      "signals": [
-        {
-          "title": "One Model Family, Two Gold-Level Results: Fine-Tuning Nemotron for IOI and IMO",
-          "url": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026",
-          "source": "hf",
-          "publishedAt": "2026-10-07T12:45:31.000Z"
-        },
-        {
-          "title": "llm-mistral 0.16",
-          "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T21:32:34.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2",
-          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T20:37:53.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
-        },
-        {
-          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
-          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
-          "source": "latent-space",
-          "publishedAt": "2026-10-06T06:28:43.000Z"
-        }
-      ]
-    },
-    {
-      "id": "fusion",
-      "label": "Fusion Energy",
-      "category": "energy",
+      "id": "quantum-hardware",
+      "label": "Quantum Hardware",
+      "category": "quantum",
       "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
+      "trajectory": "rising",
+      "momentum": 1,
       "weeklyCounts": [
-        14,
-        11,
-        14,
-        14,
-        4,
-        7,
-        7,
-        9,
-        14,
-        14,
-        17,
-        28,
         0,
-        0
-      ],
-      "signals": []
-    },
-    {
-      "id": "protein-design",
-      "label": "Protein Design",
-      "category": "biotech",
-      "stage": "research",
-      "trajectory": "stable",
-      "momentum": 0,
-      "weeklyCounts": [
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
-        21,
         0,
-        0
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5
       ],
-      "signals": []
+      "signals": [
+        {
+          "title": "Synthesis Superintelligence: from Semiconductors to Superconductors — Periodic Labs’ Liam Fedus and Ekin Dogus Cubuk",
+          "url": "https://www.latent.space/p/periodic",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T16:27:54.000Z"
+        }
+      ]
     },
     {
       "id": "humanoids",
       "label": "Humanoid Robots",
       "category": "robotics",
       "stage": "prototype",
-      "trajectory": "stable",
-      "momentum": 0,
+      "trajectory": "rising",
+      "momentum": 0.43,
       "weeklyCounts": [
         1,
         7,
@@ -240,10 +55,24 @@
         0,
         2,
         7,
-        0,
-        0
+        12,
+        7,
+        10
       ],
-      "signals": []
+      "signals": [
+        {
+          "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
+          "url": "https://www.latent.space/p/standard-bots",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T14:04:11.000Z"
+        },
+        {
+          "title": "Synthesis Superintelligence: from Semiconductors to Superconductors — Periodic Labs’ Liam Fedus and Ekin Dogus Cubuk",
+          "url": "https://www.latent.space/p/periodic",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T16:27:54.000Z"
+        }
+      ]
     },
     {
       "id": "post-quantum",
@@ -266,83 +95,236 @@
         0,
         0,
         0,
+        0,
         0
       ],
       "signals": []
     },
     {
-      "id": "ai-safety",
-      "label": "AI Safety & Interpretability",
+      "id": "rag",
+      "label": "Retrieval-Augmented Generation",
       "category": "ai",
-      "stage": "research",
+      "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.26,
+      "momentum": -0.07,
       "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        34,
-        25
+        81,
+        60,
+        57,
+        76,
+        72,
+        77,
+        95,
+        107,
+        100,
+        85,
+        92,
+        103,
+        93,
+        87,
+        81
       ],
       "signals": [
         {
-          "title": "Quoting Victoria Kim",
-          "url": "https://simonwillison.net/2026/Oct/6/victoria-kim/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T23:58:56.000Z"
+          "title": "[AINews] Quasi-Riemann-Hypothesis: OpenAI publishes 722 math papers solving 90 of the top 500 open math problems; “the most significant moment” in >100 years of mathematics",
+          "url": "https://www.latent.space/p/ainews-quasi-riemann-hypothesis-openai",
+          "source": "latent-space",
+          "publishedAt": "2026-10-07T04:55:44.000Z"
         },
         {
-          "title": "Quoting Matthew Green",
-          "url": "https://simonwillison.net/2026/Oct/1/matthew-green/",
+          "title": "EmbeddingGemma 2",
+          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
           "source": "simonw",
-          "publishedAt": "2026-10-01T06:29:01.000Z"
+          "publishedAt": "2026-10-06T20:37:53.000Z"
+        },
+        {
+          "title": "Inside-Out AI: Rebuilding Airbnb Behind the Scenes and Across the Guest Experience",
+          "url": "https://www.latent.space/p/airbnb",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T14:04:49.000Z"
+        },
+        {
+          "title": "[AINews] Gemini 4 Argon: GDM’s answer to Astra/Fable, with 1M output",
+          "url": "https://www.latent.space/p/ainews-gemini-4-argon-gdms-answer",
+          "source": "latent-space",
+          "publishedAt": "2026-10-01T06:45:05.000Z"
+        },
+        {
+          "title": "Introducing OlmoEarth embeddings: Custom embedding exports from OlmoEarth Studio for downstream analysis",
+          "url": "https://huggingface.co/blog/allenai/olmoearth-embeddings",
+          "source": "hf",
+          "publishedAt": "2026-08-12T16:14:36.000Z"
         }
       ]
     },
     {
-      "id": "generative-media",
-      "label": "Generative Media",
-      "category": "ai",
-      "stage": "early-adopter",
+      "id": "protein-design",
+      "label": "Protein Design",
+      "category": "biotech",
+      "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.57,
+      "momentum": -0.12,
       "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        28,
-        12
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        35,
+        42,
+        37
       ],
       "signals": [
         {
-          "title": "Mistral Large 4",
-          "url": "https://simonwillison.net/2026/Oct/6/hn-49982139/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T18:20:58.000Z"
+          "title": "Why AlphaFold Didn't Solve Protein Folding — Pushmeet Kohli, Google DeepMind & Sal Candido, Biohub",
+          "url": "https://www.latent.space/p/biohub-deepmind",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T00:31:26.000Z"
         },
         {
-          "title": "Scrimshaw Jukebox",
-          "url": "https://simonwillison.net/2026/Oct/6/scrimshaw-jukebox/",
+          "title": "Synthesis Superintelligence: from Semiconductors to Superconductors — Periodic Labs’ Liam Fedus and Ekin Dogus Cubuk",
+          "url": "https://www.latent.space/p/periodic",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T16:27:54.000Z"
+        },
+        {
+          "title": "[AINews] Pi 1.0, Pi Durable, and AIE NYC",
+          "url": "https://www.latent.space/p/ainews-pi-10-pi-durable-and-aie-nyc",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T06:40:53.000Z"
+        },
+        {
+          "title": "AlphaFold: Five years of impact",
+          "url": "https://deepmind.google/blog/alphafold-five-years-of-impact/",
+          "source": "deepmind",
+          "publishedAt": "2025-11-25T16:00:12.000Z"
+        },
+        {
+          "title": "Revealing a key protein behind heart disease",
+          "url": "https://deepmind.google/blog/revealing-a-key-protein-behind-heart-disease/",
+          "source": "deepmind",
+          "publishedAt": "2025-11-25T15:52:51.000Z"
+        }
+      ]
+    },
+    {
+      "id": "open-models",
+      "label": "Open Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "cooling",
+      "momentum": -0.13,
+      "weeklyCounts": [
+        375,
+        358,
+        348,
+        414,
+        398,
+        396,
+        394,
+        398,
+        388,
+        365,
+        364,
+        370,
+        384,
+        401,
+        347
+      ],
+      "signals": [
+        {
+          "title": "[AINews] Meta Muse Wonder & Wonder Full: MSL’s Claude 5.5-tier Frontier Model",
+          "url": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
+          "source": "latent-space",
+          "publishedAt": "2026-10-13T09:37:04.000Z"
+        },
+        {
+          "title": "[AINews] TypeSafe/Jev at >$100M ARR, $7.5B valuation 3 weeks after launch",
+          "url": "https://www.latent.space/p/ainews-typesafejev-at-100m-arr-75b",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T06:45:57.000Z"
+        },
+        {
+          "title": "[AINews] not much happened today",
+          "url": "https://www.latent.space/p/ainews-not-much-happened-today-60f",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T23:29:43.000Z"
+        },
+        {
+          "title": "[AINews] Quasi-Riemann-Hypothesis: OpenAI publishes 722 math papers solving 90 of the top 500 open math problems; “the most significant moment” in >100 years of mathematics",
+          "url": "https://www.latent.space/p/ainews-quasi-riemann-hypothesis-openai",
+          "source": "latent-space",
+          "publishedAt": "2026-10-07T04:55:44.000Z"
+        },
+        {
+          "title": "llm-mistral 0.16",
+          "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
           "source": "simonw",
-          "publishedAt": "2026-10-06T15:17:39.000Z"
+          "publishedAt": "2026-10-06T21:32:34.000Z"
+        }
+      ]
+    },
+    {
+      "id": "llm-agents",
+      "label": "LLM Agents",
+      "category": "ai",
+      "stage": "research",
+      "trajectory": "cooling",
+      "momentum": -0.17,
+      "weeklyCounts": [
+        411,
+        420,
+        426,
+        449,
+        458,
+        466,
+        456,
+        437,
+        437,
+        452,
+        469,
+        463,
+        440,
+        436,
+        364
+      ],
+      "signals": [
+        {
+          "title": "Quoting Geoffrey Huntley",
+          "url": "https://simonwillison.net/2026/Oct/13/geoffrey-huntley/",
+          "source": "simonw",
+          "publishedAt": "2026-10-13T13:32:00.000Z"
+        },
+        {
+          "title": "[AINews] Meta Muse Wonder & Wonder Full: MSL’s Claude 5.5-tier Frontier Model",
+          "url": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
+          "source": "latent-space",
+          "publishedAt": "2026-10-13T09:37:04.000Z"
+        },
+        {
+          "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
+          "url": "https://www.latent.space/p/standard-bots",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T14:04:11.000Z"
+        },
+        {
+          "title": "[AINews] not much happened today",
+          "url": "https://www.latent.space/p/ainews-not-much-happened-today-60f",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T23:29:43.000Z"
+        },
+        {
+          "title": "Synthesis Superintelligence: from Semiconductors to Superconductors — Periodic Labs’ Liam Fedus and Ekin Dogus Cubuk",
+          "url": "https://www.latent.space/p/periodic",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T16:27:54.000Z"
         }
       ]
     },
@@ -352,61 +334,42 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.76,
+      "momentum": -0.17,
       "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        37,
-        9
-      ],
-      "signals": [
-        {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
-        }
-      ]
-    },
-    {
-      "id": "small-models",
-      "label": "Small & Efficient Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "cooling",
-      "momentum": -0.89,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        14,
+        11,
+        14,
+        14,
+        4,
+        7,
+        7,
         9,
-        1
+        14,
+        14,
+        17,
+        28,
+        33,
+        23,
+        19
       ],
       "signals": [
         {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
+          "title": "[AINews] TypeSafe/Jev at >$100M ARR, $7.5B valuation 3 weeks after launch",
+          "url": "https://www.latent.space/p/ainews-typesafejev-at-100m-arr-75b",
+          "source": "latent-space",
+          "publishedAt": "2026-10-10T06:45:57.000Z"
+        },
+        {
+          "title": "[AINews] Claude Haiku 5.5 — better than GPT-6 Luna at the same pricing",
+          "url": "https://www.latent.space/p/ainews-claude-haiku-55-better-than",
+          "source": "latent-space",
+          "publishedAt": "2026-10-08T07:27:51.000Z"
+        },
+        {
+          "title": "Academia is for Ambition — Alex Zhang, MIT",
+          "url": "https://www.latent.space/p/rlm",
+          "source": "latent-space",
+          "publishedAt": "2026-10-02T00:28:04.000Z"
         }
       ]
     },

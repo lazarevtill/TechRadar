@@ -1055,5 +1055,76 @@
       "generative-media": 2,
       "ai-coding": 6
     }
+  },
+  {
+    "date": "2026-10-08",
+    "topics": {
+      "llm-agents": 61,
+      "fusion": 3,
+      "rag": 14,
+      "open-models": 59,
+      "protein-design": 6,
+      "humanoids": 1
+    }
+  },
+  {
+    "date": "2026-10-09",
+    "topics": {
+      "llm-agents": 62,
+      "open-models": 59,
+      "quantum-hardware": 1,
+      "humanoids": 2,
+      "protein-design": 7,
+      "fusion": 3,
+      "rag": 14
+    }
+  },
+  {
+    "date": "2026-10-10",
+    "topics": {
+      "open-models": 59,
+      "fusion": 4,
+      "protein-design": 7,
+      "llm-agents": 61,
+      "quantum-hardware": 1,
+      "humanoids": 1,
+      "rag": 14
+    }
+  },
+  {
+    "date": "2026-10-11",
+    "topics": {
+      "llm-agents": 60,
+      "humanoids": 2,
+      "open-models": 57,
+      "fusion": 3,
+      "protein-design": 6,
+      "quantum-hardware": 1,
+      "rag": 13
+    }
+  },
+  {
+    "date": "2026-10-12",
+    "topics": {
+      "llm-agents": 60,
+      "humanoids": 2,
+      "open-models": 57,
+      "fusion": 3,
+      "protein-design": 6,
+      "quantum-hardware": 1,
+      "rag": 13
+    }
+  },
+  {
+    "date": "2026-10-13",
+    "topics": {
+      "llm-agents": 60,
+      "open-models": 56,
+      "humanoids": 2,
+      "fusion": 3,
+      "protein-design": 5,
+      "quantum-hardware": 1,
+      "rag": 13
+    }
   }
 ]
