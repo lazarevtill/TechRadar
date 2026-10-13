@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-12T15:22:47.094Z",
+  "generatedAt": "2026-10-13T14:10:37.570Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -24,7 +24,7 @@
         0,
         0,
         0,
-        4
+        5
       ],
       "signals": [
         {
@@ -41,7 +41,7 @@
       "category": "robotics",
       "stage": "prototype",
       "trajectory": "rising",
-      "momentum": 0.14,
+      "momentum": 0.43,
       "weeklyCounts": [
         1,
         7,
@@ -57,7 +57,7 @@
         7,
         12,
         7,
-        8
+        10
       ],
       "signals": [
         {
@@ -106,7 +106,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.22,
+      "momentum": -0.07,
       "weeklyCounts": [
         81,
         60,
@@ -122,7 +122,7 @@
         103,
         93,
         87,
-        68
+        81
       ],
       "signals": [
         {
@@ -163,7 +163,7 @@
       "category": "biotech",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.24,
+      "momentum": -0.12,
       "weeklyCounts": [
         21,
         21,
@@ -179,7 +179,7 @@
         21,
         35,
         42,
-        32
+        37
       ],
       "signals": [
         {
@@ -195,12 +195,6 @@
           "publishedAt": "2026-10-08T16:27:54.000Z"
         },
         {
-          "title": "[AINews] Opus 5.5 is good at explainer videos",
-          "url": "https://www.latent.space/p/ainews-opus-55-is-good-at-explainer",
-          "source": "latent-space",
-          "publishedAt": "2026-09-29T02:44:29.000Z"
-        },
-        {
           "title": "Engineering more resilient crops for a warming climate",
           "url": "https://deepmind.google/blog/engineering-more-resilient-crops-for-a-warming-climate/",
           "source": "deepmind",
@@ -211,6 +205,12 @@
           "url": "https://deepmind.google/blog/alphafold-five-years-of-impact/",
           "source": "deepmind",
           "publishedAt": "2025-11-25T16:00:12.000Z"
+        },
+        {
+          "title": "Revealing a key protein behind heart disease",
+          "url": "https://deepmind.google/blog/revealing-a-key-protein-behind-heart-disease/",
+          "source": "deepmind",
+          "publishedAt": "2025-11-25T15:52:51.000Z"
         }
       ]
     },
@@ -220,7 +220,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.27,
+      "momentum": -0.13,
       "weeklyCounts": [
         375,
         358,
@@ -236,9 +236,15 @@
         370,
         384,
         401,
-        291
+        347
       ],
       "signals": [
+        {
+          "title": "[AINews] Meta Muse Wonder & Wonder Full: MSL’s Claude 5.5-tier Frontier Model",
+          "url": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
+          "source": "latent-space",
+          "publishedAt": "2026-10-13T09:37:04.000Z"
+        },
         {
           "title": "[AINews] TypeSafe/Jev at >$100M ARR, $7.5B valuation 3 weeks after launch",
           "url": "https://www.latent.space/p/ainews-typesafejev-at-100m-arr-75b",
@@ -262,12 +268,6 @@
           "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
           "source": "simonw",
           "publishedAt": "2026-10-06T21:32:34.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2",
-          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T20:37:53.000Z"
         }
       ]
     },
@@ -277,7 +277,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.3,
+      "momentum": -0.17,
       "weeklyCounts": [
         411,
         420,
@@ -293,9 +293,21 @@
         463,
         440,
         436,
-        304
+        364
       ],
       "signals": [
+        {
+          "title": "Quoting Geoffrey Huntley",
+          "url": "https://simonwillison.net/2026/Oct/13/geoffrey-huntley/",
+          "source": "simonw",
+          "publishedAt": "2026-10-13T13:32:00.000Z"
+        },
+        {
+          "title": "[AINews] Meta Muse Wonder & Wonder Full: MSL’s Claude 5.5-tier Frontier Model",
+          "url": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
+          "source": "latent-space",
+          "publishedAt": "2026-10-13T09:37:04.000Z"
+        },
         {
           "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
           "url": "https://www.latent.space/p/standard-bots",
@@ -313,18 +325,6 @@
           "url": "https://www.latent.space/p/periodic",
           "source": "latent-space",
           "publishedAt": "2026-10-08T16:27:54.000Z"
-        },
-        {
-          "title": "[AINews] Claude Haiku 5.5 — better than GPT-6 Luna at the same pricing",
-          "url": "https://www.latent.space/p/ainews-claude-haiku-55-better-than",
-          "source": "latent-space",
-          "publishedAt": "2026-10-08T07:27:51.000Z"
-        },
-        {
-          "title": "Can a Cloud-Native Harness Make Agents Reliable Beyond the Desktop?",
-          "url": "https://www.latent.space/p/stacklok",
-          "source": "latent-space",
-          "publishedAt": "2026-10-07T14:10:45.000Z"
         }
       ]
     },
@@ -334,7 +334,7 @@
       "category": "energy",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.3,
+      "momentum": -0.17,
       "weeklyCounts": [
         14,
         11,
@@ -350,7 +350,7 @@
         28,
         33,
         23,
-        16
+        19
       ],
       "signals": [
         {
