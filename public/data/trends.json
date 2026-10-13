@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-12T15:21:26.404Z",
+  "generatedAt": "2026-10-13T14:13:15.282Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 9,
+      "momentum": 11,
       "weeklyCounts": [
         0,
         0,
@@ -24,7 +24,7 @@
         0,
         9,
         1,
-        10
+        12
       ],
       "signals": [
         {
@@ -47,7 +47,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 1.4,
+      "momentum": 1.73,
       "weeklyCounts": [
         375,
         358,
@@ -63,7 +63,7 @@
         370,
         15,
         15,
-        36
+        41
       ],
       "signals": [
         {
@@ -120,7 +120,7 @@
         21,
         0,
         0,
-        3
+        4
       ],
       "signals": [
         {
@@ -153,7 +153,7 @@
         0,
         0,
         0,
-        3
+        4
       ],
       "signals": [
         {
@@ -186,7 +186,7 @@
         0,
         0,
         0,
-        2
+        3
       ],
       "signals": [
         {
@@ -203,7 +203,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 0.56,
+      "momentum": 0.89,
       "weeklyCounts": [
         0,
         0,
@@ -219,7 +219,7 @@
         0,
         37,
         9,
-        14
+        17
       ],
       "signals": [
         {
@@ -248,7 +248,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 0.17,
+      "momentum": 0.42,
       "weeklyCounts": [
         0,
         0,
@@ -264,7 +264,7 @@
         0,
         28,
         12,
-        14
+        17
       ],
       "signals": [
         {
@@ -423,7 +423,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.5,
+      "momentum": -0.37,
       "weeklyCounts": [
         0,
         0,
@@ -439,9 +439,27 @@
         0,
         49,
         56,
-        28
+        35
       ],
       "signals": [
+        {
+          "title": "Quoting Geoffrey Huntley",
+          "url": "https://simonwillison.net/2026/Oct/13/geoffrey-huntley/",
+          "source": "simonw",
+          "publishedAt": "2026-10-13T13:32:00.000Z"
+        },
+        {
+          "title": "[AINews] Meta Muse Wonder & Wonder Full: MSL’s Claude 5.5-tier Frontier Model",
+          "url": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
+          "source": "latent-space",
+          "publishedAt": "2026-10-13T09:37:04.000Z"
+        },
+        {
+          "title": "web-edit 0.1a0",
+          "url": "https://simonwillison.net/2026/Oct/12/web-edit/",
+          "source": "simonw",
+          "publishedAt": "2026-10-12T15:54:36.000Z"
+        },
         {
           "title": "A new feature for my blog, built using my voice",
           "url": "https://simonwillison.net/2026/Oct/9/built-using-my-voice/",
@@ -453,24 +471,6 @@
           "url": "https://openai.com/index/asana-browser-agent",
           "source": "openai",
           "publishedAt": "2026-10-09T07:00:00.000Z"
-        },
-        {
-          "title": "LegalOn halves Codex costs while maintaining development speed",
-          "url": "https://openai.com/index/legalon-halves-codex-costs",
-          "source": "openai",
-          "publishedAt": "2026-10-08T12:00:00.000Z"
-        },
-        {
-          "title": "Can a Cloud-Native Harness Make Agents Reliable Beyond the Desktop?",
-          "url": "https://www.latent.space/p/stacklok",
-          "source": "latent-space",
-          "publishedAt": "2026-10-07T14:10:45.000Z"
-        },
-        {
-          "title": "[AINews] Reflection Beam - 501B-A23B American Open Model",
-          "url": "https://www.latent.space/p/ainews-reflection-beam-501b-a23b",
-          "source": "latent-space",
-          "publishedAt": "2026-10-06T06:28:43.000Z"
         }
       ]
     },
@@ -480,7 +480,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.52,
+      "momentum": -0.43,
       "weeklyCounts": [
         411,
         420,
@@ -496,9 +496,27 @@
         463,
         88,
         103,
-        49
+        59
       ],
       "signals": [
+        {
+          "title": "Quoting Geoffrey Huntley",
+          "url": "https://simonwillison.net/2026/Oct/13/geoffrey-huntley/",
+          "source": "simonw",
+          "publishedAt": "2026-10-13T13:32:00.000Z"
+        },
+        {
+          "title": "[AINews] Meta Muse Wonder & Wonder Full: MSL’s Claude 5.5-tier Frontier Model",
+          "url": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
+          "source": "latent-space",
+          "publishedAt": "2026-10-13T09:37:04.000Z"
+        },
+        {
+          "title": "How Anthropic’s Dynamic Workflows Coordinate Claude Agents",
+          "url": "https://www.latent.space/p/claude-dynamic-workflows",
+          "source": "latent-space",
+          "publishedAt": "2026-10-12T18:18:17.000Z"
+        },
         {
           "title": "Quoting The New York Times",
           "url": "https://simonwillison.net/2026/Oct/10/the-new-york-times/",
@@ -510,24 +528,6 @@
           "url": "https://simonwillison.net/2026/Oct/9/built-using-my-voice/",
           "source": "simonw",
           "publishedAt": "2026-10-09T12:54:06.000Z"
-        },
-        {
-          "title": "Asana cuts model costs 76x in browser tests with GPT-6.1 Sol",
-          "url": "https://openai.com/index/asana-browser-agent",
-          "source": "openai",
-          "publishedAt": "2026-10-09T07:00:00.000Z"
-        },
-        {
-          "title": "[AINews] not much happened today",
-          "url": "https://www.latent.space/p/ainews-not-much-happened-today-60f",
-          "source": "latent-space",
-          "publishedAt": "2026-10-08T23:29:43.000Z"
-        },
-        {
-          "title": "[AINews] Claude Haiku 5.5 — better than GPT-6 Luna at the same pricing",
-          "url": "https://www.latent.space/p/ainews-claude-haiku-55-better-than",
-          "source": "latent-space",
-          "publishedAt": "2026-10-08T07:27:51.000Z"
         }
       ]
     },
@@ -537,7 +537,7 @@
       "category": "ai",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.64,
+      "momentum": -0.56,
       "weeklyCounts": [
         0,
         0,
@@ -553,7 +553,7 @@
         0,
         34,
         25,
-        9
+        11
       ],
       "signals": [
         {

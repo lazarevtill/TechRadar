@@ -1123,5 +1123,20 @@
       "open-models": 6,
       "small-models": 2
     }
+  },
+  {
+    "date": "2026-10-13",
+    "topics": {
+      "llm-agents": 10,
+      "ai-coding": 7,
+      "robot-learning": 1,
+      "protein-design": 1,
+      "ai-chips": 1,
+      "ai-safety": 2,
+      "multimodal": 3,
+      "generative-media": 3,
+      "open-models": 5,
+      "small-models": 2
+    }
   }
 ]

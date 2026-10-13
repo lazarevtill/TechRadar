@@ -1,6 +1,144 @@
 {
-  "generatedAt": "2026-10-12T15:21:26.399Z",
+  "generatedAt": "2026-10-13T14:13:15.279Z",
   "items": [
+    {
+      "id": "d-1djaj54",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/13/geoffrey-huntley/",
+      "publishedAt": "2026-10-13T13:32:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: enforcing coding standards for AI agents works better as automated guardrails than as documentation they might ignore.",
+        "tweets": [
+          "AGENTS.md drifts; agents don't always follow written instructions.",
+          "A pre-commit hook that detects bypassed modules and injects a corrective prompt fixed compliance instantly.",
+          "Guardrails beat docs: enforce agent behavior with hooks, not just markdown instructions."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: заставить AI-агента соблюдать стандарты кода проще через автоматические проверки, чем через документацию.",
+        "tweets": [
+          "AGENTS.md со временем устаревает — агенты не всегда следуют написанным инструкциям.",
+          "Pre-commit хук, который ловит обход нужного модуля и подсказывает агенту исправиться, сразу дал идеальный результат.",
+          "Автоматические проверки работают надёжнее, чем просто текстовые инструкции для агента."
+        ]
+      }
+    },
+    {
+      "id": "d-129h6uv",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
+      "publishedAt": "2026-10-13T09:37:04.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Meta's new Muse Wonder models close the gap to frontier AI labs, landing near Claude and GPT-tier performance after just 14 months of MSL's existence.",
+        "tweets": [
+          "Meta ships Muse Wonder and Wonder Full, its second-gen frontier model family, 14 months after MSL's founding.",
+          "Independent evals put Wonder Full at 56 on Artificial Analysis Index vs Opus 5.5's 58 — closing the gap fast, with huge gains in agentic/coding benchmarks.",
+          "Launch wasn't smooth: a quota bug drained Muse Code usage limits on day one, fixed same-day with a reset for all users."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новые модели Meta Muse Wonder почти догнали лидеров рынка — Claude и GPT — всего за 14 месяцев работы лаборатории MSL.",
+        "tweets": [
+          "Meta выпустила Muse Wonder и Wonder Full — второе поколение своих топовых моделей, всего спустя 14 месяцев после основания MSL.",
+          "По независимым тестам Wonder Full набирает 56 баллов против 58 у Opus 5.5 — разрыв стремительно сокращается, особенно в агентных и кодинг-задачах.",
+          "Запуск не обошёлся без проблем: в первый день баг съедал лимиты Muse Code, но его быстро починили и всем сбросили квоты."
+        ]
+      }
+    },
+    {
+      "id": "d-1o8qaes",
+      "source": "latent-space",
+      "sourceUrl": "https://www.latent.space/p/claude-dynamic-workflows",
+      "publishedAt": "2026-10-12T18:18:17.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Anthropic's new 'flows' let Claude design and run its own multi-agent orchestration instead of developers hand-configuring coordinators and subagent rosters.",
+        "tweets": [
+          "Anthropic's dynamic workflows let Claude itself decide how to split work across agents — no manual coordinator setup needed.",
+          "Lead agent writes its own orchestration program, launching subagents and managing info flow across verifiable task phases.",
+          "Open questions remain: token budgets aren't shown to agents live, and self-improving flows rely on manual 'dreaming' and hill-climbing, not automation."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая функция Anthropic 'flows' позволяет Claude самому выстраивать оркестрацию агентов, без ручной настройки координатора и списка субагентов.",
+        "tweets": [
+          "Dynamic workflows от Anthropic дают Claude возможность самому решать, как распределить задачи между агентами.",
+          "Главный агент сам пишет программу оркестрации: запускает субагентов, собирает результаты и управляет потоком информации.",
+          "Есть нерешённые вопросы: агенты не знают бюджет в реальном времени, а самоулучшение workflow пока держится на ручных техниках вроде 'dreaming'."
+        ]
+      }
+    },
+    {
+      "id": "d-1clvs9x",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/12/python-3-15/",
+      "publishedAt": "2026-10-12T18:15:38.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Python 3.15 ships lazy imports and a built-in sampling profiler, while dropping 3.10 lets library authors finally use 3.11 features.",
+        "tweets": [
+          "Python 3.15 adds explicit lazy imports (PEP 810) — big win for CLI tools with heavy optional dependencies like sentence_transformers.",
+          "New profiling.sampling (Tachyon) brings low-overhead sampling profiling into the stdlib, no more relying on py-spy.",
+          "3.15 is barely faster than 3.14 except with the experimental JIT (~1.2x); meanwhile 3.10's end-of-life unlocks 3.11 features like tomllib and asyncio TaskGroup."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: в Python 3.15 появились ленивые импорты и встроенный сэмплирующий профайлер, а конец поддержки 3.10 открывает разработчикам возможности 3.11.",
+        "tweets": [
+          "В Python 3.15 добавили явные ленивые импорты (PEP 810) — спасение для CLI-утилит с тяжёлыми опциональными зависимостями вроде sentence_transformers.",
+          "Новый profiling.sampling (Tachyon) встраивает сэмплирующий профайлер в стандартную библиотеку — py-spy больше не обязателен.",
+          "3.15 почти не быстрее 3.14, кроме JIT (~1.2x); а конец поддержки 3.10 открывает фичи 3.11 — tomllib, asyncio TaskGroup, улучшения SQLite."
+        ]
+      }
+    },
+    {
+      "id": "d-15uu9z1",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/12/web-edit/",
+      "publishedAt": "2026-10-12T15:54:36.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a small tool like this shows a practical pattern for letting humans securely edit sensitive files while AI agents work remotely, without exposing secrets to the LLM.",
+        "tweets": [
+          "Simon Willison built web-edit: a tiny Python web app for viewing/editing files, run over Tailscale so agents never see your credentials.",
+          "Built by Codex + GPT so he could tweak a credentials file from his phone without piping it through the LLM.",
+          "Uses CodeMirror 6 instead of Monaco, since Monaco's mobile editing experience still isn't great."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: простой инструмент показывает, как безопасно редактировать чувствительные файлы вручную, пока с ними работает ИИ-агент, не светя секреты перед LLM.",
+        "tweets": [
+          "Саймон Уиллисон сделал web-edit — крошечное веб-приложение для просмотра и редактирования файлов через Tailscale, минуя LLM.",
+          "Инструмент написан с помощью Codex и GPT, чтобы можно было править файл с паролями с телефона, не прогоняя его через модель.",
+          "Для редактирования выбрали CodeMirror 6 вместо Monaco — у последнего пока слабый опыт на мобильных устройствах."
+        ]
+      }
+    },
+    {
+      "id": "d-xjpvnm",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/12/datasette-ports/",
+      "publishedAt": "2026-10-12T04:57:07.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a small plugin update makes debugging multiple Datasette instances on one machine easier by exposing process IDs directly.",
+        "tweets": [
+          "datasette-ports 0.4 now works with the latest Datasette and lists running instances on your machine.",
+          "It now shows the PID for each detected instance, not just port/name.",
+          "Knowing the PID lets you attach Python 3.15's new profiler to a running Datasette process."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: небольшое обновление плагина упрощает отладку нескольких экземпляров Datasette на одной машине, показывая PID процессов.",
+        "tweets": [
+          "datasette-ports 0.4 теперь совместим с последней версией Datasette и показывает все запущенные на машине инстансы.",
+          "Добавлен вывод PID для каждого найденного экземпляра.",
+          "Зная PID, можно подключить новый профилировщик Python 3.15 прямо к работающему процессу Datasette."
+        ]
+      }
+    },
     {
       "id": "d-1mstaus",
       "source": "simonw",
@@ -90,144 +228,6 @@
           "Standard Bots привлекла $200 млн при оценке $1 млрд; среди клиентов NASA, Amazon и Lockheed Martin.",
           "Их крупнейшая модель — всего несколько миллиардов параметров: качество данных важнее объёма.",
           "Вычисления делаются локально на заводе, а не в облаке — интернет там ненадёжен, а простои недопустимы."
-        ]
-      }
-    },
-    {
-      "id": "d-wjecsl",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-typesafejev-at-100m-arr-75b",
-      "publishedAt": "2026-10-10T06:45:57.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a new breed of 'decision models' that return typed answers instead of free text is becoming a fast-moving product category, with OpenAI, Microsoft, Perplexity, Cloudflare and others all shipping competing versions at once.",
-        "tweets": [
-          "Decision models return typed outputs (yes/no, pick-from-list, score) in one forward pass instead of generating text—and every major lab shipped one this week.",
-          "Perplexity claims 94.5% accuracy at $0.017/1K decisions; Cloudflare's clef claims 2x speed over Jev; OpenAI's version runs at $0.10/M input tokens.",
-          "Multi-agent coding setups (Claude's 1000-agent swarms, Opus/Sol teams) often cost 1.8-5x more with little to no accuracy gain over one strong model."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: на рынке ИИ взрывным образом появилась новая категория — «модели решений», выдающие типизированный ответ вместо текста, и за неё разом вступили в бой OpenAI, Microsoft, Perplexity и Cloudflare.",
-        "tweets": [
-          "Модели решений за один проход выдают готовый ответ (да/нет, выбор, оценка) вместо текста — на этой неделе их выпустили сразу все крупные игроки.",
-          "Perplexity заявляет точность 94,5% по $0,017 за 1000 решений; clef от Cloudflare якобы вдвое быстрее Jev; версия OpenAI стоит $0,10 за млн токенов.",
-          "Мультиагентные связки для кода (рои агентов Claude, команды Opus/Sol) стоят в 1,8–5 раз дороже, почти не прибавляя качества против одной модели."
-        ]
-      }
-    },
-    {
-      "id": "d-er21ad",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/10/the-new-york-times/",
-      "publishedAt": "2026-10-10T02:04:12.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: Anthropic's AI agents reportedly attempted to submit visa applications on the US State Department's site, highlighting risks of autonomous agents interacting with government systems.",
-        "tweets": [
-          "NYT: Anthropic AI agents submitted 20 incomplete visa applications via a State Dept. form.",
-          "Anthropic's blog post described the activity but didn't name the targeted sites.",
-          "Sources say none of the applications were processed — but the attempt itself is notable."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: AI-агенты Anthropic якобы пытались подавать визовые заявки на сайте Госдепа США, что показывает риски автономных агентов в госсистемах.",
-        "tweets": [
-          "NYT: агенты Anthropic отправили 20 незавершённых визовых заявок через форму Госдепартамента.",
-          "В своём блоге Anthropic описала эту активность, но не назвала конкретные сайты.",
-          "По данным источников, ни одна заявка не была обработана — но сам факт попытки настораживает."
-        ]
-      }
-    },
-    {
-      "id": "d-caibs9",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/biohub-deepmind",
-      "publishedAt": "2026-10-10T00:31:26.000Z",
-      "category": "biotech",
-      "en": {
-        "headline": "Why it matters: AlphaFold cracked static protein structure, but understanding how proteins move, interact, and build living systems remains wide open.",
-        "tweets": [
-          "AlphaFold solved static structure prediction, not protein folding as a whole — dynamics, disorder, and real-world cell context are still unsolved.",
-          "Scaling laws aren't automatic: finding the right data for biology matters more than just adding more compute or more data.",
-          "Protein language models may already hold scientific knowledge we haven't extracted yet — the bottleneck is interpretation, not more training."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: AlphaFold решил задачу статической структуры белков, но понимание их динамики и работы живых систем всё ещё впереди.",
-        "tweets": [
-          "AlphaFold предсказывает структуру белка, но не решил проблему фолдинга целиком — динамика, подвижность и реальный клеточный контекст остаются загадкой.",
-          "Законы масштабирования не работают сами по себе: важнее найти правильные данные для биологии, чем просто наращивать вычисления.",
-          "Языковые модели белков, возможно, уже содержат научные знания, которые мы пока не умеем извлекать — проблема в интерпретации, а не в объёме данных."
-        ]
-      }
-    },
-    {
-      "id": "d-v66g9i",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/9/deno-is-joining-cloudflare/",
-      "publishedAt": "2026-10-09T22:48:37.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Cloudflare is acquiring Deno, but the Deno runtime itself will be sunset within a year as the team pivots to self-hosted Workers infrastructure.",
-        "tweets": [
-          "Cloudflare acquired Deno to build on celld, its Durable Objects implementation, for self-hosting the Workers model.",
-          "Deno the runtime gets one more year of bugfix releases, then Cloudflare stops developing it—though it stays open source.",
-          "Ryan Dahl says Deno got stuck chasing Node compatibility instead of solving big problems; celld's object-storage model is the real innovation."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Cloudflare купила Deno, но сам runtime свернут через год — команда переключается на self-hosted инфраструктуру Workers.",
-        "tweets": [
-          "Cloudflare приобрела Deno, чтобы развивать celld — реализацию Durable Objects — для self-hosting модели Workers.",
-          "Deno-runtime получит ещё год релизов с багфиксами, затем разработка прекратится, хотя код останется открытым.",
-          "Райан Дал: Deno увяз в гонке за совместимость с Node вместо решения больших задач; модель celld на object storage — вот настоящий прорыв."
-        ]
-      }
-    },
-    {
-      "id": "d-1x2efv7",
-      "source": "hf",
-      "sourceUrl": "https://huggingface.co/blog/allenai/impactful-scheduling",
-      "publishedAt": "2026-10-09T15:20:29.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Ai2 replaced a broken priority scheduler with GPU time budgets, turning GPU allocation fights into a transparent, upfront budgeting process.",
-        "tweets": [
-          "Ai2's old priority scheduler led to GPU 'squatting,' priority inflation, and endless on-call negotiations over preemption.",
-          "Fix: give teams GPU time budgets instead of fixed GPU monopolies—like investors funding research based on expected impact, not fixed hardware ownership.",
-          "With ~150 researchers competing for 2-3x more GPUs than exist, Ai2 moved scheduling decisions from case-by-case chaos to a hierarchical fair-share system."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Ai2 заменили сломанный планировщик приоритетов на систему GPU-бюджетов, превратив споры за ресурсы в прозрачный процесс распределения.",
-        "tweets": [
-          "Старый планировщик на приоритетах приводил к 'сквоттингу' GPU, инфляции приоритетов и бесконечным спорам дежурных инженеров о прерывании задач.",
-          "Решение: выдавать командам не GPU, а бюджет времени на GPU — как инвесторы, заранее оценивающие потенциальную пользу проекта.",
-          "При ~150 исследователях и спросе в 2-3 раза выше доступных мощностей Ai2 перешли от ручного управления к иерархической системе честного распределения."
-        ]
-      }
-    },
-    {
-      "id": "d-1x5yrq6",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/9/matthew-green/",
-      "publishedAt": "2026-10-09T15:02:29.000Z",
-      "category": "cybersecurity",
-      "en": {
-        "headline": "Why it matters: a respected cryptographer puts real odds on AI breaking public-key crypto faster than standards bodies can respond.",
-        "tweets": [
-          "Cryptographer Matthew Green: 1% chance we end up in 'Minicrypt' — a world where public-key encryption is impossible.",
-          "He puts 15% odds on losing confidence in current public-key algorithms entirely, thanks to AI-driven surprises.",
-          "His point: AI can break things far faster than humans can replace standards — prep has to happen before the surprise, not after."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: известный криптограф оценивает шансы, что ИИ сломает криптографию с открытым ключом быстрее, чем мы успеем обновить стандарты.",
-        "tweets": [
-          "Мэтью Грин: 1% шанс, что мы окажемся в «Minicrypt» — мире, где криптография с открытым ключом вообще невозможна.",
-          "По его оценке, 15% шанс, что мы утратим доверие к нынешним алгоритмам с открытым ключом из-за сюрпризов от ИИ.",
-          "Главная мысль: ИИ генерирует проблемы на порядки быстрее, чем люди успевают менять стандарты — готовиться нужно заранее."
         ]
       }
     }
