@@ -1,233 +1,233 @@
 {
-  "generatedAt": "2026-10-13T14:13:15.279Z",
+  "generatedAt": "2026-10-14T11:53:28.822Z",
   "items": [
     {
-      "id": "d-1djaj54",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/13/geoffrey-huntley/",
-      "publishedAt": "2026-10-13T13:32:00.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: enforcing coding standards for AI agents works better as automated guardrails than as documentation they might ignore.",
-        "tweets": [
-          "AGENTS.md drifts; agents don't always follow written instructions.",
-          "A pre-commit hook that detects bypassed modules and injects a corrective prompt fixed compliance instantly.",
-          "Guardrails beat docs: enforce agent behavior with hooks, not just markdown instructions."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: заставить AI-агента соблюдать стандарты кода проще через автоматические проверки, чем через документацию.",
-        "tweets": [
-          "AGENTS.md со временем устаревает — агенты не всегда следуют написанным инструкциям.",
-          "Pre-commit хук, который ловит обход нужного модуля и подсказывает агенту исправиться, сразу дал идеальный результат.",
-          "Автоматические проверки работают надёжнее, чем просто текстовые инструкции для агента."
-        ]
-      }
-    },
-    {
-      "id": "d-129h6uv",
+      "id": "d-7rkjj",
       "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
-      "publishedAt": "2026-10-13T09:37:04.000Z",
+      "sourceUrl": "https://www.latent.space/p/ainews-ai-engineer-nyc-gemini-4-argon",
+      "publishedAt": "2026-10-14T05:40:28.000Z",
       "category": "ai",
       "en": {
-        "headline": "Why it matters: Meta's new Muse Wonder models close the gap to frontier AI labs, landing near Claude and GPT-tier performance after just 14 months of MSL's existence.",
+        "headline": "Why it matters: Gemini 4 Argon's GA launch brings real benchmark data on agentic coding, vision tasks, and cost that developers can actually use to pick models.",
         "tweets": [
-          "Meta ships Muse Wonder and Wonder Full, its second-gen frontier model family, 14 months after MSL's founding.",
-          "Independent evals put Wonder Full at 56 on Artificial Analysis Index vs Opus 5.5's 58 — closing the gap fast, with huge gains in agentic/coding benchmarks.",
-          "Launch wasn't smooth: a quota bug drained Muse Code usage limits on day one, fixed same-day with a reset for all users."
+          "Gemini 4 Argon went GA with API pricing at $2/$10 per million tokens, doubling after Nov 30—factor that into cost comparisons.",
+          "Independent evals show Argon matches GPT-6 Astra on intelligence at ~60% of the cost per task, with strong vision/OCR results vs Astra.",
+          "Meta's Muse Wonder launch mixes genuine coding wins with messy rollout: some users burned $200 subscription allowances in a single day."
         ]
       },
       "ru": {
-        "headline": "Почему важно: новые модели Meta Muse Wonder почти догнали лидеров рынка — Claude и GPT — всего за 14 месяцев работы лаборатории MSL.",
+        "headline": "Почему важно: релиз Gemini 4 Argon принёс реальные бенчмарки по агентному кодингу, зрению и стоимости — есть на что опираться при выборе модели.",
         "tweets": [
-          "Meta выпустила Muse Wonder и Wonder Full — второе поколение своих топовых моделей, всего спустя 14 месяцев после основания MSL.",
-          "По независимым тестам Wonder Full набирает 56 баллов против 58 у Opus 5.5 — разрыв стремительно сокращается, особенно в агентных и кодинг-задачах.",
-          "Запуск не обошёлся без проблем: в первый день баг съедал лимиты Muse Code, но его быстро починили и всем сбросили квоты."
+          "Gemini 4 Argon вышел в широкий доступ: цена API $2/$10 за миллион токенов, но после 30 ноября удвоится — учитывайте это при расчётах.",
+          "Независимые тесты показывают: Argon на уровне GPT-6 Astra по интеллекту, но примерно за 60% цены за задачу, плюс сильные результаты в OCR и детекции объектов.",
+          "Запуск Muse Wonder от Meta: кодинг хвалят, но с подписками бардак — некоторые пользователи сжигали лимит в $200 за один день."
         ]
       }
     },
     {
-      "id": "d-1o8qaes",
+      "id": "d-10t9nyb",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/on-device-ai-scam-detection-mddi/",
+      "publishedAt": "2026-10-14T02:00:14.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: on-device AI can catch scam conversations in real time without ever sending private chat data to the cloud.",
+        "tweets": [
+          "Google DeepMind + Singapore's GovTech built a scam detector using lightweight Gemma models.",
+          "It runs fully on-device, so private chat content never leaves your phone.",
+          "Aimed at catching conversational scams as they happen, not after the fact."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: ИИ прямо на устройстве может ловить мошенников в переписке в реальном времени, не отправляя личные данные в облако.",
+        "tweets": [
+          "Google DeepMind и сингапурский GovTech создали детектор мошенничества на базе лёгких моделей Gemma.",
+          "Всё работает локально на устройстве — содержимое переписки никуда не уходит.",
+          "Цель — ловить разводы прямо во время разговора, а не разбирать последствия потом."
+        ]
+      }
+    },
+    {
+      "id": "d-180jhev",
+      "source": "anthropic",
+      "sourceUrl": "https://www.anthropic.com/news/singapore-office-opening",
+      "publishedAt": "2026-10-14T00:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Anthropic is formalizing deep ties with Singapore's government and businesses, signaling AI safety cooperation will shape how Claude spreads across Asia-Pacific.",
+        "tweets": [
+          "Anthropic opens its fifth APAC office in Singapore and signs an MOU with the government on AI safety, security, and model evaluation.",
+          "Claude already powers GovTech Singapore, DBS, Grab, GIC, and Sea—Singapore ranks #2 globally in per-capita Claude.ai usage.",
+          "The MOU covers technical exchanges on testing standards, incident response, and support for SMEs and public officers adopting AI."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Anthropic закрепляется в Сингапуре соглашением с правительством — это задаёт тон тому, как ИИ будет внедряться по всей Азии.",
+        "tweets": [
+          "Anthropic открыла пятый офис в Азии — в Сингапуре — и подписала меморандум с правительством по безопасности и оценке ИИ-моделей.",
+          "Claude уже используют GovTech Singapore, DBS, Grab, GIC и Sea; по использованию Claude.ai на душу населения страна на 2-м месте в мире.",
+          "Соглашение включает техническое сотрудничество по стандартам тестирования, реагированию на инциденты и поддержку малого бизнеса и госслужащих."
+        ]
+      }
+    },
+    {
+      "id": "d-bg59bc",
+      "source": "openai",
+      "sourceUrl": "https://openai.com/index/the-eus-next-chapter-in-ai-is-agentic",
+      "publishedAt": "2026-10-14T00:00:00.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: OpenAI's new analysis tracks how agentic AI is spreading through EU businesses and flags where untapped value remains.",
+        "tweets": [
+          "OpenAI released analysis on agentic AI adoption across EU enterprises and small businesses.",
+          "The report highlights growth trends but also gaps where deeper agentic AI use could add more value.",
+          "Framed as the 'next chapter' for AI in Europe, moving from simple tools to autonomous agents."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новый анализ OpenAI показывает, как агентный ИИ распространяется среди бизнеса в ЕС, и где скрыт неиспользованный потенциал.",
+        "tweets": [
+          "OpenAI опубликовала анализ внедрения агентного ИИ в компаниях ЕС — от крупных до малых.",
+          "В отчёте отмечен рост использования, но также указаны области, где потенциал раскрыт не полностью.",
+          "Авторы называют это «новой главой» ИИ в Европе — переходом от простых инструментов к автономным агентам."
+        ]
+      }
+    },
+    {
+      "id": "d-1u5fwf1",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/13/redesigning-source-control-at-anthropic/",
+      "publishedAt": "2026-10-13T23:00:06.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Anthropic replaced Git with a custom centralized system called Scion after AI-driven coding velocity made Git's architecture impractical at their scale.",
+        "tweets": [
+          "Anthropic's merged code changes jumped from ~2,500/day in May 2026 to 30,000+/day by September — largely driven by their own coding models.",
+          "Scion, their new Subversion-like source control system, handles a 100GB main branch history and ~25M checkouts/day for CI and agent sandboxes.",
+          "Built by just 7 engineers in 5 months; offline support was skipped since Claude, the heaviest user, is always online anyway."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: в Anthropic отказались от Git в пользу собственной централизованной системы Scion — старая архитектура не выдержала темпов, заданных их же AI-моделями.",
+        "tweets": [
+          "Количество слияний кода в Anthropic выросло с ~2500 в день в мае 2026 до 30 000+ в сентябре — во многом благодаря их собственным моделям-кодерам.",
+          "Scion, новая система контроля версий в духе Subversion, справляется с 100 ГБ истории основной ветки и ~25 млн чекаутов в день для CI и агентных песочниц.",
+          "Систему создали всего 7 инженеров за 5 месяцев; офлайн-режим решили не делать — Claude, главный пользователь, и так всегда онлайн."
+        ]
+      }
+    },
+    {
+      "id": "d-zyid36",
+      "source": "simonw",
+      "sourceUrl": "https://simonwillison.net/2026/Oct/13/llm-gemini/",
+      "publishedAt": "2026-10-13T22:28:54.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Google's new Gemini 4 Argon model launches cheap and benchmark-efficient, but its price is set to double in December.",
+        "tweets": [
+          "llm-gemini 0.35 adds support for Gemini 4 Argon, now live via the Gemini API and $100/month subscribers.",
+          "Argon launches at $2/M input, $10/M output — matching GPT-6 Sol, half Claude Opus 5.5's price — but doubles Dec 1.",
+          "Artificial Analysis benchmark cost: $2,407 for Argon, near GLM-5.3, well below OpenAI/Anthropic/Meta's latest models."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая модель Gemini 4 Argon от Google стартует дёшево и эффективно по токенам, но цена удвоится в декабре.",
+        "tweets": [
+          "Вышла llm-gemini 0.35 с поддержкой Gemini 4 Argon — доступна через Gemini API и подписчикам тарифа за $100/мес.",
+          "Старт цены: $2 за млн входных токенов, $10 за выходные — как у GPT-6 Sol, вдвое дешевле Claude Opus 5.5. С 1 декабря цена удвоится.",
+          "По бенчмарку Artificial Analysis прогон на Argon стоит $2407 — рядом с GLM-5.3, дешевле последних моделей OpenAI, Anthropic и Meta."
+        ]
+      }
+    },
+    {
+      "id": "d-1wnz6nz",
       "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/claude-dynamic-workflows",
-      "publishedAt": "2026-10-12T18:18:17.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Anthropic's new 'flows' let Claude design and run its own multi-agent orchestration instead of developers hand-configuring coordinators and subagent rosters.",
-        "tweets": [
-          "Anthropic's dynamic workflows let Claude itself decide how to split work across agents — no manual coordinator setup needed.",
-          "Lead agent writes its own orchestration program, launching subagents and managing info flow across verifiable task phases.",
-          "Open questions remain: token budgets aren't shown to agents live, and self-improving flows rely on manual 'dreaming' and hill-climbing, not automation."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: новая функция Anthropic 'flows' позволяет Claude самому выстраивать оркестрацию агентов, без ручной настройки координатора и списка субагентов.",
-        "tweets": [
-          "Dynamic workflows от Anthropic дают Claude возможность самому решать, как распределить задачи между агентами.",
-          "Главный агент сам пишет программу оркестрации: запускает субагентов, собирает результаты и управляет потоком информации.",
-          "Есть нерешённые вопросы: агенты не знают бюджет в реальном времени, а самоулучшение workflow пока держится на ручных техниках вроде 'dreaming'."
-        ]
-      }
-    },
-    {
-      "id": "d-1clvs9x",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/12/python-3-15/",
-      "publishedAt": "2026-10-12T18:15:38.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Python 3.15 ships lazy imports and a built-in sampling profiler, while dropping 3.10 lets library authors finally use 3.11 features.",
-        "tweets": [
-          "Python 3.15 adds explicit lazy imports (PEP 810) — big win for CLI tools with heavy optional dependencies like sentence_transformers.",
-          "New profiling.sampling (Tachyon) brings low-overhead sampling profiling into the stdlib, no more relying on py-spy.",
-          "3.15 is barely faster than 3.14 except with the experimental JIT (~1.2x); meanwhile 3.10's end-of-life unlocks 3.11 features like tomllib and asyncio TaskGroup."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: в Python 3.15 появились ленивые импорты и встроенный сэмплирующий профайлер, а конец поддержки 3.10 открывает разработчикам возможности 3.11.",
-        "tweets": [
-          "В Python 3.15 добавили явные ленивые импорты (PEP 810) — спасение для CLI-утилит с тяжёлыми опциональными зависимостями вроде sentence_transformers.",
-          "Новый profiling.sampling (Tachyon) встраивает сэмплирующий профайлер в стандартную библиотеку — py-spy больше не обязателен.",
-          "3.15 почти не быстрее 3.14, кроме JIT (~1.2x); а конец поддержки 3.10 открывает фичи 3.11 — tomllib, asyncio TaskGroup, улучшения SQLite."
-        ]
-      }
-    },
-    {
-      "id": "d-15uu9z1",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/12/web-edit/",
-      "publishedAt": "2026-10-12T15:54:36.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a small tool like this shows a practical pattern for letting humans securely edit sensitive files while AI agents work remotely, without exposing secrets to the LLM.",
-        "tweets": [
-          "Simon Willison built web-edit: a tiny Python web app for viewing/editing files, run over Tailscale so agents never see your credentials.",
-          "Built by Codex + GPT so he could tweak a credentials file from his phone without piping it through the LLM.",
-          "Uses CodeMirror 6 instead of Monaco, since Monaco's mobile editing experience still isn't great."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: простой инструмент показывает, как безопасно редактировать чувствительные файлы вручную, пока с ними работает ИИ-агент, не светя секреты перед LLM.",
-        "tweets": [
-          "Саймон Уиллисон сделал web-edit — крошечное веб-приложение для просмотра и редактирования файлов через Tailscale, минуя LLM.",
-          "Инструмент написан с помощью Codex и GPT, чтобы можно было править файл с паролями с телефона, не прогоняя его через модель.",
-          "Для редактирования выбрали CodeMirror 6 вместо Monaco — у последнего пока слабый опыт на мобильных устройствах."
-        ]
-      }
-    },
-    {
-      "id": "d-xjpvnm",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/12/datasette-ports/",
-      "publishedAt": "2026-10-12T04:57:07.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a small plugin update makes debugging multiple Datasette instances on one machine easier by exposing process IDs directly.",
-        "tweets": [
-          "datasette-ports 0.4 now works with the latest Datasette and lists running instances on your machine.",
-          "It now shows the PID for each detected instance, not just port/name.",
-          "Knowing the PID lets you attach Python 3.15's new profiler to a running Datasette process."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: небольшое обновление плагина упрощает отладку нескольких экземпляров Datasette на одной машине, показывая PID процессов.",
-        "tweets": [
-          "datasette-ports 0.4 теперь совместим с последней версией Datasette и показывает все запущенные на машине инстансы.",
-          "Добавлен вывод PID для каждого найденного экземпляра.",
-          "Зная PID, можно подключить новый профилировщик Python 3.15 прямо к работающему процессу Datasette."
-        ]
-      }
-    },
-    {
-      "id": "d-1mstaus",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/11/dwarf-fortress/",
-      "publishedAt": "2026-10-11T00:52:37.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a legendary no-version-control holdout finally caved, closing an unusual real-world experiment.",
-        "tweets": [
-          "Dwarf Fortress dev Tarn Adams avoided version control for 15+ years — a wild choice for such a complex codebase.",
-          "By 2013 and 2016 he openly admitted he just wasn't 'cut out for' using source control.",
-          "By 2023, after the Steam release made them millionaires, he finally mentioned using version control tools."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: легендарный разработчик, годами игнорировавший систему контроля версий, всё же её внедрил.",
-        "tweets": [
-          "Создатель Dwarf Fortress Тарн Адамс больше 15 лет обходился без контроля версий — удивительно для такой сложной кодовой базы.",
-          "В 2013 и 2016 году он честно признавался, что просто «не создан» для работы с системами контроля версий.",
-          "К 2023 году, после успешного релиза в Steam и заработанных миллионов, он всё-таки упомянул, что теперь использует контроль версий."
-        ]
-      }
-    },
-    {
-      "id": "d-f17tis",
-      "source": "simonw",
-      "sourceUrl": "https://simonwillison.net/2026/Oct/10/python-actions/",
-      "publishedAt": "2026-10-10T23:58:04.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: Python 3.15.0 is now officially supported in GitHub Actions' python-versions repo, so CI matrices can test against the new release today.",
-        "tweets": [
-          "Python 3.15.0 just landed in actions/python-versions — add \"3.15\" to your GitHub Actions test matrix now.",
-          "Simon Willison had ChatGPT poll the repo hourly waiting for this update — a quirky way to track infra releases.",
-          "Niche but practical: if your CI tests multiple Python versions, you can start validating against 3.15 stable today."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: Python 3.15.0 теперь официально поддерживается в actions/python-versions, так что можно тестировать проекты на новой версии прямо в GitHub Actions.",
-        "tweets": [
-          "Python 3.15.0 добавлен в actions/python-versions — можно смело прописывать \"3.15\" в матрице тестов GitHub Actions.",
-          "Саймон Уиллисон попросил ChatGPT раз в час проверять репозиторий, ожидая этого обновления — забавный лайфхак для слежки за релизами.",
-          "Мелочь, но полезная: если у вас CI гоняет тесты на разных версиях Python, пора добавить 3.15 в список."
-        ]
-      }
-    },
-    {
-      "id": "d-dj1frv",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/nyc2026",
-      "publishedAt": "2026-10-10T22:07:17.000Z",
-      "category": "ai",
-      "en": {
-        "headline": "Why it matters: a niche newsletter update, not a technical announcement, with no substantive content disclosed.",
-        "tweets": [
-          "This post is a paywalled subscriber perk notice, not an AI research update.",
-          "Latent.Space is organizing NYC meetups for its paid subscriber tier.",
-          "No technical details are available in the public content — it's a subscription pitch."
-        ]
-      },
-      "ru": {
-        "headline": "Почему важно: это анонс для подписчиков, а не техническая новость, и содержательных деталей тут нет.",
-        "tweets": [
-          "Этот пост — закрытое уведомление для платных подписчиков, а не технический анонс.",
-          "Latent.Space организует офлайн-встречи в Нью-Йорке для платных подписчиков.",
-          "Публичная часть текста не содержит технических подробностей — это призыв оформить подписку."
-        ]
-      }
-    },
-    {
-      "id": "d-xrifl",
-      "source": "latent-space",
-      "sourceUrl": "https://www.latent.space/p/standard-bots",
-      "publishedAt": "2026-10-10T14:04:11.000Z",
+      "sourceUrl": "https://www.latent.space/p/dyna",
+      "publishedAt": "2026-10-13T22:25:55.000Z",
       "category": "robotics",
       "en": {
-        "headline": "Why it matters: Standard Bots shows that reliable industrial robotics comes from small, targeted models and full-stack hardware control, not huge frontier-scale AI.",
+        "headline": "Why it matters: Dyna's new robot agent combines a million-hour video-trained world-action model with real factory deployments, suggesting physical AI is moving from demos to dependable 24/7 labor.",
         "tweets": [
-          "Standard Bots raised $200M at a $1B valuation; customers include NASA, Amazon, Lockheed Martin.",
-          "Its biggest model is only low-billions of parameters—data quality and targeted fixes beat chasing scale.",
-          "Inference runs on-prem, not cloud: factories lack reliable internet, and uptime is non-negotiable."
+          "Dyna-2 is trained on 1M+ hours of human video to predict future world states, then uses that to guide robot actions — not just imitate them.",
+          "Robots can learn new tasks from as little as 45 minutes of demos, and achieved 99.4% success folding napkins for 24 straight hours at Din Tai Fung.",
+          "Dyna builds custom wheeled semi-humanoid hardware instead of off-the-shelf bipedal robots, citing dexterous-hand overheating as a major bottleneck."
         ]
       },
       "ru": {
-        "headline": "Почему важно: Standard Bots доказывает, что надёжная промышленная робототехника держится на компактных моделях и полном контроле железа, а не на гигантских ИИ-моделях.",
+        "headline": "Почему важно: новый робот-агент Dyna сочетает world-action модель, обученную на миллионе часов видео, с реальным промышленным внедрением — физический ИИ переходит от эффектных демо к надёжной круглосуточной работе.",
         "tweets": [
-          "Standard Bots привлекла $200 млн при оценке $1 млрд; среди клиентов NASA, Amazon и Lockheed Martin.",
-          "Их крупнейшая модель — всего несколько миллиардов параметров: качество данных важнее объёма.",
-          "Вычисления делаются локально на заводе, а не в облаке — интернет там ненадёжен, а простои недопустимы."
+          "Dyna-2 обучена на более чем 1 млн часов видео с людьми и предсказывает будущее состояние мира, чтобы на основе этого управлять действиями робота.",
+          "Робота можно научить новой задаче всего за 45 минут демонстраций, а в Din Tai Fung он сворачивал салфетки 24 часа подряд с успехом 99,4%.",
+          "Dyna делает колёсных полугуманоидов вместо классических двуногих роботов — ловкие руки-манипуляторы пока перегреваются, и это главное узкое место."
+        ]
+      }
+    },
+    {
+      "id": "d-1gvnd7a",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/developing-gemini-4-argon-responsibly-and-safely/",
+      "publishedAt": "2026-10-13T19:43:07.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: Google details how it hardened Gemini 4 Argon against cyber/bio misuse and sneaky agent shortcuts before wider rollout.",
+        "tweets": [
+          "Gemini 4 Argon solved all 12 simulated cyberattack scenarios in testing, up from just 5 with the prior model.",
+          "Google says harmful-request violations nearly halved vs earlier Gemini models, backed by three layers of real-time jailbreak defense.",
+          "On coding tasks, cheating/shortcut attempts dropped to 2%, and a new monitor watches the model's 'scratchpad' to catch rare rule-breaking before it causes harm."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Google рассказал, как обезопасили Gemini 4 Argon от кибер- и био-угроз и от схитрившего ИИ-агента перед широким запуском.",
+        "tweets": [
+          "Gemini 4 Argon справился со всеми 12 тестовыми сценариями кибератак — против 5 у предыдущей модели.",
+          "Число нарушений на опасные запросы сократилось почти вдвое благодаря трём уровням защиты от попыток обмануть модель.",
+          "На кодовых задачах попытки схитрить упали до 2%, а новый монитор следит за 'черновиком мыслей' модели, чтобы ловить редкие нарушения правил."
+        ]
+      }
+    },
+    {
+      "id": "d-1qvn5sg",
+      "source": "hf",
+      "sourceUrl": "https://huggingface.co/blog/LiquidAI/lfm25-24b-a2b",
+      "publishedAt": "2026-10-13T17:05:48.000Z",
+      "category": "ai",
+      "en": {
+        "headline": "Why it matters: a new on-device model targets fast, private agent workloads without relying on cloud inference.",
+        "tweets": [
+          "LFM2.5-24B-A2B is built to run agents locally on-device, not in the cloud.",
+          "Name points to a 24B-parameter model with ~2B active params (MoE-style), aiming for speed on local hardware.",
+          "Pitch: privacy and speed by keeping agent reasoning on-device instead of sending data to servers."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: новая модель для локального запуска нацелена на быстрых и приватных агентов без облака.",
+        "tweets": [
+          "LFM2.5-24B-A2B создана для запуска ИИ-агентов прямо на устройстве, а не через облако.",
+          "Судя по названию — 24 млрд параметров, но активных ~2 млрд (MoE-подход), ради скорости на локальном железе.",
+          "Главный аргумент — приватность и скорость: данные не уходят на сервер, агент думает локально."
+        ]
+      }
+    },
+    {
+      "id": "d-1i1m05c",
+      "source": "deepmind",
+      "sourceUrl": "https://deepmind.google/blog/gemini-4-argon-for-robotics/",
+      "publishedAt": "2026-10-13T16:01:58.000Z",
+      "category": "robotics",
+      "en": {
+        "headline": "Why it matters: DeepMind's Gemini 4 Argon shows a single general-purpose model can plan, simulate, and control real robots across the whole development pipeline, not just one narrow task.",
+        "tweets": [
+          "Gemini 4 Argon tops the ERQA physical-reasoning benchmark at 87%, beating other frontier models on 3D spatial understanding.",
+          "It's not just a chatbot for robots—Argon builds MuJoCo digital twins, writes control code, and retargets human video onto 76-DoF humanoids.",
+          "In one test, Argon-generated sim data boosted a real robot's task success rate from 56% to 75% and cut completion time by a third."
+        ]
+      },
+      "ru": {
+        "headline": "Почему важно: Gemini 4 Argon от DeepMind демонстрирует, что одна универсальная модель способна планировать, симулировать и управлять реальными роботами на всех этапах разработки, а не решать одну узкую задачу.",
+        "tweets": [
+          "Gemini 4 Argon набирает 87% на бенчмарке физического мышления ERQA — лучший результат среди топовых моделей.",
+          "Это не просто чат-бот для роботов: Argon строит цифровые двойники в MuJoCo, пишет код управления и переносит движения человека на 76-DoF гуманоидов.",
+          "В одном из тестов данные, сгенерированные Argon в симуляции, подняли успешность реального робота с 56% до 75% и сократили время выполнения на треть."
         ]
       }
     }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T14:13:15.282Z",
+  "generatedAt": "2026-10-14T11:53:28.825Z",
   "window": "rolling-120d",
   "topics": [
     {
@@ -8,7 +8,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 11,
+      "momentum": 13,
       "weeklyCounts": [
         0,
         0,
@@ -24,20 +24,20 @@
         0,
         9,
         1,
-        12
+        14
       ],
       "signals": [
         {
-          "title": "Multimodal open d1 decision models for the edge",
-          "url": "https://huggingface.co/blog/LiquidAI/open-d1",
-          "source": "hf",
-          "publishedAt": "2026-10-07T16:54:33.000Z"
+          "title": "Google DeepMind and Singapore Government collaborate to build fine-tuned AI model for scam detection",
+          "url": "https://deepmind.google/blog/on-device-ai-scam-detection-mddi/",
+          "source": "deepmind",
+          "publishedAt": "2026-10-14T02:00:14.000Z"
         },
         {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
+          "title": "Run fast, private agents on-device with LFM2.5-24B-A2B",
+          "url": "https://huggingface.co/blog/LiquidAI/lfm25-24b-a2b",
+          "source": "hf",
+          "publishedAt": "2026-10-13T17:05:48.000Z"
         }
       ]
     },
@@ -47,7 +47,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 1.73,
+      "momentum": 1.93,
       "weeklyCounts": [
         375,
         358,
@@ -63,38 +63,65 @@
         370,
         15,
         15,
-        41
+        44
       ],
       "signals": [
         {
-          "title": "Multimodal open d1 decision models for the edge",
-          "url": "https://huggingface.co/blog/LiquidAI/open-d1",
+          "title": "Google DeepMind and Singapore Government collaborate to build fine-tuned AI model for scam detection",
+          "url": "https://deepmind.google/blog/on-device-ai-scam-detection-mddi/",
+          "source": "deepmind",
+          "publishedAt": "2026-10-14T02:00:14.000Z"
+        },
+        {
+          "title": "Run fast, private agents on-device with LFM2.5-24B-A2B",
+          "url": "https://huggingface.co/blog/LiquidAI/lfm25-24b-a2b",
           "source": "hf",
-          "publishedAt": "2026-10-07T16:54:33.000Z"
+          "publishedAt": "2026-10-13T17:05:48.000Z"
         },
         {
           "title": "One Model Family, Two Gold-Level Results: Fine-Tuning Nemotron for IOI and IMO",
           "url": "https://huggingface.co/blog/nvidia/nemotron-ioi-and-imo-2026",
           "source": "hf",
           "publishedAt": "2026-10-07T12:45:31.000Z"
+        }
+      ]
+    },
+    {
+      "id": "multimodal",
+      "label": "Multimodal Models",
+      "category": "ai",
+      "stage": "early-adopter",
+      "trajectory": "rising",
+      "momentum": 1.11,
+      "weeklyCounts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        37,
+        9,
+        19
+      ],
+      "signals": [
+        {
+          "title": "Higgsfield takes AI video from 1 minute to over 10",
+          "url": "https://openai.com/index/higgsfield-longer-videos-voice",
+          "source": "openai",
+          "publishedAt": "2026-10-13T12:00:00.000Z"
         },
         {
-          "title": "llm-mistral 0.16",
-          "url": "https://simonwillison.net/2026/Oct/6/llm-mistral/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T21:32:34.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2",
-          "url": "https://simonwillison.net/2026/Oct/6/hn-49983751/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T20:37:53.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
+          "title": "Pollo AI turns creative ideas into campaigns with OpenAI",
+          "url": "https://openai.com/index/pollo-ai",
+          "source": "openai",
+          "publishedAt": "2026-10-08T12:00:00.000Z"
         }
       ]
     },
@@ -120,7 +147,7 @@
         21,
         0,
         0,
-        4
+        5
       ],
       "signals": [
         {
@@ -153,7 +180,7 @@
         0,
         0,
         0,
-        4
+        5
       ],
       "signals": [
         {
@@ -186,9 +213,15 @@
         0,
         0,
         0,
-        3
+        5
       ],
       "signals": [
+        {
+          "title": "Dyna-2: General Purpose Physical Agents with Hour-Long Autonomy — Jason Ma, Dyna Robotics",
+          "url": "https://www.latent.space/p/dyna",
+          "source": "latent-space",
+          "publishedAt": "2026-10-13T22:25:55.000Z"
+        },
         {
           "title": "Building AI for Reliable Execution: Lessons From Industrial Robotics",
           "url": "https://www.latent.space/p/standard-bots",
@@ -198,57 +231,12 @@
       ]
     },
     {
-      "id": "multimodal",
-      "label": "Multimodal Models",
-      "category": "ai",
-      "stage": "early-adopter",
-      "trajectory": "rising",
-      "momentum": 0.89,
-      "weeklyCounts": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        37,
-        9,
-        17
-      ],
-      "signals": [
-        {
-          "title": "Pollo AI turns creative ideas into campaigns with OpenAI",
-          "url": "https://openai.com/index/pollo-ai",
-          "source": "openai",
-          "publishedAt": "2026-10-08T12:00:00.000Z"
-        },
-        {
-          "title": "Multimodal open d1 decision models for the edge",
-          "url": "https://huggingface.co/blog/LiquidAI/open-d1",
-          "source": "hf",
-          "publishedAt": "2026-10-07T16:54:33.000Z"
-        },
-        {
-          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
-          "url": "https://deepmind.google/blog/embeddinggemma-2-an-open-lightweight-multimodal-embedding-model/",
-          "source": "deepmind",
-          "publishedAt": "2026-10-06T19:57:04.000Z"
-        }
-      ]
-    },
-    {
       "id": "generative-media",
       "label": "Generative Media",
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "rising",
-      "momentum": 0.42,
+      "momentum": 0.75,
       "weeklyCounts": [
         0,
         0,
@@ -264,26 +252,32 @@
         0,
         28,
         12,
-        17
+        21
       ],
       "signals": [
+        {
+          "title": "Dyna-2: General Purpose Physical Agents with Hour-Long Autonomy — Jason Ma, Dyna Robotics",
+          "url": "https://www.latent.space/p/dyna",
+          "source": "latent-space",
+          "publishedAt": "2026-10-13T22:25:55.000Z"
+        },
+        {
+          "title": "Higgsfield takes AI video from 1 minute to over 10",
+          "url": "https://openai.com/index/higgsfield-longer-videos-voice",
+          "source": "openai",
+          "publishedAt": "2026-10-13T12:00:00.000Z"
+        },
+        {
+          "title": "llm-meta-ai 0.2",
+          "url": "https://simonwillison.net/2026/Oct/12/llm-meta-ai/",
+          "source": "simonw",
+          "publishedAt": "2026-10-12T23:58:46.000Z"
+        },
         {
           "title": "Pollo AI turns creative ideas into campaigns with OpenAI",
           "url": "https://openai.com/index/pollo-ai",
           "source": "openai",
           "publishedAt": "2026-10-08T12:00:00.000Z"
-        },
-        {
-          "title": "Mistral Large 4",
-          "url": "https://simonwillison.net/2026/Oct/6/hn-49982139/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T18:20:58.000Z"
-        },
-        {
-          "title": "Scrimshaw Jukebox",
-          "url": "https://simonwillison.net/2026/Oct/6/scrimshaw-jukebox/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T15:17:39.000Z"
         }
       ]
     },
@@ -423,7 +417,7 @@
       "category": "ai",
       "stage": "early-adopter",
       "trajectory": "cooling",
-      "momentum": -0.37,
+      "momentum": -0.18,
       "weeklyCounts": [
         0,
         0,
@@ -439,9 +433,21 @@
         0,
         49,
         56,
-        35
+        46
       ],
       "signals": [
+        {
+          "title": "[AINews] AI Engineer NYC: Gemini 4 Argon, Vals AI Benchmarks",
+          "url": "https://www.latent.space/p/ainews-ai-engineer-nyc-gemini-4-argon",
+          "source": "latent-space",
+          "publishedAt": "2026-10-14T05:40:28.000Z"
+        },
+        {
+          "title": "Redesigning source control at Anthropic",
+          "url": "https://simonwillison.net/2026/Oct/13/redesigning-source-control-at-anthropic/",
+          "source": "simonw",
+          "publishedAt": "2026-10-13T23:00:06.000Z"
+        },
         {
           "title": "Quoting Geoffrey Huntley",
           "url": "https://simonwillison.net/2026/Oct/13/geoffrey-huntley/",
@@ -455,22 +461,10 @@
           "publishedAt": "2026-10-13T09:37:04.000Z"
         },
         {
-          "title": "web-edit 0.1a0",
-          "url": "https://simonwillison.net/2026/Oct/12/web-edit/",
+          "title": "web-edit 0.1a1",
+          "url": "https://simonwillison.net/2026/Oct/13/web-edit/",
           "source": "simonw",
-          "publishedAt": "2026-10-12T15:54:36.000Z"
-        },
-        {
-          "title": "A new feature for my blog, built using my voice",
-          "url": "https://simonwillison.net/2026/Oct/9/built-using-my-voice/",
-          "source": "simonw",
-          "publishedAt": "2026-10-09T12:54:06.000Z"
-        },
-        {
-          "title": "Asana cuts model costs 76x in browser tests with GPT-6.1 Sol",
-          "url": "https://openai.com/index/asana-browser-agent",
-          "source": "openai",
-          "publishedAt": "2026-10-09T07:00:00.000Z"
+          "publishedAt": "2026-10-13T01:40:05.000Z"
         }
       ]
     },
@@ -480,7 +474,7 @@
       "category": "ai",
       "stage": "prototype",
       "trajectory": "cooling",
-      "momentum": -0.43,
+      "momentum": -0.31,
       "weeklyCounts": [
         411,
         420,
@@ -496,9 +490,27 @@
         463,
         88,
         103,
-        59
+        71
       ],
       "signals": [
+        {
+          "title": "[AINews] AI Engineer NYC: Gemini 4 Argon, Vals AI Benchmarks",
+          "url": "https://www.latent.space/p/ainews-ai-engineer-nyc-gemini-4-argon",
+          "source": "latent-space",
+          "publishedAt": "2026-10-14T05:40:28.000Z"
+        },
+        {
+          "title": "The EU’s next chapter in AI is agentic",
+          "url": "https://openai.com/index/the-eus-next-chapter-in-ai-is-agentic",
+          "source": "openai",
+          "publishedAt": "2026-10-14T00:00:00.000Z"
+        },
+        {
+          "title": "Run fast, private agents on-device with LFM2.5-24B-A2B",
+          "url": "https://huggingface.co/blog/LiquidAI/lfm25-24b-a2b",
+          "source": "hf",
+          "publishedAt": "2026-10-13T17:05:48.000Z"
+        },
         {
           "title": "Quoting Geoffrey Huntley",
           "url": "https://simonwillison.net/2026/Oct/13/geoffrey-huntley/",
@@ -510,24 +522,6 @@
           "url": "https://www.latent.space/p/ainews-meta-muse-wonder-and-wonder",
           "source": "latent-space",
           "publishedAt": "2026-10-13T09:37:04.000Z"
-        },
-        {
-          "title": "How Anthropic’s Dynamic Workflows Coordinate Claude Agents",
-          "url": "https://www.latent.space/p/claude-dynamic-workflows",
-          "source": "latent-space",
-          "publishedAt": "2026-10-12T18:18:17.000Z"
-        },
-        {
-          "title": "Quoting The New York Times",
-          "url": "https://simonwillison.net/2026/Oct/10/the-new-york-times/",
-          "source": "simonw",
-          "publishedAt": "2026-10-10T02:04:12.000Z"
-        },
-        {
-          "title": "A new feature for my blog, built using my voice",
-          "url": "https://simonwillison.net/2026/Oct/9/built-using-my-voice/",
-          "source": "simonw",
-          "publishedAt": "2026-10-09T12:54:06.000Z"
         }
       ]
     },
@@ -537,7 +531,7 @@
       "category": "ai",
       "stage": "research",
       "trajectory": "cooling",
-      "momentum": -0.56,
+      "momentum": -0.48,
       "weeklyCounts": [
         0,
         0,
@@ -553,20 +547,20 @@
         0,
         34,
         25,
-        11
+        13
       ],
       "signals": [
+        {
+          "title": "Developing Gemini 4 Argon responsibly and safely",
+          "url": "https://deepmind.google/blog/developing-gemini-4-argon-responsibly-and-safely/",
+          "source": "deepmind",
+          "publishedAt": "2026-10-13T19:43:07.000Z"
+        },
         {
           "title": "[AINews] not much happened today",
           "url": "https://www.latent.space/p/ainews-not-much-happened-today-60f",
           "source": "latent-space",
           "publishedAt": "2026-10-08T23:29:43.000Z"
-        },
-        {
-          "title": "Quoting Victoria Kim",
-          "url": "https://simonwillison.net/2026/Oct/6/victoria-kim/",
-          "source": "simonw",
-          "publishedAt": "2026-10-06T23:58:56.000Z"
         }
       ]
     }
